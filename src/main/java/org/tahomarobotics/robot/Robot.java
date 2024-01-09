@@ -14,6 +14,7 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.slf4j.LoggerFactory;
+import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.util.BuildConstants;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
@@ -33,6 +34,7 @@ public class Robot extends LoggedRobot {
         initializeAKit();
 
         subsystems.add(OI.getInstance().initialize());
+        subsystems.add(Chassis.getInstance().initialize());
 
         logger.info("Robot Initialized.");
     }
@@ -118,4 +120,7 @@ public class Robot extends LoggedRobot {
     
     @Override
     public void testPeriodic() {}
+
+    @Override
+    public void simulationPeriodic() {}
 }

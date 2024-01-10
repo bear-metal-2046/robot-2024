@@ -2,7 +2,7 @@ import groovy.json.JsonSlurper
 
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2024.1.1-beta-4" // TODO: UPDATE THIS WHEN ADVANTAGEKIT 2024 RELEASES
+    id "edu.wpi.first.GradleRIO" version "2024.1.1"
     id "idea"
     id "com.peterabeles.gversion" version "1.10"
 }

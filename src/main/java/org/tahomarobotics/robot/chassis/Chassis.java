@@ -39,7 +39,6 @@ public class Chassis extends SubsystemIF {
 
     private boolean isFieldOriented = true;
     private final Field2d fieldPose = new Field2d();
-//    private final List<Pose2d> actualPath = new ArrayList<>();
 
     private final SwerveDriveKinematics kinematics;
 
@@ -48,10 +47,10 @@ public class Chassis extends SubsystemIF {
     // Constructor
 
     private Chassis() {
-        // read calibration data
+        // Read the calibration data from the roboRIO.
         swerveCalibration = new CalibrationData<>("SwerveCalibration", new Double[]{0d, 0d, 0d, 0d});
 
-        // create swerve modules
+        // Use the calibration to create the SwerveModules.
         Double[] angularOffsets = swerveCalibration.get();
         modules = List.of(
                 new SwerveModule(RobotMap.FRONT_LEFT_MOD, angularOffsets[0]),
@@ -66,9 +65,6 @@ public class Chassis extends SubsystemIF {
                         .toArray(Translation2d[]::new)
         );
 
-        /*
-        Pose Estimator is configured further down the line, and utilizes the previously set swerveConstants.
-         */
         poseEstimator = new SwerveDrivePoseEstimator(
                 kinematics,
                 new Rotation2d(),
@@ -79,6 +75,12 @@ public class Chassis extends SubsystemIF {
         );
     }
 
+    private SwerveDrivePoseEstimator poseEstimator() {
+        synchronized (poseEstimator) {
+            return poseEstimator;
+        }
+    }
+
     @Override
     public SubsystemIF initialize() {
         SmartDashboard.putData("Align Swerves", new AlignSwerveCommand());
@@ -87,9 +89,7 @@ public class Chassis extends SubsystemIF {
 
         var gyro = getYaw();
         var modules = getSwerveModulePositions();
-        synchronized (poseEstimator) {
-            poseEstimator.resetPosition(gyro, modules, new Pose2d());
-        }
+        poseEstimator().resetPosition(gyro, modules, new Pose2d());
 
         return this;
     }

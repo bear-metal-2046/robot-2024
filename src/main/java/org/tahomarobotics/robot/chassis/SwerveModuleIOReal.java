@@ -184,21 +184,8 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
         // Optimize the reference state to avoid spinning further than 90 degrees
         desiredState = SwerveModuleState.optimize(desiredState, Rotation2d.fromRotations(steerAngle));
 
-        double referenceAngle = desiredState.angle.getRotations();
-        double currentAngleMod = steerAngle % 1.0;
-        if (currentAngleMod < 0.0) {
-            currentAngleMod++;
-        }
-
-        double adjustedAngle = referenceAngle + steerAngle - currentAngleMod;
-        if (referenceAngle - currentAngleMod > 0.5) {
-            adjustedAngle--;
-        } else if (referenceAngle - currentAngleMod < -0.5) {
-            adjustedAngle++;
-        }
-
         driveMotor.setControl(driveMotorVelocity.withVelocity(desiredState.speedMetersPerSecond / DRIVE_POSITION_COEFFICIENT));
-        steerMotor.setControl(steerMotorPosition.withPosition(adjustedAngle));
+        steerMotor.setControl(steerMotorPosition.withPosition(desiredState.angle.getRotations()));
     }
 
     @Override

@@ -75,12 +75,6 @@ public class Chassis extends SubsystemIF {
         );
     }
 
-    private SwerveDrivePoseEstimator poseEstimator() {
-        synchronized (poseEstimator) {
-            return poseEstimator;
-        }
-    }
-
     @Override
     public SubsystemIF initialize() {
         SmartDashboard.putData("Align Swerves", new AlignSwerveCommand());
@@ -89,7 +83,9 @@ public class Chassis extends SubsystemIF {
 
         var gyro = getYaw();
         var modules = getSwerveModulePositions();
-        poseEstimator().resetPosition(gyro, modules, new Pose2d());
+        synchronized (poseEstimator) {
+            poseEstimator.resetPosition(gyro, modules, new Pose2d());
+        }
 
         return this;
     }
@@ -134,10 +130,11 @@ public class Chassis extends SubsystemIF {
 
     @Override
     public void periodic() {
+        // Log outputs to the log every 20ms.
         Logger.recordOutput("Chassis/Pose", getPose());
         Logger.recordOutput("Chassis/States", getSwerveModuleStates());
-
         gyroIO.logOutputs();
+
         modules.forEach(SwerveModule::periodic);
 
         var gyro = getYaw();

@@ -5,7 +5,6 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.geometry.Rotation2d;
-import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 
@@ -24,11 +23,6 @@ public class GyroIOReal implements GyroIO {
 
         // Don't update unused signals
         pigeon2.optimizeBusUtilization();
-    }
-
-    @Override
-    public void logOutputs() {
-        Logger.recordOutput("Chassis/Gyro/Yaw", getYaw());
     }
 
     @Override

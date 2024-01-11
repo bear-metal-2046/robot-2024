@@ -130,10 +130,9 @@ public class Chassis extends SubsystemIF {
 
     @Override
     public void periodic() {
-        // Log outputs to the log every 20ms.
         Logger.recordOutput("Chassis/Pose", getPose());
-        Logger.recordOutput("Chassis/States", getSwerveModuleStates());
-        gyroIO.logOutputs();
+        Logger.recordOutput("Chassis/State", getSwerveModuleStates());
+        Logger.recordOutput("Chassis/Gyro/Yaw", getYaw());
 
         modules.forEach(SwerveModule::periodic);
 

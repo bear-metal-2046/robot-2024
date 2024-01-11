@@ -1,5 +1,9 @@
 package org.tahomarobotics.robot.chassis;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -11,7 +15,9 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
@@ -36,6 +42,7 @@ public class Chassis extends SubsystemIF {
     private final List<SwerveModule> modules;
 
     private final SwerveDrivePoseEstimator poseEstimator;
+    private final SendableChooser<Command> autoChooser;
 
     private boolean isFieldOriented = true;
     private final Field2d fieldPose = new Field2d();
@@ -77,6 +84,35 @@ public class Chassis extends SubsystemIF {
                 VecBuilder.fill(0.02, 0.02, 0.02),
                 VecBuilder.fill(0.1, 0.1, 0.01)
         );
+
+        AutoBuilder.configureHolonomic(
+                this::getPose,
+                this::resetOdometry,
+                this::getCurrentChassisSpeeds,
+                this::drive,
+                new HolonomicPathFollowerConfig(
+                    new PIDConstants(0,0,0), //TODO: Update these after SysID is complete
+                        new PIDConstants(0,0,0),
+                        ChassisConstants.MAX_VELOCITY,
+                        ChassisConstants.TRACK_WIDTH/2,
+                        new ReplanningConfig()
+                ),
+                () -> {
+                    var alliance = DriverStation.getAlliance();
+                    if (alliance.isPresent()) {
+                        return alliance.get().equals(DriverStation.Alliance.Red);
+                    }
+                    return false;
+                },
+                this
+        );
+
+        autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData(autoChooser);
+    }
+
+    public SendableChooser<Command> getAutoChooser() {
+        return autoChooser;
     }
 
     @Override
@@ -152,9 +188,13 @@ public class Chassis extends SubsystemIF {
         SmartDashboard.putString("Pose", getPose().toString());
     }
 
+    private ChassisSpeeds getCurrentChassisSpeeds() {
+        return kinematics.toChassisSpeeds(getSwerveModuleStates());
+    }
+
     @Override
     public void simulationPeriodic() {
-        ChassisSpeeds speeds = kinematics.toChassisSpeeds(getSwerveModuleStates());
+        ChassisSpeeds speeds = getCurrentChassisSpeeds();
         ((GyroIOSim) gyroIO).simulationPeriodic(speeds);
     }
 

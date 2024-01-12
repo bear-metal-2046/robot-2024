@@ -1,6 +1,7 @@
 package org.tahomarobotics.robot.chassis;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -18,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
@@ -89,10 +91,10 @@ public class Chassis extends SubsystemIF {
                 this::getPose,
                 this::resetOdometry,
                 this::getCurrentChassisSpeeds,
-                this::drive,
+                this::autoDrive,
                 new HolonomicPathFollowerConfig(
-                    new PIDConstants(0,0,0), //TODO: Update these after SysID is complete
-                        new PIDConstants(0,0,0),
+                    ChassisConstants.DRIVE_PID,
+                        ChassisConstants.STEER_PID,
                         ChassisConstants.MAX_VELOCITY,
                         ChassisConstants.TRACK_WIDTH/2,
                         new ReplanningConfig()
@@ -107,6 +109,7 @@ public class Chassis extends SubsystemIF {
                 this
         );
 
+        NamedCommands.registerCommand("ShootCommand", new InstantCommand(() -> logger.info("========SHOOT COMMAND CALLED=========")));
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData(autoChooser);
     }
@@ -203,6 +206,14 @@ public class Chassis extends SubsystemIF {
             velocity = new ChassisSpeeds(-velocity.vxMetersPerSecond, -velocity.vyMetersPerSecond, velocity.omegaRadiansPerSecond);
         }
         drive(velocity, isFieldOriented);
+    }
+
+    public void autoDrive(ChassisSpeeds velocity) {
+        velocity = ChassisSpeeds.discretize(velocity, Robot.defaultPeriodSecs);
+
+        var swerveModuleStates = kinematics.toSwerveModuleStates(velocity);
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, ChassisConstants.MAX_VELOCITY);
+        setSwerveStates(swerveModuleStates);
     }
 
     public void drive(ChassisSpeeds velocity, boolean fieldRelative) {

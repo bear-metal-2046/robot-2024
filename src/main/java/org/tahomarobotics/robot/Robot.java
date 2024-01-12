@@ -55,7 +55,7 @@ public class Robot extends LoggedRobot {
 
         switch (RobotConfiguration.getMode()) {
             case REAL, SIM -> {
-                Logger.addDataReceiver(new WPILOGWriter()); // Write to a USB drive ("/U/logs" or "logs")
+//                Logger.addDataReceiver(new WPILOGWriter()); // Write to a USB drive ("/U/logs" or "logs")
                 Logger.addDataReceiver(new NT4Publisher());
             }
             case REPLAY -> {

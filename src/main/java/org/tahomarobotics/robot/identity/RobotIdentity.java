@@ -1,4 +1,4 @@
-package org.tahomarobotics.robot.Identity;
+package org.tahomarobotics.robot.identity;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -13,7 +14,7 @@ public class RobotIdentity {
 
     private final Logger logger = LoggerFactory.getLogger(RobotIdentity.class);
 
-    private static final RobotID robotID = null;
+    private static RobotID robotID;
 
     private static final RobotIdentity INSTANCE = new RobotIdentity();
 
@@ -22,7 +23,21 @@ public class RobotIdentity {
     }
 
     private RobotIdentity() {
+        for (byte[] address : getRobotAddress()) {
+            for (RobotID identity : RobotID.values()) {
+                if (Arrays.equals(identity.getMac(), address)) {
+                    robotID = identity;
+                    break;
+                }
+            }
+            if (robotID != null) break;
+        }
 
+        if (robotID == null) {
+            robotID = RobotID.COMPETITION;
+            logger.error("Could not get a valid ID for robot, assigning default");
+        }
+        logger.info("Set robot identity to " + robotID);
     }
 
     private List<byte[]> getRobotAddress() {

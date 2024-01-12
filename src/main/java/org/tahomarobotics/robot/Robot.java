@@ -18,6 +18,7 @@ import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.util.BuildConstants;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +59,8 @@ public class Robot extends LoggedRobot {
         // Depending on the current platform, publish logs to different receivers.
         switch (RobotConfiguration.getMode()) {
             case REAL, SIM -> {
-                Logger.addDataReceiver(new WPILOGWriter()); // Write to a USB drive ("/U/logs" or "logs")
+                if (RobotConfiguration.getMode() != RobotConfiguration.Mode.SIM && Path.of("/U").toFile().exists())
+                    Logger.addDataReceiver(new WPILOGWriter()); // Write to a USB drive ("/U/logs" or "logs")
                 Logger.addDataReceiver(new NT4Publisher());
             }
             case REPLAY -> {

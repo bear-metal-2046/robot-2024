@@ -64,8 +64,7 @@ public final class ChassisConstants {
     public static final double MASS = 25.33313;
 
     // volts per mps
-    public static final double kV_DRIVE = 1.0 / DRIVE_REDUCTION
-            / (SWERVE_DRIVE_MOTOR.KvRadPerSecPerVolt * WHEEL_RADIUS);
+    public static final double kV_DRIVE = (2 * Math.PI) / SWERVE_DRIVE_MOTOR.KvRadPerSecPerVolt;
 
     // volts per mps^2
     // ohms * meter * kg / Nm * Amps = volts * kg / N = volts * kg / (kg m/s^2) =

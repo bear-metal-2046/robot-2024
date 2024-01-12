@@ -4,10 +4,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
-import com.ctre.phoenix6.controls.CoastOut;
-import com.ctre.phoenix6.controls.PositionDutyCycle;
-import com.ctre.phoenix6.controls.StaticBrake;
-import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -44,8 +41,8 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
     private final StatusSignal<Double> steerOutput;
     private final StatusSignal<Double> steerCurrentDraw;
 
-    private final VelocityDutyCycle driveMotorVelocity = new VelocityDutyCycle(0.0);
-    private final PositionDutyCycle steerMotorPosition = new PositionDutyCycle(0.0);
+    private final VelocityVoltage driveMotorVelocity = new VelocityVoltage(0.0);
+    private final PositionVoltage steerMotorPosition = new PositionVoltage(0.0);
 
     // CONSTRUCTOR
 
@@ -55,9 +52,9 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
 
         this.angularOffset = angularOffset;
 
-        driveMotor = new TalonFX(descriptor.driveId());
-        steerMotor = new TalonFX(descriptor.steerId());
-        steerAbsEncoder = new CANcoder(descriptor.encoderId());
+        driveMotor = new TalonFX(descriptor.driveId(), RobotConfiguration.CANBUS_NAME);
+        steerMotor = new TalonFX(descriptor.steerId(), RobotConfiguration.CANBUS_NAME);
+        steerAbsEncoder = new CANcoder(descriptor.encoderId(), RobotConfiguration.CANBUS_NAME);
 
         configureDriveMotor(driveMotor.getConfigurator());
         configureSteerMotor(steerMotor.getConfigurator(), descriptor.encoderId());

@@ -9,7 +9,7 @@ import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 
 public class GyroIOReal implements GyroIO {
-    protected final Pigeon2 pigeon2 = new Pigeon2(RobotMap.PIGEON);
+    protected final Pigeon2 pigeon2 = new Pigeon2(RobotMap.PIGEON, RobotConfiguration.CANBUS_NAME);
     private final StatusSignal<Double> yaw = pigeon2.getYaw();
     private final StatusSignal<Double> yawVelocity = pigeon2.getAngularVelocityZWorld();
 

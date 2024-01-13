@@ -172,6 +172,7 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
         Logger.recordOutput(name + "/Position", getPosition());
 
         Logger.recordOutput(name + "/DriveVelocity", driveVelocity.getValueAsDouble());
+        Logger.recordOutput(name + "/DriveVelocityMPS", driveVelocity.getValueAsDouble() * DRIVE_POSITION_COEFFICIENT);
         Logger.recordOutput(name + "/SteerVelocity", steerVelocity.getValueAsDouble());
         Logger.recordOutput(name + "/SteerOutput", steerOutput.getValueAsDouble());
         Logger.recordOutput(name + "/SteerCurrentDraw", steerCurrentDraw.getValueAsDouble());
@@ -183,9 +184,6 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
 
         // Optimize the reference state to avoid spinning further than 90 degrees
         desiredState = SwerveModuleState.optimize(desiredState, Rotation2d.fromRotations(steerAngle));
-
-        Logger.recordOutput(name + "/DEBUG/DesiredAngle", desiredState.angle);
-        Logger.recordOutput(name + "/DEBUG/SteerAngle", steerAngle);
 
         desiredState.angle = Rotation2d.fromRotations((desiredState.angle.getRotations() % 1.0 + 1.0) % 1.0);
 

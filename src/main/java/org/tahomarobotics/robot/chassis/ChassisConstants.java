@@ -90,6 +90,7 @@ public final class ChassisConstants {
                     .withStatorCurrentLimitEnable(true)
                     .withSupplyCurrentLimitEnable(true))
             .withSlot0(new Slot0Configs()
+                    .withKP(0.15)
                     .withKV(kV_DRIVE))
             .withMotorOutput(new MotorOutputConfigs()
                     .withNeutralMode(NeutralModeValue.Brake)

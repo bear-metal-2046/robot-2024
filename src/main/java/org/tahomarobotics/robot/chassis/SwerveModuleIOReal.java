@@ -4,7 +4,10 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
-import com.ctre.phoenix6.controls.*;
+import com.ctre.phoenix6.controls.CoastOut;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.controls.StaticBrake;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -42,7 +45,7 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
     private final StatusSignal<Double> steerCurrentDraw;
 
     private final VelocityVoltage driveMotorVelocity = new VelocityVoltage(0.0);
-    private final PositionVoltage steerMotorPosition = new PositionVoltage(0.0);
+    private final PositionDutyCycle steerMotorPosition = new PositionDutyCycle(0.0);
 
     // CONSTRUCTOR
 
@@ -180,6 +183,11 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
 
         // Optimize the reference state to avoid spinning further than 90 degrees
         desiredState = SwerveModuleState.optimize(desiredState, Rotation2d.fromRotations(steerAngle));
+
+        Logger.recordOutput(name + "/DEBUG/DesiredAngle", desiredState.angle);
+        Logger.recordOutput(name + "/DEBUG/SteerAngle", steerAngle);
+
+        desiredState.angle = Rotation2d.fromRotations((desiredState.angle.getRotations() % 1.0 + 1.0) % 1.0);
 
         driveMotor.setControl(driveMotorVelocity.withVelocity(desiredState.speedMetersPerSecond / DRIVE_POSITION_COEFFICIENT));
         steerMotor.setControl(steerMotorPosition.withPosition(desiredState.angle.getRotations()));

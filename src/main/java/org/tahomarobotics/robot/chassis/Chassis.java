@@ -126,13 +126,23 @@ public class Chassis extends SubsystemIF {
         return modules.stream().map(SwerveModule::getState).toArray(SwerveModuleState[]::new);
     }
 
+    private SwerveModuleState[] getSwerveModuleDesiredStates() {
+        return modules.stream().map(SwerveModule::getDesiredState).toArray(SwerveModuleState[]::new);
+    }
+
+    private ChassisSpeeds getCurrentChassisSpeeds() {
+        return kinematics.toChassisSpeeds(getSwerveModuleStates());
+    }
+
     // State
 
     @Override
     public void periodic() {
         Logger.recordOutput("Chassis/Pose", getPose());
         Logger.recordOutput("Chassis/State", getSwerveModuleStates());
+        Logger.recordOutput("Chassis/DesiredState", getSwerveModuleDesiredStates());
         Logger.recordOutput("Chassis/Gyro/Yaw", getYaw());
+        Logger.recordOutput("Chassis/CurrentChassisSpeeds", getCurrentChassisSpeeds());
 
         modules.forEach(SwerveModule::periodic);
 
@@ -150,8 +160,7 @@ public class Chassis extends SubsystemIF {
 
     @Override
     public void simulationPeriodic() {
-        ChassisSpeeds speeds = kinematics.toChassisSpeeds(getSwerveModuleStates());
-        ((GyroIOSim) gyroIO).simulationPeriodic(speeds);
+        ((GyroIOSim) gyroIO).simulationPeriodic(getCurrentChassisSpeeds());
     }
 
     public void drive(ChassisSpeeds velocity) {

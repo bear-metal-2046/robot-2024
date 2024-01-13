@@ -7,7 +7,7 @@ import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.StaticBrake;
-import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -44,7 +44,7 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
     private final StatusSignal<Double> steerOutput;
     private final StatusSignal<Double> steerCurrentDraw;
 
-    private final VelocityDutyCycle driveMotorVelocity = new VelocityDutyCycle(0.0);
+    private final VelocityVoltage driveMotorVelocity = new VelocityVoltage(0.0);
     private final PositionDutyCycle steerMotorPosition = new PositionDutyCycle(0.0);
 
     // CONSTRUCTOR
@@ -55,9 +55,9 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
 
         this.angularOffset = angularOffset;
 
-        driveMotor = new TalonFX(descriptor.driveId());
-        steerMotor = new TalonFX(descriptor.steerId());
-        steerAbsEncoder = new CANcoder(descriptor.encoderId());
+        driveMotor = new TalonFX(descriptor.driveId(), RobotConfiguration.CANBUS_NAME);
+        steerMotor = new TalonFX(descriptor.steerId(), RobotConfiguration.CANBUS_NAME);
+        steerAbsEncoder = new CANcoder(descriptor.encoderId(), RobotConfiguration.CANBUS_NAME);
 
         configureDriveMotor(driveMotor.getConfigurator());
         configureSteerMotor(steerMotor.getConfigurator(), descriptor.encoderId());
@@ -172,6 +172,7 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
         Logger.recordOutput(name + "/Position", getPosition());
 
         Logger.recordOutput(name + "/DriveVelocity", driveVelocity.getValueAsDouble());
+        Logger.recordOutput(name + "/DriveVelocityMPS", driveVelocity.getValueAsDouble() * DRIVE_POSITION_COEFFICIENT);
         Logger.recordOutput(name + "/SteerVelocity", steerVelocity.getValueAsDouble());
         Logger.recordOutput(name + "/SteerOutput", steerOutput.getValueAsDouble());
         Logger.recordOutput(name + "/SteerCurrentDraw", steerCurrentDraw.getValueAsDouble());
@@ -184,21 +185,10 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
         // Optimize the reference state to avoid spinning further than 90 degrees
         desiredState = SwerveModuleState.optimize(desiredState, Rotation2d.fromRotations(steerAngle));
 
-        double referenceAngle = desiredState.angle.getRotations();
-        double currentAngleMod = steerAngle % 1.0;
-        if (currentAngleMod < 0.0) {
-            currentAngleMod++;
-        }
-
-        double adjustedAngle = referenceAngle + steerAngle - currentAngleMod;
-        if (referenceAngle - currentAngleMod > 0.5) {
-            adjustedAngle--;
-        } else if (referenceAngle - currentAngleMod < -0.5) {
-            adjustedAngle++;
-        }
+        desiredState.angle = Rotation2d.fromRotations((desiredState.angle.getRotations() % 1.0 + 1.0) % 1.0);
 
         driveMotor.setControl(driveMotorVelocity.withVelocity(desiredState.speedMetersPerSecond / DRIVE_POSITION_COEFFICIENT));
-        steerMotor.setControl(steerMotorPosition.withPosition(adjustedAngle));
+        steerMotor.setControl(steerMotorPosition.withPosition(desiredState.angle.getRotations()));
     }
 
     @Override

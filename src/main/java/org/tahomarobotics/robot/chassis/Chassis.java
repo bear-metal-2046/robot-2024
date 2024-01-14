@@ -44,7 +44,6 @@ public class Chassis extends SubsystemIF {
     private final List<SwerveModule> modules;
 
     private final SwerveDrivePoseEstimator poseEstimator;
-    private final SendableChooser<Command> autoChooser;
 
     private boolean isFieldOriented = true;
     private final Field2d fieldPose = new Field2d();
@@ -82,36 +81,6 @@ public class Chassis extends SubsystemIF {
                 VecBuilder.fill(0.02, 0.02, 0.02),
                 VecBuilder.fill(0.1, 0.1, 0.01)
         );
-
-        AutoBuilder.configureHolonomic(
-                this::getPose,
-                this::resetOdometry,
-                this::getCurrentChassisSpeeds,
-                this::autoDrive,
-                new HolonomicPathFollowerConfig(
-                    ChassisConstants.DRIVE_PID,
-                        ChassisConstants.STEER_PID,
-                        ChassisConstants.MAX_VELOCITY,
-                        ChassisConstants.TRACK_WIDTH/2,
-                        new ReplanningConfig()
-                ),
-                () -> {
-                    var alliance = DriverStation.getAlliance();
-                    if (alliance.isPresent()) {
-                        return alliance.get().equals(DriverStation.Alliance.Red);
-                    }
-                    return false;
-                },
-                this
-        );
-
-        NamedCommands.registerCommand("ShootCommand", new InstantCommand(() -> logger.info("========SHOOT COMMAND CALLED=========")));
-        autoChooser = AutoBuilder.buildAutoChooser();
-        SmartDashboard.putData(autoChooser);
-    }
-
-    public SendableChooser<Command> getAutoChooser() {
-        return autoChooser;
     }
 
     @Override
@@ -187,7 +156,7 @@ public class Chassis extends SubsystemIF {
         SmartDashboard.putString("Pose", getPose().toString());
     }
 
-    private ChassisSpeeds getCurrentChassisSpeeds() {
+    public ChassisSpeeds getCurrentChassisSpeeds() {
         return kinematics.toChassisSpeeds(getSwerveModuleStates());
     }
 
@@ -228,7 +197,7 @@ public class Chassis extends SubsystemIF {
         for (int i = 0; i < states.length; i++) modules.get(i).setDesiredState(states[i]);
     }
 
-    private void resetOdometry(Pose2d pose) {
+    public void resetOdometry(Pose2d pose) {
         var gyro = getYaw();
         var modules = getSwerveModulePositions();
         synchronized (poseEstimator) {

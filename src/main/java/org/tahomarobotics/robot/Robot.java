@@ -6,6 +6,7 @@
 package org.tahomarobotics.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -16,6 +17,7 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.slf4j.LoggerFactory;
+import org.tahomarobotics.robot.auto.PathPlannerHelper;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.util.BuildConstants;
 import org.tahomarobotics.robot.util.SubsystemIF;
@@ -29,6 +31,7 @@ public class Robot extends LoggedRobot {
 
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final List<SubsystemIF> subsystems = new ArrayList<>();
+    private SendableChooser<Command> autoChooser;
 
     @Override
     public void robotInit() {
@@ -39,6 +42,8 @@ public class Robot extends LoggedRobot {
         // Initialize all the subsystems as well as auto-register them with the CommandScheduler.
         subsystems.add(OI.getInstance().initialize());
         subsystems.add(Chassis.getInstance().initialize());
+        autoChooser = PathPlannerHelper.getAutoChooser();
+        SmartDashboard.putData(autoChooser);
 
         logger.info("Robot Initialized.");
     }
@@ -97,7 +102,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void autonomousInit() {
         subsystems.forEach(SubsystemIF::onAutonomousInit);
-        Chassis.getInstance().getAutoChooser().getSelected().schedule();
+        autoChooser.getSelected().schedule();
 
         logger.info("-=-=-=- AUTONOMOUS initiated -=-=-=-");
     }

@@ -50,8 +50,8 @@ public final class ChassisConstants {
     public static final double STEER_REDUCTION = (14.0 / 50.0) * (10.0 / 60.0);
 
     //Placeholder PID values
-    public static final PIDConstants DRIVE_PID = new PIDConstants(1,0,0); //TODO: When merging, replace with sysid PID values
-    public static final PIDConstants STEER_PID = new PIDConstants(1,0,0);
+    public static final PIDConstants AUTO_TRANSLATION_PID = new PIDConstants(1,0,0);
+    public static final PIDConstants AUTO_ROTATION_PID = new PIDConstants(1, 0, 0);
 
     public static final double DRIVE_SUPPLY_CURRENT_LIMIT = 300.0; // Amps
     public static final double DRIVE_STATOR_CURRENT_LIMIT = 150.0;

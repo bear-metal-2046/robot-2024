@@ -55,6 +55,10 @@ public class SwerveModule {
 
     // State
 
+    /**
+     * Updates the desired state.
+     * @param desiredState New state for the module.
+     */
     public void setDesiredState(SwerveModuleState desiredState) {
         inputs.desiredState = desiredState;
 
@@ -62,6 +66,9 @@ public class SwerveModule {
         io.updateDesiredState();
     }
 
+    /**
+     * Updates the inputs and outputs of the SwerveModule periodically.
+     */
     public void periodic() {
         io.periodic();
 

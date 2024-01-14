@@ -18,6 +18,7 @@ import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.util.BuildConstants;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +34,7 @@ public class Robot extends LoggedRobot {
 
         initializeAKit();
 
+        // Initialize all the subsystems as well as auto-register them with the CommandScheduler.
         subsystems.add(OI.getInstance().initialize());
         subsystems.add(Chassis.getInstance().initialize());
 
@@ -41,6 +43,7 @@ public class Robot extends LoggedRobot {
 
     @SuppressWarnings("DataFlowIssue")
     private void initializeAKit() {
+        // Record git information in the log.
         Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
         Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
         Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
@@ -53,19 +56,22 @@ public class Robot extends LoggedRobot {
             default -> "Unknown";
         });
 
+        // Depending on the current platform, publish logs to different receivers.
         switch (RobotConfiguration.getMode()) {
             case REAL, SIM -> {
-//                Logger.addDataReceiver(new WPILOGWriter()); // Write to a USB drive ("/U/logs" or "logs")
+                if (RobotConfiguration.getMode() != RobotConfiguration.Mode.SIM && Path.of("/U").toFile().exists())
+                    Logger.addDataReceiver(new WPILOGWriter()); // Write to a USB drive ("/U/logs" or "logs")
                 Logger.addDataReceiver(new NT4Publisher());
             }
             case REPLAY -> {
                 setUseTiming(false);
-                String logPath = LogFileUtil.findReplayLog();
+                String logPath = LogFileUtil.findReplayLog(); // Gets the log from an open AdvantageScope instance or prompted user input.
                 Logger.setReplaySource(new WPILOGReader(logPath));
                 Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
             }
         }
 
+        // Start the logger, any subsequent Logger configuration is not allowed.
         Logger.start();
     }
     

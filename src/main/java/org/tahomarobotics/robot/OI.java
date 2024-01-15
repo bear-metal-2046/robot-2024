@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import org.tahomarobotics.robot.chassis.Chassis;
+import org.tahomarobotics.robot.chassis.commands.KnownMovementCommand;
 import org.tahomarobotics.robot.chassis.commands.TeleopDriveCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
@@ -42,8 +43,20 @@ public class OI extends SubsystemIF {
 
         // Robot Heading Zeroing
         driveController.a().onTrue(Commands.runOnce(chassis::orientToZeroHeading));
+        driveController.x().onTrue(Commands.runOnce(chassis::zeroPose));
+
         // Robot/Field Orientation
         driveController.b().onTrue(Commands.runOnce(chassis::toggleOrientation));
+
+        driveController.povLeft().onTrue(new KnownMovementCommand(0.125, 0.0, 0.0, p -> p.getTranslation().getX() < 1.0));
+        driveController.povRight().onTrue(new KnownMovementCommand(-0.125, 0.0, 0.0, p -> p.getTranslation().getX() > 0.0));
+        driveController.povUp().onTrue(new KnownMovementCommand(0.0, 0.125, 0.0, p -> p.getTranslation().getY() < 1.0));
+        driveController.povDown().onTrue(new KnownMovementCommand(0.0, -0.125, 0.0, p -> p.getTranslation().getY() > 0.0));
+        driveController.povUpLeft().onTrue(new KnownMovementCommand(0.125, 0.125, 0.0, p -> p.getTranslation().getX() < 1.0 && p.getTranslation().getY() < 1.0));
+        driveController.povDownRight().onTrue(new KnownMovementCommand(-0.125, -0.125, 0.0, p -> p.getTranslation().getX() > -1.0 && p.getTranslation().getY() > -1.0));
+
+        driveController.start().onTrue(new KnownMovementCommand(0.0, 0.0, 1.0, p -> p.getRotation().getRotations() < 3.0));
+        driveController.back().onTrue(new KnownMovementCommand(0.0, 0.0, -1.0, p -> p.getRotation().getRotations() > -3.0));
     }
 
     private void setDefaultCommands() {

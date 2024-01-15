@@ -30,8 +30,8 @@ import org.tahomarobotics.robot.RobotConfiguration;
  */
 @SuppressWarnings({"SuspiciousNameCombination", "HungarianNotationConstants"})
 public final class ChassisConstants {
-    public static final double TRACK_WIDTH = 0.57785;
-    public static final double WHEELBASE = 0.57785;
+    public static final double TRACK_WIDTH = 0.52705;
+    public static final double WHEELBASE = 0.52705;
     public static final double HALF_TRACK_WIDTH = TRACK_WIDTH / 2;
     public static final double HALF_WHEELBASE = WHEELBASE / 2;
 

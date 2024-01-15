@@ -1,8 +1,12 @@
 package org.tahomarobotics.robot.chassis;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import org.littletonrobotics.junction.AutoLog;
+
+import java.util.Collections;
+import java.util.List;
 
 public interface SwerveModuleIO {
     void processInputs(SwerveModuleIOInputs inputs);
@@ -21,6 +25,10 @@ public interface SwerveModuleIO {
     default void cancelCalibration() {}
 
     default void stop() {}
+
+    default List<BaseStatusSignal> getStatusSignals() {
+        return Collections.emptyList();
+    }
 
     @AutoLog
     class SwerveModuleIOInputs {

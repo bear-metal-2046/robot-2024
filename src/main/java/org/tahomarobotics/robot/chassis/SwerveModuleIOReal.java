@@ -19,6 +19,9 @@ import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 
+import java.lang.reflect.Array;
+import java.util.List;
+
 import static org.tahomarobotics.robot.chassis.ChassisConstants.*;
 
 public class SwerveModuleIOReal implements SwerveModuleIO {
@@ -200,5 +203,17 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
     public void stop() {
         driveMotor.stopMotor();
         steerMotor.stopMotor();
+    }
+
+    @Override
+    public List<BaseStatusSignal> getStatusSignals() {
+        return List.of(
+                drivePosition,
+                driveVelocity,
+                steerPosition,
+                steerVelocity,
+                steerOutput,
+                steerCurrentDraw
+        );
     }
 }

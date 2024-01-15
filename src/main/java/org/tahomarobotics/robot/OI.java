@@ -42,7 +42,6 @@ public class OI extends SubsystemIF {
 
         // Robot Heading Zeroing
         driveController.a().onTrue(Commands.runOnce(chassis::orientToZeroHeading));
-
         // Robot/Field Orientation
         driveController.b().onTrue(Commands.runOnce(chassis::toggleOrientation));
     }

@@ -186,7 +186,7 @@ public class Chassis extends SubsystemIF {
         for (int i = 0; i < states.length; i++) modules.get(i).setDesiredState(states[i]);
     }
 
-    public void resetOdometry(Pose2d pose) {
+    private void resetOdometry(Pose2d pose) {
         var gyro = getYaw();
         var modules = getSwerveModulePositions();
         synchronized (poseEstimator) {
@@ -202,11 +202,6 @@ public class Chassis extends SubsystemIF {
     public void orientToZeroHeading() {
         Rotation2d heading = new Rotation2d(DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Blue ? 0.0 : Math.PI);
         resetOdometry(new Pose2d(getPose().getTranslation(), heading));
-    }
-
-    public void zeroPose() {
-        Rotation2d heading = new Rotation2d(DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Blue ? 0.0 : Math.PI);
-        resetOdometry(new Pose2d(new Translation2d(), heading));
     }
 
     // onInit

@@ -12,6 +12,7 @@ public interface SwerveModuleIO {
     SwerveModulePosition getPosition();
 
     SwerveModuleState getState();
+    SwerveModuleState getDesiredState();
 
     default void periodic() {}
 

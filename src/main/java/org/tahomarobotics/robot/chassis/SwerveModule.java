@@ -48,6 +48,9 @@ public class SwerveModule {
     public SwerveModuleState getState() {
         return io.getState();
     }
+    public SwerveModuleState getDesiredState() {
+        return io.getDesiredState();
+    }
 
     public Translation2d getTranslationOffset() {
         return translationOffset;

@@ -1,6 +1,7 @@
 package org.tahomarobotics.robot.identity;
 
-import org.slf4j.Logger;
+
+import org.littletonrobotics.junction.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.NetworkInterface;
@@ -12,7 +13,7 @@ import java.util.List;
 
 public class RobotIdentity {
 
-    private final Logger logger = LoggerFactory.getLogger(RobotIdentity.class);
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(RobotIdentity.class);
 
     private static RobotID robotID;
 
@@ -38,6 +39,8 @@ public class RobotIdentity {
             logger.error("Could not get a valid ID for robot, assigning default");
         }
         logger.info("Set robot identity to " + robotID);
+
+        Logger.recordOutput("RobotID", robotID);
     }
 
     private List<byte[]> getRobotAddress() {
@@ -55,6 +58,7 @@ public class RobotIdentity {
 
                 addresses.add(address);
                 logger.info("MAC address: " + macToString(address));
+                Logger.recordOutput("RobotID", macToString(address));
             }
 
         } catch (SocketException e) {

@@ -47,7 +47,6 @@ public class RobotIdentity {
         try {
             Enumeration<NetworkInterface> networkInterfaceEnumeration = NetworkInterface.getNetworkInterfaces();
 
-            NetworkInterface networkInterface;
             while (networkInterfaceEnumeration.hasMoreElements()) {
                 byte[] address = networkInterfaceEnumeration.nextElement().getHardwareAddress();
                 if (address == null) {

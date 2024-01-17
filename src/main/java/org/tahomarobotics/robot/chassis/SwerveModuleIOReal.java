@@ -141,6 +141,11 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
         return new SwerveModuleState(getDriveVelocity(), Rotation2d.fromRotations(getSteerAngle()));
     }
 
+    @Override
+    public SwerveModuleState getDesiredState() {
+        return desiredState;
+    }
+
     /**
      * @return The current position of the module.
      */

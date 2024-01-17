@@ -1,10 +1,5 @@
 package org.tahomarobotics.robot.chassis;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -16,10 +11,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
@@ -126,12 +118,20 @@ public class Chassis extends SubsystemIF {
         return poseEstimator.getEstimatedPosition();
     }
 
-    private SwerveModulePosition[] getSwerveModulePositions() {
+    public SwerveModulePosition[] getSwerveModulePositions() {
         return modules.stream().map(SwerveModule::getPosition).toArray(SwerveModulePosition[]::new);
     }
 
     private SwerveModuleState[] getSwerveModuleStates() {
         return modules.stream().map(SwerveModule::getState).toArray(SwerveModuleState[]::new);
+    }
+
+    private SwerveModuleState[] getSwerveModuleDesiredStates() {
+        return modules.stream().map(SwerveModule::getDesiredState).toArray(SwerveModuleState[]::new);
+    }
+
+    private ChassisSpeeds getCurrentChassisSpeeds() {
+        return kinematics.toChassisSpeeds(getSwerveModuleStates());
     }
 
     // State
@@ -140,7 +140,9 @@ public class Chassis extends SubsystemIF {
     public void periodic() {
         Logger.recordOutput("Chassis/Pose", getPose());
         Logger.recordOutput("Chassis/State", getSwerveModuleStates());
+        Logger.recordOutput("Chassis/DesiredState", getSwerveModuleDesiredStates());
         Logger.recordOutput("Chassis/Gyro/Yaw", getYaw());
+        Logger.recordOutput("Chassis/CurrentChassisSpeeds", getCurrentChassisSpeeds());
 
         modules.forEach(SwerveModule::periodic);
 
@@ -156,14 +158,9 @@ public class Chassis extends SubsystemIF {
         SmartDashboard.putString("Pose", getPose().toString());
     }
 
-    public ChassisSpeeds getCurrentChassisSpeeds() {
-        return kinematics.toChassisSpeeds(getSwerveModuleStates());
-    }
-
     @Override
     public void simulationPeriodic() {
-        ChassisSpeeds speeds = getCurrentChassisSpeeds();
-        ((GyroIOSim) gyroIO).simulationPeriodic(speeds);
+        ((GyroIOSim) gyroIO).simulationPeriodic(getCurrentChassisSpeeds());
     }
 
     public void drive(ChassisSpeeds velocity) {
@@ -171,14 +168,6 @@ public class Chassis extends SubsystemIF {
             velocity = new ChassisSpeeds(-velocity.vxMetersPerSecond, -velocity.vyMetersPerSecond, velocity.omegaRadiansPerSecond);
         }
         drive(velocity, isFieldOriented);
-    }
-
-    public void autoDrive(ChassisSpeeds velocity) {
-        velocity = ChassisSpeeds.discretize(velocity, Robot.defaultPeriodSecs);
-
-        var swerveModuleStates = kinematics.toSwerveModuleStates(velocity);
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, ChassisConstants.MAX_VELOCITY);
-        setSwerveStates(swerveModuleStates);
     }
 
     public void drive(ChassisSpeeds velocity, boolean fieldRelative) {
@@ -197,7 +186,7 @@ public class Chassis extends SubsystemIF {
         for (int i = 0; i < states.length; i++) modules.get(i).setDesiredState(states[i]);
     }
 
-    public void resetOdometry(Pose2d pose) {
+    private void resetOdometry(Pose2d pose) {
         var gyro = getYaw();
         var modules = getSwerveModulePositions();
         synchronized (poseEstimator) {

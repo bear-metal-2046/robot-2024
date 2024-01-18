@@ -2,6 +2,7 @@ package org.tahomarobotics.robot.auto;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -12,8 +13,10 @@ import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.chassis.ChassisConstants;
 
 public class PathPlannerHelper {
+
+    private static final Chassis chassis = Chassis.getInstance();
     public static LoggedDashboardChooser<Command> getAutoChooser() {
-        Chassis chassis = Chassis.getInstance();
+
         AutoBuilder.configureHolonomic(
                 chassis::getPose,
                 chassis::resetOdometry,
@@ -23,7 +26,7 @@ public class PathPlannerHelper {
                         ChassisConstants.AUTO_TRANSLATION_PID,
                         ChassisConstants.AUTO_ROTATION_PID,
                         ChassisConstants.MAX_VELOCITY,
-                        ChassisConstants.TRACK_WIDTH/2,
+                        ChassisConstants.DRIVE_RADIUS,
                         new ReplanningConfig()
                 ),
                 () -> {
@@ -33,8 +36,11 @@ public class PathPlannerHelper {
                 chassis
         );
 
-        NamedCommands.registerCommand("ShootCommand", new InstantCommand(() -> System.out.println("========SHOOT COMMAND CALLED=========")));
-
         return new LoggedDashboardChooser<>("Auto", AutoBuilder.buildAutoChooser());
+    }
+
+    public static void registerAutoCommands() {
+        NamedCommands.registerCommand("ShootCommand", new InstantCommand(() -> System.out.println("========SHOOT COMMAND CALLED=========")));
+        NamedCommands.registerCommand("ResetOdom", new InstantCommand(() -> chassis.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile("Fast 4 piece speaker"))));
     }
 }

@@ -19,7 +19,7 @@ public class GyroIOReal implements GyroIO {
         zero();
 
         yaw.setUpdateFrequency(RobotConfiguration.ODOMETRY_UPDATE_FREQUENCY);
-        yawVelocity.setUpdateFrequency(100.0);
+        yawVelocity.setUpdateFrequency(RobotConfiguration.ODOMETRY_UPDATE_FREQUENCY);
 
         // Don't update unused signals
         pigeon2.optimizeBusUtilization();

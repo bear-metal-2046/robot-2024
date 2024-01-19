@@ -15,6 +15,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.chassis.Chassis;
+import org.tahomarobotics.robot.identity.RobotIdentity;
 import org.tahomarobotics.robot.util.BuildConstants;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
@@ -37,6 +38,7 @@ public class Robot extends LoggedRobot {
         // Initialize all the subsystems as well as auto-register them with the CommandScheduler.
         subsystems.add(OI.getInstance().initialize());
         subsystems.add(Chassis.getInstance().initialize());
+        subsystems.add(RobotIdentity.getInstance().initialize());
 
         logger.info("Robot Initialized.");
     }
@@ -59,7 +61,7 @@ public class Robot extends LoggedRobot {
         // Depending on the current platform, publish logs to different receivers.
         switch (RobotConfiguration.getMode()) {
             case REAL, SIM -> {
-                if (RobotConfiguration.getMode() != RobotConfiguration.Mode.SIM && Path.of("/U").toFile().exists())
+                if (RobotConfiguration.getMode() == RobotConfiguration.Mode.SIM || Path.of("/U").toFile().exists())
                     Logger.addDataReceiver(new WPILOGWriter()); // Write to a USB drive ("/U/logs" or "logs")
                 Logger.addDataReceiver(new NT4Publisher());
             }

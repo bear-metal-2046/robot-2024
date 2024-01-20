@@ -20,6 +20,7 @@ package org.tahomarobotics.robot.chassis;
 
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.*;
+import com.pathplanner.lib.util.PIDConstants;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import org.tahomarobotics.robot.RobotConfiguration;
@@ -35,18 +36,24 @@ public final class ChassisConstants {
     public static final double HALF_TRACK_WIDTH = TRACK_WIDTH / 2;
     public static final double HALF_WHEELBASE = WHEELBASE / 2;
 
+    public static final double DRIVE_RADIUS = Math.sqrt((HALF_TRACK_WIDTH * HALF_TRACK_WIDTH) + (HALF_WHEELBASE * HALF_WHEELBASE));
+
     public static final Translation2d FRONT_LEFT_OFFSET = new Translation2d(HALF_WHEELBASE, HALF_TRACK_WIDTH);
     public static final Translation2d FRONT_RIGHT_OFFSET = new Translation2d(HALF_WHEELBASE, -HALF_TRACK_WIDTH);
     public static final Translation2d BACK_LEFT_OFFSET = new Translation2d(-HALF_WHEELBASE, HALF_TRACK_WIDTH);
     public static final Translation2d BACK_RIGHT_OFFSET = new Translation2d(-HALF_WHEELBASE, -HALF_TRACK_WIDTH);
 
-    public static final double WHEEL_RADIUS = 0.05134574468085107;
+    public static final double WHEEL_RADIUS = 0.0499;
     public static final double WHEEL_CIRCUMFERENCE = 2 * Math.PI * WHEEL_RADIUS;
 
     public static final double DRIVE_REDUCTION = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0);
     public static final double DRIVE_POSITION_COEFFICIENT = WHEEL_CIRCUMFERENCE * DRIVE_REDUCTION; // r/s -> m/s
     @SuppressWarnings("unused")
     public static final double STEER_REDUCTION = (14.0 / 50.0) * (10.0 / 60.0);
+
+    //Placeholder PID values
+    public static final PIDConstants AUTO_TRANSLATION_PID = new PIDConstants(1.5,0,0.5);
+    public static final PIDConstants AUTO_ROTATION_PID = new PIDConstants(1.5, 0, 0);
 
     public static final double DRIVE_SUPPLY_CURRENT_LIMIT = 300.0; // Amps
     public static final double DRIVE_STATOR_CURRENT_LIMIT = 150.0;
@@ -75,7 +82,7 @@ public final class ChassisConstants {
 
     /// DEVICE CONFIGURATION
 
-    private static final MagnetSensorConfigs encoderConfiguration = new MagnetSensorConfigs()
+    public static final MagnetSensorConfigs encoderConfiguration = new MagnetSensorConfigs()
             .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
             .withSensorDirection(SensorDirectionValue.CounterClockwise_Positive);
 
@@ -83,7 +90,7 @@ public final class ChassisConstants {
         configurator.apply(encoderConfiguration.withMagnetOffset(rotationOffset));
     }
 
-    private static final TalonFXConfiguration driveMotorConfiguration = new TalonFXConfiguration()
+    public static final TalonFXConfiguration driveMotorConfiguration = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
                     .withStatorCurrentLimit(DRIVE_STATOR_CURRENT_LIMIT)
                     .withSupplyCurrentLimit(DRIVE_SUPPLY_CURRENT_LIMIT)
@@ -97,11 +104,7 @@ public final class ChassisConstants {
                     .withInverted(InvertedValue.CounterClockwise_Positive))
             .withAudio(new AudioConfigs().withBeepOnBoot(true).withBeepOnConfig(true));
 
-    public static void configureDriveMotor(TalonFXConfigurator configurator) {
-        configurator.apply(driveMotorConfiguration);
-    }
-
-    private static final TalonFXConfiguration steerMotorConfiguration = new TalonFXConfiguration()
+    public static final TalonFXConfiguration steerMotorConfiguration = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
                     .withStatorCurrentLimit(STEER_STATOR_CURRENT_LIMIT)
                     .withSupplyCurrentLimit(STEER_SUPPLY_CURRENT_LIMIT)
@@ -129,9 +132,4 @@ public final class ChassisConstants {
                           }}
             );
 
-    public static void configureSteerMotor(TalonFXConfigurator configurator, int encoderId) {
-        steerMotorConfiguration.Feedback.FeedbackRemoteSensorID = encoderId;
-
-        configurator.apply(steerMotorConfiguration);
-    }
 }

@@ -1,11 +1,14 @@
 package org.tahomarobotics.robot.chassis;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
+
+import java.util.List;
 
 public class SwerveModule {
     // Member Variables
@@ -19,7 +22,7 @@ public class SwerveModule {
 
     public SwerveModule(RobotMap.SwerveModuleDescriptor descriptor, double angularOffset) {
         io = switch (RobotConfiguration.getMode()) {
-            case REAL -> new SwerveModuleIOReal(descriptor, angularOffset);
+            case REAL -> new SwerveModuleIO(descriptor, angularOffset);
             case SIM, REPLAY -> new SwerveModuleIOSim(descriptor, angularOffset);
         };
 
@@ -50,6 +53,10 @@ public class SwerveModule {
     }
     public SwerveModuleState getDesiredState() {
         return io.getDesiredState();
+    }
+
+    public List<BaseStatusSignal> getStatusSignals() {
+        return io.getStatusSignals();
     }
 
     public Translation2d getTranslationOffset() {

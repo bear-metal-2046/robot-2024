@@ -15,7 +15,7 @@ public class ShooterConstants {
     public static final double KI_INDEX = 0.0;
     public static final double KD_INDEX = 0.0;
 
-    private static final TalonFXConfiguration shooterMotorConfiguration = new TalonFXConfiguration()
+    static final TalonFXConfiguration shooterMotorConfiguration = new TalonFXConfiguration()
             .withSlot0(new Slot0Configs()
                     .withKP(KP_SHOOTER)
                     .withKI(KI_SHOOTER)
@@ -25,11 +25,7 @@ public class ShooterConstants {
                     .withInverted(InvertedValue.CounterClockwise_Positive))
             .withAudio(new AudioConfigs().withBeepOnBoot(true).withBeepOnConfig(true));
 
-    public static void configureShootMotor(TalonFXConfigurator configurator) {
-        configurator.apply(shooterMotorConfiguration);
-    }
-
-    private static final TalonFXConfiguration indexMotorConfiguration = new TalonFXConfiguration()
+    static final TalonFXConfiguration indexMotorConfiguration = new TalonFXConfiguration()
             .withSlot0(new Slot0Configs()
                     .withKP(KP_INDEX)
                     .withKI(KI_INDEX)
@@ -38,8 +34,4 @@ public class ShooterConstants {
                     .withNeutralMode(NeutralModeValue.Brake)
                     .withInverted(InvertedValue.CounterClockwise_Positive))
             .withAudio(new AudioConfigs().withBeepOnBoot(true).withBeepOnConfig(true));
-
-    public static void configureIndexMotor(TalonFXConfigurator configurator) {
-        configurator.apply(indexMotorConfiguration);
-    }
 }

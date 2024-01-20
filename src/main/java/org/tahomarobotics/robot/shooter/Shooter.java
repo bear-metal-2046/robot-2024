@@ -4,13 +4,14 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.TalonFX;
+import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
+import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
-import static org.tahomarobotics.robot.chassis.ChassisConstants.driveMotorConfiguration;
-import static org.tahomarobotics.robot.shooter.ShooterConstants.configureIndexMotor;
-import static org.tahomarobotics.robot.shooter.ShooterConstants.configureShootMotor;
+import static org.tahomarobotics.robot.shooter.ShooterConstants.shooterMotorConfiguration;
+import static org.tahomarobotics.robot.shooter.ShooterConstants.indexMotorConfiguration;
 
 
 public class Shooter extends SubsystemIF {
@@ -39,14 +40,18 @@ public class Shooter extends SubsystemIF {
 
     private final PositionDutyCycle indexMotorPosition = new PositionDutyCycle(0.0);
 
+    private final RobustConfigurator configurator;
     private Shooter() {
+        logger = LoggerFactory.getLogger("Shooter");
+        configurator = new RobustConfigurator(logger);
+
         topMotor = new TalonFX(RobotMap.TOP_SHOOTER_MOTOR);
         bottomMotor = new TalonFX(RobotMap.BOTTOM_SHOOTER_MOTOR);
         indexMotor = new TalonFX(RobotMap.INDEX_ROLLER);
 
-        configureShootMotor(topMotor.getConfigurator());
-        configureShootMotor(bottomMotor.getConfigurator());
-        configureIndexMotor(indexMotor.getConfigurator());
+        configurator.configureTalonFX(topMotor, shooterMotorConfiguration);
+        configurator.configureTalonFX(bottomMotor, shooterMotorConfiguration);
+        configurator.configureTalonFX(indexMotor, indexMotorConfiguration);
 
         topVelocity = topMotor.getVelocity();
         bottomVelocity = bottomMotor.getVelocity();

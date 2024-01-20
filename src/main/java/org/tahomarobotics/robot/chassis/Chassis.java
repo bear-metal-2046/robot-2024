@@ -138,7 +138,7 @@ public class Chassis extends SubsystemIF {
         return modules.stream().map(SwerveModule::getDesiredState).toArray(SwerveModuleState[]::new);
     }
 
-    private ChassisSpeeds getCurrentChassisSpeeds() {
+    public ChassisSpeeds getCurrentChassisSpeeds() {
         return kinematics.toChassisSpeeds(getSwerveModuleStates());
     }
 
@@ -198,11 +198,19 @@ public class Chassis extends SubsystemIF {
         setSwerveStates(swerveModuleStates);
     }
 
+    public void autoDrive(ChassisSpeeds velocity) {
+        velocity = ChassisSpeeds.discretize(velocity, Robot.defaultPeriodSecs);
+
+        var swerveModuleStates = kinematics.toSwerveModuleStates(velocity);
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, ChassisConstants.MAX_VELOCITY);
+        setSwerveStates(swerveModuleStates);
+    }
+
     private void setSwerveStates(SwerveModuleState[] states) {
         for (int i = 0; i < states.length; i++) modules.get(i).setDesiredState(states[i]);
     }
 
-    private void resetOdometry(Pose2d pose) {
+    public void resetOdometry(Pose2d pose) {
         var gyro = getYaw();
         var modules = getSwerveModulePositions();
         synchronized (poseEstimator) {
@@ -268,5 +276,8 @@ public class Chassis extends SubsystemIF {
             }
         }
     }
-
+//    Code for testing Odometry
+//    public void zeroPose() {
+//        resetOdometry(new Pose2d(new Translation2d(0, 0), new Rotation2d(0)));
+//    }
 }

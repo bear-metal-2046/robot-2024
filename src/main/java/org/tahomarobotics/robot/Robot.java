@@ -14,6 +14,8 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.slf4j.LoggerFactory;
+import org.tahomarobotics.robot.auto.Autonomous;
+import org.tahomarobotics.robot.auto.PathPlannerHelper;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.identity.RobotIdentity;
 import org.tahomarobotics.robot.util.BuildConstants;
@@ -38,7 +40,11 @@ public class Robot extends LoggedRobot {
         // Initialize all the subsystems as well as auto-register them with the CommandScheduler.
         subsystems.add(OI.getInstance().initialize());
         subsystems.add(Chassis.getInstance().initialize());
+        subsystems.add(Autonomous.getInstance().initialize());
         subsystems.add(RobotIdentity.getInstance().initialize());
+
+        PathPlannerHelper.registerAutoCommands();
+
 
         logger.info("Robot Initialized.");
     }
@@ -97,6 +103,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void autonomousInit() {
         subsystems.forEach(SubsystemIF::onAutonomousInit);
+        Autonomous.getInstance().getSelectedAuto().schedule();
 
         logger.info("-=-=-=- AUTONOMOUS initiated -=-=-=-");
     }

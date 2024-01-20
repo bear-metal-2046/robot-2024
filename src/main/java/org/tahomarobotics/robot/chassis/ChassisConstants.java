@@ -20,6 +20,7 @@ package org.tahomarobotics.robot.chassis;
 
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.*;
+import com.pathplanner.lib.util.PIDConstants;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import org.tahomarobotics.robot.RobotConfiguration;
@@ -35,6 +36,8 @@ public final class ChassisConstants {
     public static final double HALF_TRACK_WIDTH = TRACK_WIDTH / 2;
     public static final double HALF_WHEELBASE = WHEELBASE / 2;
 
+    public static final double DRIVE_RADIUS = Math.sqrt((HALF_TRACK_WIDTH * HALF_TRACK_WIDTH) + (HALF_WHEELBASE * HALF_WHEELBASE));
+
     public static final Translation2d FRONT_LEFT_OFFSET = new Translation2d(HALF_WHEELBASE, HALF_TRACK_WIDTH);
     public static final Translation2d FRONT_RIGHT_OFFSET = new Translation2d(HALF_WHEELBASE, -HALF_TRACK_WIDTH);
     public static final Translation2d BACK_LEFT_OFFSET = new Translation2d(-HALF_WHEELBASE, HALF_TRACK_WIDTH);
@@ -47,6 +50,10 @@ public final class ChassisConstants {
     public static final double DRIVE_POSITION_COEFFICIENT = WHEEL_CIRCUMFERENCE * DRIVE_REDUCTION; // r/s -> m/s
     @SuppressWarnings("unused")
     public static final double STEER_REDUCTION = (14.0 / 50.0) * (10.0 / 60.0);
+
+    //Placeholder PID values
+    public static final PIDConstants AUTO_TRANSLATION_PID = new PIDConstants(1.5,0,0.5);
+    public static final PIDConstants AUTO_ROTATION_PID = new PIDConstants(1.5, 0, 0);
 
     public static final double DRIVE_SUPPLY_CURRENT_LIMIT = 300.0; // Amps
     public static final double DRIVE_STATOR_CURRENT_LIMIT = 150.0;

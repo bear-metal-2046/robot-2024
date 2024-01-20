@@ -8,10 +8,13 @@ import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
+import static org.tahomarobotics.robot.chassis.ChassisConstants.driveMotorConfiguration;
 import static org.tahomarobotics.robot.shooter.ShooterConstants.configureIndexMotor;
 import static org.tahomarobotics.robot.shooter.ShooterConstants.configureShootMotor;
 
+
 public class Shooter extends SubsystemIF {
+
     private static final Shooter INSTANCE = new Shooter();
 
     public static Shooter getInstance() {
@@ -88,6 +91,5 @@ public class Shooter extends SubsystemIF {
                 indexPosition
         );
     }
-
 
 }

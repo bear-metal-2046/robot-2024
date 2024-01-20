@@ -2,6 +2,8 @@ package org.tahomarobotics.robot.shooter;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.TalonFX;
 import org.slf4j.LoggerFactory;
@@ -40,10 +42,18 @@ public class Shooter extends SubsystemIF {
 
     private final PositionDutyCycle indexMotorPosition = new PositionDutyCycle(0.0);
 
+    private final MotionMagicVoltage motionMagic = new MotionMagicVoltage(0);
+
     private final RobustConfigurator configurator;
     private Shooter() {
         logger = LoggerFactory.getLogger("Shooter");
         configurator = new RobustConfigurator(logger);
+        TalonFXConfiguration cfg = new TalonFXConfiguration();
+
+        MotionMagicConfigs mm = cfg.MotionMagic;
+        mm.MotionMagicCruiseVelocity = 5;
+        mm.MotionMagicAcceleration = 10;
+        mm.MotionMagicJerk = 50;
 
         topMotor = new TalonFX(RobotMap.TOP_SHOOTER_MOTOR);
         bottomMotor = new TalonFX(RobotMap.BOTTOM_SHOOTER_MOTOR);
@@ -57,6 +67,8 @@ public class Shooter extends SubsystemIF {
         bottomVelocity = bottomMotor.getVelocity();
         indexPosition = indexMotor.getPosition();
         indexVelocity = indexMotor.getVelocity();
+
+        indexMotor.setPosition(0);
 
         bottomMotor.setControl(new Follower(topMotor.getDeviceID(), true));
         topMotorVelocity.EnableFOC = RobotConfiguration.USING_PHOENIX_PRO;
@@ -76,7 +88,7 @@ public class Shooter extends SubsystemIF {
     }
 
     public void setIndexAngle(double angle) {
-        indexMotor.setControl(indexMotorPosition.withPosition(angle));
+        indexMotor.setControl(motionMagic.withPosition(angle));
     }
 
     public void stopShooter(){

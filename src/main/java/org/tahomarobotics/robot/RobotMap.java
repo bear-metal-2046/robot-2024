@@ -21,4 +21,10 @@ public class RobotMap {
     public record SwerveModuleDescriptor(String moduleName, Translation2d offset, int driveId, int steerId,
                                          int encoderId) {
     }
+
+    public static final int TOP_SHOOTER_MOTOR = 5;
+
+    public static final int BOTTOM_SHOOTER_MOTOR = 6;
+
+    public static final int INDEX_ROLLER = 7;
 }

@@ -22,7 +22,7 @@ public class SwerveModule {
 
     public SwerveModule(RobotMap.SwerveModuleDescriptor descriptor, double angularOffset) {
         io = switch (RobotConfiguration.getMode()) {
-            case REAL -> new SwerveModuleIOReal(descriptor, angularOffset);
+            case REAL -> new SwerveModuleIO(descriptor, angularOffset);
             case SIM, REPLAY -> new SwerveModuleIOSim(descriptor, angularOffset);
         };
 

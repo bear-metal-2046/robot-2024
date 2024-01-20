@@ -19,6 +19,8 @@ import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.chassis.commands.AlignSwerveCommand;
 import org.tahomarobotics.robot.util.CalibrationData;
 import org.tahomarobotics.robot.util.SubsystemIF;
+import org.tahomarobotics.robot.vision.ATVision;
+import org.tahomarobotics.robot.vision.VisionConstants;
 
 import java.util.List;
 
@@ -43,6 +45,10 @@ public class Chassis extends SubsystemIF {
     private final SwerveDriveKinematics kinematics;
 
     private final CalibrationData<Double[]> swerveCalibration;
+
+    private final ATVision backATVision;
+    private final ATVision leftATVision;
+    private final ATVision rightATVision;
 
     // Constructor
 
@@ -73,6 +79,10 @@ public class Chassis extends SubsystemIF {
                 VecBuilder.fill(0.02, 0.02, 0.02),
                 VecBuilder.fill(0.1, 0.1, 0.01)
         );
+
+        backATVision = new ATVision(VisionConstants.ATCamera.BACK, fieldPose, poseEstimator);
+        leftATVision = new ATVision(VisionConstants.ATCamera.LEFT, fieldPose, poseEstimator);
+        rightATVision = new ATVision(VisionConstants.ATCamera.RIGHT, fieldPose, poseEstimator);
     }
 
     @Override

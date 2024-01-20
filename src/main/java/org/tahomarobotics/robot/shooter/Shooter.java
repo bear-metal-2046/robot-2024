@@ -4,13 +4,12 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.TalonFX;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
+import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
-import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
-import static org.tahomarobotics.robot.chassis.ChassisConstants.DRIVE_POSITION_COEFFICIENT;
+import static org.tahomarobotics.robot.shooter.ShooterConstants.configureIndexMotor;
+import static org.tahomarobotics.robot.shooter.ShooterConstants.configureShootMotor;
 
 public class Shooter extends SubsystemIF {
     private static final Shooter INSTANCE = new Shooter();
@@ -42,15 +41,18 @@ public class Shooter extends SubsystemIF {
         bottomMotor = new TalonFX(RobotMap.BOTTOM_SHOOTER_MOTOR);
         indexMotor = new TalonFX(RobotMap.INDEX_ROLLER);
 
+        configureShootMotor(topMotor.getConfigurator());
+        configureShootMotor(bottomMotor.getConfigurator());
+        configureIndexMotor(indexMotor.getConfigurator());
+
         topVelocity = topMotor.getVelocity();
         bottomVelocity = bottomMotor.getVelocity();
         indexPosition = indexMotor.getPosition();
         indexVelocity = indexMotor.getVelocity();
 
-        topMotor.setControl(new CoastOut());
-        bottomMotor.setControl(new CoastOut());
-        indexMotor.setControl(new StaticBrake());
         bottomMotor.setControl(new Follower(topMotor.getDeviceID(), true));
+        topMotorVelocity.EnableFOC = RobotConfiguration.USING_PHOENIX_PRO;
+        indexMotorPosition.EnableFOC = RobotConfiguration.USING_PHOENIX_PRO;
     }
 
     public double getShooterVelocity() {

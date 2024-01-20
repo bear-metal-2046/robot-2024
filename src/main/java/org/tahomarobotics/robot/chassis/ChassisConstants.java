@@ -82,7 +82,7 @@ public final class ChassisConstants {
 
     /// DEVICE CONFIGURATION
 
-    private static final MagnetSensorConfigs encoderConfiguration = new MagnetSensorConfigs()
+    public static final MagnetSensorConfigs encoderConfiguration = new MagnetSensorConfigs()
             .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
             .withSensorDirection(SensorDirectionValue.CounterClockwise_Positive);
 
@@ -90,7 +90,7 @@ public final class ChassisConstants {
         configurator.apply(encoderConfiguration.withMagnetOffset(rotationOffset));
     }
 
-    private static final TalonFXConfiguration driveMotorConfiguration = new TalonFXConfiguration()
+    public static final TalonFXConfiguration driveMotorConfiguration = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
                     .withStatorCurrentLimit(DRIVE_STATOR_CURRENT_LIMIT)
                     .withSupplyCurrentLimit(DRIVE_SUPPLY_CURRENT_LIMIT)
@@ -104,11 +104,7 @@ public final class ChassisConstants {
                     .withInverted(InvertedValue.CounterClockwise_Positive))
             .withAudio(new AudioConfigs().withBeepOnBoot(true).withBeepOnConfig(true));
 
-    public static void configureDriveMotor(TalonFXConfigurator configurator) {
-        configurator.apply(driveMotorConfiguration);
-    }
-
-    private static final TalonFXConfiguration steerMotorConfiguration = new TalonFXConfiguration()
+    public static final TalonFXConfiguration steerMotorConfiguration = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
                     .withStatorCurrentLimit(STEER_STATOR_CURRENT_LIMIT)
                     .withSupplyCurrentLimit(STEER_SUPPLY_CURRENT_LIMIT)
@@ -136,9 +132,4 @@ public final class ChassisConstants {
                           }}
             );
 
-    public static void configureSteerMotor(TalonFXConfigurator configurator, int encoderId) {
-        steerMotorConfiguration.Feedback.FeedbackRemoteSensorID = encoderId;
-
-        configurator.apply(steerMotorConfiguration);
-    }
 }

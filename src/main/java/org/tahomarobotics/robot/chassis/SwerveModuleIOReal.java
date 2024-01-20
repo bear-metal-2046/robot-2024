@@ -3,6 +3,7 @@ package org.tahomarobotics.robot.chassis;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
@@ -18,6 +19,7 @@ import org.littletonrobotics.junction.Logger;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
+import org.tahomarobotics.robot.util.RobustConfigurator;
 
 import java.lang.reflect.Array;
 import java.util.List;
@@ -59,9 +61,9 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
         steerMotor = new TalonFX(descriptor.steerId(), RobotConfiguration.CANBUS_NAME);
         steerAbsEncoder = new CANcoder(descriptor.encoderId(), RobotConfiguration.CANBUS_NAME);
 
-        configureDriveMotor(driveMotor.getConfigurator());
-        configureSteerMotor(steerMotor.getConfigurator(), descriptor.encoderId());
-        configureEncoder(steerAbsEncoder.getConfigurator(), angularOffset);
+        RobustConfigurator.configureTalonFX(logger, descriptor.moduleName(), driveMotor, driveMotorConfiguration);
+        RobustConfigurator.configureTalonFX(logger, descriptor.moduleName(), steerMotor, steerMotorConfiguration, descriptor.encoderId());
+        RobustConfigurator.configureCancoder(logger, descriptor.moduleName(), steerAbsEncoder, encoderConfiguration, angularOffset);
 
         drivePosition = driveMotor.getPosition();
         driveVelocity = driveMotor.getVelocity();

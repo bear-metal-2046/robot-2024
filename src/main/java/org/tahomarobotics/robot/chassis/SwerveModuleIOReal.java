@@ -44,11 +44,14 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
     private final VelocityVoltage driveMotorVelocity = new VelocityVoltage(0.0);
     private final PositionDutyCycle steerMotorPosition = new PositionDutyCycle(0.0);
 
+    private final RobustConfigurator configurator;
+
     // CONSTRUCTOR
 
     public SwerveModuleIOReal(RobotMap.SwerveModuleDescriptor descriptor, double angularOffset) {
         logger = LoggerFactory.getLogger("SwerveModule." + descriptor.moduleName());
         name = "Chassis/Modules/" + descriptor.moduleName();
+        configurator = new RobustConfigurator(logger);
 
         this.angularOffset = angularOffset;
 
@@ -56,9 +59,9 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
         steerMotor = new TalonFX(descriptor.steerId(), RobotConfiguration.CANBUS_NAME);
         steerAbsEncoder = new CANcoder(descriptor.encoderId(), RobotConfiguration.CANBUS_NAME);
 
-        RobustConfigurator.configureTalonFX(logger, name, driveMotor, driveMotorConfiguration);
-        RobustConfigurator.configureTalonFX(logger, name, steerMotor, steerMotorConfiguration, descriptor.encoderId());
-        RobustConfigurator.configureCancoder(logger, name, steerAbsEncoder, encoderConfiguration, angularOffset);
+        configurator.configureTalonFX(driveMotor, driveMotorConfiguration);
+        configurator.configureTalonFX(steerMotor, steerMotorConfiguration, descriptor.encoderId());
+        configurator.configureCancoder(steerAbsEncoder, encoderConfiguration, angularOffset);
 
         drivePosition = driveMotor.getPosition();
         driveVelocity = driveMotor.getVelocity();
@@ -79,21 +82,21 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
 
     @Override
     public void initializeCalibration() {
-        RobustConfigurator.setCancoderAngularOffset(logger, name, steerAbsEncoder, 0);
-        RobustConfigurator.setMotorNeutralMode(logger, name, steerMotor, NeutralModeValue.Coast);
+        configurator.setCancoderAngularOffset( steerAbsEncoder, 0);
+        configurator.setMotorNeutralMode(steerMotor, NeutralModeValue.Coast);
     }
 
     @Override
     public double finalizeCalibration() {
         angularOffset = -steerPosition.refresh().getValue();
-        RobustConfigurator.setCancoderAngularOffset(logger, name, steerAbsEncoder, angularOffset);
-        RobustConfigurator.setMotorNeutralMode(logger, name, steerMotor, NeutralModeValue.Brake);
+        configurator.setCancoderAngularOffset(steerAbsEncoder, angularOffset);
+        configurator.setMotorNeutralMode(steerMotor, NeutralModeValue.Brake);
         return angularOffset;
     }
 
     @Override
     public void cancelCalibration() {
-        RobustConfigurator.setCancoderAngularOffset(logger, name, steerAbsEncoder, angularOffset);
+        configurator.setCancoderAngularOffset(steerAbsEncoder, angularOffset);
     }
 
     // Getters

@@ -1,17 +1,13 @@
 package org.tahomarobotics.robot.chassis;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.FeedbackConfigs;
-import com.ctre.phoenix6.configs.MagnetSensorConfigs;
-import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
-import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -21,7 +17,6 @@ import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 
-import java.lang.reflect.Array;
 import java.util.List;
 
 import static org.tahomarobotics.robot.chassis.ChassisConstants.*;
@@ -61,9 +56,9 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
         steerMotor = new TalonFX(descriptor.steerId(), RobotConfiguration.CANBUS_NAME);
         steerAbsEncoder = new CANcoder(descriptor.encoderId(), RobotConfiguration.CANBUS_NAME);
 
-        RobustConfigurator.configureTalonFX(logger, descriptor.moduleName(), driveMotor, driveMotorConfiguration);
-        RobustConfigurator.configureTalonFX(logger, descriptor.moduleName(), steerMotor, steerMotorConfiguration, descriptor.encoderId());
-        RobustConfigurator.configureCancoder(logger, descriptor.moduleName(), steerAbsEncoder, encoderConfiguration, angularOffset);
+        RobustConfigurator.configureTalonFX(logger, name, driveMotor, driveMotorConfiguration);
+        RobustConfigurator.configureTalonFX(logger, name, steerMotor, steerMotorConfiguration, descriptor.encoderId());
+        RobustConfigurator.configureCancoder(logger, name, steerAbsEncoder, encoderConfiguration, angularOffset);
 
         drivePosition = driveMotor.getPosition();
         driveVelocity = driveMotor.getVelocity();
@@ -84,29 +79,21 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
 
     @Override
     public void initializeCalibration() {
-        applyAngularOffset(0);
-        steerMotor.setControl(new CoastOut());
+        RobustConfigurator.setCancoderAngularOffset(logger, name, steerAbsEncoder, 0);
+        RobustConfigurator.setMotorNeutralMode(logger, name, steerMotor, NeutralModeValue.Coast);
     }
 
     @Override
     public double finalizeCalibration() {
         angularOffset = -steerPosition.refresh().getValue();
-        applyAngularOffset(angularOffset);
-        steerMotor.setControl(new StaticBrake());
+        RobustConfigurator.setCancoderAngularOffset(logger, name, steerAbsEncoder, angularOffset);
+        RobustConfigurator.setMotorNeutralMode(logger, name, steerMotor, NeutralModeValue.Brake);
         return angularOffset;
     }
 
     @Override
     public void cancelCalibration() {
-        applyAngularOffset(angularOffset);
-    }
-
-    private void applyAngularOffset(double offset) {
-        var config = new MagnetSensorConfigs();
-        config.MagnetOffset = offset;
-        if (steerAbsEncoder.getConfigurator().apply(config) != StatusCode.OK) {
-            logger.error("Failed to apply angular offset to " + offset);
-        }
+        RobustConfigurator.setCancoderAngularOffset(logger, name, steerAbsEncoder, angularOffset);
     }
 
     // Getters

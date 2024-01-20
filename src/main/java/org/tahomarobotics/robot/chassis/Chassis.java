@@ -276,5 +276,8 @@ public class Chassis extends SubsystemIF {
             }
         }
     }
-
+//    Code for testing Odometry
+//    public void zeroPose() {
+//        resetOdometry(new Pose2d(new Translation2d(0, 0), new Rotation2d(0)));
+//    }
 }

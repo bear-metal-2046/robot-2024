@@ -334,10 +334,10 @@ bin/
 
 ctre_sim/
 
-networktables.json
-simgui-ds.json
-simgui.json
-simgui-window.json
+networktables.json*
+simgui-ds.json*
+simgui.json*
+simgui-window.json*
 
 crash_tracking.txt
 src/main/java/org/tahomarobotics/robot/util/BuildConstants.java

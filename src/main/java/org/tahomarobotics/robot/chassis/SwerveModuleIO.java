@@ -1,16 +1,13 @@
 package org.tahomarobotics.robot.chassis;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.MagnetSensorConfigs;
-import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
-import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -19,6 +16,7 @@ import org.littletonrobotics.junction.Logger;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
+import org.tahomarobotics.robot.util.RobustConfigurator;
 
 import java.util.List;
 
@@ -47,6 +45,8 @@ public class SwerveModuleIO {
     private final VelocityVoltage driveMotorVelocity = new VelocityVoltage(0.0);
     private final PositionDutyCycle steerMotorPosition = new PositionDutyCycle(0.0);
 
+    private final RobustConfigurator configurator;
+
     @AutoLog
     static class SwerveModuleIOInputs {
         public SwerveModuleState desiredState = new SwerveModuleState();
@@ -57,6 +57,7 @@ public class SwerveModuleIO {
     public SwerveModuleIO(RobotMap.SwerveModuleDescriptor descriptor, double angularOffset) {
         logger = LoggerFactory.getLogger("SwerveModule." + descriptor.moduleName());
         name = "Chassis/Modules/" + descriptor.moduleName();
+        configurator = new RobustConfigurator(logger);
 
         this.angularOffset = angularOffset;
 
@@ -64,9 +65,9 @@ public class SwerveModuleIO {
         steerMotor = new TalonFX(descriptor.steerId(), RobotConfiguration.CANBUS_NAME);
         steerAbsEncoder = new CANcoder(descriptor.encoderId(), RobotConfiguration.CANBUS_NAME);
 
-        configureDriveMotor(driveMotor.getConfigurator());
-        configureSteerMotor(steerMotor.getConfigurator(), descriptor.encoderId());
-        configureEncoder(steerAbsEncoder.getConfigurator(), angularOffset);
+        configurator.configureTalonFX(driveMotor, driveMotorConfiguration);
+        configurator.configureTalonFX(steerMotor, steerMotorConfiguration, descriptor.encoderId());
+        configurator.configureCancoder(steerAbsEncoder, encoderConfiguration, angularOffset);
 
         drivePosition = driveMotor.getPosition();
         driveVelocity = driveMotor.getVelocity();
@@ -87,29 +88,21 @@ public class SwerveModuleIO {
 
     
     public void initializeCalibration() {
-        applyAngularOffset(0);
-        steerMotor.setControl(new CoastOut());
+        configurator.setCancoderAngularOffset( steerAbsEncoder, 0);
+        configurator.setMotorNeutralMode(steerMotor, NeutralModeValue.Coast);
     }
 
     
     public double finalizeCalibration() {
         angularOffset = -steerPosition.refresh().getValue();
-        applyAngularOffset(angularOffset);
-        steerMotor.setControl(new StaticBrake());
+        configurator.setCancoderAngularOffset(steerAbsEncoder, angularOffset);
+        configurator.setMotorNeutralMode(steerMotor, NeutralModeValue.Brake);
         return angularOffset;
     }
 
     
     public void cancelCalibration() {
-        applyAngularOffset(angularOffset);
-    }
-
-    private void applyAngularOffset(double offset) {
-        var config = new MagnetSensorConfigs();
-        config.MagnetOffset = offset;
-        if (steerAbsEncoder.getConfigurator().apply(config) != StatusCode.OK) {
-            logger.error("Failed to apply angular offset to " + offset);
-        }
+        configurator.setCancoderAngularOffset(steerAbsEncoder, angularOffset);
     }
 
     // Getters
@@ -200,6 +193,7 @@ public class SwerveModuleIO {
         steerMotor.stopMotor();
     }
 
+    
     public List<BaseStatusSignal> getStatusSignals() {
         return List.of(
                 drivePosition,

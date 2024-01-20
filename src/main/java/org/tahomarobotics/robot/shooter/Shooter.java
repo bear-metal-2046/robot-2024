@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.wpilibj.DigitalInput;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
@@ -30,6 +31,8 @@ public class Shooter extends SubsystemIF {
 
     private final TalonFX indexMotor;
 
+    private final DigitalInput sensor = new DigitalInput(RobotMap.BEAM_BREAK);
+
     private final StatusSignal<Double> topVelocity;
 
     private final StatusSignal<Double> bottomVelocity;
@@ -39,6 +42,7 @@ public class Shooter extends SubsystemIF {
     private final StatusSignal<Double> indexVelocity;
 
     private final VelocityVoltage topMotorVelocity = new VelocityVoltage(0.0);
+    private final VelocityVoltage indexMotorVelocity = new VelocityVoltage(0.0);
 
     private final PositionDutyCycle indexMotorPosition = new PositionDutyCycle(0.0);
 
@@ -72,6 +76,7 @@ public class Shooter extends SubsystemIF {
 
         bottomMotor.setControl(new Follower(topMotor.getDeviceID(), true));
         topMotorVelocity.EnableFOC = RobotConfiguration.USING_PHOENIX_PRO;
+        indexMotorVelocity.EnableFOC = RobotConfiguration.USING_PHOENIX_PRO;
         indexMotorPosition.EnableFOC = RobotConfiguration.USING_PHOENIX_PRO;
     }
 
@@ -90,6 +95,9 @@ public class Shooter extends SubsystemIF {
     public void setIndexAngle(double angle) {
         indexMotor.setControl(motionMagic.withPosition(angle));
     }
+    public void setIndexVelocity(double speed) {
+        indexMotor.setControl(indexMotorVelocity.withVelocity(speed));
+    }
 
     public void stopShooter(){
         topMotor.set(0.0);
@@ -98,6 +106,10 @@ public class Shooter extends SubsystemIF {
 
     public void stopIndexer(){
         indexMotor.set(0.0);
+    }
+
+    public boolean getBeamBreake(){
+        return sensor.get();
     }
 
     @Override

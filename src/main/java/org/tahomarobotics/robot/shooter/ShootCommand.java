@@ -25,7 +25,7 @@ public class ShootCommand extends Command {
 
     @Override
     public void execute() {
-        SmartDashboard.putNumber("Shoot Veolocity", shooter.getShooterVelocity());
+        SmartDashboard.putNumber("Shoot Velocity", shooter.getShooterVelocity());
         shooter.setShooterVelocity(velocity);
     }
 

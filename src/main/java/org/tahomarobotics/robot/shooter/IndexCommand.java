@@ -18,7 +18,7 @@ public class IndexCommand extends Command {
 
     @Override
     public void initialize() {
-        shooter.setShooterVelocity(distance);
+        shooter.setIndexAngle(distance);
     }
 
     @Override

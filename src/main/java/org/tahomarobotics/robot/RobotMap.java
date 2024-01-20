@@ -22,6 +22,7 @@ public class RobotMap {
                                          int encoderId) {
     }
 
+    public final static int BEAM_BREAK = 0;
     public static final int TOP_SHOOTER_MOTOR = 5;
 
     public static final int BOTTOM_SHOOTER_MOTOR = 6;

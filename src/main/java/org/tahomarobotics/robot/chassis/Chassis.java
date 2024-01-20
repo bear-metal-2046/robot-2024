@@ -1,5 +1,6 @@
 package org.tahomarobotics.robot.chassis;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -10,6 +11,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.littletonrobotics.junction.Logger;
@@ -20,6 +22,7 @@ import org.tahomarobotics.robot.chassis.commands.AlignSwerveCommand;
 import org.tahomarobotics.robot.util.CalibrationData;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Chassis extends SubsystemIF {
@@ -43,6 +46,8 @@ public class Chassis extends SubsystemIF {
     private final SwerveDriveKinematics kinematics;
 
     private final CalibrationData<Double[]> swerveCalibration;
+
+    private final Thread odometryThread;
 
     // Constructor
 
@@ -73,6 +78,9 @@ public class Chassis extends SubsystemIF {
                 VecBuilder.fill(0.02, 0.02, 0.02),
                 VecBuilder.fill(0.1, 0.1, 0.01)
         );
+
+        odometryThread = new Thread(this::odometryThread);
+        odometryThread.start();
     }
 
     @Override
@@ -138,24 +146,32 @@ public class Chassis extends SubsystemIF {
 
     @Override
     public void periodic() {
-        Logger.recordOutput("Chassis/Pose", getPose());
-        Logger.recordOutput("Chassis/State", getSwerveModuleStates());
-        Logger.recordOutput("Chassis/DesiredState", getSwerveModuleDesiredStates());
-        Logger.recordOutput("Chassis/Gyro/Yaw", getYaw());
-        Logger.recordOutput("Chassis/CurrentChassisSpeeds", getCurrentChassisSpeeds());
+        Pose2d pose;
+        Rotation2d yaw;
 
-        modules.forEach(SwerveModule::periodic);
-
-        var gyro = getYaw();
-        var modules = getSwerveModulePositions();
-        synchronized (poseEstimator) {
-            poseEstimator.update(gyro, modules);
+        synchronized (modules) {
+            modules.forEach(SwerveModule::periodic);
+            Logger.recordOutput("Chassis/State", getSwerveModuleStates());
+            Logger.recordOutput("Chassis/DesiredState", getSwerveModuleDesiredStates());
         }
 
-        fieldPose.setRobotPose(getPose());
+        synchronized (poseEstimator) {
+            pose = getPose();
+        }
+
+        synchronized (gyroIO) {
+            yaw = getYaw();
+        }
+
+        // TODO: Synchronize chassis speeds - pose estimator does use kinematics
+        Logger.recordOutput("Chassis/CurrentChassisSpeeds", getCurrentChassisSpeeds());
+        Logger.recordOutput("Chassis/Gyro/Yaw", yaw);
+        Logger.recordOutput("Chassis/Pose", pose);
+
+        fieldPose.setRobotPose(pose);
         SmartDashboard.putData(fieldPose);
 
-        SmartDashboard.putString("Pose", getPose().toString());
+        SmartDashboard.putString("Pose", pose.toString());
     }
 
     @Override
@@ -218,4 +234,47 @@ public class Chassis extends SubsystemIF {
     public void onDisabledInit() {
         modules.forEach(SwerveModule::stop);
     }
+
+    // Odometry Thread
+
+    /**
+     * Simple thread which runs at the status period rate for all CAN devices
+     * in chassis.
+     */
+    private void odometryThread() {
+        Rotation2d yaw;
+        SwerveModulePosition[] modulePositions;
+
+        Threads.setCurrentThreadPriority(true, 1);
+
+        // Get signals array
+        List<BaseStatusSignal> signalList = new ArrayList<>(gyroIO.getStatusSignals());
+        for (var module : this.modules) {
+            signalList.addAll(module.getStatusSignals());
+        }
+
+        BaseStatusSignal[] signals = signalList.toArray(BaseStatusSignal[]::new);
+
+        while (true) {
+            // Wait for all signals to arrive
+            var status = BaseStatusSignal.waitForAll(2 / RobotConfiguration.ODOMETRY_UPDATE_FREQUENCY, signals);
+
+            if (status.isError()) logger.error("Failed to waitForAll updates" + status.getDescription());
+
+            // Calculate new position
+
+            synchronized (gyroIO) {
+                yaw = getYaw();
+            }
+
+            synchronized (modules) {
+                modulePositions = getSwerveModulePositions();
+            }
+
+            synchronized (poseEstimator) {
+                poseEstimator.update(yaw, modulePositions);
+            }
+        }
+    }
+
 }

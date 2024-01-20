@@ -19,6 +19,9 @@ import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 
+import java.lang.reflect.Array;
+import java.util.List;
+
 import static org.tahomarobotics.robot.chassis.ChassisConstants.*;
 
 public class SwerveModuleIOReal implements SwerveModuleIO {
@@ -40,9 +43,6 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
     private final StatusSignal<Double> steerVelocity;
     private final StatusSignal<Double> drivePosition;
     private final StatusSignal<Double> driveVelocity;
-
-    private final StatusSignal<Double> steerOutput;
-    private final StatusSignal<Double> steerCurrentDraw;
 
     private final VelocityVoltage driveMotorVelocity = new VelocityVoltage(0.0);
     private final PositionDutyCycle steerMotorPosition = new PositionDutyCycle(0.0);
@@ -68,12 +68,9 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
         steerPosition = steerAbsEncoder.getAbsolutePosition();
         steerVelocity = steerAbsEncoder.getVelocity();
 
-        steerOutput = steerMotor.getClosedLoopOutput();
-        steerCurrentDraw = steerMotor.getSupplyCurrent();
-
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.ODOMETRY_UPDATE_FREQUENCY,
                 drivePosition, driveVelocity, steerPosition,
-                steerVelocity, steerOutput, steerCurrentDraw
+                steerVelocity
         );
         ParentDevice.optimizeBusUtilizationForAll(driveMotor, steerMotor, steerAbsEncoder);
 
@@ -167,9 +164,7 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
                 drivePosition,
                 driveVelocity,
                 steerPosition,
-                steerVelocity,
-                steerCurrentDraw,
-                steerOutput
+                steerVelocity
         );
 
         Logger.recordOutput(name + "/State", getState());
@@ -179,8 +174,6 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
         Logger.recordOutput(name + "/DriveVelocity", driveVelocity.getValueAsDouble());
         Logger.recordOutput(name + "/DriveVelocityMPS", driveVelocity.getValueAsDouble() * DRIVE_POSITION_COEFFICIENT);
         Logger.recordOutput(name + "/SteerVelocity", steerVelocity.getValueAsDouble());
-        Logger.recordOutput(name + "/SteerOutput", steerOutput.getValueAsDouble());
-        Logger.recordOutput(name + "/SteerCurrentDraw", steerCurrentDraw.getValueAsDouble());
     }
 
     @Override
@@ -200,5 +193,15 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
     public void stop() {
         driveMotor.stopMotor();
         steerMotor.stopMotor();
+    }
+
+    @Override
+    public List<BaseStatusSignal> getStatusSignals() {
+        return List.of(
+                drivePosition,
+                driveVelocity,
+                steerPosition,
+                steerVelocity
+        );
     }
 }

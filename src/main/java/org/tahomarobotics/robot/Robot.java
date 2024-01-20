@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.auto.Autonomous;
 import org.tahomarobotics.robot.auto.PathPlannerHelper;
 import org.tahomarobotics.robot.chassis.Chassis;
+import org.tahomarobotics.robot.identity.RobotIdentity;
 import org.tahomarobotics.robot.util.BuildConstants;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
@@ -40,8 +41,10 @@ public class Robot extends LoggedRobot {
         subsystems.add(OI.getInstance().initialize());
         subsystems.add(Chassis.getInstance().initialize());
         subsystems.add(Autonomous.getInstance().initialize());
+        subsystems.add(RobotIdentity.getInstance().initialize());
 
         PathPlannerHelper.registerAutoCommands();
+
 
         logger.info("Robot Initialized.");
     }

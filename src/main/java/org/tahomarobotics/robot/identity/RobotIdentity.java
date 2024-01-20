@@ -3,6 +3,7 @@ package org.tahomarobotics.robot.identity;
 
 import org.littletonrobotics.junction.Logger;
 import org.slf4j.LoggerFactory;
+import org.tahomarobotics.robot.util.SubsystemIF;
 
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -11,7 +12,7 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 
-public class RobotIdentity {
+public class RobotIdentity extends SubsystemIF {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(RobotIdentity.class);
 

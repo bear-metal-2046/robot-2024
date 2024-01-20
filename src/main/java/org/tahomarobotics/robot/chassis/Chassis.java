@@ -267,7 +267,7 @@ public class Chassis extends SubsystemIF {
 
         while (true) {
             // Wait for all signals to arrive
-            var status = BaseStatusSignal.waitForAll(0.1, signals);
+            var status = BaseStatusSignal.waitForAll(2 / RobotConfiguration.ODOMETRY_UPDATE_FREQUENCY, signals);
 
             if (status.isError()) logger.error("Failed to waitForAll updates" + status.getDescription());
 

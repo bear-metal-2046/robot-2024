@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.chassis.commands.TeleopDriveCommand;
+import org.tahomarobotics.robot.shooter.ShootSequence;
+import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
 public class OI extends SubsystemIF {
@@ -44,6 +46,8 @@ public class OI extends SubsystemIF {
         driveController.a().onTrue(Commands.runOnce(chassis::orientToZeroHeading));
         // Robot/Field Orientation
         driveController.b().onTrue(Commands.runOnce(chassis::toggleOrientation));
+        // Shoot
+        driveController.rightTrigger().onTrue(new ShootSequence());
     }
 
     private void setDefaultCommands() {

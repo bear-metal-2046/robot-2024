@@ -11,6 +11,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.littletonrobotics.junction.Logger;
@@ -46,7 +47,7 @@ public class Chassis extends SubsystemIF {
 
     private final CalibrationData<Double[]> swerveCalibration;
 
-    private final Thread mOdometryThread;
+    private final Thread odometryThread;
 
     // Constructor
 
@@ -78,8 +79,8 @@ public class Chassis extends SubsystemIF {
                 VecBuilder.fill(0.1, 0.1, 0.01)
         );
 
-        mOdometryThread = new Thread(this::odometryThread);
-        mOdometryThread.start();
+        odometryThread = new Thread(this::odometryThread);
+        odometryThread.start();
     }
 
     @Override
@@ -236,6 +237,8 @@ public class Chassis extends SubsystemIF {
         Rotation2d yaw;
         SwerveModulePosition[] modulePositions;
 
+        Threads.setCurrentThreadPriority(true, 1);
+
         // Get signals array
         List<BaseStatusSignal> signalList = new ArrayList<>(gyroIO.getStatusSignals());
         for (var module : this.modules) {
@@ -246,9 +249,9 @@ public class Chassis extends SubsystemIF {
 
         while (true) {
             // Wait for all signals to arrive
-            var status = BaseStatusSignal.waitForAll(0.1, signals);
+            var status = BaseStatusSignal.waitForAll(2 / RobotConfiguration.ODOMETRY_UPDATE_FREQUENCY, signals);
 
-            // TODO: Do something with status
+            if (status.isError()) logger.error("Failed to waitForAll updates" + status.getDescription());
 
             // Calculate new position
 

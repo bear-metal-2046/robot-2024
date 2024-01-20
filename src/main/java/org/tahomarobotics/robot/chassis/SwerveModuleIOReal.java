@@ -201,9 +201,7 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
                 drivePosition,
                 driveVelocity,
                 steerPosition,
-                steerVelocity,
-                steerOutput,
-                steerCurrentDraw
+                steerVelocity
         );
     }
 }

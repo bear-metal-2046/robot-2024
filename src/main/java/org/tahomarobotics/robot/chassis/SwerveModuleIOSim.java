@@ -5,7 +5,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 import org.tahomarobotics.robot.RobotMap;
 
-public class SwerveModuleIOSim extends SwerveModuleIOReal {
+public class SwerveModuleIOSim extends SwerveModuleIO {
     private final SwerveModulePosition position = new SwerveModulePosition();
     private double lastTime = Timer.getFPGATimestamp();
 

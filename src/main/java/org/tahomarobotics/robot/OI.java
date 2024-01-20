@@ -53,10 +53,10 @@ public class OI extends SubsystemIF {
 //        Code for testing odometry
 //        driveController.x().onTrue(Commands.runOnce(chassis::zeroPose));
 //
-//        driveController.povLeft().onTrue(new KnownMovementCommand(0.5, 0.0, 0.0, p -> p.getTranslation().getX() < 1.0));
-//        driveController.povRight().onTrue(new KnownMovementCommand(-0.5, 0.0, 0.0, p -> p.getTranslation().getX() > 0.0));
-//        driveController.povUp().onTrue(new KnownMovementCommand(0.0, 0.5, 0.0, p -> p.getTranslation().getY() < 1.0));
-//        driveController.povDown().onTrue(new KnownMovementCommand(0.0, -0.5, 0.0, p -> p.getTranslation().getY() > 0.0));
+//        driveController.povLeft().onTrue(new KnownMovementCommand(0.5, 0.0, 0.0, p -> p.getTranslation().getX() < 2.0)
+//                .andThen(new KnownMovementCommand(0.0, 0.5, 0.0, p -> p.getTranslation().getY() < 2.0)
+//                .andThen(new KnownMovementCommand(-0.5, 0.0, 0.0, p -> p.getTranslation().getX() > 0.0)
+//                .andThen(new KnownMovementCommand(0.0, -0.5, 0.0, p -> p.getTranslation().getY() > 0.0)))));
     }
 
     private void setDefaultCommands() {

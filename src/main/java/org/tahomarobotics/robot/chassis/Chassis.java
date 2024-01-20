@@ -36,7 +36,7 @@ public class Chassis extends SubsystemIF {
 
     // Member Variables
 
-    private final GyroIO gyroIO = RobotConfiguration.getMode() == RobotConfiguration.Mode.REAL ? new GyroIOReal() : new GyroIOSim();
+    private final GyroIO gyroIO = RobotConfiguration.getMode() == RobotConfiguration.Mode.REAL ? new GyroIO() : new GyroIOSim();
 
     private final List<SwerveModule> modules;
 

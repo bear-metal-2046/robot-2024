@@ -15,7 +15,7 @@ public class GyroIO {
     private final StatusSignal<Double> yaw = pigeon2.getYaw();
     private final StatusSignal<Double> yawVelocity = pigeon2.getAngularVelocityZWorld();
 
-    public GyroIO() {
+    GyroIO() {
         pigeon2.getConfigurator().apply(new Pigeon2Configuration());
 
         zero();
@@ -27,14 +27,14 @@ public class GyroIO {
         pigeon2.optimizeBusUtilization();
     }
 
-    public void zero() {
+    void zero() {
         pigeon2.setYaw(0.0);
     }
 
-    public Rotation2d getYaw() {
+    Rotation2d getYaw() {
         return Rotation2d.fromDegrees(BaseStatusSignal.getLatencyCompensatedValue(yaw.refresh(), yawVelocity.refresh()));
     }
-    public List<BaseStatusSignal> getStatusSignals() {
+    List<BaseStatusSignal> getStatusSignals() {
         return List.of(yaw, yawVelocity);
     }
 }

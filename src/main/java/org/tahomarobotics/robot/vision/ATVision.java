@@ -151,7 +151,9 @@ public class ATVision {
 
         double distanceToTargets = result.distanceToTargets();
 
-        fieldPose.getObject(result.camera().cameraName).setPose(result.poseMeters());
+        synchronized (fieldPose) {
+            fieldPose.getObject(result.camera().cameraName).setPose(result.poseMeters());
+        }
 
         if (result.numTargets() > 1 && distanceToTargets < VisionConstants.TARGET_DISTANCE_THRESHOLD) {
             // Multi-tag PnP provides very trustworthy data
@@ -162,11 +164,8 @@ public class ATVision {
             );
 
             synchronized (poseEstimator) {
-                try {
-                    poseEstimator.addVisionMeasurement(result.poseMeters(), result.timestamp(), stds);
-                    updates++;
-                } catch (ConcurrentModificationException ignored) {
-                }
+                poseEstimator.addVisionMeasurement(result.poseMeters(), result.timestamp(), stds);
+                updates++;
             }
         } else if (result.numTargets() == 1 && distanceToTargets < VisionConstants.SINGLE_TARGET_DISTANCE_THRESHOLD) {
             // Single tag results are not very trustworthy. Do not use headings from them
@@ -178,11 +177,8 @@ public class ATVision {
             );
 
             synchronized (poseEstimator) {
-                try {
-                    poseEstimator.addVisionMeasurement(noHdgPose, result.timestamp(), stds);
-                    updates++;
-                } catch (ConcurrentModificationException ignored) {
-                }
+                poseEstimator.addVisionMeasurement(noHdgPose, result.timestamp(), stds);
+                updates++;
             }
         }
     }

@@ -1,4 +1,4 @@
-package org.tahomarobotics.robot.chassis.commands;
+package org.tahomarobotics.robot.chassis;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
-public class KnownMovementCommand extends Command {
+class KnownMovementCommand extends Command {
     private final Chassis chassis = Chassis.getInstance();
 
     //    private final SwerveRateLimiter limiter = new SwerveRateLimiter(ChassisConstants.TRANSLATION_LIMIT, ChassisConstants.ROTATION_LIMIT);

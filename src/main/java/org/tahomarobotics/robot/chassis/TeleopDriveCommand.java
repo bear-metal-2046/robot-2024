@@ -17,7 +17,7 @@
  * DEALINGS IN THE SOFTWARE.
  * <p>
  */
-package org.tahomarobotics.robot.chassis.commands;
+package org.tahomarobotics.robot.chassis;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -26,11 +26,12 @@ import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.chassis.ChassisConstants;
+import org.tahomarobotics.robot.chassis.commands.TeleopDriveCommandInputsAutoLogged;
 import org.tahomarobotics.robot.util.SwerveRateLimiter;
 
 import java.util.function.Consumer;
 
-public class TeleopDriveCommand extends Command {
+class TeleopDriveCommand extends Command {
 
     private static final Chassis chassis = Chassis.getInstance();
 

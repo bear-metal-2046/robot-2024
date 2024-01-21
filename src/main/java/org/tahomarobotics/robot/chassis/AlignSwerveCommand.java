@@ -1,11 +1,11 @@
-package org.tahomarobotics.robot.chassis.commands;
+package org.tahomarobotics.robot.chassis;
 
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import org.tahomarobotics.robot.chassis.Chassis;
 
-public class AlignSwerveCommand extends Command {
+class AlignSwerveCommand extends Command {
 
     private final Chassis chassis = Chassis.getInstance();
     private boolean finalized = false;

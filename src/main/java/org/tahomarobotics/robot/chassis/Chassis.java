@@ -14,11 +14,13 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
-import org.tahomarobotics.robot.chassis.commands.AlignSwerveCommand;
+import org.tahomarobotics.robot.chassis.TeleopDriveCommand;
+import org.tahomarobotics.robot.chassis.commands.TeleopDriveCommandInputsAutoLogged;
 import org.tahomarobotics.robot.util.CalibrationData;
 import org.tahomarobotics.robot.util.SubsystemIF;
 import org.tahomarobotics.robot.vision.ATVision;
@@ -26,11 +28,16 @@ import org.tahomarobotics.robot.vision.VisionConstants;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class Chassis extends SubsystemIF {
-    private static final Chassis INSTANCE = new Chassis();
+    private static Chassis INSTANCE;
 
     public static Chassis getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new Chassis();
+        }
         return INSTANCE;
     }
 
@@ -290,4 +297,19 @@ public class Chassis extends SubsystemIF {
 //    public void zeroPose() {
 //        resetOdometry(new Pose2d(new Translation2d(0, 0), new Rotation2d(0)));
 //    }
+
+    // Command Factory is bellow |
+    //                           v
+
+    public Command getTeleopDriveCommand (Consumer<TeleopDriveCommandInputsAutoLogged> inpMut) {
+        return new TeleopDriveCommand(inpMut);
+    }
+
+    public Command getKnownMovementCommand(double x, double y, double r, Function<Pose2d, Boolean> endCondition) {
+        return new KnownMovementCommand(x, y, r, endCondition);
+    }
+
+    public Command getAlignSwerveCommand() {
+        return new AlignSwerveCommand();
+    }
 }

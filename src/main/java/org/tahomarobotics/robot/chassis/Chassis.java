@@ -20,6 +20,7 @@ import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.chassis.commands.AlignSwerveCommand;
 import org.tahomarobotics.robot.util.CalibrationData;
+import org.tahomarobotics.robot.util.NapCompensationKinematics;
 import org.tahomarobotics.robot.util.SubsystemIF;
 import org.tahomarobotics.robot.vision.ATVision;
 import org.tahomarobotics.robot.vision.VisionConstants;
@@ -70,7 +71,7 @@ public class Chassis extends SubsystemIF {
                 new SwerveModule(RobotMap.BACK_RIGHT_MOD, angularOffsets[3])
         );
 
-        kinematics = new SwerveDriveKinematics(
+        kinematics = new NapCompensationKinematics(
                 modules.stream()
                         .map(SwerveModule::getTranslationOffset)
                         .toArray(Translation2d[]::new)

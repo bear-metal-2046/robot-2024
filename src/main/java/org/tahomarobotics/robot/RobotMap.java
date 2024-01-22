@@ -3,7 +3,6 @@ package org.tahomarobotics.robot;
 import edu.wpi.first.math.geometry.Translation2d;
 
 import static org.tahomarobotics.robot.chassis.ChassisConstants.*;
-import static org.tahomarobotics.robot.chassis.ChassisConstants.BACK_RIGHT_OFFSET;
 
 public class RobotMap {
     public static final int PIGEON = 0;
@@ -18,7 +17,10 @@ public class RobotMap {
     public final static SwerveModuleDescriptor BACK_RIGHT_MOD = new SwerveModuleDescriptor(
             "Back-Right", BACK_RIGHT_OFFSET, 4, 14, 24);
 
-    public record SwerveModuleDescriptor(String moduleName, Translation2d offset, int driveId, int steerId,
-                                         int encoderId) {
+    public final static int DEPLOY_COLLECTOR_MOTOR = 8;
+    public final static int DEPLOY_COLLECTOR_MOTOR_FOLLOWER = 9;
+    public final static int COLLECTOR_MOTOR = 10;
+
+    public record SwerveModuleDescriptor(String moduleName, Translation2d offset, int driveId, int steerId, int encoderId) {
     }
 }

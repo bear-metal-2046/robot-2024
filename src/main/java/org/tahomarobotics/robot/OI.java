@@ -15,6 +15,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.chassis.commands.KnownMovementCommand;
 import org.tahomarobotics.robot.chassis.commands.TeleopDriveCommand;
+import org.tahomarobotics.robot.collector.Collector;
+import org.tahomarobotics.robot.collector.CollectorConstants;
+import org.tahomarobotics.robot.collector.CollectorDefaultCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
 public class OI extends SubsystemIF {
@@ -22,6 +25,7 @@ public class OI extends SubsystemIF {
 
     private static final double ROTATIONAL_SENSITIVITY = 2;
     private static final double FORWARD_SENSITIVITY = 1.1;
+    private static final double COLLECT_SENSITIVITY = 1.0;
     private static final double DEAD_ZONE = 0.09;
 
     public static OI getInstance() {
@@ -44,11 +48,15 @@ public class OI extends SubsystemIF {
      */
     private void configureBindings() {
         Chassis chassis = Chassis.getInstance();
+        Collector collector = Collector.getInstance();
 
         // Robot Heading Zeroing
         driveController.a().onTrue(Commands.runOnce(chassis::orientToZeroHeading));
         // Robot/Field Orientation
         driveController.b().onTrue(Commands.runOnce(chassis::toggleOrientation));
+
+        driveController.leftBumper().toggleOnTrue(collector.getDeployCommand(CollectorConstants.COLLECT_POSITION));
+        driveController.leftBumper().toggleOnFalse(collector.getDeployCommand(CollectorConstants.STOW_POSITION));
 
 //        Code for testing odometry
 //        driveController.x().onTrue(Commands.runOnce(chassis::zeroPose));
@@ -68,6 +76,12 @@ public class OI extends SubsystemIF {
                     inputs.y = -desensitizePowerBased(driveController.getLeftX(), FORWARD_SENSITIVITY);
                     inputs.rot = -desensitizePowerBased(driveController.getRightX(), ROTATIONAL_SENSITIVITY);
                 }
+        ));
+
+        Collector collector = Collector.getInstance();
+
+        collector.setDefaultCommand(new CollectorDefaultCommand(
+                () -> desensitizePowerBased(driveController.getLeftTriggerAxis(), COLLECT_SENSITIVITY)
         ));
     }
 

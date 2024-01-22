@@ -1,37 +1,20 @@
 package org.tahomarobotics.robot.shooter;
 
-import com.ctre.phoenix6.configs.*;
+import com.ctre.phoenix6.configs.AudioConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import static org.tahomarobotics.robot.chassis.ChassisConstants.kV_DRIVE;
-
 public class ShooterConstants {
-    public static final double KP_SHOOTER = 0.15;
-    public static final double KI_SHOOTER = 0.0;
-    public static final double KD_SHOOTER = 0.0;
-
-    public static final double KP_INDEX = 0.15;
-    public static final double KI_INDEX = 0.0;
-    public static final double KD_INDEX = 0.0;
-
     static final TalonFXConfiguration shooterMotorConfiguration = new TalonFXConfiguration()
             .withSlot0(new Slot0Configs()
-                    .withKP(KP_SHOOTER)
-                    .withKI(KI_SHOOTER)
-                    .withKD(KD_SHOOTER))
+                    .withKP(0.15)
+                    .withKI(0.0)
+                    .withKD(0.0))
             .withMotorOutput(new MotorOutputConfigs()
                     .withNeutralMode(NeutralModeValue.Coast)
-                    .withInverted(InvertedValue.CounterClockwise_Positive))
-            .withAudio(new AudioConfigs().withBeepOnBoot(true).withBeepOnConfig(true));
-
-    static final TalonFXConfiguration indexMotorConfiguration = new TalonFXConfiguration()
-            .withSlot0(new Slot0Configs()
-                    .withKP(KP_INDEX)
-                    .withKI(KI_INDEX)
-                    .withKD(KD_INDEX))
-            .withMotorOutput(new MotorOutputConfigs()
-                    .withNeutralMode(NeutralModeValue.Brake)
                     .withInverted(InvertedValue.CounterClockwise_Positive))
             .withAudio(new AudioConfigs().withBeepOnBoot(true).withBeepOnConfig(true));
 }

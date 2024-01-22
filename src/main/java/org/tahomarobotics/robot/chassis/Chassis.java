@@ -30,23 +30,15 @@ import java.util.List;
 public class Chassis extends SubsystemIF {
     private static final Chassis INSTANCE = new Chassis();
 
-    public static Chassis getInstance() {
-        return INSTANCE;
-    }
-
-    // Member Variables
-
     private final GyroIO gyroIO = RobotConfiguration.getMode() == RobotConfiguration.Mode.REAL ? new GyroIO() : new GyroIOSim();
 
+    // Member Variables
     private final List<SwerveModule> modules;
 
     private final SwerveDrivePoseEstimator poseEstimator;
-
-    private boolean isFieldOriented = true;
     private final Field2d fieldPose = new Field2d();
 
     private final SwerveDriveKinematics kinematics;
-
     private final CalibrationData<Double[]> swerveCalibration;
 
     private final ATVision backATVision;
@@ -55,7 +47,9 @@ public class Chassis extends SubsystemIF {
 
     private final Thread odometryThread;
 
-    // Constructor
+    private boolean isFieldOriented = true;
+
+    // CONSTRUCTOR
 
     private Chassis() {
         // Read the calibration data from the roboRIO.
@@ -92,6 +86,12 @@ public class Chassis extends SubsystemIF {
         leftATVision = new ATVision(VisionConstants.ATCamera.LEFT, fieldPose, poseEstimator);
         rightATVision = new ATVision(VisionConstants.ATCamera.RIGHT, fieldPose, poseEstimator);
     }
+
+    public static Chassis getInstance() {
+        return INSTANCE;
+    }
+
+    // INITIALIZE
 
     @Override
     public SubsystemIF initialize() {
@@ -152,7 +152,7 @@ public class Chassis extends SubsystemIF {
         return kinematics.toChassisSpeeds(getSwerveModuleStates());
     }
 
-    // State
+    // PERIODIC
 
     @Override
     public void periodic() {
@@ -189,6 +189,8 @@ public class Chassis extends SubsystemIF {
         ((GyroIOSim) gyroIO).simulationPeriodic(getCurrentChassisSpeeds());
     }
 
+    // STATE
+
     public void drive(ChassisSpeeds velocity) {
         if (!isFieldOriented && DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Red) {
             velocity = new ChassisSpeeds(-velocity.vxMetersPerSecond, -velocity.vyMetersPerSecond, velocity.omegaRadiansPerSecond);
@@ -215,6 +217,8 @@ public class Chassis extends SubsystemIF {
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, ChassisConstants.MAX_VELOCITY);
         setSwerveStates(swerveModuleStates);
     }
+
+    // SETTERS
 
     private void setSwerveStates(SwerveModuleState[] states) {
         for (int i = 0; i < states.length; i++) modules.get(i).setDesiredState(states[i]);
@@ -286,8 +290,4 @@ public class Chassis extends SubsystemIF {
             }
         }
     }
-//    Code for testing Odometry
-//    public void zeroPose() {
-//        resetOdometry(new Pose2d(new Translation2d(0, 0), new Rotation2d(0)));
-//    }
 }

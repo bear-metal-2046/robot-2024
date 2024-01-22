@@ -19,7 +19,10 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false
+    # Only run on push to main or on a non draft PR
+    if: |
+      github.event_name == 'push' || 
+      (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
     steps:
     - uses: actions/checkout@v4
     - name: Set up JDK 17

@@ -5,7 +5,7 @@ import edu.wpi.first.math.util.Units;
 import org.tahomarobotics.robot.Robot;
 
 public class GyroIOSim extends GyroIO {
-    public void simulationPeriodic(ChassisSpeeds speeds) {
+    void simulationPeriodic(ChassisSpeeds speeds) {
         pigeon2.getSimState().addYaw(Robot.defaultPeriodSecs * Units.radiansToDegrees(speeds.omegaRadiansPerSecond));
     }
 }

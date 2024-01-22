@@ -9,12 +9,12 @@ public class SwerveModuleIOSim extends SwerveModuleIO {
     private final SwerveModulePosition position = new SwerveModulePosition();
     private double lastTime = Timer.getFPGATimestamp();
 
-    public SwerveModuleIOSim(RobotMap.SwerveModuleDescriptor descriptor, double angularOffset) {
+    SwerveModuleIOSim(RobotMap.SwerveModuleDescriptor descriptor, double angularOffset) {
         super(descriptor, angularOffset);
     }
 
     @Override
-    public void processInputs(SwerveModuleIOInputs inputs) {
+    void processInputs(SwerveModuleIOInputs inputs) {
         super.processInputs(inputs);
 
         double time = Timer.getFPGATimestamp();
@@ -24,12 +24,12 @@ public class SwerveModuleIOSim extends SwerveModuleIO {
     }
 
     @Override
-    public SwerveModulePosition getPosition() {
+    SwerveModulePosition getPosition() {
         return position;
     }
 
     @Override
-    public SwerveModuleState getState() {
+    SwerveModuleState getState() {
         return desiredState;
     }
 }

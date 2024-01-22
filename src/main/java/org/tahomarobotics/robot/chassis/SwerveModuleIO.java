@@ -54,7 +54,7 @@ public class SwerveModuleIO {
 
     // CONSTRUCTOR
 
-    public SwerveModuleIO(RobotMap.SwerveModuleDescriptor descriptor, double angularOffset) {
+    SwerveModuleIO(RobotMap.SwerveModuleDescriptor descriptor, double angularOffset) {
         logger = LoggerFactory.getLogger("SwerveModule." + descriptor.moduleName());
         name = "Chassis/Modules/" + descriptor.moduleName();
         configurator = new RobustConfigurator(logger);
@@ -84,13 +84,13 @@ public class SwerveModuleIO {
     // CALIBRATION
 
     
-    public void initializeCalibration() {
+    void initializeCalibration() {
         configurator.setCancoderAngularOffset( steerAbsEncoder, 0);
         configurator.setMotorNeutralMode(steerMotor, NeutralModeValue.Coast);
     }
 
     
-    public double finalizeCalibration() {
+    double finalizeCalibration() {
         angularOffset = -steerPosition.refresh().getValue();
         configurator.setCancoderAngularOffset(steerAbsEncoder, angularOffset);
         configurator.setMotorNeutralMode(steerMotor, NeutralModeValue.Brake);
@@ -98,7 +98,7 @@ public class SwerveModuleIO {
     }
 
     
-    public void cancelCalibration() {
+    void cancelCalibration() {
         configurator.setCancoderAngularOffset(steerAbsEncoder, angularOffset);
     }
 
@@ -107,21 +107,21 @@ public class SwerveModuleIO {
     /**
      * @return Position of the module in <strong>meters</strong>.
      */
-    public double getDrivePosition() {
+    double getDrivePosition() {
         return BaseStatusSignal.getLatencyCompensatedValue(drivePosition.refresh(), driveVelocity.refresh()) * DRIVE_POSITION_COEFFICIENT;
     }
 
     /**
      * @return Velocity of the module in <strong>meters/s</strong>.
      */
-    public double getDriveVelocity() {
+    double getDriveVelocity() {
         return driveVelocity.refresh().getValue() * DRIVE_POSITION_COEFFICIENT;
     }
 
     /**
      * @return Relative rotation of the module in <strong>rotations</strong>.
      */
-    public double getSteerAngle() {
+    double getSteerAngle() {
         return BaseStatusSignal.getLatencyCompensatedValue(steerPosition.refresh(), steerVelocity.refresh());
     }
 
@@ -129,12 +129,12 @@ public class SwerveModuleIO {
      * @return The current state of the module.
      */
     
-    public SwerveModuleState getState() {
+    SwerveModuleState getState() {
         return new SwerveModuleState(getDriveVelocity(), Rotation2d.fromRotations(getSteerAngle()));
     }
 
     
-    public SwerveModuleState getDesiredState() {
+    SwerveModuleState getDesiredState() {
         return desiredState;
     }
 
@@ -142,14 +142,14 @@ public class SwerveModuleIO {
      * @return The current position of the module.
      */
     
-    public SwerveModulePosition getPosition() {
+    SwerveModulePosition getPosition() {
         return new SwerveModulePosition(getDrivePosition(), Rotation2d.fromRotations(getSteerAngle()));
     }
 
     // State
 
     
-    public void processInputs(SwerveModuleIOInputs inputs) {
+    void processInputs(SwerveModuleIOInputs inputs) {
         desiredState = inputs.desiredState;
     }
 
@@ -172,7 +172,7 @@ public class SwerveModuleIO {
     }
 
     
-    public void updateDesiredState() {
+    void updateDesiredState() {
         double steerAngle = getSteerAngle();
 
         // Optimize the reference state to avoid spinning further than 90 degrees
@@ -185,13 +185,13 @@ public class SwerveModuleIO {
     }
 
     
-    public void stop() {
+    void stop() {
         driveMotor.stopMotor();
         steerMotor.stopMotor();
     }
 
     
-    public List<BaseStatusSignal> getStatusSignals() {
+    List<BaseStatusSignal> getStatusSignals() {
         return List.of(
                 drivePosition,
                 driveVelocity,

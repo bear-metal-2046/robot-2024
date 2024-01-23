@@ -2,15 +2,22 @@ package org.tahomarobotics.robot.collector;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.units.*;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
+import static edu.wpi.first.units.MutableMeasure.mutable;
+import static edu.wpi.first.units.Units.*;
 import static org.tahomarobotics.robot.collector.CollectorConstants.*;
 
 public class Collector extends SubsystemIF {
@@ -20,15 +27,24 @@ public class Collector extends SubsystemIF {
     public static Collector getInstance() {
         return INSTANCE;
     }
+
     private final TalonFX deployMotor;
     private final TalonFX deployFollower;
     private final TalonFX collectMotor;
 
     private final StatusSignal<Double> deployPosition;
+    private final StatusSignal<Double> deployVelocity;
     private final StatusSignal<Double> collectVelocity;
 
-    private final MotionMagicVelocityVoltage collectVelocityControl = new MotionMagicVelocityVoltage(COLLECT_MAX_RPS);
-    private final MotionMagicDutyCycle deployPositionControl = new MotionMagicDutyCycle(0.0).withEnableFOC(true);
+    private final MotionMagicVelocityVoltage collectVelocityControl = new MotionMagicVelocityVoltage(COLLECT_MAX_RPS).withEnableFOC(RobotConfiguration.USING_PHOENIX_PRO);
+    private final MotionMagicVoltage deployPositionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.USING_PHOENIX_PRO);
+    private final VoltageOut voltage = new VoltageOut(0.0);
+
+    private final SysIdRoutine routine;
+
+    private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
+    private final MutableMeasure<Angle> m_rotations = mutable(Rotations.of(0));
+    private final MutableMeasure<Velocity<Angle>> m_velocity = mutable(RotationsPerSecond.of(0));
 
     private final RobustConfigurator configurator;
 
@@ -43,10 +59,44 @@ public class Collector extends SubsystemIF {
         configurator.configureTalonFX(collectMotor, collectMotorConfiguration);
 
         deployPosition = deployMotor.getPosition();
+        deployVelocity = deployMotor.getVelocity();
         collectVelocity = collectMotor.getVelocity();
 
         ParentDevice.optimizeBusUtilizationForAll(deployMotor, deployFollower, collectMotor);
 
+        routine = new SysIdRoutine(
+                // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
+                new SysIdRoutine.Config(),
+                new SysIdRoutine.Mechanism(
+                        // Tell SysId how to plumb the driving voltage to the motors.
+                        (Measure<Voltage> volts) -> {
+                            deployMotor.setControl(voltage.withOutput(volts.in(Volts)));
+                        },
+                        // Tell SysId how to record a frame of data for each motor on the mechanism being
+                        // characterized.
+                        log -> {
+                            // Record a frame for the left motors.  Since these share an encoder, we consider
+                            // the entire group to be one motor.
+                            log.motor("drive-left")
+                                    .voltage(
+                                            m_appliedVoltage.mut_replace(
+                                                    deployMotor.getMotorVoltage().getValue() * RobotController.getBatteryVoltage(), Volts))
+                                    .angularPosition(m_rotations.mut_replace(deployPosition.refresh().getValue(), Rotations))
+                                    .angularVelocity(
+                                            m_velocity.mut_replace(deployVelocity.refresh().getValue(), RotationsPerSecond));
+                        },
+                        // Tell SysId to make generated commands require this subsystem, suffix test state in
+                        // WPILog with this subsystem's name ("drive")
+                        this));
+
+    }
+
+    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+        return routine.quasistatic(direction);
+    }
+
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+        return routine.dynamic(direction);
     }
 
     @Override

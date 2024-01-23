@@ -50,5 +50,7 @@ public class CollectorConstants {
             .withMotorOutput(new MotorOutputConfigs()
                     .withNeutralMode(NeutralModeValue.Brake)
                     .withInverted(InvertedValue.Clockwise_Positive))
+            .withFeedback(new FeedbackConfigs()
+                    .withSensorToMechanismRatio(1 / DEPLOY_GEAR_REDUCTION))
             .withAudio(new AudioConfigs().withBeepOnBoot(true).withBeepOnConfig(true));
 }

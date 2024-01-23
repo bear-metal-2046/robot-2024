@@ -12,7 +12,7 @@ import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.chassis.commands.TeleopDriveCommand;
 import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.collector.CollectorConstants;
-import org.tahomarobotics.robot.collector.CollectorDefaultCommand;
+import org.tahomarobotics.robot.collector.commands.CollectorDefaultCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
 public class OI extends SubsystemIF {
@@ -50,6 +50,7 @@ public class OI extends SubsystemIF {
         // Robot/Field Orientation
         driveController.b().onTrue(Commands.runOnce(chassis::toggleOrientation));
 
+        //Collector up and down
         driveController.leftBumper().toggleOnTrue(collector.getDeployCommand(CollectorConstants.COLLECT_POSITION));
         driveController.leftBumper().toggleOnFalse(collector.getDeployCommand(CollectorConstants.STOW_POSITION));
 

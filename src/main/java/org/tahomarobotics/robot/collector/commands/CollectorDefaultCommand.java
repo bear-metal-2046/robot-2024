@@ -1,6 +1,7 @@
-package org.tahomarobotics.robot.collector;
+package org.tahomarobotics.robot.collector.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import org.tahomarobotics.robot.collector.Collector;
 
 import java.util.function.DoubleSupplier;
 

@@ -6,6 +6,9 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class IndexerConstants {
     static final double INTAKE_DISTANCE = 5.0; // Radians
+    static final double TRANSFER_DISTANCE = 5.0; // Radians
+
+    static final double IDLE_VEL = 2.0; // rps
 
     static final TalonFXConfiguration indexMotorConfiguration = new TalonFXConfiguration()
             .withSlot0(new Slot0Configs()
@@ -16,7 +19,6 @@ public class IndexerConstants {
                     .withNeutralMode(NeutralModeValue.Brake)
                     .withInverted(InvertedValue.CounterClockwise_Positive))
             .withMotionMagic(new MotionMagicConfigs()
-                    .withMotionMagicCruiseVelocity(5)
                     .withMotionMagicAcceleration(10)
                     .withMotionMagicJerk(50))
             .withAudio(new AudioConfigs().withBeepOnBoot(true).withBeepOnConfig(true));

@@ -11,6 +11,8 @@ import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
+import static org.tahomarobotics.robot.indexer.IndexerConstants.*;
+
 public class Indexer extends SubsystemIF {
     private static final Indexer INSTANCE = new Indexer();
 
@@ -23,13 +25,14 @@ public class Indexer extends SubsystemIF {
     private boolean intaking = false;
     private boolean collected = false;
 
-    private final MotionMagicVoltage intakePos = new MotionMagicVoltage(IndexerConstants.INTAKE_DISTANCE).withEnableFOC(RobotConfiguration.USING_PHOENIX_PRO);
-    private final MotionMagicVelocityVoltage idleVel = new MotionMagicVelocityVoltage(0.0).withEnableFOC(RobotConfiguration.USING_PHOENIX_PRO);
+    private final MotionMagicVoltage intakePos = new MotionMagicVoltage(INTAKE_DISTANCE).withEnableFOC(RobotConfiguration.USING_PHOENIX_PRO);
+    private final MotionMagicVoltage transferPos = new MotionMagicVoltage(TRANSFER_DISTANCE).withEnableFOC(RobotConfiguration.USING_PHOENIX_PRO);
+    private final MotionMagicVelocityVoltage idleVel = new MotionMagicVelocityVoltage(IDLE_VEL).withEnableFOC(RobotConfiguration.USING_PHOENIX_PRO);
 
     private Indexer() {
         RobustConfigurator configurator = new RobustConfigurator(logger);
 
-        motor = new TalonFX(RobotMap.INDEX_ROLLER);
+        motor = new TalonFX(RobotMap.INDEXER_MOTOR);
         beamBreak = new DigitalInput(RobotMap.BEAM_BREAK);
 
         configurator.configureTalonFX(motor, IndexerConstants.indexMotorConfiguration);
@@ -81,7 +84,7 @@ public class Indexer extends SubsystemIF {
 
     public void intake() {
         if (intaking || collected) return;
-        if (Math.abs(getPosition() - IndexerConstants.INTAKE_DISTANCE) < 0.01) {
+        if (Math.abs(getPosition() - INTAKE_DISTANCE) < 0.01) {
             stop();
             motor.setPosition(0.0);
 
@@ -93,5 +96,17 @@ public class Indexer extends SubsystemIF {
         motor.setControl(intakePos);
 
         intaking = true;
+    }
+
+    public void transferToShooter() {
+        if (intaking || !collected) return;
+        if (Math.abs(getPosition() - TRANSFER_DISTANCE) < 0.01) {
+            stop();
+            motor.setPosition(0.0);
+
+            collected = false;
+        }
+
+        motor.setControl(transferPos);
     }
 }

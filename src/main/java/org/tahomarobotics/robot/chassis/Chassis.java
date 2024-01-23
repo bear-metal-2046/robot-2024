@@ -258,6 +258,7 @@ public class Chassis extends SubsystemIF {
     private void odometryThread() {
         Rotation2d yaw;
         SwerveModulePosition[] modulePositions;
+        double TIMEOUT = RobotConfiguration.USING_PHOENIX_PRO ? 2 / RobotConfiguration.ODOMETRY_UPDATE_FREQUENCY : 0;
 
         Threads.setCurrentThreadPriority(true, 1);
 
@@ -271,7 +272,7 @@ public class Chassis extends SubsystemIF {
 
         while (true) {
             // Wait for all signals to arrive
-            var status = BaseStatusSignal.waitForAll(2 / RobotConfiguration.ODOMETRY_UPDATE_FREQUENCY, signals);
+            var status = BaseStatusSignal.waitForAll(TIMEOUT, signals);
 
             if (status.isError()) logger.error("Failed to waitForAll updates" + status.getDescription());
 

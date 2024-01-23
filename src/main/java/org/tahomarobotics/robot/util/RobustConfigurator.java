@@ -4,14 +4,13 @@ import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import org.slf4j.Logger;
 
 import java.util.function.Supplier;
-
-import static org.tahomarobotics.robot.chassis.ChassisConstants.encoderConfiguration;
 
 public class RobustConfigurator {
 
@@ -54,6 +53,11 @@ public class RobustConfigurator {
 
     public void configureTalonFX(TalonFX motor, TalonFXConfiguration configuration, int encoderId) {
         configuration.Feedback.FeedbackRemoteSensorID = encoderId;
+        configureTalonFX(motor, configuration);
+    }
+
+    public void configureTalonFX(TalonFX motor, TalonFXConfiguration configuration, TalonFX motorFollower, boolean isOppositeMasterDirection) {
+        motorFollower.setControl(new Follower(motor.getDeviceID(), isOppositeMasterDirection));
         configureTalonFX(motor, configuration);
     }
 

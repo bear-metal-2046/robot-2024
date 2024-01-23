@@ -6,6 +6,7 @@ import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.DigitalInput;
+import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.util.RobustConfigurator;
@@ -22,7 +23,7 @@ public class Indexer extends SubsystemIF {
     private final StatusSignal<Double> position;
     private final StatusSignal<Double> velocity;
 
-    private boolean intaking = false;
+    private State state = State.DISABLED;
     private boolean collected = false;
 
     private final MotionMagicVoltage intakePos = new MotionMagicVoltage(INTAKE_DISTANCE).withEnableFOC(RobotConfiguration.USING_PHOENIX_PRO);
@@ -62,44 +63,47 @@ public class Indexer extends SubsystemIF {
         return collected;
     }
 
-    public boolean isIntaking() {
-        return intaking;
+    public boolean isIndexing() {
+        return state == State.INDEXING;
     }
 
     // SETTERS
 
-    public boolean getBeamBreak() {
-        return beamBreak.get();
+    public boolean isBeamBroken() {
+        return !beamBreak.get();
     }
 
-    // STATES
+    // STATE TRANSITIONS
 
     public void stop() {
         motor.stopMotor();
+
+        state = State.DISABLED;
     }
 
-    public void idle() {
+    public void collect() {
         motor.setControl(idleVel);
+
+        state = State.COLLECT;
     }
 
-    public void intake() {
-        if (intaking || collected) return;
+    public void index() {
+        if (isIndexing() || collected) return;
         if (Math.abs(getPosition() - INTAKE_DISTANCE) < 0.01) {
             stop();
             motor.setPosition(0.0);
 
-            intaking = false;
             collected = true;
         }
 
         motor.setPosition(0.0);
         motor.setControl(intakePos);
 
-        intaking = true;
+        state = State.INDEXING;
     }
 
     public void transferToShooter() {
-        if (intaking || !collected) return;
+        if (isIndexing() || !collected) return;
         if (Math.abs(getPosition() - TRANSFER_DISTANCE) < 0.01) {
             stop();
             motor.setPosition(0.0);
@@ -108,5 +112,22 @@ public class Indexer extends SubsystemIF {
         }
 
         motor.setControl(transferPos);
+    }
+
+    // PERIODIC
+
+    @Override
+    public void periodic() {
+        Logger.recordOutput("Indexer/State", state);
+        Logger.recordOutput("Indexer/BeamBreak", isBeamBroken());
+        Logger.recordOutput("Indexer/Collected", hasCollected());
+    }
+
+    // STATES
+
+    enum State {
+        COLLECT,
+        INDEXING,
+        DISABLED
     }
 }

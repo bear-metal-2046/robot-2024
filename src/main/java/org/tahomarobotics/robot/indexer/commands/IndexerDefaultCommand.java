@@ -19,7 +19,7 @@ public class IndexerDefaultCommand extends Command {
         // }
 
         if (indexer.hasCollected()) indexer.stop();
-        else if (!(indexer.getBeamBreak() || indexer.isIntaking())) indexer.idle();
-        else indexer.intake();
+        else if (!indexer.isBeamBroken() && !indexer.isIndexing()) indexer.collect();
+        else indexer.index();
     }
 }

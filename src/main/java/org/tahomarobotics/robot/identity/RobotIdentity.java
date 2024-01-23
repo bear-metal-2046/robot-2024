@@ -41,7 +41,8 @@ public class RobotIdentity extends SubsystemIF {
         }
         logger.info("Set robot identity to " + robotID);
 
-        Logger.recordOutput("RobotID", robotID);
+        Logger.recordOutput("Identity/RobotID", robotID);
+        Logger.recordOutput("Identity/MAC", macToString(robotID.getMac()));
     }
 
     private List<byte[]> getRobotAddress() {
@@ -52,14 +53,16 @@ public class RobotIdentity extends SubsystemIF {
             Enumeration<NetworkInterface> networkInterfaceEnumeration = NetworkInterface.getNetworkInterfaces();
 
             while (networkInterfaceEnumeration.hasMoreElements()) {
-                byte[] address = networkInterfaceEnumeration.nextElement().getHardwareAddress();
-                if (address == null) {
+                NetworkInterface inter = networkInterfaceEnumeration.nextElement();
+                String name = inter.getName();
+                byte[] addr = inter.getHardwareAddress();
+                if (addr == null || !name.startsWith("eth")) {
                     continue;
                 }
 
-                addresses.add(address);
-                logger.info("MAC address: " + macToString(address));
-                Logger.recordOutput("RobotID", macToString(address));
+                addresses.add(addr);
+
+                logger.info("Interface: " + name + ", MAC address: " + macToString(addr) + ", Code: " + macToArray(addr));
             }
 
         } catch (SocketException e) {
@@ -79,6 +82,21 @@ public class RobotIdentity extends SubsystemIF {
             }
             stringBuilder.append(String.format("%02X", address[i]));
         }
+        return stringBuilder.toString();
+    }
+
+    private String macToArray(byte[] address) {
+
+        StringBuilder stringBuilder = new StringBuilder("[");
+
+        for (int i = 0; i < address.length; i++) {
+            if (i != 0) {
+                stringBuilder.append(", ");
+            }
+            stringBuilder.append(String.format("0x%02X", address[i]));
+        }
+        stringBuilder.append("]");
+
         return stringBuilder.toString();
     }
 

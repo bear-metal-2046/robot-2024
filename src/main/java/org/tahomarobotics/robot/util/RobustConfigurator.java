@@ -12,8 +12,6 @@ import org.slf4j.Logger;
 
 import java.util.function.Supplier;
 
-import static org.tahomarobotics.robot.chassis.ChassisConstants.encoderConfiguration;
-
 public class RobustConfigurator {
 
     private static final int RETRIES = 5;
@@ -61,6 +59,8 @@ public class RobustConfigurator {
     public void configureTalonFX(TalonFX motor, TalonFXConfiguration configuration, TalonFX motorFollower, boolean isOppositeMasterDirection) {
         configureTalonFX(motor, configuration);
         configureTalonFX(motorFollower, configuration);
+
+        motorFollower.setControl(new Follower(motor.getDeviceID(), isOppositeMasterDirection));
     }
 
     public void setMotorNeutralMode(TalonFX motor, NeutralModeValue mode) {

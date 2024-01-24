@@ -10,6 +10,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.chassis.commands.TeleopDriveCommand;
+import org.tahomarobotics.robot.indexer.Indexer;
+import org.tahomarobotics.robot.indexer.commands.IndexerDefaultCommand;
+import org.tahomarobotics.robot.shooter.Shooter;
+import org.tahomarobotics.robot.shooter.commands.ShootCommand;
 import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.collector.CollectorConstants;
 import org.tahomarobotics.robot.collector.commands.CollectorDefaultCommand;
@@ -59,6 +63,14 @@ public class OI extends SubsystemIF {
 
         driveController.leftTrigger(0.5).whileTrue(Commands.runOnce(collector::collect)).whileFalse(Commands.runOnce(collector::stopCollect));
 
+        // Shoot
+        driveController.x().onTrue(new ShootCommand());
+        driveController.povDownLeft().onTrue(Commands.runOnce(Shooter.getInstance()::enable));
+        driveController.back().onTrue(Commands.runOnce(Shooter.getInstance()::disable));
+        driveController.start().onTrue(Commands.runOnce(() -> Shooter.getInstance().setShooterAngle(0.085)));
+
+//        Shooter.getInstance().registerSysIdCommands(driveController);
+
 //        Code for testing odometry
 //        driveController.x().onTrue(Commands.runOnce(chassis::zeroPose));
 //
@@ -79,15 +91,14 @@ public class OI extends SubsystemIF {
     }
 
     private void setDefaultCommands() {
-        Chassis chassis = Chassis.getInstance();
-
-        chassis.setDefaultCommand(new TeleopDriveCommand(
+        Chassis.getInstance().setDefaultCommand(new TeleopDriveCommand(
                 inputs -> {
                     inputs.x = -desensitizePowerBased(driveController.getLeftY(), FORWARD_SENSITIVITY);
                     inputs.y = -desensitizePowerBased(driveController.getLeftX(), FORWARD_SENSITIVITY);
                     inputs.rot = -desensitizePowerBased(driveController.getRightX(), ROTATIONAL_SENSITIVITY);
                 }
         ));
+        Indexer.getInstance().setDefaultCommand(new IndexerDefaultCommand());
 
 //        Collector collector = Collector.getInstance();
 //

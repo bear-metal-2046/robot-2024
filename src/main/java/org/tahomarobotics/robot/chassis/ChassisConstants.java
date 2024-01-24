@@ -86,10 +86,6 @@ public final class ChassisConstants {
             .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
             .withSensorDirection(SensorDirectionValue.CounterClockwise_Positive);
 
-    public static void configureEncoder(CANcoderConfigurator configurator, double rotationOffset) {
-        configurator.apply(encoderConfiguration.withMagnetOffset(rotationOffset));
-    }
-
     public static final TalonFXConfiguration driveMotorConfiguration = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
                     .withStatorCurrentLimit(DRIVE_STATOR_CURRENT_LIMIT)
@@ -123,7 +119,7 @@ public final class ChassisConstants {
                 ContinuousWrap = true;
             }})
             .withFeedback(new FeedbackConfigs() {{
-                              if (RobotConfiguration.CANIVORE_USING_PHOENIX_PRO) {
+                              if (RobotConfiguration.CANIVORE_PHOENIX_PRO) {
                                   FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
                                   RotorToSensorRatio = 1 / STEER_REDUCTION;
                               } else {

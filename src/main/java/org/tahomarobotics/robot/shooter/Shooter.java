@@ -28,8 +28,8 @@ public class Shooter extends SubsystemIF {
     private final StatusSignal<Double> pivotPosition;
     private final StatusSignal<Double> pivotVelocity;
 
-    private final MotionMagicVoltage pivotPositionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.USING_PHOENIX_PRO);
-    private final MotionMagicVelocityVoltage motorVelocity = new MotionMagicVelocityVoltage(SHOOTER_SPEED).withEnableFOC(RobotConfiguration.USING_PHOENIX_PRO);
+    private final MotionMagicVoltage pivotPositionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
+    private final MotionMagicVelocityVoltage motorVelocity = new MotionMagicVelocityVoltage(SHOOTER_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
 
     private double angle = 0.0;
 
@@ -66,11 +66,11 @@ public class Shooter extends SubsystemIF {
     }
 
     public double getPivotPosition() {
-        return BaseStatusSignal.getLatencyCompensatedValue(pivotPosition.refresh(), pivotVelocity.refresh()) * PIVOT_GEAR_RATIO;
+        return BaseStatusSignal.getLatencyCompensatedValue(pivotPosition.refresh(), pivotVelocity.refresh());
     }
 
     public double getPivotVelocity() {
-        return pivotVelocity.refresh().getValue() * PIVOT_GEAR_RATIO;
+        return pivotVelocity.refresh().getValue();
     }
 
     public boolean isSpinningAtVelocity() {

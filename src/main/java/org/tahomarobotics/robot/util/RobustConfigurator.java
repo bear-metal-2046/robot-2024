@@ -57,8 +57,10 @@ public class RobustConfigurator {
     }
 
     public void configureTalonFX(TalonFX motor, TalonFXConfiguration configuration, TalonFX motorFollower, boolean isOppositeMasterDirection) {
-        motorFollower.setControl(new Follower(motor.getDeviceID(), isOppositeMasterDirection));
         configureTalonFX(motor, configuration);
+        configureTalonFX(motorFollower, configuration);
+
+        motorFollower.setControl(new Follower(motor.getDeviceID(), isOppositeMasterDirection));
     }
 
     public void setMotorNeutralMode(TalonFX motor, NeutralModeValue mode) {

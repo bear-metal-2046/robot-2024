@@ -37,8 +37,8 @@ public class SysIdTest extends SubsystemIF {
 
         sysIdRoutine = new SysIdRoutine(
                 new SysIdRoutine.Config(
-                        null,         // Default ramp rate is acceptable
-                        Volts.of(4), // Reduce dynamic voltage to 4 to prevent motor brownout
+                        Volts.of(0.1).per(Second),         // Default ramp rate is acceptable
+                        Volts.of(1), // Reduce dynamic voltage to 4 to prevent motor brownout
                         null,          // Default timeout is acceptable
                         null),
                 new SysIdRoutine.Mechanism(

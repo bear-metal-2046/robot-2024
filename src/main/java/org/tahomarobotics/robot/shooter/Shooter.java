@@ -54,7 +54,7 @@ public class Shooter extends SubsystemIF {
         pivotPosition = pivotMotor.getPosition();
         pivotVelocity = pivotMotor.getVelocity();
 
-        tester = new SysIdTest(this, shooterMotor);
+        tester = new SysIdTest(this, pivotMotor);
     }
 
     public static Shooter getInstance() {
@@ -126,6 +126,7 @@ public class Shooter extends SubsystemIF {
 
     @Override
     public void periodic() {
+        SmartDashboard.putNumber("Shooter Angle (Rotations)", getPivotPosition());
         SmartDashboard.putNumber("Shooter Angle (Degrees)", getPivotPosition() * 360);
     }
 

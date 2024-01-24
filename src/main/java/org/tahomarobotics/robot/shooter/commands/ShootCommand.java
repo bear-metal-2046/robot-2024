@@ -18,7 +18,7 @@ public class ShootCommand extends SequentialCommandGroup {
         addCommands(
                 Commands.sequence(
 //                        Commands.runOnce(shooter::setAngleToSpeaker, shooter),
-//                        Commands.runOnce(() -> shooter.setShooterAngle(0.1), shooter),
+                        Commands.runOnce(() -> shooter.setShooterAngle(0.085), shooter),
                         Commands.runOnce(shooter::enable, shooter),
                         Commands.waitUntil(shooter::isSpinningAtVelocity),
                         Commands.run(indexer::transferToShooter, indexer).onlyWhile(indexer::hasCollected),

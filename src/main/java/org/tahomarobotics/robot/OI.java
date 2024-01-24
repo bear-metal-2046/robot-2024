@@ -53,6 +53,9 @@ public class OI extends SubsystemIF {
         driveController.x().onTrue(new ShootCommand());
         driveController.povDownLeft().onTrue(Commands.runOnce(Shooter.getInstance()::enable));
         driveController.back().onTrue(Commands.runOnce(Shooter.getInstance()::disable));
+        driveController.start().onTrue(Commands.runOnce(() -> Shooter.getInstance().setShooterAngle(0.085)));
+
+//        Shooter.getInstance().registerSysIdCommands(driveController);
 
 //        Code for testing odometry
 //        driveController.x().onTrue(Commands.runOnce(chassis::zeroPose));

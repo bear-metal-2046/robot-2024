@@ -17,8 +17,8 @@ public class RobotMap {
     public final static SwerveModuleDescriptor BACK_RIGHT_MOD = new SwerveModuleDescriptor(
             "Back-Right", BACK_RIGHT_OFFSET, 4, 14, 24);
 
-    public final static int DEPLOY_COLLECTOR_MOTOR = 36;
-    public final static int DEPLOY_COLLECTOR_MOTOR_FOLLOWER = 35;
+    public final static int DEPLOY_MOTOR_LEFT = 35;
+    public final static int DEPLOY_MOTOR_RIGHT = 36;
     public final static int COLLECTOR_MOTOR = 37;
 
     public record SwerveModuleDescriptor(String moduleName, Translation2d offset, int driveId, int steerId, int encoderId) {

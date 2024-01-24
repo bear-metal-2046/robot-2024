@@ -7,18 +7,18 @@ import edu.wpi.first.math.util.Units;
 
 public class CollectorConstants {
 
-    public final static double DEPLOY_GEAR_REDUCTION = (10d / 72d) * (16d / 40d);
-    public final static double COLLECT_GEAR_REDUCTION = (18d / 36);
+    private final static double DEPLOY_GEAR_REDUCTION = (10d / 72d) * (16d / 40d);
+    private final static double COLLECT_GEAR_REDUCTION = (18d / 36);
 
     //Deploy Motion Profile Constraints
-    public final static double DEPLOY_MAX_RPS = 0.5;
-    public final static double DEPLOY_MAX_ACCEL = DEPLOY_MAX_RPS / 0.5;
-    public final static double DEPLOY_MAX_JERK = DEPLOY_MAX_ACCEL / 0.25;
+    private final static double DEPLOY_MAX_RPS = 0.5;
+    private final static double DEPLOY_MAX_ACCEL = DEPLOY_MAX_RPS / 0.5;
+    private final static double DEPLOY_MAX_JERK = DEPLOY_MAX_ACCEL / 0.25;
 
     //Collection Motion Profile Constraints
     public final static double COLLECT_MAX_RPS = 50;
-    public final static double COLLECT_MAX_ACCEL = COLLECT_MAX_RPS / 2;
-    public final static double COLLECT_MAX_JERK = COLLECT_MAX_ACCEL / 5;
+    private final static double COLLECT_MAX_ACCEL = COLLECT_MAX_RPS / 2;
+    private final static double COLLECT_MAX_JERK = COLLECT_MAX_ACCEL / 5;
 
     public final static double STOW_POSITION = Units.degreesToRotations(10);
     public final static double COLLECT_POSITION = Units.degreesToRotations(100);

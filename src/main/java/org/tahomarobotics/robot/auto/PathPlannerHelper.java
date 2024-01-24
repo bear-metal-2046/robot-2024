@@ -42,8 +42,4 @@ public class PathPlannerHelper {
         return new LoggedDashboardChooser<>("Auto", AutoBuilder.buildAutoChooser());
     }
 
-    public static void registerAutoCommands() {
-        NamedCommands.registerCommand("ShootCommand", new InstantCommand(() -> System.out.println("========SHOOT COMMAND CALLED=========")));
-        NamedCommands.registerCommand("ResetOdom", new InstantCommand(() -> chassis.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(getAutoChooser().get().getName()))));
-    }
 }

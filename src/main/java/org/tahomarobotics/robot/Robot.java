@@ -43,7 +43,7 @@ public class Robot extends LoggedRobot {
         subsystems.add(Autonomous.getInstance().initialize());
         subsystems.add(RobotIdentity.getInstance().initialize());
 
-        PathPlannerHelper.registerAutoCommands();
+        Autonomous.getInstance().registerAutoCommands();
 
 
         logger.info("Robot Initialized.");

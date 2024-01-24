@@ -1,18 +1,23 @@
 package org.tahomarobotics.robot.shooter;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.util.BetterMath;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
+import org.tahomarobotics.robot.util.SysIdTest;
 
 import static org.tahomarobotics.robot.shooter.ShooterConstants.*;
 
@@ -28,7 +33,9 @@ public class Shooter extends SubsystemIF {
     private final StatusSignal<Double> pivotPosition;
     private final StatusSignal<Double> pivotVelocity;
 
-    private final MotionMagicVoltage pivotPositionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
+    private final SysIdTest tester;
+
+    private final MotionMagicVoltage pivotPositionControl = new MotionMagicVoltage(0.0).withSlot(1).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage motorVelocity = new MotionMagicVelocityVoltage(SHOOTER_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
 
     private double angle = 0.0;
@@ -46,6 +53,8 @@ public class Shooter extends SubsystemIF {
         shooterVelocity = shooterMotor.getVelocity();
         pivotPosition = pivotMotor.getPosition();
         pivotVelocity = pivotMotor.getVelocity();
+
+        tester = new SysIdTest(this, shooterMotor);
     }
 
     public static Shooter getInstance() {
@@ -118,5 +127,20 @@ public class Shooter extends SubsystemIF {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Shooter Angle (Degrees)", getPivotPosition() * 360);
+    }
+
+    // SYSID
+
+    public void registerSysIdCommands(CommandXboxController controller) {
+        logger.warn("IN SYSID MODE");
+
+        controller.povUp().whileTrue(tester.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        controller.povDown().whileTrue(tester.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        controller.povLeft().whileTrue(tester.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        controller.povRight().whileTrue(tester.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+        /* Manually stop logging with left bumper after we're done with the tests */
+        /* This isn't necessary, but is convenient to reduce the size of the hoot file */
+        controller.leftBumper().onTrue(new RunCommand(SignalLogger::stop));
     }
 }

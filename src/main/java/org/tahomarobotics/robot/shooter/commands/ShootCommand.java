@@ -17,13 +17,12 @@ public class ShootCommand extends SequentialCommandGroup {
 
         addCommands(
                 Commands.sequence(
-//                        Commands.run(shooter::setAngleToSpeaker, shooter),
-                        Commands.run(() -> shooter.setShooterAngle(0.1), shooter),
-                        Commands.run(shooter::enable, shooter),
+//                        Commands.runOnce(shooter::setAngleToSpeaker, shooter),
+//                        Commands.runOnce(() -> shooter.setShooterAngle(0.1), shooter),
+                        Commands.runOnce(shooter::enable, shooter),
                         Commands.waitUntil(shooter::isSpinningAtVelocity),
-                        Commands.run(indexer::transferToShooter, indexer),
-                        Commands.waitSeconds(0.5),
-                        Commands.run(shooter::disable, shooter)
+                        Commands.run(indexer::transferToShooter, indexer).onlyWhile(indexer::hasCollected),
+                        Commands.runOnce(shooter::disable, shooter)
                 ).onlyIf(this::hasIndexerCollected)
         );
     }

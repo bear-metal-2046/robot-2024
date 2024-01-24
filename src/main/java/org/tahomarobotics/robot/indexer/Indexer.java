@@ -7,6 +7,7 @@ import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -61,6 +62,13 @@ public class Indexer extends SubsystemIF {
         return INSTANCE;
     }
 
+    @Override
+    public SubsystemIF initialize() {
+        SmartDashboard.putData("Reset Indexer", runOnce(() -> collected = false));
+
+        return this;
+    }
+
     // GETTERS
 
     public double getPosition() {
@@ -100,7 +108,7 @@ public class Indexer extends SubsystemIF {
     }
 
     public void index() {
-        if (isIndexing() && getPosition() >= INTAKE_DISTANCE) {
+        if (isIndexing() && getPosition() >= INTAKE_DISTANCE - POSITION_TOLERANCE) {
             stop();
             motor.setPosition(0.0);
 
@@ -115,7 +123,7 @@ public class Indexer extends SubsystemIF {
     }
 
     public void transferToShooter() {
-        if (isIndexing() && getPosition() >= TRANSFER_DISTANCE) {
+        if (getPosition() >= TRANSFER_DISTANCE - POSITION_TOLERANCE) {
             stop();
             motor.setPosition(0.0);
 

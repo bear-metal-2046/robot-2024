@@ -12,6 +12,7 @@ import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.chassis.commands.TeleopDriveCommand;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.indexer.commands.IndexerDefaultCommand;
+import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.commands.ShootCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
@@ -50,6 +51,8 @@ public class OI extends SubsystemIF {
 
         // Shoot
         driveController.x().onTrue(new ShootCommand());
+        driveController.povDownLeft().onTrue(Commands.runOnce(Shooter.getInstance()::enable));
+        driveController.back().onTrue(Commands.runOnce(Shooter.getInstance()::disable));
 
 //        Code for testing odometry
 //        driveController.x().onTrue(Commands.runOnce(chassis::zeroPose));

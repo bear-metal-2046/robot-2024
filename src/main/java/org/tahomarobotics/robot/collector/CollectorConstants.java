@@ -61,7 +61,7 @@ public class CollectorConstants {
                     .withMotionMagicJerk(DEPLOY_MAX_JERK))
             .withMotorOutput(new MotorOutputConfigs()
                     .withNeutralMode(NeutralModeValue.Brake)
-                    .withInverted(InvertedValue.Clockwise_Positive))
+                    .withInverted(InvertedValue.CounterClockwise_Positive))
             .withFeedback(new FeedbackConfigs()
                     .withSensorToMechanismRatio(1 / DEPLOY_GEAR_REDUCTION))
             .withAudio(new AudioConfigs().withBeepOnBoot(true).withBeepOnConfig(true));

@@ -51,8 +51,8 @@ public class OI extends SubsystemIF {
         driveController.b().onTrue(Commands.runOnce(chassis::toggleOrientation));
 
         //Collector up and down
-        driveController.leftBumper().toggleOnTrue(collector.getDeployCommand(CollectorConstants.COLLECT_POSITION));
-        driveController.leftBumper().toggleOnFalse(collector.getDeployCommand(CollectorConstants.STOW_POSITION));
+//        driveController.leftBumper().toggleOnTrue(collector.getDeployCommand(CollectorConstants.COLLECT_POSITION));
+//        driveController.leftBumper().toggleOnFalse(collector.getDeployCommand(CollectorConstants.STOW_POSITION));
 
 //        Code for testing odometry
 //        driveController.x().onTrue(Commands.runOnce(chassis::zeroPose));

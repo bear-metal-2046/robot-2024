@@ -2,10 +2,12 @@ package org.tahomarobotics.robot.collector;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.ControlModeValue;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import org.tahomarobotics.robot.RobotConfiguration;
@@ -54,10 +56,6 @@ public class Collector extends SubsystemIF {
         collectVelocity = collectMotor.getVelocity();
         deployVoltage = deployFollower.getSupplyVoltage();
         followerVoltage = deployFollower.getSupplyVoltage();
-
-        ParentDevice.optimizeBusUtilizationForAll(deployMotor, deployFollower, collectMotor);
-
-        BaseStatusSignal.setUpdateFrequencyForAll(100, deployPosition, collectVelocity, deployVoltage, followerVoltage);
     }
 
     @Override
@@ -69,6 +67,8 @@ public class Collector extends SubsystemIF {
 
         SmartDashboard.putNumber("Master Motor", deployVoltage.refresh().getValue());
         SmartDashboard.putNumber("Follower Motor", followerVoltage.refresh().getValue());
+
+        SmartDashboard.putString("Current follower control", deployFollower.getAppliedControl().toString());
     }
 
     @Override
@@ -77,7 +77,8 @@ public class Collector extends SubsystemIF {
 
         zeroCollector();
 
-        SmartDashboard.putData(getDeployCommand(COLLECT_POSITION));
+        SmartDashboard.putData(getDeployCommand(COLLECT_POSITION, "down"));
+        SmartDashboard.putData(getDeployCommand(STOW_POSITION, "up"));
         return this;
     }
 
@@ -115,7 +116,9 @@ public class Collector extends SubsystemIF {
         isCollecting = false;
     }
 
-    public Command getDeployCommand(double desiredPosition) {
-        return new DeployCommand(this, desiredPosition);
+    public Command getDeployCommand(double desiredPosition, String name) {
+        var command = new DeployCommand(this, desiredPosition);
+        command.setName(name);
+        return command;
     }
 }

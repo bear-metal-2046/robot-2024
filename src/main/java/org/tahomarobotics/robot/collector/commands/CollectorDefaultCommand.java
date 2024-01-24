@@ -18,11 +18,6 @@ public class CollectorDefaultCommand extends Command {
     }
 
     @Override
-    public void initialize() {
-        collector.zeroCollector();
-    }
-
-    @Override
     public void execute() {
         if (trigger.getAsDouble() > 0.0) {
             collector.collect();

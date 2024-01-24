@@ -6,6 +6,7 @@ import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
@@ -29,9 +30,11 @@ public class Collector extends SubsystemIF {
 
     private final StatusSignal<Double> deployPosition;
     private final StatusSignal<Double> collectVelocity;
+    private final StatusSignal<Double> deployVoltage;
+    private final StatusSignal<Double> followerVoltage;
 
-    private final MotionMagicVelocityVoltage collectVelocityControl = new MotionMagicVelocityVoltage(COLLECT_MAX_RPS).withEnableFOC(RobotConfiguration.USING_PHOENIX_PRO);
-    private final MotionMagicVoltage deployPositionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.USING_PHOENIX_PRO);
+    private final MotionMagicVelocityVoltage collectVelocityControl = new MotionMagicVelocityVoltage(COLLECT_MAX_RPS).withEnableFOC(RobotConfiguration.RIO_USING_PHOENIX_PRO);
+    private final MotionMagicVoltage deployPositionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_USING_PHOENIX_PRO);
 
     private boolean isCollecting;
 
@@ -49,18 +52,32 @@ public class Collector extends SubsystemIF {
 
         deployPosition = deployMotor.getPosition();
         collectVelocity = collectMotor.getVelocity();
+        deployVoltage = deployFollower.getSupplyVoltage();
+        followerVoltage = deployFollower.getSupplyVoltage();
 
         ParentDevice.optimizeBusUtilizationForAll(deployMotor, deployFollower, collectMotor);
+
+        BaseStatusSignal.setUpdateFrequencyForAll(100, deployPosition, collectVelocity, deployVoltage, followerVoltage);
     }
 
     @Override
     public void periodic() {
-        BaseStatusSignal.refreshAll(deployPosition, collectVelocity);
+        //BaseStatusSignal.refreshAll(deployPosition, collectVelocity);
+        double pos = getDeployPosition();
+        SmartDashboard.putNumber("Collector Angle (Deg)", pos * 360);
+        SmartDashboard.putNumber("Collector Angle (Rot)", pos);
+
+        SmartDashboard.putNumber("Master Motor", deployVoltage.refresh().getValue());
+        SmartDashboard.putNumber("Follower Motor", followerVoltage.refresh().getValue());
     }
 
     @Override
+
     public SubsystemIF initialize() {
-        deployMotor.setPosition(0);
+
+        zeroCollector();
+
+        SmartDashboard.putData(getDeployCommand(COLLECT_POSITION));
         return this;
     }
 
@@ -77,7 +94,7 @@ public class Collector extends SubsystemIF {
     }
 
     public double getDeployPosition() {
-        return deployPosition.refresh().getValue() * DEPLOY_GEAR_REDUCTION;
+        return deployPosition.refresh().getValue();
     }
 
     public double getCollectVelocity() {

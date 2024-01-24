@@ -80,8 +80,8 @@ public class SwerveModuleIO {
         );
         ParentDevice.optimizeBusUtilizationForAll(driveMotor, steerMotor, steerAbsEncoder);
 
-        driveMotorVelocity.EnableFOC = RobotConfiguration.USING_PHOENIX_PRO;
-        steerMotorPosition.EnableFOC = RobotConfiguration.USING_PHOENIX_PRO;
+        driveMotorVelocity.EnableFOC = RobotConfiguration.CANIVORE_USING_PHOENIX_PRO;
+        steerMotorPosition.EnableFOC = RobotConfiguration.CANIVORE_USING_PHOENIX_PRO;
     }
 
     // CALIBRATION

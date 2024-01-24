@@ -123,7 +123,7 @@ public final class ChassisConstants {
                 ContinuousWrap = true;
             }})
             .withFeedback(new FeedbackConfigs() {{
-                              if (RobotConfiguration.USING_PHOENIX_PRO) {
+                              if (RobotConfiguration.CANIVORE_USING_PHOENIX_PRO) {
                                   FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
                                   RotorToSensorRatio = 1 / STEER_REDUCTION;
                               } else {

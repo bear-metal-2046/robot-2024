@@ -9,12 +9,15 @@ import org.tahomarobotics.robot.collector.Collector;
 
 public class ZeroCollectorCommand extends Command {
 
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(ZeroCollectorCommand.class);
+
+
     private final Collector collector = Collector.getInstance();
 
     private static final double TIMEOUT = 5;
 
     private static final double STOPPED_VELOCITY_THRESHOLD = 0.01;
-    private static final double INITIAL_MOVE_TIME = 0.01;
+    private static final double INITIAL_MOVE_TIME = 0.1;
     private final Timer timer = new Timer();
 
     public ZeroCollectorCommand() {
@@ -28,7 +31,7 @@ public class ZeroCollectorCommand extends Command {
 
     @Override
     public void execute() {
-        collector.setVoltage(5);
+        collector.setVoltage(-0.5);
     }
 
     @Override
@@ -38,6 +41,7 @@ public class ZeroCollectorCommand extends Command {
 
     @Override
     public void end(boolean interrupted) {
+        logger.info("*************ZEROED COLLECTOR****************");
         collector.stopDeploy();
         collector.zeroCollector();
     }

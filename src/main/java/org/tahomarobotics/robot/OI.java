@@ -30,6 +30,8 @@ public class OI extends SubsystemIF {
     private final CommandXboxController driveController = new CommandXboxController(0);
     private final CommandXboxController manipController = new CommandXboxController(1);
 
+    private boolean isStowed = true;
+
     public OI() {
         // Disable OI periodic unless its being used.
         CommandScheduler.getInstance().unregisterSubsystem(this);
@@ -50,9 +52,12 @@ public class OI extends SubsystemIF {
         // Robot/Field Orientation
         driveController.b().onTrue(Commands.runOnce(chassis::toggleOrientation));
 
+        Collector.getInstance().registerSysCommands(driveController);
+
         //Collector up and down
-//        driveController.leftBumper().toggleOnTrue(collector.getDeployCommand(CollectorConstants.COLLECT_POSITION));
-//        driveController.leftBumper().toggleOnFalse(collector.getDeployCommand(CollectorConstants.STOW_POSITION));
+        driveController.leftBumper().onTrue(Commands.runOnce(this::toggleDeploy));
+
+        driveController.leftTrigger(0.5).whileTrue(Commands.runOnce(collector::collect)).whileFalse(Commands.runOnce(collector::stopCollect));
 
 //        Code for testing odometry
 //        driveController.x().onTrue(Commands.runOnce(chassis::zeroPose));
@@ -61,6 +66,16 @@ public class OI extends SubsystemIF {
 //                .andThen(new KnownMovementCommand(0.0, 0.5, 0.0, p -> p.getTranslation().getY() < 2.0)
 //                .andThen(new KnownMovementCommand(-0.5, 0.0, 0.0, p -> p.getTranslation().getX() > 0.0)
 //                .andThen(new KnownMovementCommand(0.0, -0.5, 0.0, p -> p.getTranslation().getY() > 0.0)))));
+    }
+
+    private void toggleDeploy() {
+        if (isStowed) {
+            Collector.getInstance().getDeployCommand(CollectorConstants.COLLECT_POSITION, "Stow to collect").schedule();
+            isStowed = false;
+        } else {
+            Collector.getInstance().getDeployCommand(CollectorConstants.STOW_POSITION, "Collect to Stow").schedule();
+            isStowed = true;
+        }
     }
 
     private void setDefaultCommands() {
@@ -74,11 +89,11 @@ public class OI extends SubsystemIF {
                 }
         ));
 
-        Collector collector = Collector.getInstance();
-
-        collector.setDefaultCommand(new CollectorDefaultCommand(
-                () -> desensitizePowerBased(driveController.getLeftTriggerAxis(), COLLECT_SENSITIVITY)
-        ));
+//        Collector collector = Collector.getInstance();
+//
+//        collector.setDefaultCommand(new CollectorDefaultCommand(
+//                () -> desensitizePowerBased(driveController.getLeftTriggerAxis(), COLLECT_SENSITIVITY)
+//        ));
     }
 
     private static double deadband(double value) {

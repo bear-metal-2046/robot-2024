@@ -12,12 +12,15 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.collector.commands.DeployCommand;
 import org.tahomarobotics.robot.collector.commands.ZeroCollectorCommand;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
+import org.tahomarobotics.robot.util.SysIdTest;
 
 import static org.tahomarobotics.robot.collector.CollectorConstants.*;
 
@@ -41,6 +44,8 @@ public class Collector extends SubsystemIF {
     private final MotionMagicVelocityVoltage collectVelocityControl = new MotionMagicVelocityVoltage(COLLECT_MAX_RPS).withEnableFOC(RobotConfiguration.RIO_USING_PHOENIX_PRO);
     private final MotionMagicVoltage deployPositionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_USING_PHOENIX_PRO);
 
+    private final SysIdTest tester;
+
     private boolean isCollecting;
 
     private final RobustConfigurator configurator;
@@ -53,7 +58,7 @@ public class Collector extends SubsystemIF {
         collectMotor = new TalonFX(RobotMap.COLLECTOR_MOTOR);
 
         configurator.configureTalonFX(deployLeft, deployMotorConfiguration);
-        configurator.configureTalonFX(deployLeft, deployMotorConfiguration.withMotorOutput(deployMotorConfiguration.MotorOutput.withInverted(InvertedValue.CounterClockwise_Positive)));
+        configurator.configureTalonFX(deployRight, deployMotorConfiguration.withMotorOutput(deployMotorConfiguration.MotorOutput.withInverted(InvertedValue.CounterClockwise_Positive)));
         configurator.configureTalonFX(collectMotor, collectMotorConfiguration);
 
         deployPositionLeft = deployLeft.getPosition();
@@ -69,6 +74,8 @@ public class Collector extends SubsystemIF {
         );
 
         ParentDevice.optimizeBusUtilizationForAll(deployLeft, deployRight, collectMotor);
+
+        tester = new SysIdTest(this, deployLeft, deployRight);
     }
 
     @Override
@@ -77,6 +84,8 @@ public class Collector extends SubsystemIF {
 
         SmartDashboard.putNumber("Collector Angle LEFT (Deg)", getDeployPositionLeft() * 360);
         SmartDashboard.putNumber("Collector Angle RIGHT (Deg)", getDeployPositionLeft() * 360);
+
+        SmartDashboard.putBoolean("IsCollecting", isCollecting());
     }
 
     @Override
@@ -94,6 +103,7 @@ public class Collector extends SubsystemIF {
 
     public void zeroCollector() {
         deployLeft.setPosition(0);
+        deployRight.setPosition(0);
     }
 
     public boolean isAtPosition(double desiredPosition) {
@@ -154,5 +164,13 @@ public class Collector extends SubsystemIF {
         command.setName(name);
 
         return command;
+    }
+
+    public void registerSysCommands(CommandXboxController controller) {
+
+        controller.povUp().whileTrue(tester.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        controller.povDown().whileTrue(tester.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        controller.povLeft().whileTrue(tester.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        controller.povRight().whileTrue(tester.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     }
 }

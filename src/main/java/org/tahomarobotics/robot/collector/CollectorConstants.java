@@ -1,6 +1,7 @@
 package org.tahomarobotics.robot.collector;
 
 import com.ctre.phoenix6.configs.*;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.util.Units;
@@ -16,12 +17,12 @@ public class CollectorConstants {
     private final static double DEPLOY_MAX_JERK = DEPLOY_MAX_ACCEL / 0.25;
 
     //Collection Motion Profile Constraints
-    public final static double COLLECT_MAX_RPS = 50;
-    private final static double COLLECT_MAX_ACCEL = COLLECT_MAX_RPS / 2;
-    private final static double COLLECT_MAX_JERK = COLLECT_MAX_ACCEL / 5;
+    public final static double COLLECT_MAX_RPS = 40;
+    private final static double COLLECT_MAX_ACCEL = COLLECT_MAX_RPS / 0.25;
+    private final static double COLLECT_MAX_JERK = COLLECT_MAX_ACCEL / 0.125;
 
     public final static double STOW_POSITION = Units.degreesToRotations(10);
-    public final static double COLLECT_POSITION = Units.degreesToRotations(100);
+    public final static double COLLECT_POSITION = Units.degreesToRotations(137.5);
 
     public final static double EPSILON = 0.01;
 
@@ -35,7 +36,7 @@ public class CollectorConstants {
                     .withStatorCurrentLimitEnable(true)
                     .withSupplyCurrentLimitEnable(true))
             .withSlot0(new Slot0Configs()
-                    .withKP(0.5))
+                    .withKP(1))
             .withMotionMagic(new MotionMagicConfigs()
                     .withMotionMagicCruiseVelocity(COLLECT_MAX_RPS)
                     .withMotionMagicAcceleration(COLLECT_MAX_ACCEL)
@@ -53,15 +54,23 @@ public class CollectorConstants {
                     .withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT)
                     .withStatorCurrentLimitEnable(true)
                     .withSupplyCurrentLimitEnable(true))
-            .withSlot0(new Slot0Configs()
-                    .withKP(10))
+            .withSlot0(new Slot0Configs() {{
+                        GravityType = GravityTypeValue.Arm_Cosine;
+                    }}
+                    .withKP(53.655)
+                    .withKD(4.0302)
+                    .withKS(0.098451)
+                    .withKV(1.7039)
+                    .withKA(0.18671)
+                    .withKG(0.2808)
+            )
             .withMotionMagic(new MotionMagicConfigs()
                     .withMotionMagicCruiseVelocity(DEPLOY_MAX_RPS)
                     .withMotionMagicAcceleration(DEPLOY_MAX_ACCEL)
                     .withMotionMagicJerk(DEPLOY_MAX_JERK))
             .withMotorOutput(new MotorOutputConfigs()
                     .withNeutralMode(NeutralModeValue.Brake)
-                    .withInverted(InvertedValue.CounterClockwise_Positive))
+                    .withInverted(InvertedValue.Clockwise_Positive))
             .withFeedback(new FeedbackConfigs()
                     .withSensorToMechanismRatio(1 / DEPLOY_GEAR_REDUCTION))
             .withAudio(new AudioConfigs().withBeepOnBoot(true).withBeepOnConfig(true));

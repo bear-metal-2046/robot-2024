@@ -52,7 +52,7 @@ public class Indexer extends SubsystemIF {
         position = motor.getPosition();
         velocity = motor.getVelocity();
 
-        BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.ODOMETRY_UPDATE_FREQUENCY, position, velocity);
+        BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY, position, velocity);
         motor.optimizeBusUtilization();
 
         tester = new SysIdTest(this, motor);

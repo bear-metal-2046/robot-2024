@@ -5,12 +5,14 @@ import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.chassis.Chassis;
@@ -35,7 +37,7 @@ public class Shooter extends SubsystemIF {
 
     private final SysIdTest tester;
 
-    private final MotionMagicVoltage pivotPositionControl = new MotionMagicVoltage(0.0).withSlot(1).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
+    private final MotionMagicVoltage pivotPositionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage motorVelocity = new MotionMagicVelocityVoltage(SHOOTER_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
 
     private double angle = 0.0;
@@ -53,6 +55,11 @@ public class Shooter extends SubsystemIF {
         shooterVelocity = shooterMotor.getVelocity();
         pivotPosition = pivotMotor.getPosition();
         pivotVelocity = pivotMotor.getVelocity();
+
+        BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY,
+                shooterVelocity, pivotPosition, pivotPosition
+        );
+        ParentDevice.optimizeBusUtilizationForAll(pivotMotor, shooterMotorFollower, shooterMotor);
 
         tester = new SysIdTest(this, pivotMotor);
     }
@@ -91,6 +98,8 @@ public class Shooter extends SubsystemIF {
     public void setShooterAngle(double _angle) {
         angle = BetterMath.clamp(_angle, 0, MAX_PIVOT_ANGLE);
 
+        Logger.recordOutput("Shooter/Target Angle", angle);
+
         pivotMotor.setControl(pivotPositionControl.withPosition(angle));
     }
 
@@ -126,8 +135,8 @@ public class Shooter extends SubsystemIF {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Shooter Angle (Rotations)", getPivotPosition());
-        SmartDashboard.putNumber("Shooter Angle (Degrees)", getPivotPosition() * 360);
+        Logger.recordOutput("Shooter/Angle", getPivotPosition());
+        Logger.recordOutput("Shooter/Angle (Degrees)", getPivotPosition() * 360);
     }
 
     // SYSID

@@ -60,7 +60,7 @@ public class ShooterConstants {
                     .withKG(0.32742))
             .withMotorOutput(new MotorOutputConfigs()
                     .withNeutralMode(NeutralModeValue.Brake)
-                    .withInverted(InvertedValue.Clockwise_Positive))
+                    .withInverted(InvertedValue.CounterClockwise_Positive))
             .withMotionMagic(new MotionMagicConfigs()
                     .withMotionMagicCruiseVelocity(1)
                     .withMotionMagicAcceleration(10)

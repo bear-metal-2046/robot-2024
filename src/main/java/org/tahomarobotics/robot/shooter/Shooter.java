@@ -29,6 +29,7 @@ public class Shooter extends SubsystemIF {
     private static final Shooter INSTANCE = new Shooter();
 
     private final TalonFX shooterMotor;
+    private final TalonFX shooterMotorFollower;
     private final TalonFX pivotMotor;
 
     private final StatusSignal<Double> shooterVelocity;
@@ -47,10 +48,11 @@ public class Shooter extends SubsystemIF {
 
         pivotMotor = new TalonFX(RobotMap.SHOOTER_PIVOT_MOTOR);
         shooterMotor = new TalonFX(RobotMap.TOP_SHOOTER_MOTOR);
-        var shooterMotorFollower = new TalonFX(RobotMap.BOTTOM_SHOOTER_MOTOR);
+        shooterMotorFollower = new TalonFX(RobotMap.BOTTOM_SHOOTER_MOTOR);
 
         configurator.configureTalonFX(pivotMotor, pivotMotorConfiguration);
-        configurator.configureTalonFX(shooterMotor, shooterMotorConfiguration, shooterMotorFollower, false);
+        configurator.configureTalonFX(shooterMotor, shooterMotorConfiguration);
+        configurator.configureTalonFX(shooterMotorFollower, shooterMotorConfiguration);
 
         shooterVelocity = shooterMotor.getVelocity();
         pivotPosition = pivotMotor.getPosition();
@@ -120,10 +122,12 @@ public class Shooter extends SubsystemIF {
 
     public void enable() {
         shooterMotor.setControl(motorVelocity);
+        shooterMotorFollower.setControl(motorVelocity);
     }
 
     public void disable() {
         shooterMotor.stopMotor();
+        shooterMotorFollower.stopMotor();
     }
 
     // onInit

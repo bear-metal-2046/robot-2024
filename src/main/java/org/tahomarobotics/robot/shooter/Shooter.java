@@ -8,7 +8,6 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -93,6 +92,14 @@ public class Shooter extends SubsystemIF {
 
     public boolean isSpinningAtVelocity() {
         return Math.abs(SHOOTER_SPEED - getShooterVelocity()) < SHOOTER_SPEED_TOLERANCE;
+    }
+
+    public boolean isAtAngle() {
+        return Math.abs(angle - getPivotPosition()) < PIVOT_ANGLE_TOLERANCE;
+    }
+
+    public boolean isReadyToShoot() {
+        return isAtAngle() && isSpinningAtVelocity();
     }
 
     // SETTERS

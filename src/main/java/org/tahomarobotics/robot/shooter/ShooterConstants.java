@@ -5,6 +5,7 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 
 import java.util.function.Supplier;
@@ -15,6 +16,8 @@ public class ShooterConstants {
     static final double MAX_PIVOT_ANGLE = 0.14;
 
     static final double PIVOT_GEAR_REDUCTION = (14.0 / 56.0) * (10.0 / 90.0);
+
+    static final double BIAS_AMT = Units.degreesToRotations(5) / 50;
 
     private static final double SHOOTER_HEIGHT = 1.0;
     private static final double SPEAKER_HEIGHT = 4.0;

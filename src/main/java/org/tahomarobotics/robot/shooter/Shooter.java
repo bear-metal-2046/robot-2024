@@ -118,6 +118,13 @@ public class Shooter extends SubsystemIF {
         setShooterAngle(angle);
     }
 
+    private void updateAngleBias(double theta) {
+        setShooterAngle(angle + theta);
+    }
+
+    public void biasUp() { updateAngleBias(BIAS_AMT); }
+    public void biasDown() { updateAngleBias(-BIAS_AMT); }
+
     // STATES
 
     public void enable() {

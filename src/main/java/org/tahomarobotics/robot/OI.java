@@ -43,6 +43,7 @@ public class OI extends SubsystemIF {
      */
     private void configureBindings() {
         Chassis chassis = Chassis.getInstance();
+        Shooter shooter = Shooter.getInstance();
 
         // Robot Heading Zeroing
         driveController.a().onTrue(Commands.runOnce(chassis::orientToZeroHeading));
@@ -51,19 +52,9 @@ public class OI extends SubsystemIF {
 
         // Shoot
         driveController.x().onTrue(new ShootCommand());
-        driveController.povDownLeft().onTrue(Commands.runOnce(Shooter.getInstance()::enable));
-        driveController.back().onTrue(Commands.runOnce(Shooter.getInstance()::disable));
-        driveController.start().onTrue(Commands.runOnce(() -> Shooter.getInstance().setShooterAngle(0.085)));
 
-//        Shooter.getInstance().registerSysIdCommands(driveController);
-
-//        Code for testing odometry
-//        driveController.x().onTrue(Commands.runOnce(chassis::zeroPose));
-//
-//        driveController.povLeft().onTrue(new KnownMovementCommand(0.5, 0.0, 0.0, p -> p.getTranslation().getX() < 2.0)
-//                .andThen(new KnownMovementCommand(0.0, 0.5, 0.0, p -> p.getTranslation().getY() < 2.0)
-//                .andThen(new KnownMovementCommand(-0.5, 0.0, 0.0, p -> p.getTranslation().getX() > 0.0)
-//                .andThen(new KnownMovementCommand(0.0, -0.5, 0.0, p -> p.getTranslation().getY() > 0.0)))));
+        driveController.povUp().whileTrue(Commands.run(shooter::biasUp));
+        driveController.povDown().whileTrue(Commands.run(shooter::biasDown));
     }
 
     private void setDefaultCommands() {

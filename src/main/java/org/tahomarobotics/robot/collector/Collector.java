@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
-import org.tahomarobotics.robot.collector.commands.DeployCommand;
 import org.tahomarobotics.robot.collector.commands.ZeroCollectorCommand;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
@@ -47,6 +46,7 @@ public class Collector extends SubsystemIF {
     private final SysIdTest tester;
 
     private boolean isCollecting;
+    private boolean isStowed = true;
 
     private final RobustConfigurator configurator;
 
@@ -66,7 +66,7 @@ public class Collector extends SubsystemIF {
         deployVelocity = deployRight.getVelocity();
         collectVelocity = collectMotor.getVelocity();
 
-        BaseStatusSignal.setUpdateFrequencyForAll(50,
+        BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY,
                 deployPositionLeft,
                 deployPositionRight,
                 deployVelocity,
@@ -75,7 +75,7 @@ public class Collector extends SubsystemIF {
 
         ParentDevice.optimizeBusUtilizationForAll(deployLeft, deployRight, collectMotor);
 
-        tester = new SysIdTest(this, deployLeft, deployRight);
+        tester = new SysIdTest(this, collectMotor);
     }
 
     @Override
@@ -96,8 +96,6 @@ public class Collector extends SubsystemIF {
                 .andThen(new ZeroCollectorCommand())
                 .ignoringDisable(true).schedule();
 
-        SmartDashboard.putData(getDeployCommand(COLLECT_POSITION, "down"));
-        SmartDashboard.putData(getDeployCommand(STOW_POSITION, "up"));
         return this;
     }
 
@@ -133,9 +131,19 @@ public class Collector extends SubsystemIF {
     }
 
 
-    public void setDeployPosition(double position) {
+    private void setDeployPosition(double position) {
         deployLeft.setControl(deployPositionControl.withPosition(position));
         deployRight.setControl(deployPositionControl.withPosition(position));
+    }
+
+    public void stowCollector() {
+        setDeployPosition(STOW_POSITION);
+        isStowed = true;
+    }
+
+    public void deployCollector() {
+        setDeployPosition(COLLECT_POSITION);
+        isStowed = false;
     }
 
     public void setVoltage(double voltage) {
@@ -158,12 +166,12 @@ public class Collector extends SubsystemIF {
         deployRight.stopMotor();
     }
 
-    public Command getDeployCommand(double desiredPosition, String name) {
-        var command = new DeployCommand(this, desiredPosition);
-
-        command.setName(name);
-
-        return command;
+    public void toggleDeploy() {
+        if (isStowed) {
+            deployCollector();
+        } else {
+            stowCollector();
+        }
     }
 
     public void registerSysCommands(CommandXboxController controller) {

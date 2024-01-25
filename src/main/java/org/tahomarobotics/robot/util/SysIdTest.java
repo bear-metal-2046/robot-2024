@@ -22,7 +22,41 @@ public class SysIdTest extends SubsystemIF {
     private final MutableMeasure<Velocity<Angle>> velocity = mutable(RotationsPerSecond.of(0));
 
     public SysIdTest(SubsystemIF subsystem, TalonFX testingMotor) {
-        this(subsystem, testingMotor, new TalonFX(testingMotor.getDeviceID()));
+
+        //I'm only like 90% sure you can do this...
+        //Just make sure to configure motors before ig
+        this.motor = testingMotor;
+        this.motorOther = null;
+
+        /* Speed up signals for better characterization data */
+        BaseStatusSignal.setUpdateFrequencyForAll(250,
+                motor.getPosition(),
+                motor.getVelocity(),
+                motor.getMotorVoltage()
+                );
+        /* Optimize out the other signals, since they're not particularly helpful for us */
+        motor.optimizeBusUtilization();
+
+        sysIdRoutine = new SysIdRoutine(
+                new SysIdRoutine.Config(
+                        Volts.of(1).per(Second),  //Quasistatic Ramp Rate
+                        Volts.of(4), // Dynamic voltage
+                        null,     // Default timeout is acceptable
+                        null),
+                new SysIdRoutine.Mechanism(
+                        (Measure<Voltage> volts) ->  {
+                            motor.setControl(control.withOutput(volts.in(Volts)));
+                        },
+                        log -> {
+                            log.motor("motor")
+                                    .voltage(
+                                            voltage.mut_replace(
+                                                    motor.getMotorVoltage().getValue(), Volts))
+                                    .angularPosition(position.mut_replace(motor.getPosition().getValue(), Rotations))
+                                    .angularVelocity(
+                                            velocity.mut_replace(motor.getVelocity().getValue(), RotationsPerSecond));
+                        },
+                        subsystem));
     }
 
 
@@ -66,7 +100,7 @@ public class SysIdTest extends SubsystemIF {
                                     .angularVelocity(
                                             velocity.mut_replace(motor.getVelocity().getValue(), RotationsPerSecond));
 
-                            log.motor("motor")
+                            log.motor("motor2")
                                     .voltage(
                                             voltage.mut_replace(
                                                     motorOther.getMotorVoltage().getValue(), Volts))

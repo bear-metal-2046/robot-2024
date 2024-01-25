@@ -57,10 +57,8 @@ public class OI extends SubsystemIF {
         // Robot/Field Orientation
         driveController.b().onTrue(Commands.runOnce(chassis::toggleOrientation));
 
-        Collector.getInstance().registerSysCommands(driveController);
-
         //Collector up and down
-        driveController.leftBumper().onTrue(Commands.runOnce(this::toggleDeploy));
+        driveController.leftBumper().onTrue(Commands.runOnce(collector::toggleDeploy));
 
         driveController.leftTrigger(0.5).whileTrue(Commands.runOnce(collector::collect)).whileFalse(Commands.runOnce(collector::stopCollect));
 
@@ -71,16 +69,6 @@ public class OI extends SubsystemIF {
 
         driveController.povUp().whileTrue(Commands.run(shooter::biasUp));
         driveController.povDown().whileTrue(Commands.run(shooter::biasDown));
-    }
-
-    private void toggleDeploy() {
-        if (isStowed) {
-            Collector.getInstance().getDeployCommand(CollectorConstants.COLLECT_POSITION, "Stow to collect").schedule();
-            isStowed = false;
-        } else {
-            Collector.getInstance().getDeployCommand(CollectorConstants.STOW_POSITION, "Collect to Stow").schedule();
-            isStowed = true;
-        }
     }
 
     private void setDefaultCommands() {

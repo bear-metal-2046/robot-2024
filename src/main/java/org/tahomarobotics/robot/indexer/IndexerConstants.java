@@ -3,13 +3,12 @@ package org.tahomarobotics.robot.indexer;
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import org.tahomarobotics.robot.collector.CollectorConstants;
 
 public class IndexerConstants {
     static final double INTAKE_DISTANCE = 2.0; // Rotations
     static final double TRANSFER_DISTANCE = 2.0; // Rotations
     static final double POSITION_TOLERANCE = 0.1; // Rotations
-
-    static final double IDLE_VEL = 25.0; // rps
 
     static final TalonFXConfiguration indexMotorConfiguration = new TalonFXConfiguration()
             .withSlot0(new Slot0Configs()
@@ -27,8 +26,8 @@ public class IndexerConstants {
                     .withNeutralMode(NeutralModeValue.Brake)
                     .withInverted(InvertedValue.Clockwise_Positive))
             .withMotionMagic(new MotionMagicConfigs()
-                    .withMotionMagicCruiseVelocity(25)
-                    .withMotionMagicAcceleration(160)
-                    .withMotionMagicJerk(1280))
+                    .withMotionMagicCruiseVelocity(CollectorConstants.COLLECT_MAX_RPS)
+                    .withMotionMagicAcceleration(CollectorConstants.COLLECT_MAX_ACCEL)
+                    .withMotionMagicJerk(CollectorConstants.COLLECT_MAX_JERK))
             .withAudio(new AudioConfigs().withBeepOnBoot(true).withBeepOnConfig(true));
 }

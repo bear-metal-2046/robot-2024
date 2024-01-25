@@ -137,8 +137,6 @@ public class Indexer extends SubsystemIF {
         Logger.recordOutput("Indexer/State", state);
         Logger.recordOutput("Indexer/BeamBreak", isBeamBroken());
         Logger.recordOutput("Indexer/Collected", hasCollected());
-
-        SmartDashboard.putString("Indexer State", state.toString());
     }
 
     // STATES
@@ -149,4 +147,3 @@ public class Indexer extends SubsystemIF {
         DISABLED
     }
 }
-

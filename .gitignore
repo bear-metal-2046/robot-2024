@@ -344,3 +344,4 @@ src/main/java/org/tahomarobotics/robot/util/BuildConstants.java
 
 logs/
 .run/
+.sysid/

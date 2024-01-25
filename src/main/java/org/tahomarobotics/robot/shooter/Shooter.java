@@ -95,6 +95,14 @@ public class Shooter extends SubsystemIF {
         return Math.abs(SHOOTER_SPEED - getShooterVelocity()) < SHOOTER_SPEED_TOLERANCE;
     }
 
+    public boolean isAtAngle() {
+        return Math.abs(angle - getPivotPosition()) < PIVOT_ANGLE_TOLERANCE;
+    }
+
+    public boolean isReadyToShoot() {
+        return isAtAngle() && isSpinningAtVelocity();
+    }
+
     // SETTERS
 
     public void setShooterAngle(double _angle) {

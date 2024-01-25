@@ -5,11 +5,11 @@ public enum RobotID {
     ALPHA {
         @Override
         public byte[] getMac() {
-            return new byte[]{};
+            return new byte[]{0x00, (byte) 0x80, 0x2F, 0x32, (byte) 0xFC, (byte) 0xD7};
         }
     },
 
-    CHASSISBOT {
+    CHASSIS {
         @Override
         public byte[] getMac() {
             return new byte[]{0x00, (byte) 0x80, 0x2F, 0x33, 0x04, (byte) 0xF9};

@@ -14,6 +14,7 @@ public class ShooterConstants {
     static final double SHOOTER_SPEED = 75; // rps
     static final double SHOOTER_SPEED_TOLERANCE = 0.25; // rps
     static final double MAX_PIVOT_ANGLE = 0.14;
+    static final double PIVOT_ANGLE_TOLERANCE = 0.0025;
 
     static final double PIVOT_GEAR_REDUCTION = (14.0 / 56.0) * (10.0 / 90.0);
 

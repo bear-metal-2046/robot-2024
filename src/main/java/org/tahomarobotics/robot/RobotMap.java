@@ -32,5 +32,7 @@ public class RobotMap {
     public record SwerveModuleDescriptor(String moduleName, Translation2d offset, int driveId, int steerId,
                                          int encoderId) {
 
+    }
+
 
 }

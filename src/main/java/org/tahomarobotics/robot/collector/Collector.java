@@ -41,8 +41,8 @@ public class Collector extends SubsystemIF {
     private final StatusSignal<Double> deployVelocity;
     private final StatusSignal<Double> collectVelocity;
 
-    private final MotionMagicVelocityVoltage collectVelocityControl = new MotionMagicVelocityVoltage(COLLECT_MAX_RPS).withEnableFOC(RobotConfiguration.RIO_USING_PHOENIX_PRO);
-    private final MotionMagicVoltage deployPositionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_USING_PHOENIX_PRO);
+    private final MotionMagicVelocityVoltage collectVelocityControl = new MotionMagicVelocityVoltage(COLLECT_MAX_RPS).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
+    private final MotionMagicVoltage deployPositionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
 
     private final SysIdTest tester;
 

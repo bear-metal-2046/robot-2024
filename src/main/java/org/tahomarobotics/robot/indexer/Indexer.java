@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
+import org.tahomarobotics.robot.collector.Collector;
+import org.tahomarobotics.robot.collector.CollectorConstants;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
 import org.tahomarobotics.robot.util.SysIdTest;
@@ -38,7 +40,7 @@ public class Indexer extends SubsystemIF {
             .withSlot(1).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVoltage transferPos = new MotionMagicVoltage(TRANSFER_DISTANCE)
             .withSlot(1).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
-    private final MotionMagicVelocityVoltage idleVel = new MotionMagicVelocityVoltage(IDLE_VEL)
+    private final MotionMagicVelocityVoltage idleVel = new MotionMagicVelocityVoltage(CollectorConstants.COLLECT_MAX_RPS)
             .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
 
     private Indexer() {
@@ -108,6 +110,7 @@ public class Indexer extends SubsystemIF {
     }
 
     public void index() {
+
         if (isIndexing() && getPosition() >= INTAKE_DISTANCE - POSITION_TOLERANCE) {
             stop();
             motor.setPosition(0.0);
@@ -144,6 +147,8 @@ public class Indexer extends SubsystemIF {
         Logger.recordOutput("Indexer/State", state);
         Logger.recordOutput("Indexer/BeamBreak", isBeamBroken());
         Logger.recordOutput("Indexer/Collected", hasCollected());
+
+        SmartDashboard.putString("Indexer State", state.toString());
     }
 
     // STATES

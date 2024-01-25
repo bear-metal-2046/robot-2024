@@ -65,8 +65,11 @@ public class OI extends SubsystemIF {
 
         // Shoot
         driveController.x().onTrue(new ShootCommand());
+
         driveController.povDownLeft().onTrue(Commands.runOnce(Shooter.getInstance()::enable));
+
         driveController.back().onTrue(Commands.runOnce(Shooter.getInstance()::disable));
+
         driveController.start().onTrue(Commands.runOnce(() -> Shooter.getInstance().setShooterAngle(0.085)));
 
 //        Shooter.getInstance().registerSysIdCommands(driveController);
@@ -98,6 +101,7 @@ public class OI extends SubsystemIF {
                     inputs.rot = -desensitizePowerBased(driveController.getRightX(), ROTATIONAL_SENSITIVITY);
                 }
         ));
+
         Indexer.getInstance().setDefaultCommand(new IndexerDefaultCommand());
 
 //        Collector collector = Collector.getInstance();

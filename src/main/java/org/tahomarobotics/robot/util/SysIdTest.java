@@ -21,6 +21,11 @@ public class SysIdTest extends SubsystemIF {
     private final MutableMeasure<Angle> position = mutable(Rotations.of(0));
     private final MutableMeasure<Velocity<Angle>> velocity = mutable(RotationsPerSecond.of(0));
 
+    public SysIdTest(SubsystemIF subsystem, TalonFX testingMotor) {
+        this(subsystem, testingMotor, new TalonFX(testingMotor.getDeviceID()));
+    }
+
+
     public SysIdTest(SubsystemIF subsystem, TalonFX testingMotor, TalonFX otherTestingMotor) {
 
         //I'm only like 90% sure you can do this...

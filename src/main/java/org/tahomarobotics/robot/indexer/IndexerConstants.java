@@ -28,7 +28,7 @@ public class IndexerConstants {
                     .withInverted(InvertedValue.Clockwise_Positive))
             .withMotionMagic(new MotionMagicConfigs()
                     .withMotionMagicCruiseVelocity(25)
-                    .withMotionMagicAcceleration(50)
-                    .withMotionMagicJerk(100))
+                    .withMotionMagicAcceleration(160)
+                    .withMotionMagicJerk(1280))
             .withAudio(new AudioConfigs().withBeepOnBoot(true).withBeepOnConfig(true));
 }

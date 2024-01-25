@@ -19,6 +19,7 @@ import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
+import org.tahomarobotics.robot.auto.Autonomous;
 import org.tahomarobotics.robot.chassis.commands.AlignSwerveCommand;
 import org.tahomarobotics.robot.util.CalibrationData;
 import org.tahomarobotics.robot.util.SubsystemIF;
@@ -37,7 +38,7 @@ public class Chassis extends SubsystemIF {
     private final List<SwerveModule> modules;
 
     private final SwerveDrivePoseEstimator poseEstimator;
-    private final Field2d fieldPose = new Field2d();
+    private final Field2d fieldPose;
 
     private final SwerveDriveKinematics kinematics;
     private final CalibrationData<Double[]> swerveCalibration;
@@ -82,6 +83,8 @@ public class Chassis extends SubsystemIF {
 
         odometryThread = new Thread(this::odometryThread);
         odometryThread.start();
+
+        fieldPose = Autonomous.getInstance().getField();
 
         backATVision = new ATVision(VisionConstants.ATCamera.BACK, fieldPose, poseEstimator);
         leftATVision = new ATVision(VisionConstants.ATCamera.LEFT, fieldPose, poseEstimator);

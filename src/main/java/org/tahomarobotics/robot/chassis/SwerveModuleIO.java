@@ -179,6 +179,7 @@ public class SwerveModuleIO {
         desiredState = SwerveModuleState.optimize(desiredState, Rotation2d.fromRotations(steerAngle));
 
         desiredState.angle = Rotation2d.fromRotations((desiredState.angle.getRotations() % 1.0 + 1.0) % 1.0);
+        desiredState.speedMetersPerSecond *= desiredState.angle.minus(Rotation2d.fromRotations(steerAngle)).getCos();
 
         driveMotor.setControl(driveMotorVelocity.withVelocity(desiredState.speedMetersPerSecond / DRIVE_POSITION_COEFFICIENT));
         steerMotor.setControl(steerMotorPosition.withPosition(desiredState.angle.getRotations()));

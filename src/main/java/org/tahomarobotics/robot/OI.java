@@ -5,16 +5,15 @@
 
 package org.tahomarobotics.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import org.tahomarobotics.robot.chassis.Chassis;
-import org.tahomarobotics.robot.chassis.commands.KnownMovementCommand;
 import org.tahomarobotics.robot.chassis.commands.TeleopDriveCommand;
+import org.tahomarobotics.robot.indexer.Indexer;
+import org.tahomarobotics.robot.indexer.commands.IndexerDefaultCommand;
+import org.tahomarobotics.robot.shooter.Shooter;
+import org.tahomarobotics.robot.shooter.commands.ShootCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
 public class OI extends SubsystemIF {
@@ -44,31 +43,29 @@ public class OI extends SubsystemIF {
      */
     private void configureBindings() {
         Chassis chassis = Chassis.getInstance();
+        Shooter shooter = Shooter.getInstance();
 
         // Robot Heading Zeroing
         driveController.a().onTrue(Commands.runOnce(chassis::orientToZeroHeading));
         // Robot/Field Orientation
         driveController.b().onTrue(Commands.runOnce(chassis::toggleOrientation));
 
-//        Code for testing odometry
-//        driveController.x().onTrue(Commands.runOnce(chassis::zeroPose));
-//
-//        driveController.povLeft().onTrue(new KnownMovementCommand(0.5, 0.0, 0.0, p -> p.getTranslation().getX() < 2.0)
-//                .andThen(new KnownMovementCommand(0.0, 0.5, 0.0, p -> p.getTranslation().getY() < 2.0)
-//                .andThen(new KnownMovementCommand(-0.5, 0.0, 0.0, p -> p.getTranslation().getX() > 0.0)
-//                .andThen(new KnownMovementCommand(0.0, -0.5, 0.0, p -> p.getTranslation().getY() > 0.0)))));
+        // Shoot
+        driveController.x().onTrue(new ShootCommand());
+
+        driveController.povUp().whileTrue(Commands.run(shooter::biasUp));
+        driveController.povDown().whileTrue(Commands.run(shooter::biasDown));
     }
 
     private void setDefaultCommands() {
-        Chassis chassis = Chassis.getInstance();
-
-        chassis.setDefaultCommand(new TeleopDriveCommand(
+        Chassis.getInstance().setDefaultCommand(new TeleopDriveCommand(
                 inputs -> {
                     inputs.x = -desensitizePowerBased(driveController.getLeftY(), FORWARD_SENSITIVITY);
                     inputs.y = -desensitizePowerBased(driveController.getLeftX(), FORWARD_SENSITIVITY);
                     inputs.rot = -desensitizePowerBased(driveController.getRightX(), ROTATIONAL_SENSITIVITY);
                 }
         ));
+        Indexer.getInstance().setDefaultCommand(new IndexerDefaultCommand());
     }
 
     private static double deadband(double value) {

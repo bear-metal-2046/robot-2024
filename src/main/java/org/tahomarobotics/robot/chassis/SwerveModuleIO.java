@@ -42,8 +42,8 @@ public class SwerveModuleIO {
     private final StatusSignal<Double> drivePosition;
     private final StatusSignal<Double> driveVelocity;
 
-    private final VelocityVoltage driveMotorVelocity = new VelocityVoltage(0.0);
-    private final PositionDutyCycle steerMotorPosition = new PositionDutyCycle(0.0);
+    private final VelocityVoltage driveMotorVelocity = new VelocityVoltage(0.0).withEnableFOC(RobotConfiguration.CANIVORE_PHOENIX_PRO);
+    private final PositionDutyCycle steerMotorPosition = new PositionDutyCycle(0.0).withEnableFOC(RobotConfiguration.CANIVORE_PHOENIX_PRO);
 
     private final RobustConfigurator configurator;
 
@@ -79,9 +79,6 @@ public class SwerveModuleIO {
                 steerVelocity
         );
         ParentDevice.optimizeBusUtilizationForAll(driveMotor, steerMotor, steerAbsEncoder);
-
-        driveMotorVelocity.EnableFOC = RobotConfiguration.USING_PHOENIX_PRO;
-        steerMotorPosition.EnableFOC = RobotConfiguration.USING_PHOENIX_PRO;
     }
 
     // CALIBRATION

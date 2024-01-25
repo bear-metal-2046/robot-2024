@@ -2,15 +2,12 @@ package org.tahomarobotics.robot.collector.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.collector.Collector;
 
 public class ZeroCollectorCommand extends Command {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(ZeroCollectorCommand.class);
-
 
     private final Collector collector = Collector.getInstance();
 
@@ -18,6 +15,7 @@ public class ZeroCollectorCommand extends Command {
 
     private static final double STOPPED_VELOCITY_THRESHOLD = 0.01;
     private static final double INITIAL_MOVE_TIME = 0.1;
+
     private final Timer timer = new Timer();
 
     public ZeroCollectorCommand() {
@@ -41,7 +39,7 @@ public class ZeroCollectorCommand extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        logger.info("*************ZEROED COLLECTOR****************");
+        logger.info("ZEROED COLLECTOR");
         collector.stopDeploy();
         collector.zeroCollector();
     }

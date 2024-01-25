@@ -9,17 +9,12 @@ import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.wpilibj.RobotState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.collector.commands.ZeroCollectorCommand;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
-import org.tahomarobotics.robot.util.SysIdTest;
 
 import static org.tahomarobotics.robot.collector.CollectorConstants.*;
 
@@ -43,15 +38,11 @@ public class Collector extends SubsystemIF {
     private final MotionMagicVelocityVoltage collectVelocityControl = new MotionMagicVelocityVoltage(COLLECT_MAX_RPS).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVoltage deployPositionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
 
-    private final SysIdTest tester;
-
     private boolean isCollecting;
     private boolean isStowed = true;
 
-    private final RobustConfigurator configurator;
-
     private Collector() {
-        configurator = new RobustConfigurator(logger);
+        RobustConfigurator configurator = new RobustConfigurator(logger);
 
         deployLeft = new TalonFX(RobotMap.DEPLOY_MOTOR_LEFT);
         deployRight = new TalonFX(RobotMap.DEPLOY_MOTOR_RIGHT);
@@ -74,18 +65,11 @@ public class Collector extends SubsystemIF {
         );
 
         ParentDevice.optimizeBusUtilizationForAll(deployLeft, deployRight, collectMotor);
-
-        tester = new SysIdTest(this, collectMotor);
     }
 
     @Override
     public void periodic() {
         BaseStatusSignal.refreshAll(deployPositionLeft, collectVelocity);
-
-        SmartDashboard.putNumber("Collector Angle LEFT (Deg)", getDeployPositionLeft() * 360);
-        SmartDashboard.putNumber("Collector Angle RIGHT (Deg)", getDeployPositionLeft() * 360);
-
-        SmartDashboard.putBoolean("IsCollecting", isCollecting());
     }
 
     @Override
@@ -104,13 +88,12 @@ public class Collector extends SubsystemIF {
         deployRight.setPosition(0);
     }
 
-    public boolean isAtPosition(double desiredPosition) {
-        return Math.abs(getDeployPositionLeft() - desiredPosition) < EPSILON
-                && Math.abs(getDeployPositionRight() - desiredPosition) < EPSILON;
-    }
-
     public boolean isCollecting() {
         return isCollecting;
+    }
+
+    public boolean isStowed() {
+        return isStowed;
     }
 
 
@@ -172,13 +155,5 @@ public class Collector extends SubsystemIF {
         } else {
             stowCollector();
         }
-    }
-
-    public void registerSysCommands(CommandXboxController controller) {
-
-        controller.povUp().whileTrue(tester.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        controller.povDown().whileTrue(tester.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-        controller.povLeft().whileTrue(tester.sysIdDynamic(SysIdRoutine.Direction.kForward));
-        controller.povRight().whileTrue(tester.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     }
 }

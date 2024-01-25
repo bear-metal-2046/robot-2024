@@ -1,18 +1,17 @@
 package org.tahomarobotics.robot.collector.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.collector.Collector;
+import org.tahomarobotics.robot.indexer.Indexer;
 
 import java.util.function.DoubleSupplier;
 
 public class CollectorDefaultCommand extends Command {
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(CollectorDefaultCommand.class);
-
 
     private final DoubleSupplier trigger;
 
     private final Collector collector = Collector.getInstance();
+    private final Indexer indexer = Indexer.getInstance();
 
     public CollectorDefaultCommand(DoubleSupplier trigger) {
         this.trigger = trigger;
@@ -22,9 +21,8 @@ public class CollectorDefaultCommand extends Command {
 
     @Override
     public void execute() {
-        if (trigger.getAsDouble() > 0.0) {
+        if (trigger.getAsDouble() > 0.0 && !collector.isStowed() && !indexer.hasCollected()) {
             collector.collect();
-            logger.info("Collecting");
         } else {
             collector.stopCollect();
         }

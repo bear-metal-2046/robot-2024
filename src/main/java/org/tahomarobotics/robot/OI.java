@@ -10,13 +10,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.chassis.commands.TeleopDriveCommand;
+import org.tahomarobotics.robot.collector.Collector;
+import org.tahomarobotics.robot.collector.commands.CollectorDefaultCommand;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.indexer.commands.IndexerDefaultCommand;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.commands.ShootCommand;
-import org.tahomarobotics.robot.collector.Collector;
-import org.tahomarobotics.robot.collector.CollectorConstants;
-import org.tahomarobotics.robot.collector.commands.CollectorDefaultCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
 public class OI extends SubsystemIF {
@@ -24,7 +23,6 @@ public class OI extends SubsystemIF {
 
     private static final double ROTATIONAL_SENSITIVITY = 2;
     private static final double FORWARD_SENSITIVITY = 1.1;
-    private static final double COLLECT_SENSITIVITY = 1.0;
     private static final double DEAD_ZONE = 0.09;
 
     public static OI getInstance() {
@@ -33,8 +31,6 @@ public class OI extends SubsystemIF {
 
     private final CommandXboxController driveController = new CommandXboxController(0);
     private final CommandXboxController manipController = new CommandXboxController(1);
-
-    private boolean isStowed = true;
 
     public OI() {
         // Disable OI periodic unless its being used.
@@ -60,8 +56,6 @@ public class OI extends SubsystemIF {
         //Collector up and down
         driveController.leftBumper().onTrue(Commands.runOnce(collector::toggleDeploy));
 
-        driveController.leftTrigger(0.5).whileTrue(Commands.runOnce(collector::collect)).whileFalse(Commands.runOnce(collector::stopCollect));
-
         // Shoot
         driveController.x().onTrue(new ShootCommand());
 
@@ -80,15 +74,19 @@ public class OI extends SubsystemIF {
                 }
         ));
 
+        Collector.getInstance().setDefaultCommand(new CollectorDefaultCommand(
+                () -> deadband(driveController.getLeftTriggerAxis(), 0.5)
+        ));
+
         Indexer.getInstance().setDefaultCommand(new IndexerDefaultCommand());
     }
 
-    private static double deadband(double value) {
-        if (Math.abs(value) > OI.DEAD_ZONE) {
+    private static double deadband(double value, double deadZone) {
+        if (Math.abs(value) > deadZone) {
             if (value > 0.0) {
-                return (value - OI.DEAD_ZONE) / (1.0 - OI.DEAD_ZONE);
+                return (value - deadZone) / (1.0 - deadZone);
             } else {
-                return (value + OI.DEAD_ZONE) / (1.0 - OI.DEAD_ZONE);
+                return (value + deadZone) / (1.0 - deadZone);
             }
         } else {
             return 0.0;
@@ -105,7 +103,7 @@ public class OI extends SubsystemIF {
      * @return 0 to +/- 100%
      */
     private static double desensitizePowerBased(double value, double power) {
-        value = deadband(value);
+        value = deadband(value, DEAD_ZONE);
         value *= Math.pow(Math.abs(value), power - 1);
         return value;
     }

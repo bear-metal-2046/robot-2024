@@ -17,12 +17,10 @@ public class ShootCommand extends SequentialCommandGroup {
 
         addCommands(
                 Commands.sequence(
-                        Commands.runOnce(shooter::enable, shooter),
-//                        Commands.runOnce(shooter::setAngleToSpeaker, shooter),
                         Commands.waitUntil(shooter::isReadyToShoot),
                         Commands.run(indexer::transferToShooter, indexer).onlyWhile(indexer::hasCollected),
-                        Commands.runOnce(shooter::disable, shooter)
-                ).onlyIf(this::hasIndexerCollected)
+                        Commands.runOnce(shooter::disable)
+                ).onlyIf(this::hasIndexerCollected).onlyIf(shooter::inShootingMode)
         );
     }
 

@@ -16,6 +16,7 @@ import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.indexer.commands.IndexerDefaultCommand;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.commands.ShootCommand;
+import org.tahomarobotics.robot.shooter.commands.ShooterDefaultCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
 public class OI extends SubsystemIF {
@@ -56,6 +57,9 @@ public class OI extends SubsystemIF {
         //Collector up and down
         driveController.leftBumper().onTrue(Commands.runOnce(collector::toggleDeploy));
 
+        //Shooting mode toggle
+        driveController.rightBumper().onTrue(Commands.runOnce(shooter::enable));
+
         // Shoot
         driveController.x().onTrue(new ShootCommand());
 
@@ -80,6 +84,8 @@ public class OI extends SubsystemIF {
         ));
 
         Indexer.getInstance().setDefaultCommand(new IndexerDefaultCommand());
+
+        Shooter.getInstance().setDefaultCommand(new ShooterDefaultCommand());
     }
 
     private static double deadband(double value, double deadZone) {

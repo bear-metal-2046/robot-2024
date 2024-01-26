@@ -70,6 +70,18 @@ public class Shooter extends SubsystemIF {
         return io.isReadyToShoot();
     }
 
+    public boolean inShootingMode() {
+        return io.inShootingMode();
+    }
+
+    public double rotToSpeaker() {
+        return io.rotToSpeaker();
+    }
+
+    public double angleToSpeaker() {
+        return io.angleToSpeaker();
+    }
+
     // PERIODIC
 
     @Override
@@ -80,6 +92,8 @@ public class Shooter extends SubsystemIF {
         Logger.recordOutput("Shooter/Velocity", getShooterVelocity());
         Logger.recordOutput("Shooter/Angle", getPivotPosition());
         Logger.recordOutput("Shooter/Angle (Degrees)", getPivotPosition() * 360);
+
+
     }
 
     // onInit

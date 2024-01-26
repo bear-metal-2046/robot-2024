@@ -1,29 +1,24 @@
-package org.tahomarobotics.robot.arm;
+package org.tahomarobotics.robot.wrist;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
-import org.tahomarobotics.robot.util.SysIdTest;
 
-import static org.tahomarobotics.robot.arm.ArmConstants.*;
+import static org.tahomarobotics.robot.wrist.WristConstants.*;
 
-public class Arm extends SubsystemIF {
-    private static final Arm INSTANCE = new Arm();
-
-    private final SysIdTest test;
+public class Wrist extends SubsystemIF {
+    private static final Wrist INSTANCE = new Wrist();
     private final TalonFX motor;
 
     private final StatusSignal<Double> position;
     private final StatusSignal<Double> velocity;
-    private Arm.State state = State.STOW;
+    private Wrist.State state = Wrist.State.STOW;
 
     private final MotionMagicVoltage stowPose = new MotionMagicVoltage(STOW_POSE)
             .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
@@ -33,21 +28,19 @@ public class Arm extends SubsystemIF {
             .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVoltage trapPose = new MotionMagicVoltage(TRAP_POSE)
             .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
-    public Arm() {
+    public Wrist() {
         RobustConfigurator configurator = new RobustConfigurator(logger);
-        motor = new TalonFX(RobotMap.ARM_MOTOR);
-        configurator.configureTalonFX(motor, ArmConstants.armMotorConfiguration);
+        motor = new TalonFX(RobotMap.WRIST_MOTOR);
+        configurator.configureTalonFX(motor, WristConstants.wristMotorConfiguration);
 
         position = motor.getPosition();
         velocity = motor.getVelocity();
 
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY, position, velocity);
         motor.optimizeBusUtilization();
-
-        test = new SysIdTest(this,motor);
     }
 
-    public static Arm getInstance() {
+    public static Wrist getInstance() {
         return INSTANCE;
     }
 
@@ -65,33 +58,33 @@ public class Arm extends SubsystemIF {
 
     public void stow() {
         motor.setControl(stowPose);
-        state = State.STOW;
+        state = Wrist.State.STOW;
     }
 
     public void trans() {
         motor.setControl(transPose);
-        state = State.TRANS;
+        state = Wrist.State.TRANS;
     }
 
     public void amp() {
         motor.setControl(ampPose);
-        state = State.AMP;
+        state = Wrist.State.AMP;
     }
 
 
     public void trap() {
         motor.setControl(trapPose);
-        state = Arm.State.TRAP;
+        state = Wrist.State.TRAP;
     }
 
     // PERIODIC
 
     @Override
     public void periodic() {
-        Logger.recordOutput("Arm/Position", getPosition());
-        Logger.recordOutput("Arm/Velocity", getVelocity());
+        Logger.recordOutput("Wrist/Position", getPosition());
+        Logger.recordOutput("Wrist/Velocity", getVelocity());
 
-        Logger.recordOutput("Arm/State", state);
+        Logger.recordOutput("Wrist/State", state);
     }
 
     // INITIALIZE
@@ -109,16 +102,4 @@ public class Arm extends SubsystemIF {
         AMP,
         TRAP
     }
-
-    // SYS ID
-
-    public void registerSysIdCommands(CommandXboxController driveController){
-        driveController.povUp().onTrue(test.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        driveController.povDown().onTrue(test.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-
-        driveController.povLeft().onTrue(test.sysIdDynamic(SysIdRoutine.Direction.kForward));
-        driveController.povRight().onTrue(test.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-
-    }
-
 }

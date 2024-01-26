@@ -26,7 +26,6 @@ public class Indexer extends SubsystemIF {
     private final StatusSignal<Double> velocity;
 
     private State state = State.DISABLED;
-    private boolean collected = false;
 
     private final MotionMagicVoltage intakePos = new MotionMagicVoltage(INTAKE_DISTANCE)
             .withSlot(1).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
@@ -56,7 +55,7 @@ public class Indexer extends SubsystemIF {
 
     @Override
     public SubsystemIF initialize() {
-        SmartDashboard.putData("Reset Indexer", runOnce(() -> collected = false));
+        SmartDashboard.putData("Reset Indexer", runOnce(() -> setState(State.DISABLED)));
 
         return this;
     }
@@ -72,11 +71,15 @@ public class Indexer extends SubsystemIF {
     }
 
     public boolean hasCollected() {
-        return collected;
+        return state == State.COLLECTED;
     }
 
     public boolean isIndexing() {
         return state == State.INDEXING;
+    }
+
+    public State getState() {
+        return state;
     }
 
     // SETTERS
@@ -85,34 +88,31 @@ public class Indexer extends SubsystemIF {
         return !beamBreak.get();
     }
 
+    public void setState(State state) {
+        this.state = state;
+    }
+
     // STATE TRANSITIONS
 
     public void stop() {
         motor.stopMotor();
-
-        state = State.DISABLED;
     }
 
     public void collect() {
         motor.setControl(idleVel);
-
-        state = State.COLLECT;
     }
 
     public void index() {
-
         if (isIndexing() && getPosition() >= INTAKE_DISTANCE - POSITION_TOLERANCE) {
             stop();
             motor.setPosition(0.0);
 
-            collected = true;
+            setState(State.COLLECTED);
         }
-        if (isIndexing() || collected) return;
+        if (isIndexing() || hasCollected()) return;
 
         motor.setPosition(0.0);
         motor.setControl(intakePos);
-
-        state = State.INDEXING;
     }
 
     public void transferToShooter() {
@@ -120,9 +120,9 @@ public class Indexer extends SubsystemIF {
             stop();
             motor.setPosition(0.0);
 
-            collected = false;
+            setState(State.DISABLED);
         }
-        if (isIndexing() || !collected) return;
+        if (!hasCollected()) return;
 
         motor.setControl(transferPos);
     }
@@ -141,9 +141,10 @@ public class Indexer extends SubsystemIF {
 
     // STATES
 
-    enum State {
+    public enum State {
         COLLECT,
         INDEXING,
-        DISABLED
+        DISABLED,
+        COLLECTED
     }
 }

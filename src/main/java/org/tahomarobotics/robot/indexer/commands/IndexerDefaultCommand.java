@@ -14,8 +14,18 @@ public class IndexerDefaultCommand extends Command {
 
     @Override
     public void execute() {
-        if (indexer.hasCollected() || (!collector.isCollecting() && !indexer.isIndexing())) indexer.stop();
-        else if (!indexer.isBeamBroken() && !indexer.isIndexing()) indexer.collect();
-        else indexer.index();
+        switch (indexer.getState()) {
+            case COLLECT -> {
+                indexer.collect();
+
+                if (indexer.isBeamBroken()) indexer.setState(Indexer.State.INDEXING);
+            }
+            case INDEXING -> indexer.index();
+            case DISABLED -> {
+                indexer.stop();
+
+                if (collector.isCollecting() && !indexer.hasCollected()) indexer.setState(Indexer.State.COLLECT);
+            }
+        }
     }
 }

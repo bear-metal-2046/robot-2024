@@ -37,7 +37,7 @@ public class Collector extends SubsystemIF {
     private final StatusSignal<Double> deployVelocity;
     private final StatusSignal<Double> collectVelocity;
 
-    private final MotionMagicVelocityVoltage collectVelocityControl = new MotionMagicVelocityVoltage(COLLECT_MAX_RPS).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
+    private final MotionMagicVelocityVoltage collectVelocityControl = new MotionMagicVelocityVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVoltage deployPositionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
 
     private CollectionState collectionState = CollectionState.DISABLED;
@@ -69,10 +69,8 @@ public class Collector extends SubsystemIF {
         ParentDevice.optimizeBusUtilizationForAll(deployLeft, deployRight, collectMotor);
     }
 
-    public void zeroCollector() {
-        deployLeft.setPosition(0);
-        deployRight.setPosition(0);
-    }
+
+    // GETTERS
 
     private double getDeployPositionLeft() {
         return deployPositionLeft.refresh().getValue();
@@ -91,30 +89,66 @@ public class Collector extends SubsystemIF {
     }
 
 
+    // DEPLOYMENT CONTROL
+
     private void setDeployPosition(double position) {
         deployLeft.setControl(deployPositionControl.withPosition(position));
         deployRight.setControl(deployPositionControl.withPosition(position));
     }
 
-    public void stowCollector() {
-        deploymentState = DeploymentState.STOWED;
-
-        setDeployPosition(STOW_POSITION);
-    }
-
-    public void deployCollector() {
-        deploymentState = DeploymentState.DEPLOYED;
-
-        setDeployPosition(COLLECT_POSITION);
-        Shooter.getInstance().setShooterAngle(ShooterConstants.SHOOTER_COLLECT_PIVOT_ANGLE);
-    }
-
     public void toggleDeploy() {
         if (deploymentState == DeploymentState.STOWED) {
-            deployCollector();
+            deploymentState = DeploymentState.DEPLOYED;
+            setDeployPosition(COLLECT_POSITION);
+            Shooter.getInstance().setShooterAngle(ShooterConstants.SHOOTER_COLLECT_PIVOT_ANGLE);
         } else {
-            stowCollector();
+            deploymentState = DeploymentState.STOWED;
+            setDeployPosition(STOW_POSITION);
         }
+    }
+
+
+    // COLLECTOR CONTROL
+
+    public void collect() {
+        collectMotor.setControl(collectVelocityControl.withVelocity(COLLECT_MAX_RPS));
+    }
+
+    public void eject() {
+        collectMotor.setControl(collectVelocityControl.withVelocity(-COLLECT_MAX_RPS));
+    }
+
+    public void stopCollect() {
+        collectMotor.stopMotor();
+    }
+
+
+    // STATE CONTROL
+
+    public void setCollectionState(CollectionState state) {
+        collectionState = state;
+    }
+
+    public CollectionState getCollectionState() {
+        return collectionState;
+    }
+
+    public boolean isCollecting() {
+        return collectionState == CollectionState.COLLECTING;
+    }
+    public boolean isEjecting() {
+        return collectionState == CollectionState.EJECTING;
+    }
+    public boolean isStowed() {
+        return deploymentState == DeploymentState.STOWED;
+    }
+
+
+    // ZEROING
+
+    public void setVoltage(double voltage) {
+        deployLeft.setControl(new VoltageOut(voltage));
+        deployRight.setControl(new VoltageOut(voltage));
     }
 
     public void stopDeploy() {
@@ -122,35 +156,9 @@ public class Collector extends SubsystemIF {
         deployRight.stopMotor();
     }
 
-    public void collect() {
-        collectionState = CollectionState.COLLECTING;
-
-        collectMotor.setControl(collectVelocityControl);
-    }
-
-    public void eject() {
-        collectionState = CollectionState.EJECTING;
-
-        collectMotor.setControl(collectVelocityControl.withVelocity(-COLLECT_MAX_RPS));
-    }
-
-    public void stopCollect() {
-        collectionState = CollectionState.DISABLED;
-
-        collectMotor.stopMotor();
-    }
-
-    public DeploymentState getDeploymentState() {
-        return deploymentState;
-    }
-
-    public CollectionState getCollectionState() {
-        return collectionState;
-    }
-
-    public void setVoltage(double voltage) {
-        deployLeft.setControl(new VoltageOut(voltage));
-        deployRight.setControl(new VoltageOut(voltage));
+    public void zeroCollector() {
+        deployLeft.setPosition(0);
+        deployRight.setPosition(0);
     }
 
 
@@ -169,6 +177,8 @@ public class Collector extends SubsystemIF {
 
         return this;
     }
+
+    // STATES
 
     public enum CollectionState {
         COLLECTING,

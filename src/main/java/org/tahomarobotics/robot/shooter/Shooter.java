@@ -6,12 +6,12 @@ import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.chassis.Chassis;
-import org.tahomarobotics.robot.util.BetterMath;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
@@ -96,7 +96,7 @@ public class Shooter extends SubsystemIF {
     // SETTERS
 
     public void setShooterAngle(double _angle) {
-        angle = BetterMath.clamp(_angle, 0, MAX_PIVOT_ANGLE);
+        angle = MathUtil.clamp(_angle, MIN_PIVOT_ANGLE, MAX_PIVOT_ANGLE);
 
         Logger.recordOutput("Shooter/Target Angle", angle);
 

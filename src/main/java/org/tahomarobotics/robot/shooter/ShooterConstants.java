@@ -7,7 +7,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import org.tahomarobotics.robot.util.BetterMath;
 
 import java.util.function.Supplier;
 
@@ -15,8 +14,9 @@ public class ShooterConstants {
     static final double SHOOTER_SPEED = 75; // rps
     static final double SHOOTER_SPEED_TOLERANCE = 0.25; // rps
     static final double MAX_PIVOT_ANGLE = 0.14;
+    static final double MIN_PIVOT_ANGLE = 0.01;
     static final double PIVOT_ANGLE_TOLERANCE = 0.0025;
-    public static final double SHOOTER_COLLECT_PIVOT_ANGLE = Units.degreesToRotations(BetterMath.TAU * 10);
+    public static final double SHOOTER_COLLECT_PIVOT_ANGLE = Units.degreesToRotations(15);
 
     static final double PIVOT_GEAR_REDUCTION = (14.0 / 56.0) * (10.0 / 90.0);
 
@@ -31,8 +31,8 @@ public class ShooterConstants {
     static final Supplier<Translation2d> SPEAKER_TARGET_POSITION = () ->
             DriverStation
                     .getAlliance()
-                    .filter(a -> a != DriverStation.Alliance.Blue)
-                    .map(a -> RED_SPEAKER_TARGET_POSITION).orElse(BLUE_SPEAKER_TARGET_POSITION);
+                    .filter(a -> a == DriverStation.Alliance.Blue)
+                    .map(a -> BLUE_SPEAKER_TARGET_POSITION).orElse(RED_SPEAKER_TARGET_POSITION);
 
     static final TalonFXConfiguration shooterMotorConfiguration = new TalonFXConfiguration()
             .withSlot0(new Slot0Configs()

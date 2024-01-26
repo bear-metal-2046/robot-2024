@@ -26,27 +26,26 @@ public class CollectorDefaultCommand extends Command {
     public void execute() {
         boolean isCollecting = trigger.getAsDouble() > 0.0;
         boolean isEjecting = povLeft.getAsBoolean();
-        Collector.DeploymentState deploymentState = collector.getDeploymentState();
 
         switch (collector.getCollectionState()) {
             case DISABLED -> {
                 collector.stopCollect();
 
-                if (isCollecting && deploymentState == Collector.DeploymentState.DEPLOYED) collector.collect();
+                if (isCollecting && !collector.isStowed() && !indexer.hasCollected()) collector.setCollectionState(Collector.CollectionState.COLLECTING);
 
-                if (isEjecting) collector.eject();
+                if (isEjecting) collector.setCollectionState(Collector.CollectionState.EJECTING);
             }
             case COLLECTING -> {
                 collector.collect();
 
-                if (indexer.hasCollected() || deploymentState == Collector.DeploymentState.STOWED) collector.stopCollect();
+                if (!isCollecting || indexer.hasCollected() || collector.isStowed()) collector.setCollectionState(Collector.CollectionState.DISABLED);
             }
             case EJECTING -> {
                 collector.eject();
 
-                if (isCollecting && deploymentState == Collector.DeploymentState.DEPLOYED) collector.collect();
+                if (isCollecting && !collector.isStowed()) collector.setCollectionState(Collector.CollectionState.COLLECTING);
 
-                if (deploymentState == Collector.DeploymentState.STOWED) collector.stopCollect();
+                if (!isEjecting) collector.stopCollect();
             }
         }
     }

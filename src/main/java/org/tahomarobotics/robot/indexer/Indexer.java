@@ -1,22 +1,18 @@
 package org.tahomarobotics.robot.indexer;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
+import org.tahomarobotics.robot.collector.CollectorConstants;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
-import org.tahomarobotics.robot.util.SysIdTest;
 
 import static org.tahomarobotics.robot.indexer.IndexerConstants.*;
 
@@ -32,13 +28,11 @@ public class Indexer extends SubsystemIF {
     private State state = State.DISABLED;
     private boolean collected = false;
 
-    private final SysIdTest tester;
-
     private final MotionMagicVoltage intakePos = new MotionMagicVoltage(INTAKE_DISTANCE)
             .withSlot(1).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVoltage transferPos = new MotionMagicVoltage(TRANSFER_DISTANCE)
             .withSlot(1).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
-    private final MotionMagicVelocityVoltage idleVel = new MotionMagicVelocityVoltage(IDLE_VEL)
+    private final MotionMagicVelocityVoltage idleVel = new MotionMagicVelocityVoltage(CollectorConstants.COLLECT_MAX_RPS)
             .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
 
     private Indexer() {
@@ -54,8 +48,6 @@ public class Indexer extends SubsystemIF {
 
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY, position, velocity);
         motor.optimizeBusUtilization();
-
-        tester = new SysIdTest(this, motor);
     }
 
     public static Indexer getInstance() {
@@ -108,6 +100,7 @@ public class Indexer extends SubsystemIF {
     }
 
     public void index() {
+
         if (isIndexing() && getPosition() >= INTAKE_DISTANCE - POSITION_TOLERANCE) {
             stop();
             motor.setPosition(0.0);
@@ -152,20 +145,5 @@ public class Indexer extends SubsystemIF {
         COLLECT,
         INDEXING,
         DISABLED
-    }
-
-    // SYSID
-
-    public void registerSysIdCommands(CommandXboxController controller) {
-        logger.warn("IN SYSID MODE");
-
-        controller.povUp().whileTrue(tester.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        controller.povDown().whileTrue(tester.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-        controller.povLeft().whileTrue(tester.sysIdDynamic(SysIdRoutine.Direction.kForward));
-        controller.povRight().whileTrue(tester.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-
-        /* Manually stop logging with left bumper after we're done with the tests */
-        /* This isn't necessary, but is convenient to reduce the size of the hoot file */
-        controller.leftBumper().onTrue(new RunCommand(SignalLogger::stop));
     }
 }

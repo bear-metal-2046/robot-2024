@@ -100,7 +100,7 @@ public class Collector extends SubsystemIF {
         if (deploymentState == DeploymentState.STOWED) {
             deploymentState = DeploymentState.DEPLOYED;
             setDeployPosition(COLLECT_POSITION);
-            Shooter.getInstance().setShooterAngle(ShooterConstants.SHOOTER_COLLECT_PIVOT_ANGLE);
+            Shooter.getInstance().setAngle(ShooterConstants.SHOOTER_COLLECT_PIVOT_ANGLE);
         } else {
             deploymentState = DeploymentState.STOWED;
             setDeployPosition(STOW_POSITION);

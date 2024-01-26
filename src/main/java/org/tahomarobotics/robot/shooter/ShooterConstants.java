@@ -7,6 +7,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import org.tahomarobotics.robot.util.BetterMath;
 
 import java.util.function.Supplier;
 
@@ -15,6 +16,7 @@ public class ShooterConstants {
     static final double SHOOTER_SPEED_TOLERANCE = 0.25; // rps
     static final double MAX_PIVOT_ANGLE = 0.14;
     static final double PIVOT_ANGLE_TOLERANCE = 0.0025;
+    public static final double SHOOTER_COLLECT_PIVOT_ANGLE = Units.degreesToRotations(BetterMath.TAU * 10);
 
     static final double PIVOT_GEAR_REDUCTION = (14.0 / 56.0) * (10.0 / 90.0);
 

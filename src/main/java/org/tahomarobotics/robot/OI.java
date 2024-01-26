@@ -63,6 +63,8 @@ public class OI extends SubsystemIF {
 
         driveController.povUp().whileTrue(Commands.run(shooter::biasUp));
         driveController.povDown().whileTrue(Commands.run(shooter::biasDown));
+
+        driveController.povLeft().whileTrue()
     }
 
     private void setDefaultCommands() {
@@ -75,7 +77,8 @@ public class OI extends SubsystemIF {
         ));
 
         Collector.getInstance().setDefaultCommand(new CollectorDefaultCommand(
-                () -> deadband(driveController.getLeftTriggerAxis(), 0.5)
+                () -> deadband(driveController.getLeftTriggerAxis(), 0.5),
+                driveController.povLeft()
         ));
 
         Indexer.getInstance().setDefaultCommand(new IndexerDefaultCommand());

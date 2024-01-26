@@ -31,7 +31,9 @@ public class Indexer extends SubsystemIF {
             .withSlot(1).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVoltage transferPos = new MotionMagicVoltage(TRANSFER_DISTANCE)
             .withSlot(1).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
-    private final MotionMagicVelocityVoltage idleVel = new MotionMagicVelocityVoltage(CollectorConstants.COLLECT_MAX_RPS)
+    private final MotionMagicVelocityVoltage collectVel = new MotionMagicVelocityVoltage(CollectorConstants.COLLECT_MAX_RPS)
+            .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
+    private final MotionMagicVelocityVoltage ejectVel = new MotionMagicVelocityVoltage(-CollectorConstants.COLLECT_MAX_RPS)
             .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
 
     private Indexer() {
@@ -74,8 +76,8 @@ public class Indexer extends SubsystemIF {
         return state == State.COLLECTED;
     }
 
-    public boolean isIndexing() {
-        return state == State.INDEXING;
+    public boolean isTransferring() {
+        return state == State.TRANSFERRING;
     }
 
     public State getState() {
@@ -92,33 +94,40 @@ public class Indexer extends SubsystemIF {
         this.state = state;
     }
 
+    public void zero() {
+        motor.setPosition(0.0);
+    }
+
     // STATE TRANSITIONS
 
-    public void stop() {
+    public void disable() {
         motor.stopMotor();
     }
 
     public void collect() {
-        motor.setControl(idleVel);
+        motor.setControl(collectVel);
     }
 
     public void index() {
-        if (isIndexing() && getPosition() >= INTAKE_DISTANCE - POSITION_TOLERANCE) {
-            stop();
-            motor.setPosition(0.0);
+        if (getPosition() >= INTAKE_DISTANCE - POSITION_TOLERANCE) {
+            disable();
+            zero();
 
             setState(State.COLLECTED);
         }
-        if (isIndexing() || hasCollected()) return;
+        if (hasCollected()) return;
 
-        motor.setPosition(0.0);
         motor.setControl(intakePos);
     }
 
-    public void transferToShooter() {
+    public void eject() {
+        motor.setControl(ejectVel);
+    }
+
+    public void transfer() {
         if (getPosition() >= TRANSFER_DISTANCE - POSITION_TOLERANCE) {
-            stop();
-            motor.setPosition(0.0);
+            disable();
+            zero();
 
             setState(State.DISABLED);
         }
@@ -142,9 +151,11 @@ public class Indexer extends SubsystemIF {
     // STATES
 
     public enum State {
+        DISABLED,
         COLLECT,
         INDEXING,
-        DISABLED,
-        COLLECTED
+        COLLECTED,
+        EJECTING,
+        TRANSFERRING
     }
 }

@@ -4,17 +4,21 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
+import org.tahomarobotics.robot.util.SysIdTest;
 
 import static org.tahomarobotics.robot.arm.ArmConstants.*;
 
 public class Arm extends SubsystemIF {
     private static final Arm INSTANCE = new Arm();
 
+    private final SysIdTest test;
     private final TalonFX motor;
 
     private final StatusSignal<Double> position;
@@ -39,6 +43,8 @@ public class Arm extends SubsystemIF {
 
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY, position, velocity);
         motor.optimizeBusUtilization();
+
+        test = new SysIdTest(this,motor);
     }
 
     public static Arm getInstance() {
@@ -84,6 +90,12 @@ public class Arm extends SubsystemIF {
         Logger.recordOutput("Arm/State", state);
     }
 
+    // INITIALIZE
+    @Override
+    public SubsystemIF initialize(){
+        motor.setPosition(0);
+        return this;
+    }
     // STATES
 
     enum State {
@@ -91,6 +103,15 @@ public class Arm extends SubsystemIF {
         TRANS,
         AMP,
         TRAP
+    }
+
+    public void registerSysIdCommands(CommandXboxController driveController){
+        driveController.povUp().onTrue(test.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        driveController.povDown().onTrue(test.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+
+        driveController.povLeft().onTrue(test.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        driveController.povRight().onTrue(test.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
     }
 
 }

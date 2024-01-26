@@ -75,11 +75,27 @@ public class Indexer extends SubsystemIF {
         return collected;
     }
 
-    public boolean isIndexing() {
-        return state == State.INDEXING;
+    // SETTERS
+
+    public void setCollectState() {
+        if (state == State.DISABLED) {
+            motor.setControl(idleVel);
+            state = State.COLLECT;
+        }
     }
 
-    // SETTERS
+    public void setDisableState() {
+        motor.stopMotor();
+        state = State.DISABLED;
+    }
+
+    public void setTransferState() {
+        if (state == State.DISABLED && collected) {
+            motor.setPosition(0.0);
+            motor.setControl(transferPos);
+            state = State.TRANSFERRING;
+        }
+    }
 
     public boolean isBeamBroken() {
         return !beamBreak.get();
@@ -87,44 +103,28 @@ public class Indexer extends SubsystemIF {
 
     // STATE TRANSITIONS
 
-    public void stop() {
-        motor.stopMotor();
-
-        state = State.DISABLED;
-    }
-
-    public void collect() {
-        motor.setControl(idleVel);
-
-        state = State.COLLECT;
-    }
-
-    public void index() {
-
-        if (isIndexing() && getPosition() >= INTAKE_DISTANCE - POSITION_TOLERANCE) {
-            stop();
+    private void collectingState() {
+        if (isBeamBroken()) {
             motor.setPosition(0.0);
+            motor.setControl(intakePos);
+            state = State.INDEXING;
+        }
+    }
 
+    private void indexingState() {
+        if (getPosition() >= INTAKE_DISTANCE - POSITION_TOLERANCE) {
+            motor.stopMotor();
             collected = true;
+            state = State.DISABLED;
         }
-        if (isIndexing() || collected) return;
-
-        motor.setPosition(0.0);
-        motor.setControl(intakePos);
-
-        state = State.INDEXING;
     }
 
-    public void transferToShooter() {
+    private void transferringState() {
         if (getPosition() >= TRANSFER_DISTANCE - POSITION_TOLERANCE) {
-            stop();
-            motor.setPosition(0.0);
-
+            motor.stopMotor();
             collected = false;
+            state = State.DISABLED;
         }
-        if (isIndexing() || !collected) return;
-
-        motor.setControl(transferPos);
     }
 
     // PERIODIC
@@ -137,6 +137,13 @@ public class Indexer extends SubsystemIF {
         Logger.recordOutput("Indexer/State", state);
         Logger.recordOutput("Indexer/BeamBreak", isBeamBroken());
         Logger.recordOutput("Indexer/Collected", hasCollected());
+
+        switch (state) {
+            case DISABLED -> { /* Do Nothing */ }
+            case COLLECT -> collectingState();
+            case INDEXING -> indexingState();
+            case TRANSFERRING -> transferringState();
+        }
     }
 
     // STATES
@@ -144,6 +151,7 @@ public class Indexer extends SubsystemIF {
     enum State {
         COLLECT,
         INDEXING,
-        DISABLED
+        DISABLED,
+        TRANSFERRING
     }
 }

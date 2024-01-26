@@ -13,7 +13,6 @@ import org.tahomarobotics.robot.chassis.commands.TeleopDriveCommand;
 import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.collector.commands.CollectorDefaultCommand;
 import org.tahomarobotics.robot.indexer.Indexer;
-import org.tahomarobotics.robot.indexer.commands.IndexerDefaultCommand;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.commands.ShootCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
@@ -63,6 +62,18 @@ public class OI extends SubsystemIF {
 
         driveController.povUp().whileTrue(Commands.run(shooter::biasUp));
         driveController.povDown().whileTrue(Commands.run(shooter::biasDown));
+
+        driveController.leftTrigger(0.5).onTrue(
+                Commands.runOnce(() -> {
+                    Collector.getInstance().collect();
+                    Indexer.getInstance().setCollectState();
+                })
+        ).onFalse(
+                Commands.runOnce(() -> {
+                    Collector.getInstance().stopCollect();
+                    Indexer.getInstance().setDisableState();
+                })
+        );
     }
 
     private void setDefaultCommands() {
@@ -74,11 +85,9 @@ public class OI extends SubsystemIF {
                 }
         ));
 
-        Collector.getInstance().setDefaultCommand(new CollectorDefaultCommand(
-                () -> deadband(driveController.getLeftTriggerAxis(), 0.5)
-        ));
-
-        Indexer.getInstance().setDefaultCommand(new IndexerDefaultCommand());
+//        Collector.getInstance().setDefaultCommand(new CollectorDefaultCommand(
+//                () -> deadband(driveController.getLeftTriggerAxis(), 0.5)
+//        ));
     }
 
     private static double deadband(double value, double deadZone) {

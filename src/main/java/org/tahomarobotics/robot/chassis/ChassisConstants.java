@@ -21,6 +21,7 @@ package org.tahomarobotics.robot.chassis;
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.*;
 import com.pathplanner.lib.util.PIDConstants;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import org.tahomarobotics.robot.RobotConfiguration;
@@ -54,6 +55,8 @@ public final class ChassisConstants {
     //Placeholder PID values
     public static final PIDConstants AUTO_TRANSLATION_PID = new PIDConstants(1.5,0,0.5);
     public static final PIDConstants AUTO_ROTATION_PID = new PIDConstants(1.5, 0, 0);
+
+    public static final PIDController SHOOT_MODE_CONTROLLER = new PIDController(10, 0, 0.5);
 
     public static final double DRIVE_SUPPLY_CURRENT_LIMIT = 300.0; // Amps
     public static final double DRIVE_STATOR_CURRENT_LIMIT = 150.0;

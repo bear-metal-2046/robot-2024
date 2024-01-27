@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.chassis.Chassis;
+import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 
 import static org.tahomarobotics.robot.shooter.ShooterConstants.*;
@@ -33,6 +34,8 @@ class ShooterIO {
     private final MotionMagicVelocityVoltage motorVelocity = new MotionMagicVelocityVoltage(SHOOTER_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
 
     protected double angle = 0.0;
+
+    private boolean shootingMode = false;
 
     @AutoLog
     static class ShooterIOInputs {
@@ -82,6 +85,22 @@ class ShooterIO {
         return isAtAngle() && isSpinningAtVelocity();
     }
 
+    boolean inShootingMode() {
+        return shootingMode;
+    }
+
+    double rotToSpeaker() {
+        return Chassis.getInstance().getPose().getTranslation()
+                .minus(SPEAKER_TARGET_POSITION.get()).getAngle().getRadians();
+    }
+
+    double angleToSpeaker() {
+        Translation2d target = SPEAKER_TARGET_POSITION.get();
+        double distance = Chassis.getInstance().getPose().getTranslation().getDistance(target);
+
+        return Math.atan2(SPEAKER_HEIGHT_DIFF, distance) / (2 * Math.PI);
+    }
+
     // SETTERS
 
     void setShooterAngle(double angle) {
@@ -92,31 +111,30 @@ class ShooterIO {
         pivotMotor.setControl(pivotPositionControl.withPosition(angle));
     }
 
-    void angleToSpeaker() {
-        Translation2d target = SPEAKER_TARGET_POSITION.get();
-        double distance = Chassis.getInstance().getPose().getTranslation().getDistance(target);
-
-        angle = Math.atan2(SPEAKER_HEIGHT_DIFF, distance) / (2 * Math.PI);
-
-        if (angle < 0.0 || angle > MAX_PIVOT_ANGLE) {
-            logger.warn("Out of range!");
-        }
-
-        setShooterAngle(angle);
-    }
-
     void zero() { pivotMotor.setPosition(0.0); }
 
     // STATES
 
     void enable() {
+        shootingMode = true;
+
         shooterMotor.setControl(motorVelocity);
         shooterMotorFollower.setControl(motorVelocity);
     }
 
     void disable() {
+        shootingMode = false;
+
         shooterMotor.stopMotor();
         shooterMotorFollower.stopMotor();
+    }
+
+    void toggleShootMode() {
+        if (shootingMode) {
+            disable();
+        } else if (Indexer.getInstance().hasCollected()){
+            enable();
+        }
     }
 
     // INPUTS

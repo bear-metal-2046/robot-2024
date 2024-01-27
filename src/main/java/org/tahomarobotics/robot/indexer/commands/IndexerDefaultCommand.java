@@ -53,6 +53,7 @@ public class IndexerDefaultCommand extends Command {
                     logger.error("Indexer in COLLECTED state with no note detected! Transitioning to DISABLED...");
                     indexer.transitionToDisabled();
                 }
+                if (collector.isEjecting()) indexer.transitionToEjecting();
             }
         }
     }

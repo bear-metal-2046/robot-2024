@@ -22,7 +22,10 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Optional;
 
 public class ATVision {
     private final Logger logger;

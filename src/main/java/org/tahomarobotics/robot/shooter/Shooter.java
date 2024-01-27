@@ -1,12 +1,11 @@
 package org.tahomarobotics.robot.shooter;
 
+import edu.wpi.first.math.MathUtil;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.RobotConfiguration;
-import org.tahomarobotics.robot.util.BetterMath;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
-import static org.tahomarobotics.robot.shooter.ShooterConstants.BIAS_AMT;
-import static org.tahomarobotics.robot.shooter.ShooterConstants.MAX_PIVOT_ANGLE;
+import static org.tahomarobotics.robot.shooter.ShooterConstants.*;
 
 public class Shooter extends SubsystemIF {
 
@@ -37,16 +36,16 @@ public class Shooter extends SubsystemIF {
 
     // SETTERS
 
-    public void enable() {
-        io.enable();
-    }
-
     public void disable() {
         io.disable();
     }
 
+    public void toggleShootMode() {
+        io.toggleShootMode();
+    }
+
     public void setAngle(double angle) {
-        inputs.angle = BetterMath.clamp(angle, 0, MAX_PIVOT_ANGLE);
+        inputs.angle = MathUtil.clamp(angle, MIN_PIVOT_ANGLE, MAX_PIVOT_ANGLE);
     }
 
     public void biasUp() {
@@ -71,6 +70,18 @@ public class Shooter extends SubsystemIF {
         return io.isReadyToShoot();
     }
 
+    public boolean inShootingMode() {
+        return io.inShootingMode();
+    }
+
+    public double rotToSpeaker() {
+        return io.rotToSpeaker();
+    }
+
+    public double angleToSpeaker() {
+        return io.angleToSpeaker();
+    }
+
     // PERIODIC
 
     @Override
@@ -81,6 +92,8 @@ public class Shooter extends SubsystemIF {
         Logger.recordOutput("Shooter/Velocity", getShooterVelocity());
         Logger.recordOutput("Shooter/Angle", getPivotPosition());
         Logger.recordOutput("Shooter/Angle (Degrees)", getPivotPosition() * 360);
+
+
     }
 
     // onInit

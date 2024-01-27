@@ -14,23 +14,25 @@ public class ShooterConstants {
     static final double SHOOTER_SPEED = 75; // rps
     static final double SHOOTER_SPEED_TOLERANCE = 0.25; // rps
     static final double MAX_PIVOT_ANGLE = 0.14;
+    static final double MIN_PIVOT_ANGLE = 0.01;
     static final double PIVOT_ANGLE_TOLERANCE = 0.0025;
+    public static final double SHOOTER_COLLECT_PIVOT_ANGLE = MIN_PIVOT_ANGLE;
 
     static final double PIVOT_GEAR_REDUCTION = (14.0 / 56.0) * (10.0 / 90.0);
 
     static final double BIAS_AMT = Units.degreesToRotations(5) / 50;
 
-    private static final double SHOOTER_HEIGHT = 1.0;
-    private static final double SPEAKER_HEIGHT = 4.0;
+    private static final double SHOOTER_HEIGHT = Units.inchesToMeters(8.5);
+    private static final double SPEAKER_HEIGHT = Units.inchesToMeters(78.5);
     static final double SPEAKER_HEIGHT_DIFF = SPEAKER_HEIGHT - SHOOTER_HEIGHT;
 
-    private static final Translation2d RED_SPEAKER_TARGET_POSITION = new Translation2d();
-    private static final Translation2d BLUE_SPEAKER_TARGET_POSITION = new Translation2d();
+    private static final Translation2d RED_SPEAKER_TARGET_POSITION = new Translation2d(16.53, 5.55);
+    private static final Translation2d BLUE_SPEAKER_TARGET_POSITION = new Translation2d(0, 5.55);
     static final Supplier<Translation2d> SPEAKER_TARGET_POSITION = () ->
             DriverStation
                     .getAlliance()
-                    .filter(a -> a != DriverStation.Alliance.Blue)
-                    .map(a -> RED_SPEAKER_TARGET_POSITION).orElse(BLUE_SPEAKER_TARGET_POSITION);
+                    .filter(a -> a == DriverStation.Alliance.Blue)
+                    .map(a -> BLUE_SPEAKER_TARGET_POSITION).orElse(RED_SPEAKER_TARGET_POSITION);
 
     static final TalonFXConfiguration shooterMotorConfiguration = new TalonFXConfiguration()
             .withSlot0(new Slot0Configs()

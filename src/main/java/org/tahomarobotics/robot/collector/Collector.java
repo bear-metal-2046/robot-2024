@@ -10,6 +10,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Commands;
+import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.collector.commands.ZeroCollectorCommand;
@@ -97,7 +98,7 @@ public class Collector extends SubsystemIF {
     }
 
     public void toggleDeploy() {
-        if (deploymentState == DeploymentState.STOWED) {
+        if (deploymentState == DeploymentState.STOWED || deploymentState == DeploymentState.EJECT) {
             deploymentState = DeploymentState.DEPLOYED;
             setDeployPosition(COLLECT_POSITION);
             Shooter.getInstance().setAngle(ShooterConstants.SHOOTER_COLLECT_PIVOT_ANGLE);
@@ -105,6 +106,11 @@ public class Collector extends SubsystemIF {
             deploymentState = DeploymentState.STOWED;
             setDeployPosition(STOW_POSITION);
         }
+    }
+
+    public void setDeployEject() {
+        deploymentState = DeploymentState.EJECT;
+        setDeployPosition(EJECT_POSITION);
     }
 
 
@@ -142,6 +148,9 @@ public class Collector extends SubsystemIF {
     public boolean isStowed() {
         return deploymentState == DeploymentState.STOWED;
     }
+    public boolean isInEject() {
+        return deploymentState == DeploymentState.EJECT;
+    }
 
 
     // ZEROING
@@ -165,10 +174,12 @@ public class Collector extends SubsystemIF {
     @Override
     public void periodic() {
         BaseStatusSignal.refreshAll(deployPositionLeft, collectVelocity);
+
+        Logger.recordOutput("Collector/DeployState", deploymentState);
+        Logger.recordOutput("Collector/CollectionState", collectionState);
     }
 
     @Override
-
     public SubsystemIF initialize() {
 
         Commands.waitUntil(RobotState::isEnabled)
@@ -188,6 +199,7 @@ public class Collector extends SubsystemIF {
 
     public enum DeploymentState {
         DEPLOYED,
-        STOWED
+        STOWED,
+        EJECT;
     }
 }

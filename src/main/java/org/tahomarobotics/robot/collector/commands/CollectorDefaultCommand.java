@@ -2,6 +2,7 @@ package org.tahomarobotics.robot.collector.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import org.tahomarobotics.robot.collector.Collector;
+import org.tahomarobotics.robot.collector.CollectorConstants;
 import org.tahomarobotics.robot.indexer.Indexer;
 
 import java.util.function.BooleanSupplier;
@@ -31,6 +32,8 @@ public class CollectorDefaultCommand extends Command {
             case DISABLED -> {
                 collector.stopCollect();
 
+                if (collector.isInEject()) collector.toggleDeploy();
+
                 if (isCollecting && !collector.isStowed() && !indexer.hasCollected()) collector.setCollectionState(Collector.CollectionState.COLLECTING);
 
                 if (isEjecting) collector.setCollectionState(Collector.CollectionState.EJECTING);
@@ -38,14 +41,18 @@ public class CollectorDefaultCommand extends Command {
             case COLLECTING -> {
                 collector.collect();
 
-                if (!isCollecting || indexer.hasCollected() || collector.isStowed()) collector.setCollectionState(Collector.CollectionState.DISABLED);
+                if (indexer.hasCollected()) collector.toggleDeploy();
+
+                if ((!isCollecting && !indexer.isIndexing()) || collector.isStowed()) collector.setCollectionState(Collector.CollectionState.DISABLED);
             }
             case EJECTING -> {
                 collector.eject();
 
+                if (!collector.isStowed()) collector.setDeployEject();
+
                 if (isCollecting && !collector.isStowed()) collector.setCollectionState(Collector.CollectionState.COLLECTING);
 
-                if (!isEjecting) collector.stopCollect();
+                if (!isEjecting) collector.setCollectionState(Collector.CollectionState.DISABLED);
             }
         }
     }

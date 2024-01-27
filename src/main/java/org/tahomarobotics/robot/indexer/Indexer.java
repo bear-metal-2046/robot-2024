@@ -80,6 +80,10 @@ public class Indexer extends SubsystemIF {
         return state == State.TRANSFERRING;
     }
 
+    public boolean isIndexing() {
+        return state == State.INDEXING;
+    }
+
     public State getState() {
         return state;
     }
@@ -148,13 +152,13 @@ public class Indexer extends SubsystemIF {
     }
 
     public void transitionToCollected() {
-        motor.setControl(transferPos);
-
         setState(State.COLLECTED);
     }
 
     public void transitionToTransferring() {
         zero();
+        motor.setControl(transferPos);
+
         setState(State.TRANSFERRING);
     }
 

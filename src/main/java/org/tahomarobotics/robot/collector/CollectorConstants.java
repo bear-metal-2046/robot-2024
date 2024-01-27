@@ -12,9 +12,9 @@ public class CollectorConstants {
     public final static double COLLECT_GEAR_REDUCTION = (18d / 36);
 
     //Deploy Motion Profile Constraints
-    private final static double DEPLOY_MAX_RPS = 1;
-    private final static double DEPLOY_MAX_ACCEL = DEPLOY_MAX_RPS / 0.5;
-    private final static double DEPLOY_MAX_JERK = DEPLOY_MAX_ACCEL / 0.25;
+    private final static double DEPLOY_MAX_RPS = 2.5;
+    private final static double DEPLOY_MAX_ACCEL = DEPLOY_MAX_RPS / 0.25;
+    private final static double DEPLOY_MAX_JERK = DEPLOY_MAX_ACCEL / 0.125;
 
     //Collection Motion Profile Constraints
     public final static double COLLECT_MAX_RPS = 40;
@@ -23,6 +23,7 @@ public class CollectorConstants {
 
     public final static double STOW_POSITION = Units.degreesToRotations(10);
     public final static double COLLECT_POSITION = Units.degreesToRotations(137.5);
+    public final static double EJECT_POSITION = Units.degreesToRotations(100);
 
     public final static double EPSILON = 0.01;
 

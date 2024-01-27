@@ -5,7 +5,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class ArmConstants {
-    static final double ARM_GEAR_REDUCTION = (12.0 / 68.0) * (18.0 / 72.0) * (16.0 / 48.0);
+    static final double ARM_GEAR_REDUCTION = (16.0 / 64.0) * (18.0 / 72.0) * (16.0 / 48.0);
     static final double STOW_POSE = 0; // Rotations
     static final double TRANS_POSE = 0.1; // Rotations
     static final double AMP_POSE = 0.5; // Rotations

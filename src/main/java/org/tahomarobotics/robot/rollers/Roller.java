@@ -11,19 +11,16 @@ import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.collector.CollectorConstants;
-import org.tahomarobotics.robot.indexer.Indexer;
-import org.tahomarobotics.robot.indexer.IndexerConstants;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
-import static org.tahomarobotics.robot.indexer.IndexerConstants.*;
 import static org.tahomarobotics.robot.rollers.RollerConstants.*;
 
 public class Roller extends SubsystemIF{
     private static final Roller INSTANCE = new Roller();
 
     private final TalonFX motor;
-    private final DigitalInput beamBreak;
+    //private final DigitalInput beamBreak;
 
     private final StatusSignal<Double> position;
     private final StatusSignal<Double> velocity;
@@ -42,7 +39,7 @@ public class Roller extends SubsystemIF{
         RobustConfigurator configurator = new RobustConfigurator(logger);
 
         motor = new TalonFX(RobotMap.ROLLER_MOTOR);
-        beamBreak = new DigitalInput(RobotMap.BEAM_BREAK);
+        //beamBreak = new DigitalInput(RobotMap.BEAM_BREAK);
 
         configurator.configureTalonFX(motor, RollerConstants.rollerMotorConfiguration);
 
@@ -77,9 +74,9 @@ public class Roller extends SubsystemIF{
 
     // SETTERS
 
-    public boolean isBeamBroken() {
-        return !beamBreak.get();
-    }
+    //public boolean isBeamBroken() {
+    //    return !beamBreak.get();
+    //}
 
     // STATE TRANSITIONS
 
@@ -131,7 +128,7 @@ public class Roller extends SubsystemIF{
         Logger.recordOutput("Roller/Velocity", getVelocity());
 
         Logger.recordOutput("Roller/State", state);
-        Logger.recordOutput("Roller/BeamBreak", isBeamBroken());
+        //Logger.recordOutput("Roller/BeamBreak", isBeamBroken());
         Logger.recordOutput("Roller/Collected", hasCollected());
     }
 

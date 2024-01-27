@@ -4,6 +4,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.littletonrobotics.junction.Logger;
@@ -88,7 +89,7 @@ public class Arm extends SubsystemIF {
 
     @Override
     public void periodic() {
-        Logger.recordOutput("Arm/Position", getPosition());
+        Logger.recordOutput("Arm/Position", getPosition()*360);
         Logger.recordOutput("Arm/Velocity", getVelocity());
 
         Logger.recordOutput("Arm/State", state);

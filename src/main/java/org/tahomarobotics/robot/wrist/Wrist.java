@@ -81,7 +81,7 @@ public class Wrist extends SubsystemIF {
 
     @Override
     public void periodic() {
-        Logger.recordOutput("Wrist/Position", getPosition());
+        Logger.recordOutput("Wrist/Position", getPosition()*360);
         Logger.recordOutput("Wrist/Velocity", getVelocity());
 
         Logger.recordOutput("Wrist/State", state);

@@ -131,7 +131,6 @@ public class Indexer extends SubsystemIF {
 
             setState(State.DISABLED);
         }
-        if (!hasCollected()) return;
 
         motor.setControl(transferPos);
     }

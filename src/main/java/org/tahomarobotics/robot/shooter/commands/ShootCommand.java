@@ -20,7 +20,10 @@ public class ShootCommand extends SequentialCommandGroup {
                         Commands.runOnce(shooter::enable, shooter),
 //                        Commands.runOnce(shooter::setAngleToSpeaker, shooter),
                         Commands.waitUntil(shooter::isReadyToShoot),
-                        Commands.runOnce(() -> indexer.setState(Indexer.State.TRANSFERRING)),
+                        Commands.runOnce(() -> {
+                            indexer.setState(Indexer.State.TRANSFERRING);
+                            indexer.zero();
+                        }),
                         Commands.waitUntil(() -> !indexer.isTransferring()),
                         Commands.runOnce(shooter::disable, shooter)
                 ).onlyIf(this::hasIndexerCollected)

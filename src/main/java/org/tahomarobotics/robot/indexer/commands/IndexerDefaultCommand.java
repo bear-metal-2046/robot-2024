@@ -24,9 +24,10 @@ public class IndexerDefaultCommand extends Command {
             case COLLECT -> {
                 indexer.collect();
 
+                if (!collector.isCollecting()) indexer.setState(Indexer.State.DISABLED);
                 if (indexer.isBeamBroken()) {
                     indexer.setState(Indexer.State.INDEXING);
-                    indexer.zero();;
+                    indexer.zero();
                 }
                 if (collector.isEjecting()) indexer.setState(Indexer.State.EJECTING);
             }

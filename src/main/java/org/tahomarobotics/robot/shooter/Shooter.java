@@ -36,12 +36,12 @@ public class Shooter extends SubsystemIF {
 
     // SETTERS
 
-    public void enable() {
-        io.enable();
-    }
-
     public void disable() {
         io.disable();
+    }
+
+    public void toggleShootMode() {
+        io.toggleShootMode();
     }
 
     public void setAngle(double angle) {

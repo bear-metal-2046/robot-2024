@@ -22,12 +22,12 @@ public class ShooterConstants {
 
     static final double BIAS_AMT = Units.degreesToRotations(5) / 50;
 
-    private static final double SHOOTER_HEIGHT = 1.0;
-    private static final double SPEAKER_HEIGHT = 4.0;
+    private static final double SHOOTER_HEIGHT = Units.inchesToMeters(8.5);
+    private static final double SPEAKER_HEIGHT = Units.inchesToMeters(78.5);
     static final double SPEAKER_HEIGHT_DIFF = SPEAKER_HEIGHT - SHOOTER_HEIGHT;
 
-    private static final Translation2d RED_SPEAKER_TARGET_POSITION = new Translation2d();
-    private static final Translation2d BLUE_SPEAKER_TARGET_POSITION = new Translation2d();
+    private static final Translation2d RED_SPEAKER_TARGET_POSITION = new Translation2d(16.53, 5.55);
+    private static final Translation2d BLUE_SPEAKER_TARGET_POSITION = new Translation2d(0, 5.55);
     static final Supplier<Translation2d> SPEAKER_TARGET_POSITION = () ->
             DriverStation
                     .getAlliance()

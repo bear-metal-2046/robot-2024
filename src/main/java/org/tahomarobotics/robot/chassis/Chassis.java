@@ -3,6 +3,7 @@ package org.tahomarobotics.robot.chassis;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -20,6 +21,7 @@ import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.chassis.commands.AlignSwerveCommand;
+import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.util.CalibrationData;
 import org.tahomarobotics.robot.util.SubsystemIF;
 import org.tahomarobotics.robot.vision.ATVision;
@@ -50,6 +52,8 @@ public class Chassis extends SubsystemIF {
 
     private boolean isFieldOriented = true;
 
+    private final PIDController shootModeController;
+
     // CONSTRUCTOR
 
     private Chassis() {
@@ -79,6 +83,8 @@ public class Chassis extends SubsystemIF {
                 VecBuilder.fill(0.02, 0.02, 0.02),
                 VecBuilder.fill(0.1, 0.1, 0.01)
         );
+
+        shootModeController = ChassisConstants.SHOOT_MODE_CONTROLLER;
 
         odometryThread = new Thread(this::odometryThread);
         odometryThread.start();
@@ -196,12 +202,21 @@ public class Chassis extends SubsystemIF {
         if (!isFieldOriented && DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Red) {
             velocity = new ChassisSpeeds(-velocity.vxMetersPerSecond, -velocity.vyMetersPerSecond, velocity.omegaRadiansPerSecond);
         }
+
+        if (Shooter.getInstance().inShootingMode()) {
+            aimToShooter(velocity);
+        }
+
         drive(velocity, isFieldOriented);
     }
 
     public void drive(ChassisSpeeds velocity, boolean fieldRelative) {
         if (fieldRelative) {
             velocity = ChassisSpeeds.fromFieldRelativeSpeeds(velocity, getPose().getRotation());
+        }
+
+        if (Shooter.getInstance().inShootingMode()) {
+            aimToShooter(velocity);
         }
 
         velocity = ChassisSpeeds.discretize(velocity, Robot.defaultPeriodSecs);
@@ -220,6 +235,14 @@ public class Chassis extends SubsystemIF {
     }
 
     // SETTERS
+
+    public void aimToShooter(ChassisSpeeds speeds) {
+            speeds.omegaRadiansPerSecond =
+                    shootModeController.calculate(
+                            getPose().getRotation().getRadians(),
+                            Shooter.getInstance().rotToSpeaker()
+            );
+    }
 
     private void setSwerveStates(SwerveModuleState[] states) {
         for (int i = 0; i < states.length; i++) modules.get(i).setDesiredState(states[i]);

@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.chassis.Chassis;
+import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 
 import static org.tahomarobotics.robot.shooter.ShooterConstants.*;
@@ -126,6 +127,14 @@ class ShooterIO {
 
         shooterMotor.stopMotor();
         shooterMotorFollower.stopMotor();
+    }
+
+    void toggleShootMode() {
+        if (shootingMode) {
+            disable();
+        } else if (Indexer.getInstance().hasCollected()){
+            enable();
+        }
     }
 
     // INPUTS

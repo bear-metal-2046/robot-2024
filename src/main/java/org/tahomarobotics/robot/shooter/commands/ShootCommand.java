@@ -20,14 +20,7 @@ public class ShootCommand extends SequentialCommandGroup {
                         Commands.waitUntil(shooter::isReadyToShoot),
                         Commands.run(indexer::transferToShooter, indexer).onlyWhile(indexer::hasCollected),
                         Commands.runOnce(shooter::disable)
-                ).onlyIf(this::hasIndexerCollected).onlyIf(shooter::inShootingMode)
+                ).onlyIf(shooter::inShootingMode)
         );
-    }
-
-    private boolean hasIndexerCollected() {
-        boolean collected = indexer.hasCollected();
-        if (!collected)
-            logger.warn("Shoot called without a note collected! Interrupting...");
-        return collected;
     }
 }

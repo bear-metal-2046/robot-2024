@@ -19,7 +19,6 @@
  */
 package org.tahomarobotics.robot.chassis.commands;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,7 +26,6 @@ import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.chassis.ChassisConstants;
-import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.util.SwerveRateLimiter;
 
 import java.util.function.Consumer;
@@ -35,7 +33,6 @@ import java.util.function.Consumer;
 public class TeleopDriveCommand extends Command {
 
     private final Chassis chassis = Chassis.getInstance();
-    private final Shooter shooter = Shooter.getInstance();
 
     private final ChassisSpeeds velocityInput = new ChassisSpeeds();
 
@@ -43,8 +40,6 @@ public class TeleopDriveCommand extends Command {
 
     private final TeleopDriveCommandInputsAutoLogged inputs = new TeleopDriveCommandInputsAutoLogged();
     private final Consumer<TeleopDriveCommandInputsAutoLogged> inpMut;
-
-    private final PIDController rotController = new PIDController(1, 0, 0);
 
     private final double maxVelocity;
     private final double maxRotationalVelocity;
@@ -72,11 +67,6 @@ public class TeleopDriveCommand extends Command {
         velocityInput.vxMetersPerSecond = inputs.x * maxVelocity * direction;
         velocityInput.vyMetersPerSecond = inputs.y * maxVelocity * direction;
         velocityInput.omegaRadiansPerSecond = inputs.rot * maxRotationalVelocity;
-
-        if (shooter.inShootingMode()) {
-            velocityInput.omegaRadiansPerSecond =
-                    rotController.calculate(chassis.getPose().getRotation().getRadians(), shooter.rotToSpeaker());
-        }
 
         ChassisSpeeds velocityOutput = rateLimiter.calculate(velocityInput);
 

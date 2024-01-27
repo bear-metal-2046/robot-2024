@@ -15,9 +15,11 @@ import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.collector.commands.CollectorDefaultCommand;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.indexer.commands.IndexerDefaultCommand;
+import org.tahomarobotics.robot.rollers.Roller;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.commands.ShootCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
+import org.tahomarobotics.robot.wrist.Wrist;
 
 public class OI extends SubsystemIF {
     private final static OI INSTANCE = new OI();
@@ -65,7 +67,7 @@ public class OI extends SubsystemIF {
         driveController.povUp().whileTrue(Commands.run(shooter::biasUp));
         driveController.povDown().whileTrue(Commands.run(shooter::biasDown));
 
-        Arm.getInstance().registerSysIdCommands(driveController);
+        Roller.getInstance().registerSysIdCommands(driveController);
     }
 
     private void setDefaultCommands() {

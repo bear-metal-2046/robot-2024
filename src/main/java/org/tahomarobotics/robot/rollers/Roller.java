@@ -7,12 +7,15 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.collector.CollectorConstants;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
+import org.tahomarobotics.robot.util.SysIdTest;
 
 import static org.tahomarobotics.robot.rollers.RollerConstants.*;
 
@@ -22,6 +25,7 @@ public class Roller extends SubsystemIF{
     private final TalonFX motor;
     //private final DigitalInput beamBreak;
 
+    private final SysIdTest test;
     private final StatusSignal<Double> position;
     private final StatusSignal<Double> velocity;
 
@@ -48,6 +52,8 @@ public class Roller extends SubsystemIF{
 
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY, position, velocity);
         motor.optimizeBusUtilization();
+
+        test = new SysIdTest(this,motor);
     }
 
     public static Roller getInstance() {
@@ -138,5 +144,16 @@ public class Roller extends SubsystemIF{
         COLLECT,
         INDEXING,
         DISABLED
+    }
+
+    // SYS ID
+
+    public void registerSysIdCommands(CommandXboxController driveController){
+        driveController.povUp().whileTrue(test.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        driveController.povDown().whileTrue(test.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+
+        driveController.povLeft().whileTrue(test.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        driveController.povRight().whileTrue(test.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
     }
 }

@@ -18,8 +18,6 @@ import static org.tahomarobotics.robot.arm.ArmConstants.*;
 
 public class Arm extends SubsystemIF {
     private static final Arm INSTANCE = new Arm();
-
-    private final SysIdTest test;
     private final TalonFX motor;
 
     private final StatusSignal<Double> position;
@@ -44,8 +42,6 @@ public class Arm extends SubsystemIF {
 
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY, position, velocity);
         motor.optimizeBusUtilization();
-
-        test = new SysIdTest(this,motor);
     }
 
     public static Arm getInstance() {
@@ -110,16 +106,4 @@ public class Arm extends SubsystemIF {
         AMP,
         TRAP
     }
-
-    // SYS ID
-
-    public void registerSysIdCommands(CommandXboxController driveController){
-        driveController.povUp().onTrue(test.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        driveController.povDown().onTrue(test.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-
-        driveController.povLeft().onTrue(test.sysIdDynamic(SysIdRoutine.Direction.kForward));
-        driveController.povRight().onTrue(test.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-
-    }
-
 }

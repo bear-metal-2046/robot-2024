@@ -7,9 +7,10 @@ import com.pathplanner.lib.path.PathPlannerTrajectory;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.networktables.*;
+import edu.wpi.first.networktables.NetworkTableEvent;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -22,38 +23,35 @@ import java.util.List;
 
 public class Autonomous extends SubsystemIF {
     private static final Autonomous INSTANCE = new Autonomous();
-    private static final Chassis chassis = Chassis.getInstance();
-    private final Field2d fieldPose = new Field2d();
+    private final Chassis chassis = Chassis.getInstance();
+    private final LoggedDashboardChooser<Command> autoChooser;
+    private final Field2d fieldPose;
 
     public static Autonomous getInstance() {
         return INSTANCE;
     }
 
-    public Autonomous() {
+    private Autonomous() {
+        autoChooser = PathPlannerHelper.getAutoChooser(chassis);
         NetworkTableInstance netInstance = NetworkTableInstance.getDefault();
-        StringSubscriber autoSub = netInstance.getTable("SmartDashboard").getStringTopic("Auto Chooser").subscribe("Leave Auto");
+        StringSubscriber autoSub = netInstance.getTable("SmartDashboard/Auto").getStringTopic("selected").subscribe("Test Auto");
+        fieldPose = chassis.getField();
         netInstance.addListener(
                 autoSub,
                 EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-                e -> postAutoTrajectory(fieldPose)
+                e -> new InstantCommand (() -> postAutoTrajectory(fieldPose, autoSub.get())).ignoringDisable(true).schedule()
         );
     }
-
-    public Field2d getField() {
-        return fieldPose;
-    }
-
-    LoggedDashboardChooser<Command> autoChooser = PathPlannerHelper.getAutoChooser();
 
     public Command getSelectedAuto() {
         return autoChooser.get();
     }
 
-    public Trajectory convertToTrajectory(PathPlannerAuto selectedAuto) {
-        List<Trajectory> autoTrajectories = getTrajectories(selectedAuto).stream().map  // PathPlannerTrajectories are
-                ((trajectory) -> new Trajectory(                                        // essentially still Trajectories,
-                        trajectory                                                      // this just puts the values
-                                .getStates().stream().map                               // in the right places
+    public Trajectory convertToTrajectory(List<PathPlannerPath> selectedAutoPaths) {
+        List<Trajectory> autoTrajectories = getTrajectories(selectedAutoPaths).stream().map  // PathPlannerTrajectories are
+                ((trajectory) -> new Trajectory(                                            // essentially still Trajectories,
+                        trajectory                                                          // this just puts the values
+                                .getStates().stream().map                                   // in the right places
                                         (state -> new Trajectory.State (
                                                 state.timeSeconds,
                                                 state.velocityMps,
@@ -64,13 +62,12 @@ public class Autonomous extends SubsystemIF {
                 )).toList();
         Trajectory finishedTrajectory = new Trajectory();
         for (Trajectory trajectory : autoTrajectories) {
-            finishedTrajectory.concatenate(trajectory);
+            finishedTrajectory = finishedTrajectory.concatenate(trajectory);
         }
         return finishedTrajectory;
     }
 
-    private List<PathPlannerTrajectory> getTrajectories(PathPlannerAuto auto) {
-        List<PathPlannerPath> autoPaths = PathPlannerAuto.getPathGroupFromAutoFile(auto.getName());
+    private List<PathPlannerTrajectory> getTrajectories(List<PathPlannerPath> autoPaths) {
         List<PathPlannerTrajectory> autoTrajectories = new ArrayList<>();
         ChassisSpeeds lastChassisSpeeds = new ChassisSpeeds();
         Rotation2d lastRotation = new Rotation2d();
@@ -93,7 +90,12 @@ public class Autonomous extends SubsystemIF {
         NamedCommands.registerCommand("ResetOdom", new InstantCommand(() -> chassis.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.get().getName()))));
     }
 
-    public void postAutoTrajectory(Field2d field) {
-        field.getObject("trajectory").setTrajectory(convertToTrajectory((PathPlannerAuto) autoChooser.get()));
+    public void postAutoTrajectory(Field2d field, String autoName) {
+        field.getObject("Trajectory").setTrajectory(convertToTrajectory(PathPlannerAuto.getPathGroupFromAutoFile(autoName)));
+    }
+
+    @Override
+    public void onDisabledInit() {
+        postAutoTrajectory(chassis.getField(), getSelectedAuto().getName());
     }
 }

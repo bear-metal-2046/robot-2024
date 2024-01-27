@@ -17,9 +17,7 @@ public class PathPlannerHelper {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Autonomous.class);
 
-    private static final Chassis chassis = Chassis.getInstance();
-    public static LoggedDashboardChooser<Command> getAutoChooser() {
-
+    public static LoggedDashboardChooser<Command> getAutoChooser(Chassis chassis) {
         AutoBuilder.configureHolonomic(
                 chassis::getPose,
                 chassis::resetOdometry,
@@ -39,7 +37,7 @@ public class PathPlannerHelper {
                 chassis
         );
 
-        return new LoggedDashboardChooser<>("Auto", AutoBuilder.buildAutoChooser());
+        return new LoggedDashboardChooser<>("Auto", AutoBuilder.buildAutoChooser("Test Auto"));
     }
 
 }

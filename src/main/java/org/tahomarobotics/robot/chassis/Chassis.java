@@ -12,6 +12,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -30,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Chassis extends SubsystemIF {
-    private static final Chassis INSTANCE = new Chassis();
+    private static Chassis INSTANCE = new Chassis();
 
     private final GyroIO gyroIO = RobotConfiguration.getMode() == RobotConfiguration.Mode.REAL ? new GyroIO() : new GyroIOSim();
 
@@ -38,7 +39,7 @@ public class Chassis extends SubsystemIF {
     private final List<SwerveModule> modules;
 
     private final SwerveDrivePoseEstimator poseEstimator;
-    private final Field2d fieldPose;
+    private final Field2d fieldPose = new Field2d();
 
     private final SwerveDriveKinematics kinematics;
     private final CalibrationData<Double[]> swerveCalibration;
@@ -84,8 +85,6 @@ public class Chassis extends SubsystemIF {
         odometryThread = new Thread(this::odometryThread);
         odometryThread.start();
 
-        fieldPose = Autonomous.getInstance().getField();
-
         backATVision = new ATVision(VisionConstants.ATCamera.BACK, fieldPose, poseEstimator);
         leftATVision = new ATVision(VisionConstants.ATCamera.LEFT, fieldPose, poseEstimator);
         rightATVision = new ATVision(VisionConstants.ATCamera.RIGHT, fieldPose, poseEstimator);
@@ -93,6 +92,10 @@ public class Chassis extends SubsystemIF {
 
     public static Chassis getInstance() {
         return INSTANCE;
+    }
+
+    public Field2d getField() {
+        return fieldPose;
     }
 
     // INITIALIZE

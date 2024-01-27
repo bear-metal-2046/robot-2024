@@ -59,8 +59,7 @@ public class OI extends SubsystemIF {
         // Shoot
         driveController.x().onTrue(new ShootCommand());
 
-
-        driveController.start().onTrue(Commands.runOnce(() -> Shooter.getInstance().setShooterAngle(0.085)));
+        driveController.start().onTrue(Commands.runOnce(() -> Shooter.getInstance().setAngle(0.085)));
 
         driveController.povUp().whileTrue(Commands.run(shooter::biasUp));
         driveController.povDown().whileTrue(Commands.run(shooter::biasDown));

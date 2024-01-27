@@ -18,33 +18,34 @@ public class IndexerDefaultCommand extends Command {
             case DISABLED -> {
                 indexer.disable();
 
-                if (collector.isCollecting() && !indexer.hasCollected()) indexer.setState(Indexer.State.COLLECT);
-                if (collector.isEjecting()) indexer.setState(Indexer.State.EJECTING);
+                if (collector.isCollecting() && !indexer.hasCollected()) indexer.transitionToCollecting();
+                if (collector.isEjecting()) indexer.transitionToEjecting();
             }
-            case COLLECT -> {
+            case COLLECTING -> {
                 indexer.collect();
 
-                if (!collector.isCollecting()) indexer.setState(Indexer.State.DISABLED);
-                if (indexer.isBeamBroken()) {
-                    indexer.setState(Indexer.State.INDEXING);
-                    indexer.zero();
-                }
-                if (collector.isEjecting()) indexer.setState(Indexer.State.EJECTING);
+                if (!collector.isCollecting()) indexer.transitionToDisabled();
+                if (indexer.isBeamBroken()) indexer.transitionToIndexing();
+                if (collector.isEjecting()) indexer.transitionToEjecting();
             }
             case INDEXING -> {
                 indexer.index();
 
-                if (collector.isEjecting()) indexer.setState(Indexer.State.EJECTING);
+                if (collector.isEjecting()) indexer.transitionToEjecting();
             }
             case EJECTING -> {
                 indexer.eject();
 
-                if (!collector.isEjecting()) indexer.setState(Indexer.State.DISABLED);
+                if (!collector.isEjecting()) indexer.transitionToDisabled();
             }
             case TRANSFERRING -> {
                 indexer.transfer();
 
-                if (!indexer.isBeamBroken()) indexer.setState(Indexer.State.DISABLED);
+                if (!indexer.isBeamBroken()) indexer.transitionToDisabled();
+            }
+            case COLLECTED -> {
+                // Fix possible broken state
+                if (!indexer.isBeamBroken()) indexer.transitionToDisabled();
             }
         }
     }

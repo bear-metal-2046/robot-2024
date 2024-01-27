@@ -113,7 +113,7 @@ public class Indexer extends SubsystemIF {
             disable();
             zero();
 
-            setState(State.COLLECTED);
+            transitionToCollected();
         }
         if (hasCollected()) return;
 
@@ -129,10 +129,38 @@ public class Indexer extends SubsystemIF {
             disable();
             zero();
 
-            setState(State.DISABLED);
+            transitionToDisabled();
         }
 
         motor.setControl(transferPos);
+    }
+
+    // TRANSITIONS
+
+    public void transitionToDisabled() {
+        setState(State.DISABLED);
+    }
+
+    public void transitionToCollecting() {
+        setState(State.COLLECTING);
+    }
+
+    public void transitionToIndexing() {
+        zero();
+        setState(State.INDEXING);
+    }
+
+    public void transitionToCollected() {
+        setState(State.COLLECTED);
+    }
+
+    public void transitionToTransferring() {
+        zero();
+        setState(State.TRANSFERRING);
+    }
+
+    public void transitionToEjecting() {
+        setState(State.EJECTING);
     }
 
     // PERIODIC
@@ -151,7 +179,7 @@ public class Indexer extends SubsystemIF {
 
     public enum State {
         DISABLED,
-        COLLECT,
+        COLLECTING,
         INDEXING,
         COLLECTED,
         EJECTING,

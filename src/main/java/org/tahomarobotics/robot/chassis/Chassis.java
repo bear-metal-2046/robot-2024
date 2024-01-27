@@ -203,10 +203,6 @@ public class Chassis extends SubsystemIF {
             velocity = new ChassisSpeeds(-velocity.vxMetersPerSecond, -velocity.vyMetersPerSecond, velocity.omegaRadiansPerSecond);
         }
 
-        if (Shooter.getInstance().inShootingMode()) {
-            aimToShooter(velocity);
-        }
-
         drive(velocity, isFieldOriented);
     }
 
@@ -228,6 +224,10 @@ public class Chassis extends SubsystemIF {
 
     public void autoDrive(ChassisSpeeds velocity) {
         velocity = ChassisSpeeds.discretize(velocity, Robot.defaultPeriodSecs);
+
+        if (Shooter.getInstance().inShootingMode()) {
+            aimToShooter(velocity);
+        }
 
         var swerveModuleStates = kinematics.toSwerveModuleStates(velocity);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, ChassisConstants.MAX_VELOCITY);

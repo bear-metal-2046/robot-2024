@@ -156,4 +156,9 @@ public class Collector extends SubsystemIF {
             stowCollector();
         }
     }
+
+    public boolean isEjecting() {
+        // TODO: STUB METHOD
+        return false;
+    }
 }

@@ -18,9 +18,9 @@ public class ShootCommand extends SequentialCommandGroup {
         addCommands(
                 Commands.sequence(
                         Commands.runOnce(shooter::enable, shooter),
-//                        Commands.runOnce(shooter::setAngleToSpeaker, shooter),
                         Commands.waitUntil(shooter::isReadyToShoot),
-                        Commands.run(indexer::transferToShooter, indexer).onlyWhile(indexer::hasCollected),
+                        Commands.runOnce(indexer::transitionToTransferring),
+                        Commands.waitUntil(() -> !indexer.isTransferring()),
                         Commands.runOnce(shooter::disable, shooter)
                 ).onlyIf(this::hasIndexerCollected)
         );

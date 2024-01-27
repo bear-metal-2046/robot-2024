@@ -1,32 +1,35 @@
 package org.tahomarobotics.robot.collector.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.collector.Collector;
-import org.tahomarobotics.robot.collector.CollectorConstants;
 import org.tahomarobotics.robot.indexer.Indexer;
 
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
+import java.util.function.Consumer;
 
 public class CollectorDefaultCommand extends Command {
 
-    private final DoubleSupplier trigger;
-    private final BooleanSupplier povLeft;
+    private final CollectorDefaultCommandInputsAutoLogged inputs = new CollectorDefaultCommandInputsAutoLogged();
+    private final Consumer<CollectorDefaultCommandInputs> inpMut;
 
     private final Collector collector = Collector.getInstance();
     private final Indexer indexer = Indexer.getInstance();
 
-    public CollectorDefaultCommand(DoubleSupplier trigger, BooleanSupplier povLeft) {
-        this.trigger = trigger;
-        this.povLeft = povLeft;
+    public CollectorDefaultCommand(Consumer<CollectorDefaultCommandInputs> inpMut) {
+        this.inpMut = inpMut;
 
         addRequirements(collector);
     }
 
     @Override
     public void execute() {
-        boolean isCollecting = trigger.getAsDouble() > 0.0;
-        boolean isEjecting = povLeft.getAsBoolean();
+        inpMut.accept(inputs);
+
+        Logger.processInputs("Collector/ControllerInputs", inputs);
+
+        boolean isCollecting = inputs.trigger > 0.0;
+        boolean isEjecting = inputs.eject;
 
         switch (collector.getCollectionState()) {
             case DISABLED -> {
@@ -60,5 +63,11 @@ public class CollectorDefaultCommand extends Command {
     @Override
     public void end(boolean interrupted) {
         collector.stopCollect();
+    }
+
+    @AutoLog
+    public static class CollectorDefaultCommandInputs {
+        public double trigger;
+        public boolean eject;
     }
 }

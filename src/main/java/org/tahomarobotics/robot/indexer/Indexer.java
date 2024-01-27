@@ -27,7 +27,7 @@ public class Indexer extends SubsystemIF {
 
     private State state = State.DISABLED;
 
-    private final MotionMagicVoltage intakePos = new MotionMagicVoltage(INTAKE_DISTANCE)
+    private final MotionMagicVoltage indexPos = new MotionMagicVoltage(INTAKE_DISTANCE)
             .withSlot(1).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVoltage transferPos = new MotionMagicVoltage(TRANSFER_DISTANCE)
             .withSlot(1).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
@@ -115,9 +115,6 @@ public class Indexer extends SubsystemIF {
 
             transitionToCollected();
         }
-        if (hasCollected()) return;
-
-        motor.setControl(intakePos);
     }
 
     public void eject() {
@@ -131,8 +128,6 @@ public class Indexer extends SubsystemIF {
 
             transitionToDisabled();
         }
-
-        motor.setControl(transferPos);
     }
 
     // TRANSITIONS
@@ -147,10 +142,14 @@ public class Indexer extends SubsystemIF {
 
     public void transitionToIndexing() {
         zero();
+        motor.setControl(indexPos);
+
         setState(State.INDEXING);
     }
 
     public void transitionToCollected() {
+        motor.setControl(transferPos);
+
         setState(State.COLLECTED);
     }
 

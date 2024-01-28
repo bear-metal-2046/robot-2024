@@ -5,6 +5,9 @@
 
 package org.tahomarobotics.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -18,6 +21,7 @@ import org.tahomarobotics.robot.indexer.commands.IndexerDefaultCommand;
 import org.tahomarobotics.robot.rollers.Roller;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.commands.ShootCommand;
+import org.tahomarobotics.robot.shooter.commands.ShooterDefaultCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 import org.tahomarobotics.robot.wrist.Wrist;
 
@@ -56,13 +60,17 @@ public class OI extends SubsystemIF {
         // Robot/Field Orientation
         driveController.b().onTrue(Commands.runOnce(chassis::toggleOrientation));
 
+        //For testing before going to shed
+        driveController.y().onTrue(Commands.runOnce(() -> chassis.resetOdometry(new Pose2d(new Translation2d(3, 3), new Rotation2d(0)))));
+
         //Collector up and down
         driveController.leftBumper().onTrue(Commands.runOnce(collector::toggleDeploy));
 
+        //Shooting mode toggle
+        driveController.rightBumper().onTrue(Commands.runOnce(shooter::toggleShootMode));
+
         // Shoot
         driveController.x().onTrue(new ShootCommand());
-
-        driveController.start().onTrue(Commands.runOnce(() -> Shooter.getInstance().setShooterAngle(0.085)));
 
         driveController.povUp().whileTrue(Commands.run(shooter::biasUp));
         driveController.povDown().whileTrue(Commands.run(shooter::biasDown));
@@ -78,10 +86,13 @@ public class OI extends SubsystemIF {
         ));
 
         Collector.getInstance().setDefaultCommand(new CollectorDefaultCommand(
-                () -> deadband(driveController.getLeftTriggerAxis(), 0.5)
+                () -> deadband(driveController.getLeftTriggerAxis(), 0.5),
+                driveController.povLeft()
         ));
 
         Indexer.getInstance().setDefaultCommand(new IndexerDefaultCommand());
+
+        Shooter.getInstance().setDefaultCommand(new ShooterDefaultCommand());
     }
 
     private static double deadband(double value, double deadZone) {

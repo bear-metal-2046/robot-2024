@@ -26,13 +26,14 @@ public class Indexer extends SubsystemIF {
     private final StatusSignal<Double> velocity;
 
     private State state = State.DISABLED;
-    private boolean collected = false;
 
-    private final MotionMagicVoltage intakePos = new MotionMagicVoltage(INTAKE_DISTANCE)
+    private final MotionMagicVoltage indexPos = new MotionMagicVoltage(INTAKE_DISTANCE)
             .withSlot(1).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVoltage transferPos = new MotionMagicVoltage(TRANSFER_DISTANCE)
             .withSlot(1).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
-    private final MotionMagicVelocityVoltage idleVel = new MotionMagicVelocityVoltage(CollectorConstants.COLLECT_MAX_RPS)
+    private final MotionMagicVelocityVoltage collectVel = new MotionMagicVelocityVoltage(CollectorConstants.COLLECT_MAX_RPS)
+            .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
+    private final MotionMagicVelocityVoltage ejectVel = new MotionMagicVelocityVoltage(-CollectorConstants.COLLECT_MAX_RPS)
             .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
 
     private Indexer() {
@@ -56,7 +57,7 @@ public class Indexer extends SubsystemIF {
 
     @Override
     public SubsystemIF initialize() {
-        SmartDashboard.putData("Reset Indexer", runOnce(() -> collected = false));
+        SmartDashboard.putData("Reset Indexer", runOnce(() -> setState(State.DISABLED)));
 
         return this;
     }
@@ -72,11 +73,19 @@ public class Indexer extends SubsystemIF {
     }
 
     public boolean hasCollected() {
-        return collected;
+        return state == State.COLLECTED;
+    }
+
+    public boolean isTransferring() {
+        return state == State.TRANSFERRING;
     }
 
     public boolean isIndexing() {
         return state == State.INDEXING;
+    }
+
+    public State getState() {
+        return state;
     }
 
     // SETTERS
@@ -85,46 +94,76 @@ public class Indexer extends SubsystemIF {
         return !beamBreak.get();
     }
 
+    public void setState(State state) {
+        this.state = state;
+    }
+
+    public void zero() {
+        motor.setPosition(0.0);
+    }
+
     // STATE TRANSITIONS
 
-    public void stop() {
+    public void disable() {
         motor.stopMotor();
-
-        state = State.DISABLED;
     }
 
     public void collect() {
-        motor.setControl(idleVel);
-
-        state = State.COLLECT;
+        motor.setControl(collectVel);
     }
 
     public void index() {
+        if (getPosition() >= INTAKE_DISTANCE - POSITION_TOLERANCE) {
+            disable();
+            zero();
 
-        if (isIndexing() && getPosition() >= INTAKE_DISTANCE - POSITION_TOLERANCE) {
-            stop();
-            motor.setPosition(0.0);
-
-            collected = true;
+            transitionToCollected();
         }
-        if (isIndexing() || collected) return;
-
-        motor.setPosition(0.0);
-        motor.setControl(intakePos);
-
-        state = State.INDEXING;
     }
 
-    public void transferToShooter() {
+    public void eject() {
+        motor.setControl(ejectVel);
+    }
+
+    public void transfer() {
         if (getPosition() >= TRANSFER_DISTANCE - POSITION_TOLERANCE) {
-            stop();
-            motor.setPosition(0.0);
+            disable();
+            zero();
 
-            collected = false;
+            transitionToDisabled();
         }
-        if (isIndexing() || !collected) return;
+    }
 
+    // TRANSITIONS
+
+    public void transitionToDisabled() {
+        setState(State.DISABLED);
+    }
+
+    public void transitionToCollecting() {
+        setState(State.COLLECTING);
+    }
+
+    public void transitionToIndexing() {
+        zero();
+        motor.setControl(indexPos);
+
+        setState(State.INDEXING);
+    }
+
+    public void transitionToCollected() {
+        setState(State.COLLECTED);
+    }
+
+    public void transitionToTransferring() {
+        zero();
         motor.setControl(transferPos);
+
+        setState(State.TRANSFERRING);
+    }
+
+    public void transitionToEjecting() {
+        setState(State.EJECTING);
     }
 
     // PERIODIC
@@ -141,9 +180,12 @@ public class Indexer extends SubsystemIF {
 
     // STATES
 
-    enum State {
-        COLLECT,
+    public enum State {
+        DISABLED,
+        COLLECTING,
         INDEXING,
-        DISABLED
+        COLLECTED,
+        EJECTING,
+        TRANSFERRING
     }
 }

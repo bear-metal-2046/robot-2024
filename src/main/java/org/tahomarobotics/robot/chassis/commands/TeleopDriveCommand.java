@@ -32,7 +32,7 @@ import java.util.function.Consumer;
 
 public class TeleopDriveCommand extends Command {
 
-    private static final Chassis chassis = Chassis.getInstance();
+    private final Chassis chassis = Chassis.getInstance();
 
     private final ChassisSpeeds velocityInput = new ChassisSpeeds();
 

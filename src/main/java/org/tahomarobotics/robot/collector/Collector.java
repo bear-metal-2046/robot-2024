@@ -10,9 +10,12 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Commands;
+import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.collector.commands.ZeroCollectorCommand;
+import org.tahomarobotics.robot.shooter.Shooter;
+import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
@@ -35,11 +38,11 @@ public class Collector extends SubsystemIF {
     private final StatusSignal<Double> deployVelocity;
     private final StatusSignal<Double> collectVelocity;
 
-    private final MotionMagicVelocityVoltage collectVelocityControl = new MotionMagicVelocityVoltage(COLLECT_MAX_RPS).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
+    private final MotionMagicVelocityVoltage collectVelocityControl = new MotionMagicVelocityVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVoltage deployPositionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
 
-    private boolean isCollecting;
-    private boolean isStowed = true;
+    private CollectionState collectionState = CollectionState.DISABLED;
+    private DeploymentState deploymentState = DeploymentState.STOWED;
 
     private Collector() {
         RobustConfigurator configurator = new RobustConfigurator(logger);
@@ -67,35 +70,8 @@ public class Collector extends SubsystemIF {
         ParentDevice.optimizeBusUtilizationForAll(deployLeft, deployRight, collectMotor);
     }
 
-    @Override
-    public void periodic() {
-        BaseStatusSignal.refreshAll(deployPositionLeft, collectVelocity);
-    }
 
-    @Override
-
-    public SubsystemIF initialize() {
-
-        Commands.waitUntil(RobotState::isEnabled)
-                .andThen(new ZeroCollectorCommand())
-                .ignoringDisable(true).schedule();
-
-        return this;
-    }
-
-    public void zeroCollector() {
-        deployLeft.setPosition(0);
-        deployRight.setPosition(0);
-    }
-
-    public boolean isCollecting() {
-        return isCollecting;
-    }
-
-    public boolean isStowed() {
-        return isStowed;
-    }
-
+    // GETTERS
 
     private double getDeployPositionLeft() {
         return deployPositionLeft.refresh().getValue();
@@ -114,34 +90,74 @@ public class Collector extends SubsystemIF {
     }
 
 
+    // DEPLOYMENT CONTROL
+
     private void setDeployPosition(double position) {
         deployLeft.setControl(deployPositionControl.withPosition(position));
         deployRight.setControl(deployPositionControl.withPosition(position));
     }
 
-    public void stowCollector() {
-        setDeployPosition(STOW_POSITION);
-        isStowed = true;
+    public void toggleDeploy() {
+        if (deploymentState == DeploymentState.STOWED || deploymentState == DeploymentState.EJECT) {
+            deploymentState = DeploymentState.DEPLOYED;
+            setDeployPosition(COLLECT_POSITION);
+            Shooter.getInstance().setAngle(ShooterConstants.SHOOTER_COLLECT_PIVOT_ANGLE);
+        } else {
+            deploymentState = DeploymentState.STOWED;
+            setDeployPosition(STOW_POSITION);
+        }
     }
 
-    public void deployCollector() {
-        setDeployPosition(COLLECT_POSITION);
-        isStowed = false;
+    public void setDeployEject() {
+        deploymentState = DeploymentState.EJECT;
+        setDeployPosition(EJECT_POSITION);
     }
 
-    public void setVoltage(double voltage) {
-        deployLeft.setControl(new VoltageOut(voltage));
-        deployRight.setControl(new VoltageOut(voltage));
-    }
+
+    // COLLECTOR CONTROL
 
     public void collect() {
-        collectMotor.setControl(collectVelocityControl);
-        isCollecting = true;
+        collectMotor.setControl(collectVelocityControl.withVelocity(COLLECT_MAX_RPS));
+    }
+
+    public void eject() {
+        collectMotor.setControl(collectVelocityControl.withVelocity(-COLLECT_MAX_RPS));
     }
 
     public void stopCollect() {
         collectMotor.stopMotor();
-        isCollecting = false;
+    }
+
+
+    // STATE CONTROL
+
+    public void setCollectionState(CollectionState state) {
+        collectionState = state;
+    }
+
+    public CollectionState getCollectionState() {
+        return collectionState;
+    }
+
+    public boolean isCollecting() {
+        return collectionState == CollectionState.COLLECTING;
+    }
+    public boolean isEjecting() {
+        return collectionState == CollectionState.EJECTING;
+    }
+    public boolean isStowed() {
+        return deploymentState == DeploymentState.STOWED;
+    }
+    public boolean isInEject() {
+        return deploymentState == DeploymentState.EJECT;
+    }
+
+
+    // ZEROING
+
+    public void setVoltage(double voltage) {
+        deployLeft.setControl(new VoltageOut(voltage));
+        deployRight.setControl(new VoltageOut(voltage));
     }
 
     public void stopDeploy() {
@@ -149,11 +165,41 @@ public class Collector extends SubsystemIF {
         deployRight.stopMotor();
     }
 
-    public void toggleDeploy() {
-        if (isStowed) {
-            deployCollector();
-        } else {
-            stowCollector();
-        }
+    public void zeroCollector() {
+        deployLeft.setPosition(0);
+        deployRight.setPosition(0);
+    }
+
+
+    @Override
+    public void periodic() {
+        BaseStatusSignal.refreshAll(deployPositionLeft, collectVelocity);
+
+        Logger.recordOutput("Collector/DeployState", deploymentState);
+        Logger.recordOutput("Collector/CollectionState", collectionState);
+    }
+
+    @Override
+    public SubsystemIF initialize() {
+
+        Commands.waitUntil(RobotState::isEnabled)
+                .andThen(new ZeroCollectorCommand())
+                .ignoringDisable(true).schedule();
+
+        return this;
+    }
+
+    // STATES
+
+    public enum CollectionState {
+        COLLECTING,
+        DISABLED,
+        EJECTING
+    }
+
+    public enum DeploymentState {
+        DEPLOYED,
+        STOWED,
+        EJECT;
     }
 }

@@ -17,19 +17,11 @@ public class ShootCommand extends SequentialCommandGroup {
 
         addCommands(
                 Commands.sequence(
-                        Commands.runOnce(shooter::enable, shooter),
-//                        Commands.runOnce(shooter::setAngleToSpeaker, shooter),
                         Commands.waitUntil(shooter::isReadyToShoot),
-                        Commands.run(indexer::transferToShooter, indexer).onlyWhile(indexer::hasCollected),
-                        Commands.runOnce(shooter::disable, shooter)
-                ).onlyIf(this::hasIndexerCollected)
+                        Commands.runOnce(indexer::transitionToTransferring),
+                        Commands.waitUntil(() -> !indexer.isTransferring()),
+                        Commands.runOnce(shooter::disable)
+                ).onlyIf(shooter::inShootingMode)
         );
-    }
-
-    private boolean hasIndexerCollected() {
-        boolean collected = indexer.hasCollected();
-        if (!collected)
-            logger.warn("Shoot called without a note collected! Interrupting...");
-        return collected;
     }
 }

@@ -89,11 +89,10 @@ public class Shooter extends SubsystemIF {
         io.processInputs(inputs);
         Logger.processInputs("Shooter", inputs);
 
+        Logger.recordOutput("Shooter/Mode", inShootingMode()) ;
         Logger.recordOutput("Shooter/Velocity", getShooterVelocity());
         Logger.recordOutput("Shooter/Angle", getPivotPosition());
         Logger.recordOutput("Shooter/Angle (Degrees)", getPivotPosition() * 360);
-
-
     }
 
     // onInit

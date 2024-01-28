@@ -83,8 +83,10 @@ public class OI extends SubsystemIF {
         ));
 
         Collector.getInstance().setDefaultCommand(new CollectorDefaultCommand(
-                () -> deadband(driveController.getLeftTriggerAxis(), 0.5),
-                driveController.povLeft()
+                inputs -> {
+                    inputs.trigger = deadband(driveController.getLeftTriggerAxis(), 0.5);
+                    inputs.eject = driveController.povLeft().getAsBoolean();
+                }
         ));
 
         Indexer.getInstance().setDefaultCommand(new IndexerDefaultCommand());

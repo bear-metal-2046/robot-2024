@@ -173,10 +173,15 @@ public class Collector extends SubsystemIF {
 
     @Override
     public void periodic() {
-        BaseStatusSignal.refreshAll(deployPositionLeft, collectVelocity);
+        BaseStatusSignal.refreshAll(deployPositionLeft, deployPositionRight, collectVelocity);
 
-        Logger.recordOutput("Collector/DeployState", deploymentState);
-        Logger.recordOutput("Collector/CollectionState", collectionState);
+        Logger.recordOutput("Collector/Deploy State", deploymentState);
+        Logger.recordOutput("Collector/Collection State", collectionState);
+
+        Logger.recordOutput("Collector/Deploy Right Position", deployPositionRight.getValue());
+        Logger.recordOutput("Collector/Deploy Left Position", deployPositionLeft.getValue());
+        Logger.recordOutput("Collector/Deploy Velocity", deployVelocity.getValue());
+        Logger.recordOutput("Collector/Collect Velocity", collectVelocity.getValue());
     }
 
     @Override

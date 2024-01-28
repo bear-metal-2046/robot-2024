@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
+import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
 import org.tahomarobotics.robot.util.SysIdTest;
@@ -51,6 +52,10 @@ public class Arm extends SubsystemIF {
 
     public double getVelocity() {
         return velocity.refresh().getValue();
+    }
+
+    public Arm.State getState() {
+        return state;
     }
 
     // STATE TRANSITIONS

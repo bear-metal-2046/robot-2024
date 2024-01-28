@@ -8,7 +8,7 @@ import org.tahomarobotics.robot.collector.CollectorConstants;
 public class RollerConstants {
     static final double ROLLER_GEAR_REDUCTION = (12.0 / 72.0) * (18.0 / 24.0) * (24.0 / 18.0);
     static final double ROLLER_INTAKE_DISTANCE = 2.0; // Rotations
-    static final double ROLLER_TRANSFER_DISTANCE = 2.0; // Rotations
+    static final double ROLLER_TRANSFER_DISTANCE = 5.0; // Rotations
     static final double ROLLER_POSITION_TOLERANCE = 0.1; // Rotations
 
     static final TalonFXConfiguration rollerMotorConfiguration = new TalonFXConfiguration()

@@ -74,6 +74,13 @@ public class OI extends SubsystemIF {
 
         driveController.povUp().whileTrue(Commands.run(shooter::biasUp));
         driveController.povDown().whileTrue(Commands.run(shooter::biasDown));
+
+        driveController.povRight().onTrue(Commands.run(Arm.getInstance()::trans));
+        driveController.povRight().onTrue(Commands.run(Wrist.getInstance()::trans));
+
+        driveController.start().onTrue(Commands.run(Arm.getInstance()::amp));
+        driveController.start().onTrue(Commands.run(Wrist.getInstance()::amp));
+
     }
 
     private void setDefaultCommands() {

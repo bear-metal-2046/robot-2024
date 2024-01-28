@@ -7,7 +7,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 public class WristConstants {
     static final double WRIST_GEAR_REDUCTION = (12.0 / 72.0) * (18.0 / 24.0) * (24.0 / 18.0);
     static final double STOW_POSE = 0; // Rotations
-    static final double TRANS_POSE = 0.1; // Rotations
+    static final double TRANS_POSE = 0; // Rotations
     static final double AMP_POSE = 0.5; // Rotations
     static final double TRAP_POSE = 0.75; // Rotations
 

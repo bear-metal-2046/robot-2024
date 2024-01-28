@@ -7,40 +7,40 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.collector.CollectorConstants;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
-import org.tahomarobotics.robot.util.SysIdTest;
 
+import static org.tahomarobotics.robot.indexer.IndexerConstants.*;
 import static org.tahomarobotics.robot.rollers.RollerConstants.*;
 
-public class Roller extends SubsystemIF{
+public class Roller extends SubsystemIF {
     private static final Roller INSTANCE = new Roller();
 
     private final TalonFX motor;
     //private final DigitalInput beamBreak;
+
     private final StatusSignal<Double> position;
     private final StatusSignal<Double> velocity;
 
-    private Roller.State state = Roller.State.DISABLED;
-    private boolean collected = false;
+    private State state = State.DISABLED;
 
-    private final MotionMagicVoltage intakePos = new MotionMagicVoltage(ROLLER_INTAKE_DISTANCE)
+    private final MotionMagicVoltage indexPos = new MotionMagicVoltage(ROLLER_INTAKE_DISTANCE)
             .withSlot(1).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVoltage transferPos = new MotionMagicVoltage(ROLLER_TRANSFER_DISTANCE)
             .withSlot(1).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
-    private final MotionMagicVelocityVoltage idleVel = new MotionMagicVelocityVoltage(CollectorConstants.COLLECT_MAX_RPS)
+    private final MotionMagicVelocityVoltage collectVel = new MotionMagicVelocityVoltage(CollectorConstants.COLLECT_MAX_RPS)
+            .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
+    private final MotionMagicVelocityVoltage ejectVel = new MotionMagicVelocityVoltage(-CollectorConstants.COLLECT_MAX_RPS)
             .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
 
     private Roller() {
         RobustConfigurator configurator = new RobustConfigurator(logger);
 
-        motor = new TalonFX(RobotMap.ROLLER_MOTOR);
+        motor = new TalonFX(RobotMap.INDEXER_MOTOR);
         //beamBreak = new DigitalInput(RobotMap.BEAM_BREAK);
 
         configurator.configureTalonFX(motor, RollerConstants.rollerMotorConfiguration);
@@ -56,6 +56,13 @@ public class Roller extends SubsystemIF{
         return INSTANCE;
     }
 
+    @Override
+    public SubsystemIF initialize() {
+        SmartDashboard.putData("Reset Indexer", runOnce(() -> setState(State.DISABLED)));
+
+        return this;
+    }
+
     // GETTERS
 
     public double getPosition() {
@@ -67,11 +74,19 @@ public class Roller extends SubsystemIF{
     }
 
     public boolean hasCollected() {
-        return collected;
+        return state == State.COLLECTED;
+    }
+
+    public boolean isTransferring() {
+        return state == State.TRANSFERRING;
     }
 
     public boolean isIndexing() {
-        return state == Roller.State.INDEXING;
+        return state == State.INDEXING;
+    }
+
+    public State getState() {
+        return state;
     }
 
     // SETTERS
@@ -80,46 +95,76 @@ public class Roller extends SubsystemIF{
     //    return !beamBreak.get();
     //}
 
+    public void setState(State state) {
+        this.state = state;
+    }
+
+    public void zero() {
+        motor.setPosition(0.0);
+    }
+
     // STATE TRANSITIONS
 
-    public void stop() {
+    public void disable() {
         motor.stopMotor();
-
-        state = Roller.State.DISABLED;
     }
 
     public void collect() {
-        motor.setControl(idleVel);
-
-        state = Roller.State.COLLECT;
+        motor.setControl(collectVel);
     }
 
     public void index() {
+        if (getPosition() >= ROLLER_INTAKE_DISTANCE - ROLLER_POSITION_TOLERANCE) {
+            disable();
+            zero();
 
-        if (isIndexing() && getPosition() >= ROLLER_INTAKE_DISTANCE - ROLLER_POSITION_TOLERANCE) {
-            stop();
-            motor.setPosition(0.0);
-
-            collected = true;
+            transitionToCollected();
         }
-        if (isIndexing() || collected) return;
-
-        motor.setPosition(0.0);
-        motor.setControl(intakePos);
-
-        state = Roller.State.INDEXING;
     }
 
-    public void transferToShooter() {
-        if (getPosition() >= ROLLER_TRANSFER_DISTANCE - ROLLER_POSITION_TOLERANCE) {
-            stop();
-            motor.setPosition(0.0);
+    public void eject() {
+        motor.setControl(ejectVel);
+    }
 
-            collected = false;
+    public void transfer() {
+        if (getPosition() >= ROLLER_INTAKE_DISTANCE - ROLLER_POSITION_TOLERANCE) {
+            disable();
+            zero();
+
+            transitionToDisabled();
         }
-        if (isIndexing() || !collected) return;
+    }
 
+    // TRANSITIONS
+
+    public void transitionToDisabled() {
+        setState(State.DISABLED);
+    }
+
+    public void transitionToCollecting() {
+        setState(State.COLLECTING);
+    }
+
+    public void transitionToIndexing() {
+        zero();
+        motor.setControl(indexPos);
+
+        setState(State.INDEXING);
+    }
+
+    public void transitionToCollected() {
+        setState(State.COLLECTED);
+    }
+
+    public void transitionToTransferring() {
+        zero();
         motor.setControl(transferPos);
+
+        setState(State.TRANSFERRING);
+    }
+
+    public void transitionToEjecting() {
+        setState(State.EJECTING);
     }
 
     // PERIODIC
@@ -130,15 +175,18 @@ public class Roller extends SubsystemIF{
         Logger.recordOutput("Roller/Velocity", getVelocity());
 
         Logger.recordOutput("Roller/State", state);
-        //Logger.recordOutput("Roller/BeamBreak", isBeamBroken());
-        Logger.recordOutput("Roller/Collected", hasCollected());
+        //Logger.recordOutput("Indexer/BeamBreak", isBeamBroken());
+        Logger.recordOutput("Indexer/Collected", hasCollected());
     }
 
     // STATES
 
-    enum State {
-        COLLECT,
+    public enum State {
+        DISABLED,
+        COLLECTING,
         INDEXING,
-        DISABLED
+        COLLECTED,
+        EJECTING,
+        TRANSFERRING
     }
 }

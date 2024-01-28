@@ -18,8 +18,6 @@ import static org.tahomarobotics.robot.wrist.WristConstants.*;
 public class Wrist extends SubsystemIF {
     private static final Wrist INSTANCE = new Wrist();
     private final TalonFX motor;
-
-    private SysIdTest test;
     private final StatusSignal<Double> position;
     private final StatusSignal<Double> velocity;
     private Wrist.State state = Wrist.State.STOW;
@@ -36,8 +34,6 @@ public class Wrist extends SubsystemIF {
 
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY, position, velocity);
         motor.optimizeBusUtilization();
-
-        test = new SysIdTest(this, motor);
     }
 
     public static Wrist getInstance() {
@@ -106,12 +102,5 @@ public class Wrist extends SubsystemIF {
         TRANS,
         AMP,
         TRAP
-    }
-
-    public void registerSysIdCommands(CommandXboxController controller){
-        controller.povUp().onTrue(test.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        controller.povDown().onTrue(test.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-        controller.povLeft().onTrue(test.sysIdDynamic(SysIdRoutine.Direction.kForward));
-        controller.povRight().onTrue(test.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     }
 }

@@ -4,6 +4,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.littletonrobotics.junction.Logger;
@@ -12,23 +13,18 @@ import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
 import org.tahomarobotics.robot.util.SysIdTest;
-
 import static org.tahomarobotics.robot.wrist.WristConstants.*;
 
 public class Wrist extends SubsystemIF {
     private static final Wrist INSTANCE = new Wrist();
     private final TalonFX motor;
+
+    private SysIdTest test;
     private final StatusSignal<Double> position;
     private final StatusSignal<Double> velocity;
     private Wrist.State state = Wrist.State.STOW;
 
-    private final MotionMagicVoltage stowPose = new MotionMagicVoltage(STOW_POSE)
-            .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
-    private final MotionMagicVoltage transPose = new MotionMagicVoltage(TRANS_POSE)
-            .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
-    private final MotionMagicVoltage ampPose = new MotionMagicVoltage(AMP_POSE)
-            .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
-    private final MotionMagicVoltage trapPose = new MotionMagicVoltage(TRAP_POSE)
+    private final MotionMagicVoltage wristPose = new MotionMagicVoltage(STOW_POSE)
             .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     public Wrist() {
         RobustConfigurator configurator = new RobustConfigurator(logger);
@@ -40,6 +36,8 @@ public class Wrist extends SubsystemIF {
 
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY, position, velocity);
         motor.optimizeBusUtilization();
+
+        test = new SysIdTest(this, motor);
     }
 
     public static Wrist getInstance() {
@@ -59,24 +57,29 @@ public class Wrist extends SubsystemIF {
     // STATE TRANSITIONS
 
     public void stow() {
-        motor.setControl(stowPose);
+        setWristPose(STOW_POSE);
         state = Wrist.State.STOW;
     }
 
     public void trans() {
-        motor.setControl(transPose);
+        setWristPose(TRANS_POSE);
         state = Wrist.State.TRANS;
     }
 
     public void amp() {
-        motor.setControl(ampPose);
+        setWristPose(AMP_POSE);
         state = Wrist.State.AMP;
     }
 
-
     public void trap() {
-        motor.setControl(trapPose);
+        setWristPose(TRAP_POSE);
         state = Wrist.State.TRAP;
+    }
+
+    public double poseOutput;
+    private void setWristPose(double pose){
+        motor.setControl(wristPose.withPosition(pose));
+        poseOutput = pose;
     }
 
     // PERIODIC
@@ -85,7 +88,7 @@ public class Wrist extends SubsystemIF {
     public void periodic() {
         Logger.recordOutput("Wrist/Position", getPosition()*360);
         Logger.recordOutput("Wrist/Velocity", getVelocity());
-
+        Logger.recordOutput("Wrist/Desired Position", poseOutput * 360);
         Logger.recordOutput("Wrist/State", state);
     }
 
@@ -103,5 +106,12 @@ public class Wrist extends SubsystemIF {
         TRANS,
         AMP,
         TRAP
+    }
+
+    public void registerSysIdCommands(CommandXboxController controller){
+        controller.povUp().onTrue(test.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        controller.povDown().onTrue(test.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        controller.povLeft().onTrue(test.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        controller.povRight().onTrue(test.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     }
 }

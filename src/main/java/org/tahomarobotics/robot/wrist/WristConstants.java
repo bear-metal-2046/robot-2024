@@ -9,20 +9,21 @@ public class WristConstants {
     static final double STOW_POSE = 0; // Rotations
     static final double TRANS_POSE = 0.1; // Rotations
     static final double AMP_POSE = 0.5; // Rotations
-    static final double TRAP_POSE = 0.5; // Rotations
+    static final double TRAP_POSE = 0.75; // Rotations
 
     static final TalonFXConfiguration wristMotorConfiguration = new TalonFXConfiguration()
             .withSlot0(new Slot0Configs()
-                    .withKP(66.345)
-                    .withKD(24.644)
-                    .withKS(-1.5495)
-                    .withKV(0.4063)
-                    .withKA(4.7193))
+                    .withKP(51.509)
+                    .withKD(1)
+                    .withKS(-0.14318)
+                    .withKV(0.73388)
+                    .withKA(0.12356)
+                    )
             .withMotorOutput(new MotorOutputConfigs()
                     .withNeutralMode(NeutralModeValue.Brake)
                     .withInverted(InvertedValue.Clockwise_Positive))
             .withMotionMagic(new MotionMagicConfigs()
-                    .withMotionMagicCruiseVelocity(1)
+                    .withMotionMagicCruiseVelocity(2)
                     .withMotionMagicAcceleration(10)
                     .withMotionMagicJerk(50))
             .withFeedback(new FeedbackConfigs().withSensorToMechanismRatio(1 / WRIST_GEAR_REDUCTION))

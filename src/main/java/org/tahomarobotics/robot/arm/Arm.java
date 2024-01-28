@@ -4,7 +4,9 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.littletonrobotics.junction.Logger;
@@ -19,18 +21,11 @@ import static org.tahomarobotics.robot.arm.ArmConstants.*;
 public class Arm extends SubsystemIF {
     private static final Arm INSTANCE = new Arm();
     private final TalonFX motor;
-
     private final StatusSignal<Double> position;
     private final StatusSignal<Double> velocity;
     private Arm.State state = State.STOW;
 
-    private final MotionMagicVoltage stowPose = new MotionMagicVoltage(STOW_POSE)
-            .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
-    private final MotionMagicVoltage transPose = new MotionMagicVoltage(TRANS_POSE)
-            .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
-    private final MotionMagicVoltage ampPose = new MotionMagicVoltage(AMP_POSE)
-            .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
-    private final MotionMagicVoltage trapPose = new MotionMagicVoltage(TRAP_POSE)
+    private final MotionMagicVoltage armPose = new MotionMagicVoltage(0)
             .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     public Arm() {
         RobustConfigurator configurator = new RobustConfigurator(logger);
@@ -61,24 +56,29 @@ public class Arm extends SubsystemIF {
     // STATE TRANSITIONS
 
     public void stow() {
-        motor.setControl(stowPose);
+        setArmPose(STOW_POSE);
         state = State.STOW;
     }
 
     public void trans() {
-        motor.setControl(transPose);
+        setArmPose(TRANS_POSE);
         state = State.TRANS;
     }
 
     public void amp() {
-        motor.setControl(ampPose);
+        setArmPose(AMP_POSE);
         state = State.AMP;
     }
 
 
     public void trap() {
-        motor.setControl(trapPose);
+        setArmPose(TRAP_POSE);
         state = Arm.State.TRAP;
+    }
+
+    private void setArmPose(double pose){
+        double output = MathUtil.clamp(pose,ARM_MIN_POSE,ARM_MAX_POSE);
+        motor.setControl(armPose.withPosition(output));
     }
 
     // PERIODIC
@@ -100,7 +100,7 @@ public class Arm extends SubsystemIF {
 
     // STATES
 
-    enum State {
+    public enum State {
         STOW,
         TRANS,
         AMP,

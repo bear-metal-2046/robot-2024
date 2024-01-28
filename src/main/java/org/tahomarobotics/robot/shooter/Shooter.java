@@ -14,6 +14,7 @@ public class Shooter extends SubsystemIF {
     private final ShooterIO io;
     private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
+    private double biasAngle = 0.0;
     // CONSTRUCTOR
 
     private Shooter() {
@@ -45,15 +46,19 @@ public class Shooter extends SubsystemIF {
     }
 
     public void setAngle(double angle) {
-        inputs.angle = MathUtil.clamp(angle, MIN_PIVOT_ANGLE, MAX_PIVOT_ANGLE);
+        inputs.angle = MathUtil.clamp(angle + (io.inShootingMode() ? biasAngle : 0), MIN_PIVOT_ANGLE, MAX_PIVOT_ANGLE);
     }
 
     public void biasUp() {
-        setAngle(inputs.angle + BIAS_AMT);
+        biasAngle += BIAS_AMT;
     }
 
     public void biasDown() {
-        setAngle(inputs.angle - BIAS_AMT);
+        biasAngle -= BIAS_AMT;
+    }
+
+    public void resetBias() {
+        biasAngle = 0.0;
     }
 
     // GETTERS
@@ -89,6 +94,7 @@ public class Shooter extends SubsystemIF {
         io.processInputs(inputs);
         Logger.processInputs("Shooter", inputs);
 
+        Logger.recordOutput("Shooter/Bias", biasAngle);
         Logger.recordOutput("Shooter/Velocity", getShooterVelocity());
         Logger.recordOutput("Shooter/Angle", getPivotPosition());
         Logger.recordOutput("Shooter/Angle (Degrees)", getPivotPosition() * 360);

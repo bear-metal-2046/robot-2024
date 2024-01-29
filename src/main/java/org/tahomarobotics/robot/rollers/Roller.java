@@ -40,7 +40,7 @@ public class Roller extends SubsystemIF {
     private Roller() {
         RobustConfigurator configurator = new RobustConfigurator(logger);
 
-        motor = new TalonFX(RobotMap.INDEXER_MOTOR);
+        motor = new TalonFX(RobotMap.ROLLER_MOTOR);
         //beamBreak = new DigitalInput(RobotMap.BEAM_BREAK);
 
         configurator.configureTalonFX(motor, RollerConstants.rollerMotorConfiguration);

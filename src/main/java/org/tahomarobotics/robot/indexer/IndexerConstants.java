@@ -7,7 +7,7 @@ import org.tahomarobotics.robot.collector.CollectorConstants;
 
 public class IndexerConstants {
     static final double INTAKE_DISTANCE = 2.0; // Rotations
-    static final double TRANSFER_DISTANCE = 3.0; // Rotations
+    static final double TRANSFER_DISTANCE = 2.0; // Rotations
     static final double POSITION_TOLERANCE = 0.1; // Rotations
 
     static final TalonFXConfiguration indexMotorConfiguration = new TalonFXConfiguration()

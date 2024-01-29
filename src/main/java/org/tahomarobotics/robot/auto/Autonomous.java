@@ -7,18 +7,18 @@ import com.pathplanner.lib.path.PathPlannerTrajectory;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.networktables.*;
+import edu.wpi.first.networktables.BooleanSubscriber;
+import edu.wpi.first.networktables.NetworkTableEvent;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import org.apache.logging.log4j.core.pattern.AbstractStyleNameConverter;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
-import java.sql.Driver;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -49,6 +49,13 @@ public class Autonomous extends SubsystemIF {
                 EnumSet.of(NetworkTableEvent.Kind.kValueAll),
                 e -> new InstantCommand(() -> postAutoTrajectory(fieldPose, autoChooser.get().getName())).ignoringDisable(true).schedule()
         );
+    }
+
+    @Override
+    public SubsystemIF initialize() {
+        NamedCommands.registerCommand("ShootCommand", new InstantCommand(() -> System.out.println("========SHOOT COMMAND CALLED=========")));
+        NamedCommands.registerCommand("ResetOdom", new InstantCommand(() -> chassis.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.get().getName()))));
+        return this;
     }
 
     public Command getSelectedAuto() {
@@ -94,11 +101,6 @@ public class Autonomous extends SubsystemIF {
             lastRotation = endState.targetHolonomicRotation;
         }
         return autoTrajectories;
-    }
-
-    public void registerAutoCommands() {
-        NamedCommands.registerCommand("ShootCommand", new InstantCommand(() -> System.out.println("========SHOOT COMMAND CALLED=========")));
-        NamedCommands.registerCommand("ResetOdom", new InstantCommand(() -> chassis.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.get().getName()))));
     }
 
     public void postAutoTrajectory(Field2d field, String autoName) {

@@ -47,9 +47,6 @@ public class Robot extends LoggedRobot {
         subsystems.add(Indexer.getInstance().initialize());
         subsystems.add(RobotIdentity.getInstance().initialize());
 
-        Autonomous.getInstance().registerAutoCommands();
-
-
         logger.info("Robot Initialized.");
     }
 

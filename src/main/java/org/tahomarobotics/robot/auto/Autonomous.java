@@ -7,16 +7,18 @@ import com.pathplanner.lib.path.PathPlannerTrajectory;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.networktables.NetworkTableEvent;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StringSubscriber;
+import edu.wpi.first.networktables.*;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import org.apache.logging.log4j.core.pattern.AbstractStyleNameConverter;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
+import java.sql.Driver;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -35,11 +37,17 @@ public class Autonomous extends SubsystemIF {
         autoChooser = PathPlannerHelper.getAutoChooser(chassis);
         NetworkTableInstance netInstance = NetworkTableInstance.getDefault();
         StringSubscriber autoSub = netInstance.getTable("SmartDashboard/Auto").getStringTopic("selected").subscribe("Test Auto");
+        BooleanSubscriber allianceChange = netInstance.getTable("FMSInfo").getBooleanTopic("IsRedAlliance").subscribe(true);
         fieldPose = chassis.getField();
         netInstance.addListener(
                 autoSub,
                 EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-                e -> new InstantCommand (() -> postAutoTrajectory(fieldPose, autoSub.get())).ignoringDisable(true).schedule()
+                e -> new InstantCommand(() -> postAutoTrajectory(fieldPose, autoSub.get())).ignoringDisable(true).schedule()
+        );
+        netInstance.addListener(
+                allianceChange,
+                EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+                e -> new InstantCommand(() -> postAutoTrajectory(fieldPose, autoChooser.get().getName())).ignoringDisable(true).schedule()
         );
     }
 
@@ -49,9 +57,9 @@ public class Autonomous extends SubsystemIF {
 
     public Trajectory convertToTrajectory(List<PathPlannerPath> selectedAutoPaths) {
         List<Trajectory> autoTrajectories = getTrajectories(selectedAutoPaths).stream().map  // PathPlannerTrajectories are
-                ((trajectory) -> new Trajectory(                                            // essentially still Trajectories,
-                        trajectory                                                          // this just puts the values
-                                .getStates().stream().map                                   // in the right places
+                ((trajectory) -> new Trajectory(                                             // essentially still Trajectories,
+                        trajectory                                                           // this just puts the values
+                                .getStates().stream().map                                    // in the right places
                                         (state -> new Trajectory.State (
                                                 state.timeSeconds,
                                                 state.velocityMps,
@@ -72,6 +80,9 @@ public class Autonomous extends SubsystemIF {
         ChassisSpeeds lastChassisSpeeds = new ChassisSpeeds();
         Rotation2d lastRotation = new Rotation2d();
         for (PathPlannerPath path : autoPaths) {
+            if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red)) {
+                path = path.flipPath();
+            }
             PathPlannerTrajectory pathTrajectory = path.getTrajectory(lastChassisSpeeds, lastRotation);
             autoTrajectories.add(pathTrajectory);
             PathPlannerTrajectory.State endState = pathTrajectory.getEndState();

@@ -20,8 +20,7 @@ import org.tahomarobotics.robot.shooter.commands.ShootCommand;
 import org.tahomarobotics.robot.shooter.commands.ShooterDefaultCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
-import static org.tahomarobotics.robot.amp.commands.AmpArmCommands.PASS_THROUGH;
-import static org.tahomarobotics.robot.amp.commands.AmpArmCommands.STOW_TO_AMP;
+import static org.tahomarobotics.robot.amp.commands.AmpArmCommands.*;
 
 public class OI extends SubsystemIF {
     private final static OI INSTANCE = new OI();
@@ -52,6 +51,8 @@ public class OI extends SubsystemIF {
         Chassis chassis = Chassis.getInstance();
         Collector collector = Collector.getInstance();
         Shooter shooter = Shooter.getInstance();
+        Indexer indexer = Indexer.getInstance();
+        AmpArm ampArm = AmpArm.getInstance();
 
         // Robot Heading Zeroing
         driveController.a().onTrue(Commands.runOnce(chassis::orientToZeroHeading));
@@ -71,18 +72,21 @@ public class OI extends SubsystemIF {
         driveController.povDown().whileTrue(Commands.run(shooter::biasDown));
         driveController.povDownLeft().onTrue(Commands.runOnce(shooter::resetBias));
 
-        driveController.y().onTrue(PASS_THROUGH.andThen(STOW_TO_AMP));
+        driveController.y().onTrue(Commands.either(PASS_THROUGH.andThen(STOW_TO_AMP), STOW_TO_SOURCE, ampArm::isCollected));
 
-        var ampArm = AmpArm.getInstance();
+        //For testing purposes
         driveController.povUpLeft().onTrue(Commands.runOnce(() -> {
             ampArm.setArmState(AmpArm.ArmState.STOW);
-            ampArm.setRollersState(AmpArm.RollerState.DISABLED);
+            ampArm.setRollerState(AmpArm.RollerState.DISABLED);
         }));
-        driveController.rightTrigger(0.5).onTrue(Commands.sequence(
-                Commands.runOnce(() -> ampArm.setRollersState(AmpArm.RollerState.SCORE)),
-                Commands.waitSeconds(0.5),
-                Commands.runOnce(() -> ampArm.setRollersState(AmpArm.RollerState.DISABLED))
-        ).onlyIf(ampArm::isAmp));
+
+        driveController.rightTrigger(0.5).whileTrue(Commands.runOnce(() ->
+                ampArm.setRollerState(AmpArm.RollerState.SCORE)).onlyIf(ampArm::isAmp))
+                .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));
+
+        driveController.leftTrigger(0.01).whileTrue(Commands.runOnce(() ->
+                    ampArm.setRollerState(AmpArm.RollerState.PASSING)
+                ).onlyIf(ampArm::isSource));
     }
 
     private void setDefaultCommands() {

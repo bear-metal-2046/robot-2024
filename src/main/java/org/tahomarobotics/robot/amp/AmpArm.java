@@ -109,6 +109,10 @@ public class AmpArm extends SubsystemIF {
                 setArmPosition(ARM_AMP_POSE);
                 setWristPosition(WRIST_AMP_POSE);
             }
+            case SOURCE -> {
+                setArmPosition(ARM_STOW_POSE);
+                setWristPosition(WRIST_SOURCE_POSE);
+            }
             case TRAP -> {
                 setArmPosition(ARM_TRAP_POSE);
                 setWristPosition(WRIST_TRAP_POSE);
@@ -126,13 +130,13 @@ public class AmpArm extends SubsystemIF {
         wristMotor.setControl(wristControl.withPosition(targetWristPosition));
     }
 
-    public void setRollersState(RollerState state) {
+    public void setRollerState(RollerState state) {
         rollerState = state;
 
         switch (state) {
-            case DISABLED -> rollersMotor.stopMotor();
-            case COLLECT -> rollersMotor.setControl(rollerVelocityControl.withVelocity(ShooterConstants.TRANSFER_VELOCITY));
+            case PASSING -> rollersMotor.setControl(rollerVelocityControl.withVelocity(ShooterConstants.TRANSFER_VELOCITY));
             case SCORE -> rollersMotor.setControl(rollerVelocityControl.withVelocity(-ShooterConstants.TRANSFER_VELOCITY * 4));
+            default -> rollersMotor.stopMotor();
         }
     }
 
@@ -149,9 +153,16 @@ public class AmpArm extends SubsystemIF {
     public boolean isTrap() {
         return armState == ArmState.TRAP;
     }
+    public boolean isSource() {
+        return armState == ArmState.SOURCE;
+    }
 
-    public boolean isCollecting() {
-        return rollerState == RollerState.COLLECT;
+    public boolean isPassing() {
+        return rollerState == RollerState.PASSING;
+    }
+
+    public boolean isCollected() {
+        return rollerState == RollerState.COLLECTED;
     }
 
     public boolean isScoring() {
@@ -201,6 +212,7 @@ public class AmpArm extends SubsystemIF {
     public enum ArmState {
         STOW,
         AMP,
+        SOURCE,
         TRAP
     }
 
@@ -208,7 +220,8 @@ public class AmpArm extends SubsystemIF {
 
     public enum RollerState {
         DISABLED,
-        COLLECT,
+        PASSING,
+        COLLECTED,
         SCORE
     }
 

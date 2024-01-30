@@ -19,6 +19,7 @@ public class AmpArmConstants {
     public static final double ARM_STOW_POSE = 0; // Rotations
     public static final double ARM_AMP_POSE = 0.41552734375; // Rotations
     public static final double ARM_TRAP_POSE = 0.3; // Rotations
+    public static final double ARM_SOURCE_POSE = 0.3; // Rotations
 
     static final TalonFXConfiguration armMotorConfiguration = new TalonFXConfiguration()
             .withSlot0(new Slot0Configs() {{
@@ -48,6 +49,7 @@ public class AmpArmConstants {
     public static final double WRIST_STOW_POSE = 0; // Rotations
     public static final double WRIST_AMP_POSE = 0.400390625; // Rotations
     public static final double WRIST_TRAP_POSE = 0.75; // Rotations
+    public static final double WRIST_SOURCE_POSE = 0.0; // Rotations
 
     static final TalonFXConfiguration wristMotorConfiguration = new TalonFXConfiguration()
             .withSlot0(new Slot0Configs()

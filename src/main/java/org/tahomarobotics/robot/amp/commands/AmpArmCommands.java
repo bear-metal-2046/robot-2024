@@ -14,6 +14,7 @@ import static org.tahomarobotics.robot.amp.AmpArmConstants.WRIST_MOVING_POSE;
 public class AmpArmCommands {
     public static Command PASS_THROUGH;
     public static Command STOW_TO_AMP;
+    public static Command STOW_TO_SOURCE;
 
     static {
         AmpArm ampArm = AmpArm.getInstance();
@@ -23,23 +24,30 @@ public class AmpArmCommands {
         PASS_THROUGH = Commands.defer(() -> Commands.sequence(
                 Commands.runOnce(() -> {
                     shooter.transferToAmp();
-                    ampArm.setRollersState(AmpArm.RollerState.COLLECT);
+                    ampArm.setRollerState(AmpArm.RollerState.PASSING);
                 }),
                 Commands.waitSeconds(0.25),
                 Commands.runOnce(indexer::transitionToTransferring),
                 Commands.waitSeconds(0.6),
                 Commands.runOnce(() -> {
-                    ampArm.setRollersState(AmpArm.RollerState.DISABLED);
+                    ampArm.setRollerState(AmpArm.RollerState.COLLECTED);
                     indexer.transitionToDisabled();
                     shooter.disable();
                 })
-        ).onlyIf(ampArm::isStowed), Set.of(ampArm, indexer, shooter));
+        ).onlyIf(ampArm::isStowed).onlyIf(indexer::hasCollected), Set.of(ampArm, indexer, shooter));
     }
 
     static {
         AmpArm ampArm = AmpArm.getInstance();
 
         STOW_TO_AMP = Commands.defer(() -> Commands.sequence(
+                Commands.runOnce(() -> ampArm.setWristPosition(WRIST_MOVING_POSE)),
+                Commands.runOnce(() -> ampArm.setArmPosition(ARM_AMP_POSE)),
+                Commands.waitUntil(ampArm::isArmAtPosition),
+                Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.AMP))
+        ).onlyIf(ampArm::isStowed), Set.of(ampArm));
+
+        STOW_TO_SOURCE = Commands.defer(() -> Commands.sequence(
                 Commands.runOnce(() -> ampArm.setWristPosition(WRIST_MOVING_POSE)),
                 Commands.runOnce(() -> ampArm.setArmPosition(ARM_AMP_POSE)),
                 Commands.waitUntil(ampArm::isArmAtPosition),

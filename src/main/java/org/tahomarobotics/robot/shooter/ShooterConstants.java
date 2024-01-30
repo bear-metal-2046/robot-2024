@@ -12,6 +12,8 @@ import java.util.function.Supplier;
 
 public class ShooterConstants {
     static final double SHOOTER_SPEED = 75; // rps
+    public static final double TRANSFER_VELOCITY = 10; // rps
+
     static final double SHOOTER_SPEED_TOLERANCE = 0.25; // rps
     static final double MAX_PIVOT_ANGLE = 0.14;
     static final double MIN_PIVOT_ANGLE = 0.01;

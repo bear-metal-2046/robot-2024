@@ -3,20 +3,14 @@ package org.tahomarobotics.robot.indexer.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tahomarobotics.robot.arm.Arm;
 import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.indexer.Indexer;
-import org.tahomarobotics.robot.rollers.Roller;
 
 public class IndexerDefaultCommand extends Command {
     private static final Logger logger = LoggerFactory.getLogger(IndexerDefaultCommand.class);
 
     private final Indexer indexer = Indexer.getInstance();
     private final Collector collector = Collector.getInstance();
-
-    private final Arm arm = Arm.getInstance();
-
-    private final Roller roller = Roller.getInstance();
 
     public IndexerDefaultCommand() {
         addRequirements(indexer);
@@ -27,7 +21,7 @@ public class IndexerDefaultCommand extends Command {
         switch (indexer.getState()) {
             case DISABLED -> {
                 indexer.disable();
-                arm.stow();
+
                 if (collector.isCollecting() && !indexer.hasCollected()) indexer.transitionToCollecting();
                 if (collector.isEjecting()) indexer.transitionToEjecting();
             }
@@ -50,7 +44,7 @@ public class IndexerDefaultCommand extends Command {
             }
             case TRANSFERRING -> {
                 indexer.transfer();
-                roller.transfer();
+
                 if (!indexer.isBeamBroken()) indexer.transitionToDisabled();
             }
             case COLLECTED -> {

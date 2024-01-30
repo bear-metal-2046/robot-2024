@@ -56,6 +56,10 @@ public class Shooter extends SubsystemIF {
         setAngle(inputs.angle - BIAS_AMT);
     }
 
+    public void transferToAmp() {
+        io.transferToAmp();
+    }
+
     // GETTERS
 
     private double getShooterVelocity() {

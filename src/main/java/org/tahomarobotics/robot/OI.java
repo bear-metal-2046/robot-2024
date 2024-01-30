@@ -5,25 +5,23 @@
 
 package org.tahomarobotics.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import org.tahomarobotics.robot.arm.Arm;
+import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.chassis.commands.TeleopDriveCommand;
 import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.collector.commands.CollectorDefaultCommand;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.indexer.commands.IndexerDefaultCommand;
-import org.tahomarobotics.robot.rollers.Roller;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.commands.ShootCommand;
 import org.tahomarobotics.robot.shooter.commands.ShooterDefaultCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
-import org.tahomarobotics.robot.wrist.Wrist;
+
+import static org.tahomarobotics.robot.amp.commands.AmpArmCommands.PASS_THROUGH;
+import static org.tahomarobotics.robot.amp.commands.AmpArmCommands.STOW_TO_AMP;
 
 public class OI extends SubsystemIF {
     private final static OI INSTANCE = new OI();
@@ -60,9 +58,6 @@ public class OI extends SubsystemIF {
         // Robot/Field Orientation
         driveController.b().onTrue(Commands.runOnce(chassis::toggleOrientation));
 
-        //For testing before going to shed
-        driveController.y().onTrue(Commands.runOnce(() -> chassis.resetOdometry(new Pose2d(new Translation2d(3, 3), new Rotation2d(0)))));
-
         //Collector up and down
         driveController.leftBumper().onTrue(Commands.runOnce(collector::toggleDeploy));
 
@@ -75,12 +70,18 @@ public class OI extends SubsystemIF {
         driveController.povUp().whileTrue(Commands.run(shooter::biasUp));
         driveController.povDown().whileTrue(Commands.run(shooter::biasDown));
 
-        driveController.povRight().onTrue(Commands.run(Arm.getInstance()::trans));
-        driveController.povRight().onTrue(Commands.run(Wrist.getInstance()::trans));
+        driveController.y().onTrue(PASS_THROUGH.andThen(STOW_TO_AMP));
 
-        driveController.start().onTrue(Commands.run(Arm.getInstance()::amp));
-        driveController.start().onTrue(Commands.run(Wrist.getInstance()::amp));
-
+        var ampArm = AmpArm.getInstance();
+        driveController.povUpLeft().onTrue(Commands.runOnce(() -> {
+            ampArm.setArmState(AmpArm.ArmState.STOW);
+            ampArm.setRollersState(AmpArm.RollerState.DISABLED);
+        }));
+        driveController.rightTrigger(0.5).onTrue(Commands.sequence(
+                Commands.runOnce(() -> ampArm.setRollersState(AmpArm.RollerState.SCORE)),
+                Commands.waitSeconds(0.5),
+                Commands.runOnce(() -> ampArm.setRollersState(AmpArm.RollerState.DISABLED))
+        ).onlyIf(ampArm::isAmp));
     }
 
     private void setDefaultCommands() {

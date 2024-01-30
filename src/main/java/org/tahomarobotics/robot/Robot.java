@@ -14,18 +14,16 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.slf4j.LoggerFactory;
-import org.tahomarobotics.robot.arm.Arm;
+import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.auto.Autonomous;
 import org.tahomarobotics.robot.auto.PathPlannerHelper;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.identity.RobotIdentity;
 import org.tahomarobotics.robot.indexer.Indexer;
-import org.tahomarobotics.robot.rollers.Roller;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.util.BuildConstants;
 import org.tahomarobotics.robot.util.SubsystemIF;
-import org.tahomarobotics.robot.wrist.Wrist;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -49,10 +47,8 @@ public class Robot extends LoggedRobot {
         subsystems.add(Collector.getInstance().initialize());
         subsystems.add(Autonomous.getInstance().initialize());
         subsystems.add(Shooter.getInstance().initialize());
+        subsystems.add(AmpArm.getInstance().initialize());
         subsystems.add(Indexer.getInstance().initialize());
-        subsystems.add(Arm.getInstance().initialize());
-        subsystems.add(Wrist.getInstance().initialize());
-        subsystems.add(Roller.getInstance().initialize());
         subsystems.add(RobotIdentity.getInstance().initialize());
 
         PathPlannerHelper.registerAutoCommands();

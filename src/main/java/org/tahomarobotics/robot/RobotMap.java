@@ -31,7 +31,7 @@ public class RobotMap {
 
     public final static int ARM_MOTOR = 38;
     public final static int WRIST_MOTOR = 39;
-    public final static int ROLLER_MOTOR = 40;
+    public final static int ROLLERS_MOTOR = 40;
 
     public record SwerveModuleDescriptor(String moduleName, Translation2d offset, int driveId, int steerId,
                                          int encoderId) {

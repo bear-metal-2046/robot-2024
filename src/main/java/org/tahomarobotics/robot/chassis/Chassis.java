@@ -98,6 +98,10 @@ public class Chassis extends SubsystemIF {
         return INSTANCE;
     }
 
+    public Field2d getField() {
+        return fieldPose;
+    }
+
     // INITIALIZE
 
     @Override

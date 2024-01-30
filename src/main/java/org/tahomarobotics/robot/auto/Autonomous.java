@@ -35,6 +35,7 @@ public class Autonomous extends SubsystemIF {
 
     private Autonomous() {
         autoChooser = PathPlannerHelper.getAutoChooser(chassis);
+
         NetworkTableInstance netInstance = NetworkTableInstance.getDefault();
         StringSubscriber autoSub = netInstance.getTable("SmartDashboard/Auto").getStringTopic("selected").subscribe("Test Auto");
         BooleanSubscriber allianceChange = netInstance.getTable("FMSInfo").getBooleanTopic("IsRedAlliance").subscribe(true);
@@ -49,12 +50,13 @@ public class Autonomous extends SubsystemIF {
                 EnumSet.of(NetworkTableEvent.Kind.kValueAll),
                 e -> new InstantCommand(() -> postAutoTrajectory(fieldPose, autoChooser.get().getName())).ignoringDisable(true).schedule()
         );
+
+        NamedCommands.registerCommand("ShootCommand", new InstantCommand(() -> System.out.println("========SHOOT COMMAND CALLED=========")));
+        NamedCommands.registerCommand("ResetOdom", new InstantCommand(() -> chassis.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.get().getName()))));
     }
 
     @Override
     public SubsystemIF initialize() {
-        NamedCommands.registerCommand("ShootCommand", new InstantCommand(() -> System.out.println("========SHOOT COMMAND CALLED=========")));
-        NamedCommands.registerCommand("ResetOdom", new InstantCommand(() -> chassis.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.get().getName()))));
         return this;
     }
 

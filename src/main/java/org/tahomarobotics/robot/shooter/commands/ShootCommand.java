@@ -20,6 +20,7 @@ public class ShootCommand extends SequentialCommandGroup {
                         Commands.waitUntil(shooter::isReadyToShoot),
                         Commands.runOnce(indexer::transitionToTransferring),
                         Commands.waitUntil(() -> !indexer.isTransferring()),
+                        Commands.waitSeconds(0.5),
                         Commands.runOnce(shooter::disable)
                 ).onlyIf(shooter::inShootingMode)
         );

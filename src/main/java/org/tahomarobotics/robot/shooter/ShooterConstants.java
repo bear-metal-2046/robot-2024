@@ -52,8 +52,8 @@ public class ShooterConstants {
                     .withNeutralMode(NeutralModeValue.Brake)
                     .withInverted(InvertedValue.Clockwise_Positive))
             .withMotionMagic(new MotionMagicConfigs()
-                    .withMotionMagicAcceleration(50)
-                    .withMotionMagicJerk(100))
+                    .withMotionMagicAcceleration(160)
+                    .withMotionMagicJerk(1000))
             .withAudio(new AudioConfigs().withBeepOnBoot(true).withBeepOnConfig(true));
 
     static final TalonFXConfiguration pivotMotorConfiguration = new TalonFXConfiguration()

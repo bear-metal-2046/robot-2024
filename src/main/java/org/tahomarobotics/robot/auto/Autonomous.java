@@ -55,11 +55,6 @@ public class Autonomous extends SubsystemIF {
         NamedCommands.registerCommand("ResetOdom", new InstantCommand(() -> chassis.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.get().getName()))));
     }
 
-    @Override
-    public SubsystemIF initialize() {
-        return this;
-    }
-
     public Command getSelectedAuto() {
         return autoChooser.get();
     }

@@ -65,6 +65,10 @@ public class Shooter extends SubsystemIF {
         io.transferToAmp();
     }
 
+    public void reverseIntake() {
+        io.reverseIntake();
+    }
+
     // GETTERS
 
     private double getShooterVelocity() {

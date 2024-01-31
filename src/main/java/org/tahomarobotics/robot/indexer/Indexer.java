@@ -11,6 +11,7 @@ import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.collector.CollectorConstants;
+import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
@@ -34,6 +35,8 @@ public class Indexer extends SubsystemIF {
     private final MotionMagicVelocityVoltage collectVel = new MotionMagicVelocityVoltage(CollectorConstants.COLLECT_MAX_RPS)
             .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage ejectVel = new MotionMagicVelocityVoltage(-CollectorConstants.COLLECT_MAX_RPS)
+            .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
+    private final MotionMagicVelocityVoltage reverseIntakeVelocity = new MotionMagicVelocityVoltage(-ShooterConstants.TRANSFER_VELOCITY)
             .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
 
     private Indexer() {
@@ -162,6 +165,13 @@ public class Indexer extends SubsystemIF {
         setState(State.TRANSFERRING);
     }
 
+    public void transitionToReverseIntaking() {
+        zero();
+        motor.setControl(reverseIntakeVelocity);
+
+        setState(State.REVERSE_INDEXING);
+    }
+
     public void transitionToEjecting() {
         setState(State.EJECTING);
     }
@@ -186,6 +196,7 @@ public class Indexer extends SubsystemIF {
         INDEXING,
         COLLECTED,
         EJECTING,
-        TRANSFERRING
+        TRANSFERRING,
+        REVERSE_INDEXING
     }
 }

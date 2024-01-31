@@ -51,7 +51,6 @@ public class OI extends SubsystemIF {
         Chassis chassis = Chassis.getInstance();
         Collector collector = Collector.getInstance();
         Shooter shooter = Shooter.getInstance();
-        Indexer indexer = Indexer.getInstance();
         AmpArm ampArm = AmpArm.getInstance();
 
         // Robot Heading Zeroing
@@ -73,20 +72,20 @@ public class OI extends SubsystemIF {
         driveController.povDownLeft().onTrue(Commands.runOnce(shooter::resetBias));
 
         driveController.y().onTrue(Commands.either(PASS_THROUGH.andThen(STOW_TO_AMP), STOW_TO_SOURCE, ampArm::isCollected));
+        driveController.y().onTrue(COLLECT_FROM_SOURCE.onlyIf(ampArm::isSource));
 
         //For testing purposes
-        driveController.povUpLeft().onTrue(Commands.runOnce(() -> {
-            ampArm.setArmState(AmpArm.ArmState.STOW);
-            ampArm.setRollerState(AmpArm.RollerState.DISABLED);
-        }));
+        driveController.povUpLeft().onTrue(COLLECT_FROM_SOURCE);
 
         driveController.rightTrigger(0.5).whileTrue(Commands.runOnce(() ->
                 ampArm.setRollerState(AmpArm.RollerState.SCORE)).onlyIf(ampArm::isAmp))
                 .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));
 
         driveController.leftTrigger(0.01).whileTrue(Commands.runOnce(() ->
-                    ampArm.setRollerState(AmpArm.RollerState.PASSING)
-                ).onlyIf(ampArm::isSource));
+                ampArm.setRollerState(AmpArm.RollerState.PASSING)
+        ).onlyIf(ampArm::isSource)).whileFalse(Commands.runOnce(() ->
+                ampArm.setRollerState(AmpArm.RollerState.DISABLED)
+        ).onlyIf(ampArm::isSource));
     }
 
     private void setDefaultCommands() {

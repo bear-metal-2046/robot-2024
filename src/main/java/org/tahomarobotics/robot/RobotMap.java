@@ -30,6 +30,8 @@ public class RobotMap {
     public final static int DEPLOY_MOTOR_LEFT = 35;
     public final static int DEPLOY_MOTOR_RIGHT = 36;
     public final static int COLLECTOR_MOTOR = 37;
+    public final static int LEFT_CLIMB_MOTOR = 41;
+    public final static int RIGHT_CLIMB_MOTOR = 42;
 
     public final static int ARM_MOTOR = 38;
     public final static int WRIST_MOTOR = 39;

@@ -1,0 +1,31 @@
+package org.tahomarobotics.robot.climbers;
+
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
+
+
+public class ClimbZeroCommand extends Command {
+    private final Climbers climbers = Climbers.getInstance();
+    private final Timer timer = new Timer();
+
+    public ClimbZeroCommand() {
+        addRequirements(climbers);
+    }
+
+    @Override
+    public void initialize() {
+        timer.start();
+        climbers.runWithVelocity(ClimberConstants.ZERO_SPEED);
+    }
+    
+    @Override
+    public boolean isFinished() {
+        return climbers.getLeftVel() < ClimberConstants.VELOCITY_EPSILON && climbers.getRightVel() < ClimberConstants.VELOCITY_EPSILON && timer.get() > 0.5;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        climbers.stop();
+        climbers.zeroToCurrentPosition();
+    }
+}

@@ -5,9 +5,10 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
 public class ClimberConstants {
     public static final double ZERO_SPEED = -1;
-    public static final double POSITION_COEFFICIENT = 0;
+    public static final double POSITION_COEFFICIENT = 3.0/15.0; // Rotations to Inches
 
     public static final double POSITION_EPSILON = 0.05;
+    public static final double VELOCITY_EPSILON = 0.05;
 
     public static final double TOP_POSITION = 0.0;
 

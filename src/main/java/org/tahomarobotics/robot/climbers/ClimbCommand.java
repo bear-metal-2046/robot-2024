@@ -24,16 +24,8 @@ public class ClimbCommand extends Command {
     }
 
     @Override
-    public void execute() {}
-
-    @Override
     public boolean isFinished() {
         return climbers.getLeftPos() - ClimberConstants.TOP_POSITION < ClimberConstants.POSITION_EPSILON
                 && climbers.getRightPos() - ClimberConstants.TOP_POSITION < ClimberConstants.POSITION_EPSILON;
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-        climbers.zeroPosition();
     }
 }

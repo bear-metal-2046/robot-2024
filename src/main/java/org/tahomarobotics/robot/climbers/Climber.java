@@ -23,7 +23,7 @@ class Climber{
         configurator.configureTalonFX(climbMotor, ClimberConstants.CLIMB_CONFIGURATION);
     }
 
-    public void zeroPosition() {
+    public void zeroAtCurrentPosition() {
         climbMotor.setPosition(0);
     }
 
@@ -31,16 +31,24 @@ class Climber{
         climbMotor.getConfigurator().apply(slotConfig);
     }
 
-    public void setTargetPos(double targetPositionMeters) {
-        climbMotor.setControl(positionControl.withPosition(targetPositionMeters * ClimberConstants.POSITION_COEFFICIENT).withSlot(0));
+    public void setTargetPos(double targetPosition) {
+        climbMotor.setControl(positionControl.withPosition(targetPosition * ClimberConstants.POSITION_COEFFICIENT).withSlot(0));
     }
 
     public double getPosition() {
         return climbMotor.getPosition().getValueAsDouble();
     }
 
-    public void runWithVelocity(double targetVelocityMps) {
-        climbMotor.setControl(velocityControl.withVelocity(targetVelocityMps * ClimberConstants.POSITION_COEFFICIENT).withSlot(0));
+    public double getVelocity() {
+        return climbMotor.getVelocity().getValueAsDouble();
+    }
+
+    public void stop() {
+        climbMotor.stopMotor();
+    }
+
+    public void runWithVelocity(double targetVelocity) {
+        climbMotor.setControl(velocityControl.withVelocity(targetVelocity * ClimberConstants.POSITION_COEFFICIENT).withSlot(0));
     }
 }
 

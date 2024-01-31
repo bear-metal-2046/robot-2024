@@ -22,6 +22,14 @@ public class ShooterConstants {
 
     static final double BIAS_AMT = Units.degreesToRotations(5) / 50;
 
+    // Supply current is current that’s being drawn at the input bus voltage
+    // Useful for preventing breakers from tripping in the PDP
+    private final static double SUPPLY_CURRENT_LIMIT = 40;
+
+    // Stator current is current that’s being drawn by the motor
+    // Useful for limiting rotor acceleration/heat production
+    private final static double STATOR_CURRENT_LIMIT = 60;
+
     private static final double SHOOTER_HEIGHT = Units.inchesToMeters(8.5);
     private static final double SPEAKER_HEIGHT = Units.inchesToMeters(78.5);
     static final double SPEAKER_HEIGHT_DIFF = SPEAKER_HEIGHT - SHOOTER_HEIGHT;
@@ -35,6 +43,11 @@ public class ShooterConstants {
                     .map(a -> BLUE_SPEAKER_TARGET_POSITION).orElse(RED_SPEAKER_TARGET_POSITION);
 
     static final TalonFXConfiguration shooterMotorConfiguration = new TalonFXConfiguration()
+            .withCurrentLimits(new CurrentLimitsConfigs()
+                    .withStatorCurrentLimit(STATOR_CURRENT_LIMIT)
+                    .withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT)
+                    .withStatorCurrentLimitEnable(true)
+                    .withSupplyCurrentLimitEnable(true))
             .withSlot0(new Slot0Configs()
                     .withKP(0.086027)
                     .withKS(0.077906)
@@ -55,6 +68,11 @@ public class ShooterConstants {
             .withAudio(new AudioConfigs().withBeepOnBoot(true).withBeepOnConfig(true));
 
     static final TalonFXConfiguration pivotMotorConfiguration = new TalonFXConfiguration()
+            .withCurrentLimits(new CurrentLimitsConfigs()
+                    .withStatorCurrentLimit(STATOR_CURRENT_LIMIT)
+                    .withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT)
+                    .withStatorCurrentLimitEnable(true)
+                    .withSupplyCurrentLimitEnable(true))
             .withSlot0(new Slot0Configs() {{
                         GravityType = GravityTypeValue.Arm_Cosine;
                     }}

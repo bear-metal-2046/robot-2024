@@ -27,7 +27,12 @@ public class CollectorConstants {
 
     public final static double EPSILON = 0.01;
 
+    // Supply current is current that’s being drawn at the input bus voltage
+    // Useful for preventing breakers from tripping in the PDP
     private final static double SUPPLY_CURRENT_LIMIT = 40;
+
+    // Stator current is current that’s being drawn by the motor
+    // Useful for limiting rotor acceleration/heat production
     private final static double STATOR_CURRENT_LIMIT = 60;
 
     static final TalonFXConfiguration collectMotorConfiguration = new TalonFXConfiguration()

@@ -10,7 +10,21 @@ public class IndexerConstants {
     static final double TRANSFER_DISTANCE = 5.0; // Rotations
     static final double POSITION_TOLERANCE = 0.1; // Rotations
 
+
+    // Supply current is current that’s being drawn at the input bus voltage
+    // Useful for preventing breakers from tripping in the PDP
+    private final static double SUPPLY_CURRENT_LIMIT = 40;
+
+    // Stator current is current that’s being drawn by the motor
+    // Useful for limiting rotor acceleration/heat production
+    private final static double STATOR_CURRENT_LIMIT = 60;
+
     static final TalonFXConfiguration indexMotorConfiguration = new TalonFXConfiguration()
+            .withCurrentLimits(new CurrentLimitsConfigs()
+                    .withStatorCurrentLimit(STATOR_CURRENT_LIMIT)
+                    .withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT)
+                    .withStatorCurrentLimitEnable(true)
+                    .withSupplyCurrentLimitEnable(true))
             .withSlot0(new Slot0Configs()
                     .withKP(0.0054238)
                     .withKS(0.15023)

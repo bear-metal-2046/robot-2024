@@ -74,21 +74,7 @@ public class OI extends SubsystemIF {
         driveController.povDown().whileTrue(Commands.run(shooter::biasDown));
         driveController.povDownLeft().onTrue(Commands.runOnce(shooter::resetBias));
 
-        driveController.y().onTrue(Commands.deferredProxy(() -> {
-            if (ampArm.isSource() || ampArm.isAmp() && ampArm.isCollected())
-                return Commands.defer(FEEDBACK, Set.of(ampArm, indexer, shooter));
-            if (ampArm.isAmp())
-                return Commands.defer(AMP_TO_STOW, Set.of(ampArm));
-
-            if (indexer.hasCollected())
-                return Commands.defer(() -> FEEDFORWARD.get().andThen(STOW_TO_AMP.get()), Set.of(ampArm, indexer, shooter));
-            else
-                return Commands.defer(STOW_TO_SOURCE, Set.of(ampArm));
-        }));
-
-//        Commands.either(
-//                COLLECT_FROM_SOURCE, Commands.either(, STOW_TO_SOURCE, indexer::hasCollected),
-//                ampArm::isSource);
+        driveController.y().onTrue(ampArm.extendAmpArm());
 
         driveController.rightTrigger(0.5).whileTrue(Commands.runOnce(() ->
                 ampArm.setRollerState(AmpArm.RollerState.SCORE)).onlyIf(ampArm::isAmp))

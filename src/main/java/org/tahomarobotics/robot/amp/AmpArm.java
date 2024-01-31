@@ -8,15 +8,21 @@ import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
+import org.tahomarobotics.robot.indexer.Indexer;
+import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
+import java.util.Set;
+
 import static org.tahomarobotics.robot.amp.AmpArmConstants.*;
+import static org.tahomarobotics.robot.amp.commands.AmpArmCommands.*;
 
 public class AmpArm extends SubsystemIF {
     private static final AmpArm INSTANCE = new AmpArm();
@@ -64,6 +70,9 @@ public class AmpArm extends SubsystemIF {
         ParentDevice.optimizeBusUtilizationForAll(armMotor, wristMotor, rollersMotor);
     }
 
+
+    // GETTERS
+
     public static AmpArm getInstance() {
         return INSTANCE;
     }
@@ -71,9 +80,6 @@ public class AmpArm extends SubsystemIF {
     private double getArmPosition() {
         return BaseStatusSignal.getLatencyCompensatedValue(armPosition.refresh(), armVelocity.refresh());
     }
-
-
-    // GETTERS
 
     private double getWristPosition() {
         return BaseStatusSignal.getLatencyCompensatedValue(wristPosition.refresh(), wristVelocity.refresh());
@@ -91,11 +97,8 @@ public class AmpArm extends SubsystemIF {
         return rollersVelocity.refresh().getValue();
     }
 
-    public ArmState getArmState() {
-        return armState;
-    }
 
-    // STATE CONTROL... ERY
+    // STATE CONTROLLERY
 
     public void setArmState(ArmState state) {
         armState = state;
@@ -125,11 +128,6 @@ public class AmpArm extends SubsystemIF {
         armMotor.setControl(armControl.withPosition(targetArmPosition));
     }
 
-    public void setWristPosition(double position) {
-        targetWristPosition = position;
-        wristMotor.setControl(wristControl.withPosition(targetWristPosition));
-    }
-
     public void setRollerState(RollerState state) {
         rollerState = state;
 
@@ -138,6 +136,28 @@ public class AmpArm extends SubsystemIF {
             case SCORE -> rollersMotor.setControl(rollerVelocityControl.withVelocity(-ShooterConstants.TRANSFER_VELOCITY * 4));
             default -> rollersMotor.stopMotor();
         }
+    }
+
+    public void setWristPosition(double position) {
+        targetWristPosition = position;
+        wristMotor.setControl(wristControl.withPosition(targetWristPosition));
+    }
+
+    public Command extendAmpArm() {
+        Shooter shooter = Shooter.getInstance();
+        Indexer indexer = Indexer.getInstance();
+
+        return Commands.deferredProxy(() -> {
+            if (isSource() || isAmp() && isCollected())
+                return Commands.defer(FEEDBACK, Set.of(this, indexer, shooter));
+            if (isAmp())
+                return Commands.defer(AMP_TO_STOW, Set.of(this));
+
+            if (indexer.hasCollected())
+                return Commands.defer(() -> FEEDFORWARD.get().andThen(STOW_TO_AMP.get()), Set.of(this, indexer, shooter));
+            else
+                return Commands.defer(STOW_TO_SOURCE, Set.of(this));
+        });
     }
 
     // STATE CHECKERY

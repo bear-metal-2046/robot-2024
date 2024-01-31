@@ -27,8 +27,10 @@ public class Climbers extends SubsystemIF {
 
     @Override
     public SubsystemIF initialize() {
-        SmartDashboard.putData(new ClimbZeroCommand());
-        SmartDashboard.putData(new ClimbCommand(1, ClimberConstants.CLIMB_UNLADEN_SLOT)); // TODO: Test Command, remove after testing
+        SmartDashboard.putData("Climb Zero Command", new ClimbZeroCommand());
+        SmartDashboard.putData("Climb Sequence", new ClimbSequence());
+        SmartDashboard.putData("DeClimb Sequence", new DeclimbSequence());
+        SmartDashboard.putData("Test Climb Command", new ClimbCommand(1, ClimberConstants.CLIMB_UNLADEN_SLOT)); // TODO: Test Command, remove after testing
         return this;
     }
 

@@ -314,14 +314,14 @@ public class Chassis extends SubsystemIF {
     }
 
     private void simulatedOdometryThread() {
-        while(true) {
-            try {
+        try {
+            while(true) {
                 Thread.sleep(4);
                 updatePosition();
-            } catch (InterruptedException e) {
-                logger.error("Odometry thread interrupted");
-                Thread.currentThread().interrupt();
             }
+        } catch (InterruptedException e) {
+            logger.error("Odometry thread interrupted");
+            Thread.currentThread().interrupt();
         }
     }
 

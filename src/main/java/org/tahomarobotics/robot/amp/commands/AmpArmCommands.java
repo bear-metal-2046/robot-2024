@@ -6,37 +6,39 @@ import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.shooter.Shooter;
 
-import java.util.Set;
+import java.util.function.Supplier;
 
 import static org.tahomarobotics.robot.amp.AmpArmConstants.*;
 
 public class AmpArmCommands {
-    public static Command PASS_THROUGH;
-    public static Command STOW_TO_AMP;
-    public static Command STOW_TO_SOURCE;
-    public static Command COLLECT_FROM_SOURCE;
+    public static Supplier<Command> FEEDFORWARD;
+    public static Supplier<Command> STOW_TO_AMP;
+    public static Supplier<Command> AMP_TO_STOW;
+    public static Supplier<Command> STOW_TO_SOURCE;
+    public static Supplier<Command> FEEDBACK;
 
     static {
         AmpArm ampArm = AmpArm.getInstance();
         Indexer indexer = Indexer.getInstance();
         Shooter shooter = Shooter.getInstance();
 
-        PASS_THROUGH = Commands.defer(() -> Commands.sequence(
+        FEEDFORWARD = () -> Commands.sequence(
                 Commands.runOnce(() -> {
                     shooter.transferToAmp();
                     ampArm.setRollerState(AmpArm.RollerState.PASSING);
                 }),
-                Commands.waitSeconds(0.25),
+                Commands.waitSeconds(0.1),
                 Commands.runOnce(indexer::transitionToTransferring),
-                Commands.waitSeconds(0.6),
+                Commands.waitUntil(() -> !indexer.isBeanBakeTwo()),
+                Commands.waitSeconds(0.1),
                 Commands.runOnce(() -> {
                     ampArm.setRollerState(AmpArm.RollerState.COLLECTED);
                     indexer.transitionToDisabled();
                     shooter.disable();
                 })
-        ).onlyIf(ampArm::isStowed).onlyIf(indexer::hasCollected), Set.of(ampArm, indexer, shooter));
+        ).onlyIf(ampArm::isStowed).onlyIf(indexer::hasCollected);
 
-        COLLECT_FROM_SOURCE = Commands.defer(() -> Commands.sequence(
+        FEEDBACK = () -> Commands.sequence(
                 Commands.runOnce(() -> ampArm.setArmPosition(ARM_STOW_POSE)),
                 Commands.runOnce(() -> ampArm.setWristPosition(WRIST_MOVING_POSE)),
                 Commands.waitUntil(ampArm::isArmAtPosition),
@@ -48,31 +50,38 @@ public class AmpArmCommands {
                 }),
                 Commands.waitSeconds(0.1),
                 Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.SCORE)),
-                Commands.waitUntil(indexer::isBeamBroken),
+                Commands.waitUntil(indexer::isBeanBakeOne),
                 Commands.waitSeconds(0.1),
                 Commands.runOnce(() -> {
                     ampArm.setRollerState(AmpArm.RollerState.DISABLED);
-                    indexer.transitionToDisabled();
+                    indexer.transitionToCollected();
                     shooter.disable();
                 })
-        ).onlyIf(ampArm::isSource).onlyIf(() -> !indexer.hasCollected()), Set.of(ampArm, indexer, shooter));
+        ).onlyIf(() -> !indexer.hasCollected());
     }
 
     static {
         AmpArm ampArm = AmpArm.getInstance();
 
-        STOW_TO_AMP = Commands.defer(() -> Commands.sequence(
+        STOW_TO_AMP = () -> Commands.sequence(
                 Commands.runOnce(() -> ampArm.setWristPosition(WRIST_MOVING_POSE)),
                 Commands.runOnce(() -> ampArm.setArmPosition(ARM_AMP_POSE)),
                 Commands.waitUntil(ampArm::isArmAtPosition),
                 Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.AMP))
-        ).onlyIf(ampArm::isStowed), Set.of(ampArm));
+        ).onlyIf(ampArm::isStowed);
 
-        STOW_TO_SOURCE = Commands.defer(() -> Commands.sequence(
+        AMP_TO_STOW = () -> Commands.sequence(
+                Commands.runOnce(() -> ampArm.setWristPosition(WRIST_MOVING_POSE)),
+                Commands.runOnce(() -> ampArm.setArmPosition(ARM_STOW_POSE)),
+                Commands.waitUntil(ampArm::isArmAtPosition),
+                Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.STOW))
+        ).onlyIf(ampArm::isAmp);
+
+        STOW_TO_SOURCE = () -> Commands.sequence(
                 Commands.runOnce(() -> ampArm.setWristPosition(WRIST_MOVING_POSE)),
                 Commands.runOnce(() -> ampArm.setArmPosition(ARM_SOURCE_POSE)),
                 Commands.waitUntil(ampArm::isArmAtPosition),
                 Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.SOURCE))
-        ).onlyIf(ampArm::isStowed), Set.of(ampArm));
+        ).onlyIf(ampArm::isStowed);
     }
 }

@@ -20,6 +20,8 @@ import org.tahomarobotics.robot.shooter.commands.ShootCommand;
 import org.tahomarobotics.robot.shooter.commands.ShooterDefaultCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
+import java.util.Set;
+
 import static org.tahomarobotics.robot.amp.commands.AmpArmCommands.*;
 
 public class OI extends SubsystemIF {
@@ -51,6 +53,7 @@ public class OI extends SubsystemIF {
         Chassis chassis = Chassis.getInstance();
         Collector collector = Collector.getInstance();
         Shooter shooter = Shooter.getInstance();
+        Indexer indexer = Indexer.getInstance();
         AmpArm ampArm = AmpArm.getInstance();
 
         // Robot Heading Zeroing
@@ -71,11 +74,21 @@ public class OI extends SubsystemIF {
         driveController.povDown().whileTrue(Commands.run(shooter::biasDown));
         driveController.povDownLeft().onTrue(Commands.runOnce(shooter::resetBias));
 
-        driveController.y().onTrue(Commands.either(PASS_THROUGH.andThen(STOW_TO_AMP), STOW_TO_SOURCE, ampArm::isCollected));
-        driveController.y().onTrue(COLLECT_FROM_SOURCE.onlyIf(ampArm::isSource));
+        driveController.y().onTrue(Commands.deferredProxy(() -> {
+            if (ampArm.isSource() || ampArm.isAmp() && ampArm.isCollected())
+                return Commands.defer(FEEDBACK, Set.of(ampArm, indexer, shooter));
+            if (ampArm.isAmp())
+                return Commands.defer(AMP_TO_STOW, Set.of(ampArm));
 
-        //For testing purposes
-        driveController.povUpLeft().onTrue(COLLECT_FROM_SOURCE);
+            if (indexer.hasCollected())
+                return Commands.defer(() -> FEEDFORWARD.get().andThen(STOW_TO_AMP.get()), Set.of(ampArm, indexer, shooter));
+            else
+                return Commands.defer(STOW_TO_SOURCE, Set.of(ampArm));
+        }));
+
+//        Commands.either(
+//                COLLECT_FROM_SOURCE, Commands.either(, STOW_TO_SOURCE, indexer::hasCollected),
+//                ampArm::isSource);
 
         driveController.rightTrigger(0.5).whileTrue(Commands.runOnce(() ->
                 ampArm.setRollerState(AmpArm.RollerState.SCORE)).onlyIf(ampArm::isAmp))

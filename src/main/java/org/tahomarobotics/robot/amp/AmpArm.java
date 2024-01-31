@@ -110,7 +110,7 @@ public class AmpArm extends SubsystemIF {
                 setWristPosition(WRIST_AMP_POSE);
             }
             case SOURCE -> {
-                setArmPosition(ARM_STOW_POSE);
+                setArmPosition(ARM_SOURCE_POSE);
                 setWristPosition(WRIST_SOURCE_POSE);
             }
             case TRAP -> {

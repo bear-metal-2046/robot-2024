@@ -15,14 +15,15 @@ import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
-import static org.tahomarobotics.robot.indexer.IndexerConstants.*;
+import static org.tahomarobotics.robot.indexer.IndexerConstants.POSITION_TOLERANCE;
+import static org.tahomarobotics.robot.indexer.IndexerConstants.TRANSFER_DISTANCE;
 
 public class Indexer extends SubsystemIF {
     private static final Indexer INSTANCE = new Indexer();
 
     private final TalonFX motor;
-    private final DigitalInput beamBreakOne;
-    private final DigitalInput beamBreakTwo;
+    private final DigitalInput beanBakeOne;
+    private final DigitalInput beanBakeTwo;
 
     private final StatusSignal<Double> position;
     private final StatusSignal<Double> velocity;
@@ -41,8 +42,8 @@ public class Indexer extends SubsystemIF {
         RobustConfigurator configurator = new RobustConfigurator(logger);
 
         motor = new TalonFX(RobotMap.INDEXER_MOTOR);
-        beamBreakOne = new DigitalInput(RobotMap.BEAM_BREAK_ONE);
-        beamBreakTwo = new DigitalInput(RobotMap.BEAM_BREAK_TWO);
+        beanBakeOne = new DigitalInput(RobotMap.BEAM_BREAK_ONE);
+        beanBakeTwo = new DigitalInput(RobotMap.BEAM_BREAK_TWO);
 
         configurator.configureTalonFX(motor, IndexerConstants.indexMotorConfiguration);
 
@@ -92,12 +93,12 @@ public class Indexer extends SubsystemIF {
 
     // SETTERS
 
-    public boolean isBeamBrokenOne() {
-        return !beamBreakOne.get();
+    public boolean isBeanBakeOne() {
+        return !beanBakeOne.get();
     }
 
-    public boolean isBeamBrokenTwo() {
-        return !beamBreakTwo.get();
+    public boolean isBeanBakeTwo() {
+        return !beanBakeTwo.get();
     }
 
     public void setState(State state) {
@@ -119,7 +120,7 @@ public class Indexer extends SubsystemIF {
     }
 
     public void index() {
-        if (isBeamBrokenTwo()) {
+        if (isBeanBakeTwo()) {
             disable();
             zero();
 
@@ -187,8 +188,8 @@ public class Indexer extends SubsystemIF {
         Logger.recordOutput("Indexer/Velocity", getVelocity());
 
         Logger.recordOutput("Indexer/State", state);
-        Logger.recordOutput("Indexer/BeamBreakOne", isBeamBrokenOne());
-        Logger.recordOutput("Indexer/BeamBreakTwo", isBeamBrokenTwo());
+        Logger.recordOutput("Indexer/BeamBreakOne", isBeanBakeOne());
+        Logger.recordOutput("Indexer/BeamBreakTwo", isBeanBakeTwo());
         Logger.recordOutput("Indexer/Collected", hasCollected());
     }
 

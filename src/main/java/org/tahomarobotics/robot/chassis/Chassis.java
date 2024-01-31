@@ -317,12 +317,14 @@ public class Chassis extends SubsystemIF {
         while(true) {
             try {
                 Thread.sleep(4);
+                updatePosition();
             } catch (InterruptedException e) {
+                logger.error("Odometry thread interrupted");
+                Thread.currentThread().interrupt();
             }
-            updatePosition();
         }
-
     }
+
     private void updatePosition() {
         Rotation2d yaw;
         SwerveModulePosition[] modulePositions;

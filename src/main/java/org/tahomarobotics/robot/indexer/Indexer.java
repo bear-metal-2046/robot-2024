@@ -21,15 +21,13 @@ public class Indexer extends SubsystemIF {
     private static final Indexer INSTANCE = new Indexer();
 
     private final TalonFX motor;
-    private final DigitalInput beamBreak;
+    private final DigitalInput beamBreakOne;
+    private final DigitalInput beamBreakTwo;
 
     private final StatusSignal<Double> position;
     private final StatusSignal<Double> velocity;
 
     private State state = State.DISABLED;
-
-    private final MotionMagicVoltage indexPos = new MotionMagicVoltage(INTAKE_DISTANCE)
-            .withSlot(1).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVoltage transferPos = new MotionMagicVoltage(TRANSFER_DISTANCE)
             .withSlot(1).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage collectVel = new MotionMagicVelocityVoltage(CollectorConstants.COLLECT_MAX_RPS)
@@ -43,7 +41,8 @@ public class Indexer extends SubsystemIF {
         RobustConfigurator configurator = new RobustConfigurator(logger);
 
         motor = new TalonFX(RobotMap.INDEXER_MOTOR);
-        beamBreak = new DigitalInput(RobotMap.BEAM_BREAK);
+        beamBreakOne = new DigitalInput(RobotMap.BEAM_BREAK_ONE);
+        beamBreakTwo = new DigitalInput(RobotMap.BEAM_BREAK_TWO);
 
         configurator.configureTalonFX(motor, IndexerConstants.indexMotorConfiguration);
 
@@ -93,8 +92,12 @@ public class Indexer extends SubsystemIF {
 
     // SETTERS
 
-    public boolean isBeamBroken() {
-        return !beamBreak.get();
+    public boolean isBeamBrokenOne() {
+        return !beamBreakOne.get();
+    }
+
+    public boolean isBeamBrokenTwo() {
+        return !beamBreakTwo.get();
     }
 
     public void setState(State state) {
@@ -116,7 +119,7 @@ public class Indexer extends SubsystemIF {
     }
 
     public void index() {
-        if (getPosition() >= INTAKE_DISTANCE - POSITION_TOLERANCE) {
+        if (isBeamBrokenTwo()) {
             disable();
             zero();
 
@@ -149,7 +152,7 @@ public class Indexer extends SubsystemIF {
 
     public void transitionToIndexing() {
         zero();
-        motor.setControl(indexPos);
+        motor.setControl(collectVel);
 
         setState(State.INDEXING);
     }
@@ -184,7 +187,8 @@ public class Indexer extends SubsystemIF {
         Logger.recordOutput("Indexer/Velocity", getVelocity());
 
         Logger.recordOutput("Indexer/State", state);
-        Logger.recordOutput("Indexer/BeamBreak", isBeamBroken());
+        Logger.recordOutput("Indexer/BeamBreakOne", isBeamBrokenOne());
+        Logger.recordOutput("Indexer/BeamBreakTwo", isBeamBrokenTwo());
         Logger.recordOutput("Indexer/Collected", hasCollected());
     }
 

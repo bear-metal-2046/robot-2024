@@ -16,7 +16,6 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.auto.Autonomous;
-import org.tahomarobotics.robot.auto.PathPlannerHelper;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.identity.RobotIdentity;
@@ -50,9 +49,6 @@ public class Robot extends LoggedRobot {
         subsystems.add(AmpArm.getInstance().initialize());
         subsystems.add(Indexer.getInstance().initialize());
         subsystems.add(RobotIdentity.getInstance().initialize());
-
-        PathPlannerHelper.registerAutoCommands();
-
 
         logger.info("Robot Initialized.");
     }

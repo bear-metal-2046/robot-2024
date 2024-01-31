@@ -80,7 +80,7 @@ gversion {
     classPackage = "org.tahomarobotics.robot.util"
     className    = "BuildConstants"
     dateFormat   = "yyyy-MM-dd HH:mm:ss z"
-    timeZone     = "America/Las_Angeles"
+    timeZone     = "America/Los_Angeles"
     indent       = "  "
 }
 

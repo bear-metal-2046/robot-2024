@@ -29,7 +29,7 @@ public class IndexerDefaultCommand extends Command {
                 indexer.collect();
 
                 if (!collector.isCollecting()) indexer.transitionToDisabled();
-                if (indexer.isBeamBroken()) indexer.transitionToIndexing();
+                if (indexer.isBeamBrokenOne()) indexer.transitionToIndexing();
                 if (collector.isEjecting()) indexer.transitionToEjecting();
             }
             case INDEXING -> {
@@ -45,11 +45,11 @@ public class IndexerDefaultCommand extends Command {
             case TRANSFERRING -> {
                 indexer.transfer();
 
-                if (!indexer.isBeamBroken()) indexer.transitionToDisabled();
+                if (!indexer.isBeamBrokenOne()) indexer.transitionToDisabled();
             }
             case COLLECTED -> {
                 // Fix possible broken state
-                if (!indexer.isBeamBroken()) {
+                if (!indexer.isBeamBrokenOne()) {
                     logger.error("Indexer in COLLECTED state with no note detected! Transitioning to DISABLED...");
                     indexer.transitionToDisabled();
                 }

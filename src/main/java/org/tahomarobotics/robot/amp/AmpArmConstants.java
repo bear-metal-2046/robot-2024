@@ -35,9 +35,9 @@ public class AmpArmConstants {
                     .withNeutralMode(NeutralModeValue.Brake)
                     .withInverted(InvertedValue.Clockwise_Positive))
             .withMotionMagic(new MotionMagicConfigs()
-                    .withMotionMagicCruiseVelocity(0.5)
-                    .withMotionMagicAcceleration(5)
-                    .withMotionMagicJerk(25))
+                    .withMotionMagicCruiseVelocity(1)
+                    .withMotionMagicAcceleration(10)
+                    .withMotionMagicJerk(50))
             .withFeedback(new FeedbackConfigs().withSensorToMechanismRatio(1 / ARM_GEAR_REDUCTION))
             .withAudio(new AudioConfigs().withBeepOnBoot(true).withBeepOnConfig(true));
 
@@ -63,9 +63,9 @@ public class AmpArmConstants {
                     .withNeutralMode(NeutralModeValue.Brake)
                     .withInverted(InvertedValue.Clockwise_Positive))
             .withMotionMagic(new MotionMagicConfigs()
-                    .withMotionMagicCruiseVelocity(2)
-                    .withMotionMagicAcceleration(10)
-                    .withMotionMagicJerk(50))
+                    .withMotionMagicCruiseVelocity(5)
+                    .withMotionMagicAcceleration(20)
+                    .withMotionMagicJerk(75))
             .withFeedback(new FeedbackConfigs().withSensorToMechanismRatio(1 / WRIST_GEAR_REDUCTION))
             .withAudio(new AudioConfigs().withBeepOnBoot(true).withBeepOnConfig(true));
 

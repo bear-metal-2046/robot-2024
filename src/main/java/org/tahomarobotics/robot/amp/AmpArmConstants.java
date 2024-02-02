@@ -17,7 +17,7 @@ public class AmpArmConstants {
     static final double ARM_MAX_POSE = 270d/360d;
 
     public static final double ARM_STOW_POSE = 0; // Rotations
-    public static final double ARM_AMP_POSE = 0.41552734375; // Rotations
+    public static final double ARM_AMP_POSE = 0.437255859375; // Rotations
     public static final double ARM_TRAP_POSE = 0.3; // Rotations
     public static final double ARM_SOURCE_POSE = 0.396484375; // Rotations
 
@@ -47,7 +47,7 @@ public class AmpArmConstants {
 
     public static final double WRIST_MOVING_POSE = 0.18798828125; // Rotations
     public static final double WRIST_STOW_POSE = 0; // Rotations
-    public static final double WRIST_AMP_POSE = 0.400390625; // Rotations
+    public static final double WRIST_AMP_POSE = 0.366455078125; // Rotations
     public static final double WRIST_TRAP_POSE = 0.75; // Rotations
     public static final double WRIST_SOURCE_POSE = 0.158203125; // Rotations
 

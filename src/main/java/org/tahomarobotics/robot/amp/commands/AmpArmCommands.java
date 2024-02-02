@@ -29,7 +29,7 @@ public class AmpArmCommands {
                 }),
                 Commands.waitSeconds(0.1),
                 Commands.runOnce(indexer::transitionToTransferring),
-                Commands.waitUntil(() -> !indexer.isBeanBakeTwo()),
+                Commands.waitUntil(() -> !indexer.isBeanBakeTwo() && !indexer.isBeanBakeOne()),
                 Commands.waitSeconds(0.1),
                 Commands.runOnce(() -> {
                     ampArm.setRollerState(AmpArm.RollerState.COLLECTED);
@@ -51,7 +51,7 @@ public class AmpArmCommands {
                 Commands.waitSeconds(0.1),
                 Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.SCORE)),
                 Commands.waitUntil(indexer::isBeanBakeOne),
-                Commands.waitSeconds(0.1),
+                Commands.waitSeconds(0.2),
                 Commands.runOnce(() -> {
                     ampArm.setRollerState(AmpArm.RollerState.DISABLED);
                     indexer.transitionToCollected();

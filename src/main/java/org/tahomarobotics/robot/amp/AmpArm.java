@@ -8,21 +8,15 @@ import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.RobotState;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
-import org.tahomarobotics.robot.indexer.Indexer;
-import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
-import java.util.Set;
-
 import static org.tahomarobotics.robot.amp.AmpArmConstants.*;
-import static org.tahomarobotics.robot.amp.commands.AmpArmCommands.*;
 
 public class AmpArm extends SubsystemIF {
     private static final AmpArm INSTANCE = new AmpArm();
@@ -103,23 +97,13 @@ public class AmpArm extends SubsystemIF {
     public void setArmState(ArmState state) {
         armState = state;
 
+        setWristPosition(WRIST_MOVING_POSE);
+
         switch (state) {
-            case STOW -> {
-                setArmPosition(ARM_STOW_POSE);
-                setWristPosition(WRIST_STOW_POSE);
-            }
-            case AMP -> {
-                setArmPosition(ARM_AMP_POSE);
-                setWristPosition(WRIST_AMP_POSE);
-            }
-            case SOURCE -> {
-                setArmPosition(ARM_SOURCE_POSE);
-                setWristPosition(WRIST_SOURCE_POSE);
-            }
-            case TRAP -> {
-                setArmPosition(ARM_TRAP_POSE);
-                setWristPosition(WRIST_TRAP_POSE);
-            }
+            case STOW -> setArmPosition(ARM_STOW_POSE);
+            case AMP -> setArmPosition(ARM_AMP_POSE);
+            case SOURCE -> setArmPosition(ARM_SOURCE_POSE);
+            case TRAP -> setArmPosition(ARM_TRAP_POSE);
         }
     }
 
@@ -143,23 +127,6 @@ public class AmpArm extends SubsystemIF {
         wristMotor.setControl(wristControl.withPosition(targetWristPosition));
     }
 
-    public Command extendAmpArm() {
-        Shooter shooter = Shooter.getInstance();
-        Indexer indexer = Indexer.getInstance();
-
-        return Commands.deferredProxy(() -> {
-            if (isSource() || isAmp() && isCollected())
-                return Commands.defer(FEEDBACK, Set.of(this, indexer, shooter));
-            if (isAmp())
-                return Commands.defer(AMP_TO_STOW, Set.of(this));
-
-            if (indexer.hasCollected())
-                return Commands.defer(() -> FEEDFORWARD.get().andThen(STOW_TO_AMP.get()), Set.of(this, indexer, shooter));
-            else
-                return Commands.defer(STOW_TO_SOURCE, Set.of(this));
-        });
-    }
-
     // STATE CHECKERY
 
     public boolean isStowed() {
@@ -173,6 +140,7 @@ public class AmpArm extends SubsystemIF {
     public boolean isTrap() {
         return armState == ArmState.TRAP;
     }
+
     public boolean isSource() {
         return armState == ArmState.SOURCE;
     }

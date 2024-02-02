@@ -20,9 +20,7 @@ import org.tahomarobotics.robot.shooter.commands.ShootCommand;
 import org.tahomarobotics.robot.shooter.commands.ShooterDefaultCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
-import java.util.Set;
-
-import static org.tahomarobotics.robot.amp.commands.AmpArmCommands.*;
+import static org.tahomarobotics.robot.amp.commands.AmpArmCommands.AMP_ARM_CTRL;
 
 public class OI extends SubsystemIF {
     private final static OI INSTANCE = new OI();
@@ -53,7 +51,6 @@ public class OI extends SubsystemIF {
         Chassis chassis = Chassis.getInstance();
         Collector collector = Collector.getInstance();
         Shooter shooter = Shooter.getInstance();
-        Indexer indexer = Indexer.getInstance();
         AmpArm ampArm = AmpArm.getInstance();
 
         // Robot Heading Zeroing
@@ -74,7 +71,7 @@ public class OI extends SubsystemIF {
         driveController.povDown().whileTrue(Commands.run(shooter::biasDown));
         driveController.povDownLeft().onTrue(Commands.runOnce(shooter::resetBias));
 
-        driveController.y().onTrue(ampArm.extendAmpArm());
+        driveController.y().onTrue(AMP_ARM_CTRL);
 
         driveController.rightTrigger(0.5).whileTrue(Commands.runOnce(() ->
                 ampArm.setRollerState(AmpArm.RollerState.SCORE)).onlyIf(ampArm::isAmp))
@@ -84,7 +81,7 @@ public class OI extends SubsystemIF {
                 ampArm.setRollerState(AmpArm.RollerState.PASSING)
         ).onlyIf(ampArm::isSource)).whileFalse(Commands.runOnce(() ->
                 ampArm.setRollerState(AmpArm.RollerState.DISABLED)
-        ).onlyIf(ampArm::isSource));
+        ).onlyIf(ampArm::isSource)).onFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.COLLECTED)));
     }
 
     private void setDefaultCommands() {

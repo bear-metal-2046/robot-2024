@@ -117,10 +117,12 @@ class ShooterIO {
 
     public void transferToAmp() {
         shooterMotor.setControl(transferVelocity);
+        shooterMotorFollower.setControl(transferVelocity);
     }
 
     public void reverseIntake() {
         shooterMotor.setControl(reverseIntakeVelocity);
+        shooterMotorFollower.setControl(reverseIntakeVelocity);
     }
 
     // STATES

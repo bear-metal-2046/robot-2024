@@ -91,6 +91,8 @@ public class Shooter extends SubsystemIF {
 
     @Override
     public void periodic() {
+        io.periodic();
+
         io.processInputs(inputs);
         Logger.processInputs("Shooter", inputs);
 

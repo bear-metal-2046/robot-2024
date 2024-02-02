@@ -25,6 +25,8 @@ public class Indexer extends SubsystemIF {
     private final StatusSignal<Double> position;
     private final StatusSignal<Double> velocity;
 
+    private final StatusSignal<Double> indexCurrent;
+
     private State state = State.DISABLED;
 
     private final MotionMagicVoltage indexPos = new MotionMagicVoltage(INTAKE_DISTANCE)
@@ -47,7 +49,9 @@ public class Indexer extends SubsystemIF {
         position = motor.getPosition();
         velocity = motor.getVelocity();
 
-        BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY, position, velocity);
+        indexCurrent = motor.getStatorCurrent();
+
+        BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY, position, velocity, indexCurrent);
         motor.optimizeBusUtilization();
     }
 
@@ -176,6 +180,8 @@ public class Indexer extends SubsystemIF {
         Logger.recordOutput("Indexer/State", state);
         Logger.recordOutput("Indexer/BeamBreak", isBeamBroken());
         Logger.recordOutput("Indexer/Collected", hasCollected());
+
+        Logger.recordOutput("Indexer/Index Current", indexCurrent.refresh().getValue());
     }
 
     // STATES

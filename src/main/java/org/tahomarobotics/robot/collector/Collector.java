@@ -38,6 +38,10 @@ public class Collector extends SubsystemIF {
     private final StatusSignal<Double> deployVelocity;
     private final StatusSignal<Double> collectVelocity;
 
+    private final StatusSignal<Double> deployRightCurrent;
+    private final StatusSignal<Double> deployLeftCurrent;
+    private final StatusSignal<Double> collectorCurrent;
+
     private final MotionMagicVelocityVoltage collectVelocityControl = new MotionMagicVelocityVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVoltage deployPositionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
 
@@ -60,11 +64,18 @@ public class Collector extends SubsystemIF {
         deployVelocity = deployRight.getVelocity();
         collectVelocity = collectMotor.getVelocity();
 
+        deployLeftCurrent = deployLeft.getStatorCurrent();
+        deployRightCurrent = deployRight.getStatorCurrent();
+        collectorCurrent = collectMotor.getStatorCurrent();
+
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY,
                 deployPositionLeft,
                 deployPositionRight,
                 deployVelocity,
-                collectVelocity
+                collectVelocity,
+                deployLeftCurrent,
+                deployRightCurrent,
+                collectorCurrent
         );
 
         ParentDevice.optimizeBusUtilizationForAll(deployLeft, deployRight, collectMotor);
@@ -173,7 +184,16 @@ public class Collector extends SubsystemIF {
 
     @Override
     public void periodic() {
-        BaseStatusSignal.refreshAll(deployPositionLeft, deployPositionRight, collectVelocity);
+        BaseStatusSignal.refreshAll(
+                deployPositionLeft,
+                deployPositionRight,
+                deployVelocity,
+                collectVelocity,
+                deployLeftCurrent,
+                deployRightCurrent,
+                collectorCurrent
+
+        );
 
         Logger.recordOutput("Collector/Deploy State", deploymentState);
         Logger.recordOutput("Collector/Collection State", collectionState);
@@ -182,6 +202,10 @@ public class Collector extends SubsystemIF {
         Logger.recordOutput("Collector/Deploy Left Position", deployPositionLeft.getValue());
         Logger.recordOutput("Collector/Deploy Velocity", deployVelocity.getValue());
         Logger.recordOutput("Collector/Collect Velocity", collectVelocity.getValue());
+
+        Logger.recordOutput("Collector/Deploy Left Current", deployLeftCurrent.getValue());
+        Logger.recordOutput("Collector/Deploy Right Current", deployRightCurrent.getValue());
+        Logger.recordOutput("Collector/Collect Current", collectorCurrent.getValue());
     }
 
     @Override

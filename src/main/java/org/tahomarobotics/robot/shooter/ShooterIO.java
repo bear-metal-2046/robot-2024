@@ -30,6 +30,9 @@ class ShooterIO {
     private final StatusSignal<Double> pivotPosition;
     private final StatusSignal<Double> pivotVelocity;
 
+    private final StatusSignal<Double> shootCurrent;
+    private final StatusSignal<Double> pivotCurrent;
+
     private final MotionMagicVoltage pivotPositionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage motorVelocity = new MotionMagicVelocityVoltage(SHOOTER_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
 
@@ -57,9 +60,13 @@ class ShooterIO {
         pivotPosition = pivotMotor.getPosition();
         pivotVelocity = pivotMotor.getVelocity();
 
+        shootCurrent = shooterMotor.getStatorCurrent();
+        pivotCurrent = pivotMotor.getStatorCurrent();
+
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY,
-                shooterVelocity, pivotPosition, pivotVelocity
+                shooterVelocity, pivotPosition, pivotVelocity, shootCurrent, pivotCurrent
         );
+
         ParentDevice.optimizeBusUtilizationForAll(pivotMotor, shooterMotorFollower, shooterMotor);
     }
 
@@ -141,5 +148,11 @@ class ShooterIO {
 
     void processInputs(ShooterIOInputs inputs) {
         setShooterAngle(inputs.angle);
+    }
+
+
+    void periodic() {
+        Logger.recordOutput("Shooter/Shoot Current", shootCurrent.refresh().getValue());
+        Logger.recordOutput("Shooter/Pivot Current", pivotCurrent.refresh().getValue());
     }
 }

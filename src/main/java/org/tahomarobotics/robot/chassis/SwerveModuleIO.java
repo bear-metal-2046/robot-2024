@@ -42,6 +42,9 @@ public class SwerveModuleIO {
     private final StatusSignal<Double> drivePosition;
     private final StatusSignal<Double> driveVelocity;
 
+    private final StatusSignal<Double> driveCurrent;
+    private final StatusSignal<Double> steerCurrent;
+
     private final VelocityVoltage driveMotorVelocity = new VelocityVoltage(0.0).withEnableFOC(RobotConfiguration.CANIVORE_PHOENIX_PRO);
     private final PositionDutyCycle steerMotorPosition = new PositionDutyCycle(0.0).withEnableFOC(RobotConfiguration.CANIVORE_PHOENIX_PRO);
 
@@ -74,10 +77,14 @@ public class SwerveModuleIO {
         steerPosition = steerAbsEncoder.getAbsolutePosition();
         steerVelocity = steerAbsEncoder.getVelocity();
 
+        steerCurrent = steerMotor.getStatorCurrent();
+        driveCurrent = driveMotor.getStatorCurrent();
+
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.ODOMETRY_UPDATE_FREQUENCY,
                 drivePosition, driveVelocity, steerPosition,
-                steerVelocity
+                steerVelocity, driveCurrent, steerCurrent
         );
+
         ParentDevice.optimizeBusUtilizationForAll(driveMotor, steerMotor, steerAbsEncoder);
     }
 
@@ -159,7 +166,9 @@ public class SwerveModuleIO {
                 drivePosition,
                 driveVelocity,
                 steerPosition,
-                steerVelocity
+                steerVelocity,
+                driveCurrent,
+                steerCurrent
         );
 
         Logger.recordOutput(name + "/State", getState());
@@ -169,6 +178,9 @@ public class SwerveModuleIO {
         Logger.recordOutput(name + "/DriveVelocity", driveVelocity.getValueAsDouble());
         Logger.recordOutput(name + "/DriveVelocityMPS", driveVelocity.getValueAsDouble() * DRIVE_POSITION_COEFFICIENT);
         Logger.recordOutput(name + "/SteerVelocity", steerVelocity.getValueAsDouble());
+
+        Logger.recordOutput(name + "/Steer Current", steerCurrent.getValue());
+        Logger.recordOutput(name + "/Drive Current", driveCurrent.getValue());
     }
 
     

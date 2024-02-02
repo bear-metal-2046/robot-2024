@@ -58,10 +58,10 @@ public final class ChassisConstants {
 
     public static final PIDController SHOOT_MODE_CONTROLLER = new PIDController(10, 0, 0.5);
 
-    public static final double DRIVE_SUPPLY_CURRENT_LIMIT = 300.0; // Amps
-    public static final double DRIVE_STATOR_CURRENT_LIMIT = 150.0;
-    public static final double STEER_SUPPLY_CURRENT_LIMIT = 100.0;
-    public static final double STEER_STATOR_CURRENT_LIMIT = 50.0;
+    public static final double DRIVE_SUPPLY_CURRENT_LIMIT = 40.0; // Amps
+    public static final double DRIVE_STATOR_CURRENT_LIMIT = 60.0;
+    public static final double STEER_SUPPLY_CURRENT_LIMIT = 40.0;
+    public static final double STEER_STATOR_CURRENT_LIMIT = 60.0;
 
     public static final DCMotor SWERVE_DRIVE_MOTOR = DCMotor.getFalcon500(1);
     public static final double MAX_VELOCITY = SWERVE_DRIVE_MOTOR.freeSpeedRadPerSec * DRIVE_REDUCTION * WHEEL_RADIUS; // m/s

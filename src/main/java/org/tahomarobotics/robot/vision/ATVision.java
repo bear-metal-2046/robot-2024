@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -163,7 +164,7 @@ public class ATVision {
             var stds = VecBuilder.fill(
                     0.01 * distanceToTargets,
                     0.01 * distanceToTargets,
-                    0.01
+                    Units.degreesToRadians(30)
             );
 
             synchronized (poseEstimator) {
@@ -176,7 +177,7 @@ public class ATVision {
             var stds = VecBuilder.fill(
                     0.25 * distanceToTargets,
                     0.25 * distanceToTargets,
-                    0.5
+                    Units.degreesToRadians(90)
             );
 
             synchronized (poseEstimator) {

@@ -50,7 +50,7 @@ public class ATVision {
         // create PhotonLib camera (required for each camera)
         camera = new PhotonCamera(inst, cameraSettings.cameraName);
 
-        fieldLayout = AprilTagFields.k2023ChargedUp.loadAprilTagLayoutField();
+        fieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
         // Photon pose estimator will use all seen tags to run PnP once,
         // instead of looking at each target individually

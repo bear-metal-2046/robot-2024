@@ -7,6 +7,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,7 @@ class ShooterIO {
     private final MotionMagicVelocityVoltage motorVelocity = new MotionMagicVelocityVoltage(SHOOTER_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
 
     protected double angle = 0.0;
+    protected double distance = 0.0;
 
     private boolean shootingMode = false;
 
@@ -96,9 +98,10 @@ class ShooterIO {
 
     double angleToSpeaker() {
         Translation2d target = SPEAKER_TARGET_POSITION.get();
-        double distance = Chassis.getInstance().getPose().getTranslation().getDistance(target);
+        distance = Chassis.getInstance().getPose().getTranslation().getDistance(target);
 
-        return Math.atan2(SPEAKER_HEIGHT_DIFF, distance) / (2 * Math.PI);
+        //Scaling the shooter angle to compensate for the drop of the note over longer distances
+        return Units.radiansToRotations((Math.atan2(SPEAKER_HEIGHT_DIFF, distance) / 1.55) + 0.17);
     }
 
     // SETTERS
@@ -109,6 +112,10 @@ class ShooterIO {
         Logger.recordOutput("Shooter/Target Angle", angle);
 
         pivotMotor.setControl(pivotPositionControl.withPosition(angle));
+    }
+
+    double getDistance() {
+        return distance;
     }
 
     void zero() { pivotMotor.setPosition(0.0); }

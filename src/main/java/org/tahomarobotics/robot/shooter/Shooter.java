@@ -95,6 +95,7 @@ public class Shooter extends SubsystemIF {
         Logger.processInputs("Shooter", inputs);
 
         Logger.recordOutput("Shooter/Bias", biasAngle);
+        Logger.recordOutput("Shooter/Distance", io.getDistance());
         Logger.recordOutput("Shooter/Velocity", getShooterVelocity());
         Logger.recordOutput("Shooter/Angle", getPivotPosition());
         Logger.recordOutput("Shooter/Angle (Degrees)", getPivotPosition() * 360);

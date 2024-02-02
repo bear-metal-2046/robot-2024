@@ -57,8 +57,8 @@ public class OI extends SubsystemIF {
         // Robot/Field Orientation
         driveController.b().onTrue(Commands.runOnce(chassis::toggleOrientation));
 
-        //For testing before going to shed
-        driveController.y().onTrue(Commands.runOnce(() -> chassis.resetOdometry(new Pose2d(new Translation2d(3, 3), new Rotation2d(0)))));
+        //For testing w/o ATs
+        driveController.y().onTrue(Commands.runOnce(() -> chassis.resetOdometry(new Pose2d(new Translation2d(15.19, 5.57), Rotation2d.fromDegrees(180)))));
 
         //Collector up and down
         driveController.leftBumper().onTrue(Commands.runOnce(collector::toggleDeploy));

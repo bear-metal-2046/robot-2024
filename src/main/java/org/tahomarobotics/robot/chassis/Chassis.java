@@ -16,7 +16,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.ejml.equation.Function;
 import org.littletonrobotics.junction.Logger;
+import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
@@ -29,8 +31,11 @@ import org.tahomarobotics.robot.vision.VisionConstants;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class Chassis extends SubsystemIF {
+
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Chassis.class);
     private static final Chassis INSTANCE = new Chassis();
 
     private final GyroIO gyroIO = RobotConfiguration.getMode() == RobotConfiguration.Mode.REAL ? new GyroIO() : new GyroIOSim();
@@ -86,7 +91,7 @@ public class Chassis extends SubsystemIF {
 
         shootModeController = ChassisConstants.SHOOT_MODE_CONTROLLER;
 
-        odometryThread = new Thread(this::odometryThread);
+        odometryThread = new Thread(Robot.isReal() ? this::odometryThread : this::simulatedOdometryThread);
         odometryThread.start();
 
         backATVision = new ATVision(VisionConstants.ATCamera.BACK, fieldPose, poseEstimator);
@@ -241,11 +246,11 @@ public class Chassis extends SubsystemIF {
     // SETTERS
 
     public void aimToShooter(ChassisSpeeds speeds) {
-            speeds.omegaRadiansPerSecond =
-                    shootModeController.calculate(
-                            getPose().getRotation().getRadians(),
-                            Shooter.getInstance().rotToSpeaker()
-            );
+        speeds.omegaRadiansPerSecond =
+                shootModeController.calculate(
+                        getPose().getRotation().getRadians(),
+                        Shooter.getInstance().rotToSpeaker()
+                );
     }
 
     private void setSwerveStates(SwerveModuleState[] states) {
@@ -277,6 +282,8 @@ public class Chassis extends SubsystemIF {
         modules.forEach(SwerveModule::stop);
     }
 
+
+
     // Odometry Thread
 
     /**
@@ -284,8 +291,7 @@ public class Chassis extends SubsystemIF {
      * in chassis.
      */
     private void odometryThread() {
-        Rotation2d yaw;
-        SwerveModulePosition[] modulePositions;
+
 
         Threads.setCurrentThreadPriority(true, 1);
 
@@ -297,25 +303,49 @@ public class Chassis extends SubsystemIF {
 
         BaseStatusSignal[] signals = signalList.toArray(BaseStatusSignal[]::new);
 
+
+
         while (true) {
+
             // Wait for all signals to arrive
             StatusCode status = BaseStatusSignal.waitForAll(2 / RobotConfiguration.ODOMETRY_UPDATE_FREQUENCY, signals);
 
             if (status.isError()) logger.error("Failed to waitForAll updates" + status.getDescription());
 
-            // Calculate new position
+            updatePosition();
+        }
+    }
 
-            synchronized (gyroIO) {
-                yaw = getYaw();
-            }
+    private void simulatedOdometryThread() {
 
-            synchronized (modules) {
-                modulePositions = getSwerveModulePositions();
-            }
+        try {
 
-            synchronized (poseEstimator) {
-                poseEstimator.update(yaw, modulePositions);
+            while(true) {
+
+                Thread.sleep((long)(1000 / RobotConfiguration.ODOMETRY_UPDATE_FREQUENCY));
+
+                updatePosition();
             }
+        } catch (InterruptedException e) {
+            logger.warn("Simulated odometry thread has stopped", e);
+            Thread.currentThread().interrupt();
+        }
+    }
+    private void updatePosition() {
+        Rotation2d yaw;
+        SwerveModulePosition[] modulePositions;
+        // Calculate new position
+
+        synchronized (gyroIO) {
+            yaw = getYaw();
+        }
+
+        synchronized (modules) {
+            modulePositions = getSwerveModulePositions();
+        }
+
+        synchronized (poseEstimator) {
+            poseEstimator.update(yaw, modulePositions);
         }
     }
 }

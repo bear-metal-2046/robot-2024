@@ -317,20 +317,17 @@ public class Chassis extends SubsystemIF {
     }
 
     private void simulatedOdometryThread() {
-
         try {
-
             while(true) {
-
-                Thread.sleep((long)(1000 / RobotConfiguration.ODOMETRY_UPDATE_FREQUENCY));
-
+                Thread.sleep(4);
                 updatePosition();
             }
         } catch (InterruptedException e) {
-            logger.warn("Simulated odometry thread has stopped", e);
+            logger.warn("Simulated odometry thread sleep", e);
             Thread.currentThread().interrupt();
         }
     }
+
     private void updatePosition() {
         Rotation2d yaw;
         SwerveModulePosition[] modulePositions;

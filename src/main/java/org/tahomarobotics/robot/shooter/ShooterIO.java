@@ -34,6 +34,7 @@ class ShooterIO {
     private final MotionMagicVelocityVoltage motorVelocity = new MotionMagicVelocityVoltage(SHOOTER_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
 
     protected double angle = 0.0;
+    protected double distance = 0.0;
 
     private boolean shootingMode = false;
 
@@ -96,9 +97,9 @@ class ShooterIO {
 
     double angleToSpeaker() {
         Translation2d target = SPEAKER_TARGET_POSITION.get();
-        double distance = Chassis.getInstance().getPose().getTranslation().getDistance(target);
+        distance = Chassis.getInstance().getPose().getTranslation().getDistance(target) + SHOOTER_PIVOT_OFFSET.getX();
 
-        return Math.atan2(SPEAKER_HEIGHT_DIFF, distance) / (2 * Math.PI);
+        return  0.04875446 + (0.201136 - 0.04875446)/(1 + Math.pow((distance/2.019404), 2.137465));
     }
 
     // SETTERS
@@ -109,6 +110,10 @@ class ShooterIO {
         Logger.recordOutput("Shooter/Target Angle", angle);
 
         pivotMotor.setControl(pivotPositionControl.withPosition(angle));
+    }
+
+    double getDistance() {
+        return distance;
     }
 
     void zero() { pivotMotor.setPosition(0.0); }

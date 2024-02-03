@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import java.util.function.Supplier;
 
 public class ShooterConstants {
-    static final double SHOOTER_SPEED = 75; // rps
+    static final double SHOOTER_SPEED = 100; // rps
     static final double SHOOTER_SPEED_TOLERANCE = 0.25; // rps
     static final double MAX_PIVOT_ANGLE = 0.14;
     static final double MIN_PIVOT_ANGLE = 0.01;
@@ -22,9 +22,9 @@ public class ShooterConstants {
 
     static final double BIAS_AMT = Units.degreesToRotations(5) / 50;
 
-    private static final double SHOOTER_HEIGHT = Units.inchesToMeters(8.5);
-    private static final double SPEAKER_HEIGHT = Units.inchesToMeters(78.5);
-    static final double SPEAKER_HEIGHT_DIFF = SPEAKER_HEIGHT - SHOOTER_HEIGHT;
+    static final Translation2d SHOOTER_PIVOT_OFFSET = new Translation2d(0.1238, 0.1899);
+    private static final double SPEAKER_HEIGHT = Units.inchesToMeters(80);
+    static final double SPEAKER_HEIGHT_DIFF = SPEAKER_HEIGHT - SHOOTER_PIVOT_OFFSET.getY();
 
     private static final Translation2d RED_SPEAKER_TARGET_POSITION = new Translation2d(16.53, 5.55);
     private static final Translation2d BLUE_SPEAKER_TARGET_POSITION = new Translation2d(0, 5.55);

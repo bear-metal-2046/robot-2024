@@ -31,7 +31,7 @@ public class Indexer extends SubsystemIF {
             .withSlot(1).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVoltage transferPos = new MotionMagicVoltage(TRANSFER_DISTANCE)
             .withSlot(1).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
-    private final MotionMagicVelocityVoltage collectVel = new MotionMagicVelocityVoltage(CollectorConstants.COLLECT_MAX_RPS)
+    private final MotionMagicVelocityVoltage collectVel = new MotionMagicVelocityVoltage(COLLECT_SPEED)
             .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage ejectVel = new MotionMagicVelocityVoltage(-CollectorConstants.COLLECT_MAX_RPS)
             .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);

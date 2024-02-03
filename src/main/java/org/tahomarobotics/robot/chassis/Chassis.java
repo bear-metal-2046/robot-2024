@@ -90,6 +90,7 @@ public class Chassis extends SubsystemIF {
         );
 
         shootModeController = ChassisConstants.SHOOT_MODE_CONTROLLER;
+        shootModeController.enableContinuousInput(0, 2 * Math.PI);
 
         odometryThread = new Thread(Robot.isReal() ? this::odometryThread : this::simulatedOdometryThread);
         odometryThread.start();

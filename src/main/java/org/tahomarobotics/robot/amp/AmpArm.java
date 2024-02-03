@@ -17,6 +17,7 @@ import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
 import static org.tahomarobotics.robot.amp.AmpArmConstants.*;
+import static org.tahomarobotics.robot.amp.commands.AmpArmCommands.ARM_TO_STOW;
 
 public class AmpArm extends SubsystemIF {
     private static final AmpArm INSTANCE = new AmpArm();
@@ -97,13 +98,23 @@ public class AmpArm extends SubsystemIF {
     public void setArmState(ArmState state) {
         armState = state;
 
-        setWristPosition(WRIST_MOVING_POSE);
-
         switch (state) {
-            case STOW -> setArmPosition(ARM_STOW_POSE);
-            case AMP -> setArmPosition(ARM_AMP_POSE);
-            case SOURCE -> setArmPosition(ARM_SOURCE_POSE);
-            case TRAP -> setArmPosition(ARM_TRAP_POSE);
+            case STOW -> {
+                setArmPosition(ARM_STOW_POSE);
+                setWristPosition(WRIST_STOW_POSE);
+            }
+            case AMP -> {
+                setArmPosition(ARM_AMP_POSE);
+                setWristPosition(WRIST_AMP_POSE);
+            }
+            case SOURCE -> {
+                setArmPosition(ARM_SOURCE_POSE);
+                setWristPosition(WRIST_SOURCE_POSE);
+            }
+            case TRAP -> {
+                setArmPosition(ARM_TRAP_POSE);
+                setWristPosition(WRIST_TRAP_POSE);
+            }
         }
     }
 
@@ -191,6 +202,8 @@ public class AmpArm extends SubsystemIF {
                 .andThen(Commands.runOnce(() -> {
                     armMotor.setPosition(0.0);
                     wristMotor.setPosition(0.0);
+                    setArmPosition(ARM_STOW_POSE);
+                    setWristPosition(WRIST_STOW_POSE);
                 }))
                 .ignoringDisable(true).schedule();
 

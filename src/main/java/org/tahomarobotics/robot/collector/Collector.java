@@ -166,8 +166,8 @@ public class Collector extends SubsystemIF {
     }
 
     public void zeroCollector() {
-        deployLeft.setPosition(0);
-        deployRight.setPosition(0);
+        deployLeft.setPosition(0.25 - 0.04833);
+        deployRight.setPosition(0.25 - 0.04833);
     }
 
 

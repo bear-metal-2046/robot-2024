@@ -21,9 +21,9 @@ public class CollectorConstants {
     public final static double COLLECT_MAX_ACCEL = COLLECT_MAX_RPS / 0.25;
     public final static double COLLECT_MAX_JERK = COLLECT_MAX_ACCEL / 0.125;
 
-    public final static double STOW_POSITION = Units.degreesToRotations(10);
-    public final static double COLLECT_POSITION = Units.degreesToRotations(137.5);
-    public final static double EJECT_POSITION = Units.degreesToRotations(100);
+    public final static double STOW_POSITION = Units.degreesToRotations(90);
+    public final static double COLLECT_POSITION = Units.degreesToRotations(210.42);
+    public final static double EJECT_POSITION = Units.degreesToRotations(210.42 - 30);
 
     public final static double EPSILON = 0.01;
 

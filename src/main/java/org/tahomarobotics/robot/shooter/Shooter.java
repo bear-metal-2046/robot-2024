@@ -93,8 +93,8 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
 
     @Override
     public void periodic() {
-        io.processInputs(inputs);
         io.refreshSignals();
+        io.processInputs(inputs);
 
         Logger.processInputs("Shooter", inputs);
 

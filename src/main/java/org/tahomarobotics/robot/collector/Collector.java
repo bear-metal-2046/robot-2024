@@ -108,6 +108,10 @@ public class Collector extends SubsystemIF {
         }
     }
 
+    public boolean isDeployed() {
+        return deploymentState == DeploymentState.DEPLOYED;
+    }
+
     public void setDeployEject() {
         deploymentState = DeploymentState.EJECT;
         setDeployPosition(EJECT_POSITION);
@@ -205,6 +209,6 @@ public class Collector extends SubsystemIF {
     public enum DeploymentState {
         DEPLOYED,
         STOWED,
-        EJECT;
+        EJECT
     }
 }

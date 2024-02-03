@@ -14,9 +14,13 @@ import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.tahomarobotics.robot.chassis.Chassis;
+import org.tahomarobotics.robot.collector.Collector;
+import org.tahomarobotics.robot.shooter.Shooter;
+import org.tahomarobotics.robot.shooter.commands.ShootCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
 import java.util.ArrayList;
@@ -26,6 +30,8 @@ import java.util.List;
 public class Autonomous extends SubsystemIF {
     private static final Autonomous INSTANCE = new Autonomous();
     private final Chassis chassis = Chassis.getInstance();
+    private final Collector collector = Collector.getInstance();
+    private final Shooter shooter = Shooter.getInstance();
     private final LoggedDashboardChooser<Command> autoChooser;
     private final Field2d fieldPose;
 
@@ -51,8 +57,17 @@ public class Autonomous extends SubsystemIF {
                 e -> new InstantCommand(() -> postAutoTrajectory(fieldPose, autoChooser.get().getName())).ignoringDisable(true).schedule()
         );
 
-        NamedCommands.registerCommand("ShootCommand", new InstantCommand(() -> System.out.println("========SHOOT COMMAND CALLED=========")));
-        NamedCommands.registerCommand("ResetOdom", new InstantCommand(() -> chassis.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.get().getName()))));
+        NamedCommands.registerCommand("Shoot",
+                Commands.runOnce(shooter::toggleShootMode).onlyIf(() -> !shooter.inShootingMode())
+                        .andThen(new ShootCommand())
+                        .andThen(shooter::toggleShootMode));
+        NamedCommands.registerCommand("ResetOdom", Commands.runOnce(() -> chassis.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.get().getName()))));
+        NamedCommands.registerCommand("CollectorDown",
+                Commands.runOnce(collector::toggleDeploy).onlyIf(() -> !collector.isDeployed())
+                        .andThen(() -> collector.setCollectionState(Collector.CollectionState.COLLECTING)));
+        NamedCommands.registerCommand("CollectorUp",
+                Commands.runOnce(collector::stopCollect)
+                        .andThen(Commands.runOnce(collector::toggleDeploy).onlyIf(collector::isDeployed)));
     }
 
     public Command getSelectedAuto() {

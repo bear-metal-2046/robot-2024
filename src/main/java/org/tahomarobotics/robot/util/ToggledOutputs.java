@@ -1,12 +1,18 @@
 package org.tahomarobotics.robot.util;
 
 import edu.wpi.first.util.WPISerializable;
+import edu.wpi.first.util.struct.StructSerializable;
 import org.littletonrobotics.junction.Logger;
 
 public interface ToggledOutputs {
     boolean logOutputs();
 
     default <T extends WPISerializable> void recordOutput(String key, T value) {
+        if (logOutputs())
+            Logger.recordOutput(key, value);
+    }
+
+    default <T extends StructSerializable> void recordOutput(String key, T... value) {
         if (logOutputs())
             Logger.recordOutput(key, value);
     }

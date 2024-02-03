@@ -148,7 +148,9 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
     }
 
     public Pose2d getPose() {
-        return poseEstimator.getEstimatedPosition();
+        synchronized (poseEstimator) {
+            return poseEstimator.getEstimatedPosition();
+        }
     }
 
     public SwerveModulePosition[] getSwerveModulePositions() {
@@ -174,6 +176,10 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
         modules.forEach(SwerveModule::periodic);
         Pose2d pose = getPose();
 
+        recordOutput("Chassis/State", getSwerveModuleStates());
+        recordOutput("Chassis/DesiredState", getCurrentChassisSpeeds());
+        recordOutput("Chassis/CurrentChassisSpeeds", getCurrentChassisSpeeds());
+        recordOutput("Chassis/Gyro/Yaw", getYaw());
         recordOutput("Chassis/Pose", pose);
 
         fieldPose.setRobotPose(pose);

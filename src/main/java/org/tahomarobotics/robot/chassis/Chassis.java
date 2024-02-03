@@ -16,8 +16,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.littletonrobotics.junction.Logger;
 import org.slf4j.LoggerFactory;
+import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
@@ -25,12 +25,14 @@ import org.tahomarobotics.robot.chassis.commands.AlignSwerveCommand;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.util.CalibrationData;
 import org.tahomarobotics.robot.util.SubsystemIF;
+import org.tahomarobotics.robot.util.ToggledOutputs;
+import org.tahomarobotics.robot.vision.ATVision;
+import org.tahomarobotics.robot.vision.VisionConstants;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Chassis extends SubsystemIF {
-
+public class Chassis extends SubsystemIF implements ToggledOutputs {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Chassis.class);
     private static final Chassis INSTANCE = new Chassis();
 
@@ -45,9 +47,9 @@ public class Chassis extends SubsystemIF {
     private final SwerveDriveKinematics kinematics;
     private final CalibrationData<Double[]> swerveCalibration;
 
-//    private final ATVision backATVision;
-//    private final ATVision leftATVision;
-//    private final ATVision rightATVision;
+    private final ATVision backATVision;
+    private final ATVision leftATVision;
+    private final ATVision rightATVision;
 
     private final Thread odometryThread;
 
@@ -91,9 +93,9 @@ public class Chassis extends SubsystemIF {
         odometryThread = new Thread(Robot.isReal() ? this::odometryThread : this::simulatedOdometryThread);
         odometryThread.start();
 
-//        backATVision = new ATVision(VisionConstants.ATCamera.BACK, fieldPose, poseEstimator);
-//        leftATVision = new ATVision(VisionConstants.ATCamera.LEFT, fieldPose, poseEstimator);
-//        rightATVision = new ATVision(VisionConstants.ATCamera.RIGHT, fieldPose, poseEstimator);
+        backATVision = new ATVision(VisionConstants.ATCamera.BACK, fieldPose, poseEstimator);
+        leftATVision = new ATVision(VisionConstants.ATCamera.LEFT, fieldPose, poseEstimator);
+        rightATVision = new ATVision(VisionConstants.ATCamera.RIGHT, fieldPose, poseEstimator);
     }
 
     public static Chassis getInstance() {
@@ -172,7 +174,7 @@ public class Chassis extends SubsystemIF {
         modules.forEach(SwerveModule::periodic);
         Pose2d pose = getPose();
 
-        Logger.recordOutput("Chassis/Pose", pose);
+        recordOutput("Chassis/Pose", pose);
 
         fieldPose.setRobotPose(pose);
         SmartDashboard.putData(fieldPose);
@@ -322,5 +324,10 @@ public class Chassis extends SubsystemIF {
         synchronized (poseEstimator) {
             poseEstimator.update(yaw, modulePositions);
         }
+    }
+
+    @Override
+    public boolean logOutputs() {
+        return OutputsConfiguration.CHASSIS;
     }
 }

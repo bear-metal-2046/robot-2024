@@ -2,12 +2,14 @@ package org.tahomarobotics.robot.shooter;
 
 import edu.wpi.first.math.MathUtil;
 import org.littletonrobotics.junction.Logger;
+import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.util.SubsystemIF;
+import org.tahomarobotics.robot.util.ToggledOutputs;
 
 import static org.tahomarobotics.robot.shooter.ShooterConstants.*;
 
-public class Shooter extends SubsystemIF {
+public class Shooter extends SubsystemIF implements ToggledOutputs {
 
     private static final Shooter INSTANCE = new Shooter();
 
@@ -92,13 +94,15 @@ public class Shooter extends SubsystemIF {
     @Override
     public void periodic() {
         io.processInputs(inputs);
+        io.refreshSignals();
+
         Logger.processInputs("Shooter", inputs);
 
-        Logger.recordOutput("Shooter/Bias", biasAngle);
-        Logger.recordOutput("Shooter/Distance", io.getDistance());
-        Logger.recordOutput("Shooter/Velocity", getShooterVelocity());
-        Logger.recordOutput("Shooter/Angle", getPivotPosition());
-        Logger.recordOutput("Shooter/Angle (Degrees)", getPivotPosition() * 360);
+        recordOutput("Shooter/Bias", biasAngle);
+        recordOutput("Shooter/Distance", io.getDistance());
+        recordOutput("Shooter/Velocity", getShooterVelocity());
+        recordOutput("Shooter/Angle", getPivotPosition());
+        recordOutput("Shooter/Angle (Degrees)", getPivotPosition() * 360);
     }
 
     // onInit
@@ -106,5 +110,10 @@ public class Shooter extends SubsystemIF {
     @Override
     public void onDisabledInit() {
         disable();
+    }
+
+    @Override
+    public boolean logOutputs() {
+        return OutputsConfiguration.SHOOTER;
     }
 }

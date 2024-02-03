@@ -13,15 +13,17 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import org.littletonrobotics.junction.AutoLog;
 import org.slf4j.LoggerFactory;
+import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.util.RobustConfigurator;
+import org.tahomarobotics.robot.util.ToggledOutputs;
 
 import java.util.List;
 
 import static org.tahomarobotics.robot.chassis.ChassisConstants.*;
 
-public class SwerveModuleIO {
+public class SwerveModuleIO implements ToggledOutputs {
     private final org.slf4j.Logger logger;
 
     // MEMBER VARIABLES
@@ -154,13 +156,13 @@ public class SwerveModuleIO {
 
     
     public void periodic() {
-//        Logger.recordOutput(name + "/State", getState());
-//        Logger.recordOutput(name + "/DesiredState", desiredState);
-//        Logger.recordOutput(name + "/Position", getPosition());
-//
-//        Logger.recordOutput(name + "/DriveVelocity", driveVelocity.getValueAsDouble());
-//        Logger.recordOutput(name + "/DriveVelocityMPS", driveVelocity.getValueAsDouble() * DRIVE_POSITION_COEFFICIENT);
-//        Logger.recordOutput(name + "/SteerVelocity", steerVelocity.getValueAsDouble());
+        recordOutput(name + "/State", getState());
+        recordOutput(name + "/DesiredState", desiredState);
+        recordOutput(name + "/Position", getPosition());
+
+        recordOutput(name + "/DriveVelocity", driveVelocity.getValueAsDouble());
+        recordOutput(name + "/DriveVelocityMPS", driveVelocity.getValueAsDouble() * DRIVE_POSITION_COEFFICIENT);
+        recordOutput(name + "/SteerVelocity", steerVelocity.getValueAsDouble());
     }
 
     
@@ -191,5 +193,10 @@ public class SwerveModuleIO {
                 steerPosition,
                 steerVelocity
         );
+    }
+
+    @Override
+    public boolean logOutputs() {
+        return OutputsConfiguration.SWERVE_MODULE;
     }
 }

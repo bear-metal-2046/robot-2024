@@ -12,7 +12,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import org.littletonrobotics.junction.AutoLog;
-import org.littletonrobotics.junction.Logger;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
@@ -108,21 +107,21 @@ public class SwerveModuleIO {
      * @return Position of the module in <strong>meters</strong>.
      */
     double getDrivePosition() {
-        return BaseStatusSignal.getLatencyCompensatedValue(drivePosition.refresh(), driveVelocity.refresh()) * DRIVE_POSITION_COEFFICIENT;
+        return BaseStatusSignal.getLatencyCompensatedValue(drivePosition, driveVelocity) * DRIVE_POSITION_COEFFICIENT;
     }
 
     /**
      * @return Velocity of the module in <strong>meters/s</strong>.
      */
     double getDriveVelocity() {
-        return driveVelocity.refresh().getValue() * DRIVE_POSITION_COEFFICIENT;
+        return driveVelocity.getValue() * DRIVE_POSITION_COEFFICIENT;
     }
 
     /**
      * @return Relative rotation of the module in <strong>rotations</strong>.
      */
     double getSteerAngle() {
-        return BaseStatusSignal.getLatencyCompensatedValue(steerPosition.refresh(), steerVelocity.refresh());
+        return BaseStatusSignal.getLatencyCompensatedValue(steerPosition, steerVelocity);
     }
 
     /**
@@ -155,20 +154,13 @@ public class SwerveModuleIO {
 
     
     public void periodic() {
-        BaseStatusSignal.refreshAll(
-                drivePosition,
-                driveVelocity,
-                steerPosition,
-                steerVelocity
-        );
-
-        Logger.recordOutput(name + "/State", getState());
-        Logger.recordOutput(name + "/DesiredState", desiredState);
-        Logger.recordOutput(name + "/Position", getPosition());
-
-        Logger.recordOutput(name + "/DriveVelocity", driveVelocity.getValueAsDouble());
-        Logger.recordOutput(name + "/DriveVelocityMPS", driveVelocity.getValueAsDouble() * DRIVE_POSITION_COEFFICIENT);
-        Logger.recordOutput(name + "/SteerVelocity", steerVelocity.getValueAsDouble());
+//        Logger.recordOutput(name + "/State", getState());
+//        Logger.recordOutput(name + "/DesiredState", desiredState);
+//        Logger.recordOutput(name + "/Position", getPosition());
+//
+//        Logger.recordOutput(name + "/DriveVelocity", driveVelocity.getValueAsDouble());
+//        Logger.recordOutput(name + "/DriveVelocityMPS", driveVelocity.getValueAsDouble() * DRIVE_POSITION_COEFFICIENT);
+//        Logger.recordOutput(name + "/SteerVelocity", steerVelocity.getValueAsDouble());
     }
 
     

@@ -4,7 +4,6 @@ import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import org.tahomarobotics.robot.collector.CollectorConstants;
-import org.tahomarobotics.robot.shooter.ShooterConstants;
 
 public class IndexerConstants {
     static final double COLLECT_SPEED = CollectorConstants.COLLECT_MAX_RPS - 20; // Rotations

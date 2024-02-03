@@ -7,7 +7,6 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,10 +97,9 @@ class ShooterIO {
 
     double angleToSpeaker() {
         Translation2d target = SPEAKER_TARGET_POSITION.get();
-        distance = Chassis.getInstance().getPose().getTranslation().getDistance(target);
+        distance = Chassis.getInstance().getPose().getTranslation().getDistance(target) + SHOOTER_PIVOT_OFFSET.getX();
 
-        //Scaling the shooter angle to compensate for the drop of the note over longer distances
-        return Units.radiansToRotations((Math.atan2(SPEAKER_HEIGHT_DIFF, distance) / 1.55) + 0.17);
+        return  0.04875446 + (0.201136 - 0.04875446)/(1 + Math.pow((distance/2.019404), 2.137465));
     }
 
     // SETTERS

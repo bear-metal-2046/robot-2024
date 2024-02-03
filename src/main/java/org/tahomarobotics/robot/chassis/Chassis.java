@@ -16,7 +16,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.littletonrobotics.junction.Logger;
+import org.slf4j.LoggerFactory;
+import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
@@ -24,13 +25,15 @@ import org.tahomarobotics.robot.chassis.commands.AlignSwerveCommand;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.util.CalibrationData;
 import org.tahomarobotics.robot.util.SubsystemIF;
+import org.tahomarobotics.robot.util.ToggledOutputs;
 import org.tahomarobotics.robot.vision.ATVision;
 import org.tahomarobotics.robot.vision.VisionConstants;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Chassis extends SubsystemIF {
+public class Chassis extends SubsystemIF implements ToggledOutputs {
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Chassis.class);
     private static final Chassis INSTANCE = new Chassis();
 
     private final GyroIO gyroIO = RobotConfiguration.getMode() == RobotConfiguration.Mode.REAL ? new GyroIO() : new GyroIOSim();
@@ -85,8 +88,9 @@ public class Chassis extends SubsystemIF {
         );
 
         shootModeController = ChassisConstants.SHOOT_MODE_CONTROLLER;
+        shootModeController.enableContinuousInput(0, 2 * Math.PI);
 
-        odometryThread = new Thread(this::odometryThread);
+        odometryThread = new Thread(Robot.isReal() ? this::odometryThread : this::simulatedOdometryThread);
         odometryThread.start();
 
         backATVision = new ATVision(VisionConstants.ATCamera.BACK, fieldPose, poseEstimator);
@@ -144,7 +148,9 @@ public class Chassis extends SubsystemIF {
     }
 
     public Pose2d getPose() {
-        return poseEstimator.getEstimatedPosition();
+        synchronized (poseEstimator) {
+            return poseEstimator.getEstimatedPosition();
+        }
     }
 
     public SwerveModulePosition[] getSwerveModulePositions() {
@@ -167,32 +173,17 @@ public class Chassis extends SubsystemIF {
 
     @Override
     public void periodic() {
-        Pose2d pose;
-        Rotation2d yaw;
+        modules.forEach(SwerveModule::periodic);
+        Pose2d pose = getPose();
 
-        synchronized (modules) {
-            modules.forEach(SwerveModule::periodic);
-            Logger.recordOutput("Chassis/State", getSwerveModuleStates());
-            Logger.recordOutput("Chassis/DesiredState", getSwerveModuleDesiredStates());
-        }
-
-        synchronized (poseEstimator) {
-            pose = getPose();
-        }
-
-        synchronized (gyroIO) {
-            yaw = getYaw();
-        }
-
-        // TODO: Synchronize chassis speeds - pose estimator does use kinematics
-        Logger.recordOutput("Chassis/CurrentChassisSpeeds", getCurrentChassisSpeeds());
-        Logger.recordOutput("Chassis/Gyro/Yaw", yaw);
-        Logger.recordOutput("Chassis/Pose", pose);
+        recordOutput("Chassis/State", getSwerveModuleStates());
+        recordOutput("Chassis/DesiredState", getCurrentChassisSpeeds());
+        recordOutput("Chassis/CurrentChassisSpeeds", getCurrentChassisSpeeds());
+        recordOutput("Chassis/Gyro/Yaw", getYaw());
+        recordOutput("Chassis/Pose", pose);
 
         fieldPose.setRobotPose(pose);
         SmartDashboard.putData(fieldPose);
-
-        SmartDashboard.putString("Pose", pose.toString());
     }
 
     @Override
@@ -241,11 +232,11 @@ public class Chassis extends SubsystemIF {
     // SETTERS
 
     public void aimToShooter(ChassisSpeeds speeds) {
-            speeds.omegaRadiansPerSecond =
-                    shootModeController.calculate(
-                            getPose().getRotation().getRadians(),
-                            Shooter.getInstance().rotToSpeaker()
-            );
+        speeds.omegaRadiansPerSecond =
+                shootModeController.calculate(
+                        getPose().getRotation().getRadians(),
+                        Shooter.getInstance().rotToSpeaker()
+                );
     }
 
     private void setSwerveStates(SwerveModuleState[] states) {
@@ -277,6 +268,8 @@ public class Chassis extends SubsystemIF {
         modules.forEach(SwerveModule::stop);
     }
 
+
+
     // Odometry Thread
 
     /**
@@ -284,8 +277,7 @@ public class Chassis extends SubsystemIF {
      * in chassis.
      */
     private void odometryThread() {
-        Rotation2d yaw;
-        SwerveModulePosition[] modulePositions;
+
 
         Threads.setCurrentThreadPriority(true, 1);
 
@@ -297,25 +289,51 @@ public class Chassis extends SubsystemIF {
 
         BaseStatusSignal[] signals = signalList.toArray(BaseStatusSignal[]::new);
 
+
+
         while (true) {
+
             // Wait for all signals to arrive
             StatusCode status = BaseStatusSignal.waitForAll(2 / RobotConfiguration.ODOMETRY_UPDATE_FREQUENCY, signals);
 
             if (status.isError()) logger.error("Failed to waitForAll updates" + status.getDescription());
 
-            // Calculate new position
-
-            synchronized (gyroIO) {
-                yaw = getYaw();
-            }
-
-            synchronized (modules) {
-                modulePositions = getSwerveModulePositions();
-            }
-
-            synchronized (poseEstimator) {
-                poseEstimator.update(yaw, modulePositions);
-            }
+            updatePosition();
         }
+    }
+
+    private void simulatedOdometryThread() {
+        try {
+            while(true) {
+                Thread.sleep(4);
+                updatePosition();
+            }
+        } catch (InterruptedException e) {
+            logger.warn("Simulated odometry thread sleep", e);
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private void updatePosition() {
+        Rotation2d yaw;
+        SwerveModulePosition[] modulePositions;
+        // Calculate new position
+
+        synchronized (gyroIO) {
+            yaw = getYaw();
+        }
+
+        synchronized (modules) {
+            modulePositions = getSwerveModulePositions();
+        }
+
+        synchronized (poseEstimator) {
+            poseEstimator.update(yaw, modulePositions);
+        }
+    }
+
+    @Override
+    public boolean logOutputs() {
+        return OutputsConfiguration.CHASSIS;
     }
 }

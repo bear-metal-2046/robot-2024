@@ -8,18 +8,19 @@ import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.geometry.Translation2d;
 import org.littletonrobotics.junction.AutoLog;
-import org.littletonrobotics.junction.Logger;
 import org.slf4j.LoggerFactory;
+import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.util.RobustConfigurator;
+import org.tahomarobotics.robot.util.ToggledOutputs;
 
 import static org.tahomarobotics.robot.shooter.ShooterConstants.*;
 
 
-class ShooterIO {
+class ShooterIO implements ToggledOutputs {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(ShooterIO.class);
 
     private final TalonFX shooterMotor;
@@ -36,6 +37,7 @@ class ShooterIO {
     private final MotionMagicVelocityVoltage reverseIntakeVelocity = new MotionMagicVelocityVoltage(-TRANSFER_VELOCITY).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
 
     protected double angle = 0.0;
+    protected double distance = 0.0;
 
     private boolean shootingMode = false;
 
@@ -68,11 +70,11 @@ class ShooterIO {
     // GETTERS
 
     double getShooterVelocity() {
-        return shooterVelocity.refresh().getValue();
+        return shooterVelocity.getValue();
     }
 
     double getPivotPosition() {
-        return BaseStatusSignal.getLatencyCompensatedValue(pivotPosition.refresh(), pivotVelocity.refresh());
+        return BaseStatusSignal.getLatencyCompensatedValue(pivotPosition, pivotVelocity);
     }
 
     boolean isSpinningAtVelocity() {
@@ -98,9 +100,9 @@ class ShooterIO {
 
     double angleToSpeaker() {
         Translation2d target = SPEAKER_TARGET_POSITION.get();
-        double distance = Chassis.getInstance().getPose().getTranslation().getDistance(target);
+        distance = Chassis.getInstance().getPose().getTranslation().getDistance(target) + SHOOTER_PIVOT_OFFSET.getX();
 
-        return Math.atan2(SPEAKER_HEIGHT_DIFF, distance) / (2 * Math.PI);
+        return  0.04875446 + (0.201136 - 0.04875446)/(1 + Math.pow((distance/2.019404), 2.137465));
     }
 
     // SETTERS
@@ -108,9 +110,13 @@ class ShooterIO {
     void setShooterAngle(double angle) {
         this.angle = angle;
 
-        Logger.recordOutput("Shooter/Target Angle", angle);
+        recordOutput("Shooter/Target Angle", angle);
 
         pivotMotor.setControl(pivotPositionControl.withPosition(angle));
+    }
+
+    double getDistance() {
+        return distance;
     }
 
     void zero() { pivotMotor.setPosition(0.0); }
@@ -153,5 +159,14 @@ class ShooterIO {
 
     void processInputs(ShooterIOInputs inputs) {
         setShooterAngle(inputs.angle);
+    }
+
+    void refreshSignals() {
+        BaseStatusSignal.refreshAll(pivotVelocity, pivotVelocity, shooterVelocity);
+    }
+
+    @Override
+    public boolean logOutputs() {
+        return OutputsConfiguration.SHOOTER;
     }
 }

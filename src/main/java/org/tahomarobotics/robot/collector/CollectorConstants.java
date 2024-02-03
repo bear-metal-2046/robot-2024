@@ -17,7 +17,7 @@ public class CollectorConstants {
     private final static double DEPLOY_MAX_JERK = DEPLOY_MAX_ACCEL / 0.125;
 
     //Collection Motion Profile Constraints
-    public final static double COLLECT_MAX_RPS = 20;
+    public final static double COLLECT_MAX_RPS = 40;
     public final static double COLLECT_MAX_ACCEL = COLLECT_MAX_RPS / 0.25;
     public final static double COLLECT_MAX_JERK = COLLECT_MAX_ACCEL / 0.125;
 

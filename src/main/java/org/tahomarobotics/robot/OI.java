@@ -73,15 +73,17 @@ public class OI extends SubsystemIF {
 
         driveController.y().onTrue(AMP_ARM_CTRL);
 
-        driveController.rightTrigger(0.5).whileTrue(Commands.runOnce(() ->
-                ampArm.setRollerState(AmpArm.RollerState.SCORE)).onlyIf(ampArm::isAmp))
+        driveController.rightTrigger(0.5)
+                .whileTrue(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.SCORE))
+                .onlyIf(ampArm::isAmp))
                 .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));
 
-        driveController.leftTrigger(0.01).whileTrue(Commands.runOnce(() ->
-                ampArm.setRollerState(AmpArm.RollerState.PASSING)
-        ).onlyIf(ampArm::isSource)).whileFalse(Commands.runOnce(() ->
-                ampArm.setRollerState(AmpArm.RollerState.DISABLED)
-        ).onlyIf(ampArm::isSource)).onFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.COLLECTED)));
+        driveController.leftTrigger(0.01)
+                .whileTrue(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.PASSING))
+                .onlyIf(ampArm::isSource))
+                .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED))
+                .onlyIf(ampArm::isSource))
+                .onFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.COLLECTED)));
     }
 
     private void setDefaultCommands() {

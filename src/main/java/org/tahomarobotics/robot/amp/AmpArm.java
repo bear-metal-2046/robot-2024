@@ -9,17 +9,17 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Commands;
-import org.littletonrobotics.junction.Logger;
+import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
+import org.tahomarobotics.robot.util.ToggledOutputs;
 
 import static org.tahomarobotics.robot.amp.AmpArmConstants.*;
-import static org.tahomarobotics.robot.amp.commands.AmpArmCommands.ARM_TO_STOW;
 
-public class AmpArm extends SubsystemIF {
+public class AmpArm extends SubsystemIF implements ToggledOutputs {
     private static final AmpArm INSTANCE = new AmpArm();
 
     private final TalonFX armMotor;
@@ -186,21 +186,21 @@ public class AmpArm extends SubsystemIF {
     public void periodic() {
         BaseStatusSignal.refreshAll(armPosition, wristPosition, armVelocity, wristVelocity, rollersVelocity);
 
-        Logger.recordOutput("Amp Arm/Roller State", rollerState);
-        Logger.recordOutput("Amp Arm/Arm State", armState);
+        recordOutput("Amp Arm/Roller State", rollerState);
+        recordOutput("Amp Arm/Arm State", armState);
 
-        Logger.recordOutput("Amp Arm/Arm Position", getArmPosition());
-        Logger.recordOutput("Amp Arm/Wrist Position", getWristPosition());
-        Logger.recordOutput("Amp Arm/Arm Velocity", getArmVelocity());
-        Logger.recordOutput("Amp Arm/Wrist Velocity", getWristVelocity());
-        Logger.recordOutput("Amp Arm/Rollers Velocity", getRollersVelocity());
+        recordOutput("Amp Arm/Arm Position", getArmPosition());
+        recordOutput("Amp Arm/Wrist Position", getWristPosition());
+        recordOutput("Amp Arm/Arm Velocity", getArmVelocity());
+        recordOutput("Amp Arm/Wrist Velocity", getWristVelocity());
+        recordOutput("Amp Arm/Rollers Velocity", getRollersVelocity());
     }
 
     @Override
     public SubsystemIF initialize() {
         Commands.waitUntil(RobotState::isEnabled)
                 .andThen(Commands.runOnce(() -> {
-                    armMotor.setPosition(0.0);
+                    armMotor.setPosition(-0.25);
                     wristMotor.setPosition(0.0);
                     setArmPosition(ARM_STOW_POSE);
                     setWristPosition(WRIST_STOW_POSE);
@@ -210,21 +210,25 @@ public class AmpArm extends SubsystemIF {
         return this;
     }
 
+
+    //STATES
+
     public enum ArmState {
+        TRAP,
         STOW,
         AMP,
-        SOURCE,
-        TRAP
+        SOURCE;
     }
-
-    // STATES
 
     public enum RollerState {
         DISABLED,
         PASSING,
         COLLECTED,
-        SCORE
+        SCORE;
     }
 
-
+    @Override
+    public boolean logOutputs() {
+        return OutputsConfiguration.AMP_ARM;
+    }
 }

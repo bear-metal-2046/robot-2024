@@ -7,7 +7,6 @@ import com.pathplanner.lib.path.PathPlannerTrajectory;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringSubscriber;
@@ -22,12 +21,15 @@ import org.tahomarobotics.robot.util.SubsystemIF;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 
 public class Autonomous extends SubsystemIF {
     private static final Autonomous INSTANCE = new Autonomous();
     private final Chassis chassis = Chassis.getInstance();
     private final LoggedDashboardChooser<Command> autoChooser;
     private final Field2d fieldPose;
+
+    private Optional<DriverStation.Alliance> prevAlliance = DriverStation.getAlliance();
 
     public static Autonomous getInstance() {
         return INSTANCE;
@@ -38,17 +40,11 @@ public class Autonomous extends SubsystemIF {
 
         NetworkTableInstance netInstance = NetworkTableInstance.getDefault();
         StringSubscriber autoSub = netInstance.getTable("SmartDashboard/Auto").getStringTopic("selected").subscribe("Test Auto");
-        BooleanSubscriber allianceChange = netInstance.getTable("FMSInfo").getBooleanTopic("IsRedAlliance").subscribe(true);
         fieldPose = chassis.getField();
         netInstance.addListener(
                 autoSub,
                 EnumSet.of(NetworkTableEvent.Kind.kValueAll),
                 e -> new InstantCommand(() -> postAutoTrajectory(fieldPose, autoSub.get())).ignoringDisable(true).schedule()
-        );
-        netInstance.addListener(
-                allianceChange,
-                EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-                e -> new InstantCommand(() -> postAutoTrajectory(fieldPose, autoChooser.get().getName())).ignoringDisable(true).schedule()
         );
 
         NamedCommands.registerCommand("ShootCommand", new InstantCommand(() -> System.out.println("========SHOOT COMMAND CALLED=========")));
@@ -101,11 +97,24 @@ public class Autonomous extends SubsystemIF {
     }
 
     public void postAutoTrajectory(Field2d field, String autoName) {
-        field.getObject("Trajectory").setTrajectory(convertToTrajectory(PathPlannerAuto.getPathGroupFromAutoFile(autoName)));
+        var autoPaths = PathPlannerAuto.getPathGroupFromAutoFile(autoName);
+        if (!autoPaths.isEmpty()) {
+            var firstPath = autoPaths.get(0);
+            if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red)) {
+                firstPath = firstPath.flipPath();
+            }
+            var startingPose = firstPath.getPreviewStartingHolonomicPose();
+            chassis.resetOdometry(startingPose);
+        }
+        field.getObject("Trajectory").setTrajectory(convertToTrajectory(autoPaths));
     }
 
     @Override
-    public void onDisabledInit() {
-        postAutoTrajectory(chassis.getField(), getSelectedAuto().getName());
+    public void periodic() {
+        var alliance = DriverStation.getAlliance();
+        if (prevAlliance.isPresent() != alliance.isPresent() || alliance.isPresent() && (prevAlliance.get() != alliance.get())) {
+            prevAlliance = alliance;
+            postAutoTrajectory(chassis.getField(), getSelectedAuto().getName());
+        }
     }
 }

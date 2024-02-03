@@ -13,10 +13,10 @@ public class AmpArmConstants {
 
     static final double ARM_GEAR_REDUCTION = (16.0 / 64.0) * (18.0 / 72.0) * (16.0 / 48.0);
 
-    static final double ARM_MIN_POSE = -8d/360d;
-    static final double ARM_MAX_POSE = 270d/360d;
+    static final double ARM_MIN_POSE = -90d/360d;
+    static final double ARM_MAX_POSE = 90d/360d;
 
-    public static final double ARM_STOW_POSE = 0; // Rotations
+    public static final double ARM_STOW_POSE = -0.25; // Rotations
     public static final double ARM_AMP_POSE = 0.437255859375; // Rotations
     public static final double ARM_TRAP_POSE = 0.3; // Rotations
     public static final double ARM_SOURCE_POSE = 0.396484375; // Rotations

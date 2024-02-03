@@ -11,6 +11,7 @@ import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.collector.CollectorConstants;
+import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
 import org.tahomarobotics.robot.util.ToggledOutputs;
@@ -21,27 +22,28 @@ public class Indexer extends SubsystemIF implements ToggledOutputs {
     private static final Indexer INSTANCE = new Indexer();
 
     private final TalonFX motor;
-    private final DigitalInput beamBreak;
+    private final DigitalInput collectorBeanBake;
+    private final DigitalInput shooterBeanBake;
 
     private final StatusSignal<Double> position;
     private final StatusSignal<Double> velocity;
 
     private State state = State.DISABLED;
-
-    private final MotionMagicVoltage indexPos = new MotionMagicVoltage(INTAKE_DISTANCE)
-            .withSlot(1).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVoltage transferPos = new MotionMagicVoltage(TRANSFER_DISTANCE)
             .withSlot(1).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage collectVel = new MotionMagicVelocityVoltage(COLLECT_SPEED)
             .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage ejectVel = new MotionMagicVelocityVoltage(-CollectorConstants.COLLECT_MAX_RPS)
             .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
+    private final MotionMagicVelocityVoltage reverseIntakeVelocity = new MotionMagicVelocityVoltage(-ShooterConstants.TRANSFER_VELOCITY)
+            .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
 
     private Indexer() {
         RobustConfigurator configurator = new RobustConfigurator(logger);
 
         motor = new TalonFX(RobotMap.INDEXER_MOTOR);
-        beamBreak = new DigitalInput(RobotMap.BEAM_BREAK);
+        collectorBeanBake = new DigitalInput(RobotMap.BEAM_BREAK_ONE);
+        shooterBeanBake = new DigitalInput(RobotMap.BEAM_BREAK_TWO);
 
         configurator.configureTalonFX(motor, IndexerConstants.indexMotorConfiguration);
 
@@ -91,8 +93,12 @@ public class Indexer extends SubsystemIF implements ToggledOutputs {
 
     // SETTERS
 
-    public boolean isBeamBroken() {
-        return !beamBreak.get();
+    public boolean getCollectorBeanBake() {
+        return !collectorBeanBake.get();
+    }
+
+    public boolean getShooterBeanBake() {
+        return !shooterBeanBake.get();
     }
 
     public void setState(State state) {
@@ -114,7 +120,7 @@ public class Indexer extends SubsystemIF implements ToggledOutputs {
     }
 
     public void index() {
-        if (getPosition() >= INTAKE_DISTANCE - POSITION_TOLERANCE) {
+        if (getShooterBeanBake()) {
             disable();
             zero();
 
@@ -147,7 +153,7 @@ public class Indexer extends SubsystemIF implements ToggledOutputs {
 
     public void transitionToIndexing() {
         zero();
-        motor.setControl(indexPos);
+        motor.setControl(collectVel);
 
         setState(State.INDEXING);
     }
@@ -161,6 +167,13 @@ public class Indexer extends SubsystemIF implements ToggledOutputs {
         motor.setControl(transferPos);
 
         setState(State.TRANSFERRING);
+    }
+
+    public void transitionToReverseIntaking() {
+        zero();
+        motor.setControl(reverseIntakeVelocity);
+
+        setState(State.REVERSE_INDEXING);
     }
 
     public void transitionToEjecting() {
@@ -179,7 +192,8 @@ public class Indexer extends SubsystemIF implements ToggledOutputs {
         recordOutput("Indexer/Velocity", getVelocity());
 
         recordOutput("Indexer/State", state);
-        recordOutput("Indexer/BeamBreak", isBeamBroken());
+        recordOutput("Indexer/BeamBreak One", getCollectorBeanBake());
+        recordOutput("Indexer/BeamBreak Two", getShooterBeanBake());
         recordOutput("Indexer/Collected", hasCollected());
     }
 
@@ -191,7 +205,8 @@ public class Indexer extends SubsystemIF implements ToggledOutputs {
         INDEXING,
         COLLECTED,
         EJECTING,
-        TRANSFERRING
+        TRANSFERRING,
+        REVERSE_INDEXING
     }
 
     @Override

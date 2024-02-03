@@ -4,6 +4,7 @@ import edu.wpi.first.util.WPISerializable;
 import edu.wpi.first.util.struct.StructSerializable;
 import org.littletonrobotics.junction.Logger;
 
+@SuppressWarnings("unchecked")
 public interface ToggledOutputs {
     boolean logOutputs();
 

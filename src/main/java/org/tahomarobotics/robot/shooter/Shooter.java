@@ -63,6 +63,14 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
         biasAngle = 0.0;
     }
 
+    public void transferToAmp() {
+        io.transferToAmp();
+    }
+
+    public void reverseIntake() {
+        io.reverseIntake();
+    }
+
     // GETTERS
 
     private double getShooterVelocity() {

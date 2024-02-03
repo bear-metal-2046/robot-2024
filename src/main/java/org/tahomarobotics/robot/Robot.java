@@ -14,6 +14,7 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.slf4j.LoggerFactory;
+import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.auto.Autonomous;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.collector.Collector;
@@ -45,6 +46,7 @@ public class Robot extends LoggedRobot {
         subsystems.add(Collector.getInstance().initialize());
         subsystems.add(Autonomous.getInstance().initialize());
         subsystems.add(Shooter.getInstance().initialize());
+        subsystems.add(AmpArm.getInstance().initialize());
         subsystems.add(Indexer.getInstance().initialize());
         subsystems.add(RobotIdentity.getInstance().initialize());
 

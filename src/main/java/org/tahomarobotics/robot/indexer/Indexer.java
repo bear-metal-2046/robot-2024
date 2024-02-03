@@ -7,16 +7,17 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.littletonrobotics.junction.Logger;
+import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.collector.CollectorConstants;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
+import org.tahomarobotics.robot.util.ToggledOutputs;
 
 import static org.tahomarobotics.robot.indexer.IndexerConstants.*;
 
-public class Indexer extends SubsystemIF {
+public class Indexer extends SubsystemIF implements ToggledOutputs {
     private static final Indexer INSTANCE = new Indexer();
 
     private final TalonFX motor;
@@ -65,11 +66,11 @@ public class Indexer extends SubsystemIF {
     // GETTERS
 
     public double getPosition() {
-        return BaseStatusSignal.getLatencyCompensatedValue(position.refresh(), velocity.refresh());
+        return BaseStatusSignal.getLatencyCompensatedValue(position, velocity);
     }
 
     public double getVelocity() {
-        return velocity.refresh().getValue();
+        return velocity.getValue();
     }
 
     public boolean hasCollected() {
@@ -170,12 +171,16 @@ public class Indexer extends SubsystemIF {
 
     @Override
     public void periodic() {
-        Logger.recordOutput("Indexer/Position", getPosition());
-        Logger.recordOutput("Indexer/Velocity", getVelocity());
+        BaseStatusSignal.refreshAll(
+            position, velocity
+        );
 
-        Logger.recordOutput("Indexer/State", state);
-        Logger.recordOutput("Indexer/BeamBreak", isBeamBroken());
-        Logger.recordOutput("Indexer/Collected", hasCollected());
+        recordOutput("Indexer/Position", getPosition());
+        recordOutput("Indexer/Velocity", getVelocity());
+
+        recordOutput("Indexer/State", state);
+        recordOutput("Indexer/BeamBreak", isBeamBroken());
+        recordOutput("Indexer/Collected", hasCollected());
     }
 
     // STATES
@@ -187,5 +192,10 @@ public class Indexer extends SubsystemIF {
         COLLECTED,
         EJECTING,
         TRANSFERRING
+    }
+
+    @Override
+    public boolean logOutputs() {
+        return OutputsConfiguration.INDEXER;
     }
 }

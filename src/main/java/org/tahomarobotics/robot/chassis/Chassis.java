@@ -16,9 +16,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.ejml.equation.Function;
-import org.littletonrobotics.junction.Logger;
 import org.slf4j.LoggerFactory;
+import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
@@ -26,15 +25,14 @@ import org.tahomarobotics.robot.chassis.commands.AlignSwerveCommand;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.util.CalibrationData;
 import org.tahomarobotics.robot.util.SubsystemIF;
+import org.tahomarobotics.robot.util.ToggledOutputs;
 import org.tahomarobotics.robot.vision.ATVision;
 import org.tahomarobotics.robot.vision.VisionConstants;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
-public class Chassis extends SubsystemIF {
-
+public class Chassis extends SubsystemIF implements ToggledOutputs {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Chassis.class);
     private static final Chassis INSTANCE = new Chassis();
 
@@ -150,7 +148,9 @@ public class Chassis extends SubsystemIF {
     }
 
     public Pose2d getPose() {
-        return poseEstimator.getEstimatedPosition();
+        synchronized (poseEstimator) {
+            return poseEstimator.getEstimatedPosition();
+        }
     }
 
     public SwerveModulePosition[] getSwerveModulePositions() {
@@ -173,32 +173,17 @@ public class Chassis extends SubsystemIF {
 
     @Override
     public void periodic() {
-        Pose2d pose;
-        Rotation2d yaw;
+        modules.forEach(SwerveModule::periodic);
+        Pose2d pose = getPose();
 
-        synchronized (modules) {
-            modules.forEach(SwerveModule::periodic);
-            Logger.recordOutput("Chassis/State", getSwerveModuleStates());
-            Logger.recordOutput("Chassis/DesiredState", getSwerveModuleDesiredStates());
-        }
-
-        synchronized (poseEstimator) {
-            pose = getPose();
-        }
-
-        synchronized (gyroIO) {
-            yaw = getYaw();
-        }
-
-        // TODO: Synchronize chassis speeds - pose estimator does use kinematics
-        Logger.recordOutput("Chassis/CurrentChassisSpeeds", getCurrentChassisSpeeds());
-        Logger.recordOutput("Chassis/Gyro/Yaw", yaw);
-        Logger.recordOutput("Chassis/Pose", pose);
+        recordOutput("Chassis/State", getSwerveModuleStates());
+        recordOutput("Chassis/DesiredState", getCurrentChassisSpeeds());
+        recordOutput("Chassis/CurrentChassisSpeeds", getCurrentChassisSpeeds());
+        recordOutput("Chassis/Gyro/Yaw", getYaw());
+        recordOutput("Chassis/Pose", pose);
 
         fieldPose.setRobotPose(pose);
         SmartDashboard.putData(fieldPose);
-
-        SmartDashboard.putString("Pose", pose.toString());
     }
 
     @Override
@@ -345,5 +330,10 @@ public class Chassis extends SubsystemIF {
         synchronized (poseEstimator) {
             poseEstimator.update(yaw, modulePositions);
         }
+    }
+
+    @Override
+    public boolean logOutputs() {
+        return OutputsConfiguration.CHASSIS;
     }
 }

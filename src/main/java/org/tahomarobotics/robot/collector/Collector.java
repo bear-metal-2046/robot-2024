@@ -10,7 +10,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Commands;
-import org.littletonrobotics.junction.Logger;
+import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.collector.commands.ZeroCollectorCommand;
@@ -18,10 +18,11 @@ import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
+import org.tahomarobotics.robot.util.ToggledOutputs;
 
 import static org.tahomarobotics.robot.collector.CollectorConstants.*;
 
-public class Collector extends SubsystemIF {
+public class Collector extends SubsystemIF implements ToggledOutputs {
 
     private static final Collector INSTANCE = new Collector();
 
@@ -74,19 +75,19 @@ public class Collector extends SubsystemIF {
     // GETTERS
 
     private double getDeployPositionLeft() {
-        return deployPositionLeft.refresh().getValue();
+        return deployPositionLeft.getValue();
     }
 
     private double getDeployPositionRight() {
-        return deployPositionRight.refresh().getValue();
+        return deployPositionRight.getValue();
     }
 
     public double getDeployVelocity() {
-        return deployVelocity.refresh().getValue();
+        return deployVelocity.getValue();
     }
 
     public double getCollectVelocity() {
-        return collectVelocity.refresh().getValue();
+        return collectVelocity.getValue();
     }
 
 
@@ -179,13 +180,13 @@ public class Collector extends SubsystemIF {
     public void periodic() {
         BaseStatusSignal.refreshAll(deployPositionLeft, deployPositionRight, collectVelocity);
 
-        Logger.recordOutput("Collector/Deploy State", deploymentState);
-        Logger.recordOutput("Collector/Collection State", collectionState);
+        recordOutput("Collector/Deploy State", deploymentState);
+        recordOutput("Collector/Collection State", collectionState);
 
-        Logger.recordOutput("Collector/Deploy Right Position", deployPositionRight.getValue());
-        Logger.recordOutput("Collector/Deploy Left Position", deployPositionLeft.getValue());
-        Logger.recordOutput("Collector/Deploy Velocity", deployVelocity.getValue());
-        Logger.recordOutput("Collector/Collect Velocity", collectVelocity.getValue());
+        recordOutput("Collector/Deploy Right Position", deployPositionRight.getValue());
+        recordOutput("Collector/Deploy Left Position", deployPositionLeft.getValue());
+        recordOutput("Collector/Deploy Velocity", deployVelocity.getValue());
+        recordOutput("Collector/Collect Velocity", collectVelocity.getValue());
     }
 
     @Override
@@ -210,5 +211,10 @@ public class Collector extends SubsystemIF {
         DEPLOYED,
         STOWED,
         EJECT
+    }
+
+    @Override
+    public boolean logOutputs() {
+        return OutputsConfiguration.COLLECTOR;
     }
 }

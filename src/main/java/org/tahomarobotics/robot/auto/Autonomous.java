@@ -56,23 +56,27 @@ public class Autonomous extends SubsystemIF {
                 e -> new InstantCommand(() -> postAutoTrajectory(fieldPose, autoSub.get())).ignoringDisable(true).schedule()
         );
 
+        NamedCommands.registerCommand("ResetOdometry", Commands.runOnce(() -> chassis.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.get().getName()))));
+
         NamedCommands.registerCommand("Shoot",
-                Commands.runOnce(shooter::toggleShootMode).onlyIf(() -> !shooter.inShootingMode())
-                        .andThen(new ShootCommand())
-                        .andThen(shooter::toggleShootMode));
-        NamedCommands.registerCommand("ResetOdom", Commands.runOnce(() -> chassis.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.get().getName()))));
+                Commands.runOnce(shooter::toggleShootMode)
+                        .andThen(new ShootCommand()));
+
         NamedCommands.registerCommand("CollectorDown",
-                Commands.runOnce(collector::toggleDeploy).onlyIf(() -> !collector.isDeployed())
+                Commands.runOnce(collector::toggleDeploy)
                         .andThen(() -> collector.setCollectionState(Collector.CollectionState.COLLECTING)));
+
         NamedCommands.registerCommand("CollectorUp",
-                Commands.runOnce(collector::stopCollect)
-                        .andThen(Commands.runOnce(collector::toggleDeploy).onlyIf(collector::isDeployed)));
+                Commands.runOnce(collector::toggleDeploy));
+
         NamedCommands.registerCommand("AmpArmToScore",
                 Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.AMP)));
+
         NamedCommands.registerCommand("AmpArmEject",
                 Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.SCORE))
                         .andThen(Commands.waitSeconds(1))
                         .andThen(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));
+
         NamedCommands.registerCommand("AmpArmToStow",
                 Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.STOW))
                         .andThen(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));

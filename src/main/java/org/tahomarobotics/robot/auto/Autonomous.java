@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.tahomarobotics.robot.amp.AmpArm;
+import org.tahomarobotics.robot.amp.commands.AmpArmCommands;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.shooter.Shooter;
@@ -32,6 +34,7 @@ public class Autonomous extends SubsystemIF {
     private final Chassis chassis = Chassis.getInstance();
     private final Collector collector = Collector.getInstance();
     private final Shooter shooter = Shooter.getInstance();
+    private final AmpArm ampArm = AmpArm.getInstance();
     private final LoggedDashboardChooser<Command> autoChooser;
     private final Field2d fieldPose;
 
@@ -64,6 +67,15 @@ public class Autonomous extends SubsystemIF {
         NamedCommands.registerCommand("CollectorUp",
                 Commands.runOnce(collector::stopCollect)
                         .andThen(Commands.runOnce(collector::toggleDeploy).onlyIf(collector::isDeployed)));
+        NamedCommands.registerCommand("AmpArmToScore",
+                Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.AMP)));
+        NamedCommands.registerCommand("AmpArmEject",
+                Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.SCORE))
+                        .andThen(Commands.waitSeconds(1))
+                        .andThen(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));
+        NamedCommands.registerCommand("AmpArmToStow",
+                Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.STOW))
+                        .andThen(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));
     }
 
     public Command getSelectedAuto() {

@@ -1,5 +1,6 @@
 package org.tahomarobotics.robot.collector.commands;
 
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
@@ -24,6 +25,14 @@ public class CollectorDefaultCommand extends Command {
 
     @Override
     public void execute() {
+        if (RobotState.isAutonomous()) {
+            executeAuto();
+        } else {
+            executeTeleOp();
+        }
+    }
+
+    private void executeTeleOp() {
         inpMut.accept(inputs);
 
         Logger.processInputs("Collector/ControllerInputs", inputs);
@@ -56,6 +65,21 @@ public class CollectorDefaultCommand extends Command {
                 if (isCollecting && !collector.isStowed()) collector.setCollectionState(Collector.CollectionState.COLLECTING);
 
                 if (!isEjecting) collector.setCollectionState(Collector.CollectionState.DISABLED);
+            }
+        }
+    }
+
+    private void executeAuto() {
+        switch (collector.getCollectionState()) {
+            case DISABLED -> {
+                collector.stopCollect();
+
+                if (collector.isDeployed()) collector.setCollectionState(Collector.CollectionState.COLLECTING);
+            }
+            case COLLECTING -> {
+                collector.collect();
+
+                if (collector.isStowed()) collector.setCollectionState(Collector.CollectionState.DISABLED);
             }
         }
     }

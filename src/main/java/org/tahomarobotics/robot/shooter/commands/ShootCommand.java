@@ -22,7 +22,7 @@ public class ShootCommand extends SequentialCommandGroup {
                         Commands.runOnce(indexer::transitionToTransferring),
                         Commands.waitUntil(() -> !indexer.isTransferring()),
                         Commands.waitSeconds(0.5),
-                        Commands.either(Commands.runOnce(shooter::disable), Commands.runOnce(shooter::disableShootMode), RobotState::isTeleop)
+                        Commands.either(Commands.runOnce(shooter::disable), Commands.runOnce(shooter::disableShootMode), () -> !RobotState.isAutonomous())
                 ).onlyIf(shooter::inShootingMode)
         );
     }

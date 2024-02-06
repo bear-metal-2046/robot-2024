@@ -44,7 +44,7 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
     // SETTERS
 
     public void disable() {
-        io.disable();
+        io.disableShooter();
     }
 
     public void toggleShootMode() {
@@ -53,6 +53,10 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
 
     public void disableShootMode() {
         io.disableShootMode();
+    }
+
+    public void enableShootMode() {
+        io.enableShootMode();
     }
 
     public void setAngle(double angle) {

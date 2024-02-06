@@ -100,12 +100,10 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
 
     public void toggleDeploy() {
         if (deploymentState == DeploymentState.STOWED || deploymentState == DeploymentState.EJECT) {
-            deploymentState = DeploymentState.DEPLOYED;
-            setDeployPosition(COLLECT_POSITION);
+            setDeployed();
             Shooter.getInstance().setAngle(ShooterConstants.SHOOTER_COLLECT_PIVOT_ANGLE);
         } else {
-            deploymentState = DeploymentState.STOWED;
-            setDeployPosition(STOW_POSITION);
+            setStowed();
         }
     }
 
@@ -116,6 +114,16 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
     public void setDeployEject() {
         deploymentState = DeploymentState.EJECT;
         setDeployPosition(EJECT_POSITION);
+    }
+
+    public void setDeployed() {
+        deploymentState = DeploymentState.DEPLOYED;
+        setDeployPosition(COLLECT_POSITION);
+    }
+
+    public void setStowed() {
+        deploymentState = DeploymentState.STOWED;
+        setDeployPosition(STOW_POSITION);
     }
 
 

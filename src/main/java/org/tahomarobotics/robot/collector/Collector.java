@@ -109,6 +109,17 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
         }
     }
 
+    public void deploy() {
+        deploymentState = DeploymentState.DEPLOYED;
+        setDeployPosition(COLLECT_POSITION);
+        Shooter.getInstance().setAngle(ShooterConstants.SHOOTER_COLLECT_PIVOT_ANGLE);
+    }
+
+    public void stow() {
+        deploymentState = DeploymentState.STOWED;
+        setDeployPosition(STOW_POSITION);
+    }
+
     public boolean isDeployed() {
         return deploymentState == DeploymentState.DEPLOYED;
     }

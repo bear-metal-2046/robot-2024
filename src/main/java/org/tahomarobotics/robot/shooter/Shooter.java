@@ -47,6 +47,14 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
         io.toggleShootMode();
     }
 
+    public void enableShootMode() {
+        io.enable();
+    }
+
+    public void disableShootMode() {
+        io.disable();
+    }
+
     public void setAngle(double angle) {
         inputs.angle = MathUtil.clamp(angle + (io.inShootingMode() ? biasAngle : 0), MIN_PIVOT_ANGLE, MAX_PIVOT_ANGLE);
     }

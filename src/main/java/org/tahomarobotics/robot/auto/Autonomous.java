@@ -17,11 +17,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.tahomarobotics.robot.amp.AmpArm;
-import org.tahomarobotics.robot.amp.commands.AmpArmCommands;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.shooter.Shooter;
-import org.tahomarobotics.robot.shooter.commands.ShootCommand;
+import org.tahomarobotics.robot.shooter.commands.AutoShootCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
 import java.util.ArrayList;
@@ -58,16 +57,16 @@ public class Autonomous extends SubsystemIF {
 
         NamedCommands.registerCommand("ResetOdometry", Commands.runOnce(() -> chassis.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.get().getName()))));
 
-        NamedCommands.registerCommand("Shoot",
-                Commands.runOnce(shooter::toggleShootMode)
-                        .andThen(new ShootCommand()));
+        NamedCommands.registerCommand("SpinUpShooter", Commands.runOnce(shooter::enableShootMode));
+
+        NamedCommands.registerCommand("Shoot", new AutoShootCommand());
 
         NamedCommands.registerCommand("CollectorDown",
-                Commands.runOnce(collector::toggleDeploy)
+                Commands.runOnce(collector::deploy)
                         .andThen(() -> collector.setCollectionState(Collector.CollectionState.COLLECTING)));
 
         NamedCommands.registerCommand("CollectorUp",
-                Commands.runOnce(collector::toggleDeploy));
+                Commands.runOnce(collector::stow));
 
         NamedCommands.registerCommand("AmpArmToScore",
                 Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.AMP)));

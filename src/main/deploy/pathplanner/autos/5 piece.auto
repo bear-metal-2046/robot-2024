@@ -1,0 +1,63 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7635575631511622,
+      "y": 4.483681039434152
+    },
+    "rotation": -58.57043438516156
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "5 Piece 1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "CollectorDown"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootCommand"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "5 piece 2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootCommand"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

@@ -141,6 +141,10 @@ class ShooterIO implements ToggledOutputs {
         }
     }
 
+    void disableShootMode() {
+        shootingMode = false;
+    }
+
     // INPUTS
 
     void processInputs(ShooterIOInputs inputs) {

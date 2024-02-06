@@ -1,5 +1,6 @@
 package org.tahomarobotics.robot.shooter.commands;
 
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import org.slf4j.Logger;
@@ -21,7 +22,7 @@ public class ShootCommand extends SequentialCommandGroup {
                         Commands.runOnce(indexer::transitionToTransferring),
                         Commands.waitUntil(() -> !indexer.isTransferring()),
                         Commands.waitSeconds(0.5),
-                        Commands.runOnce(shooter::disable)
+                        Commands.either(Commands.runOnce(shooter::disable), Commands.runOnce(shooter::disableShootMode), RobotState::isTeleop)
                 ).onlyIf(shooter::inShootingMode)
         );
     }

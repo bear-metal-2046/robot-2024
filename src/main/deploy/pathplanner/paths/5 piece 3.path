@@ -1,0 +1,74 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.288933586876183,
+        "y": 6.702409801216
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.241138013807559,
+        "y": 6.813346239305091
+      },
+      "isLocked": false,
+      "linkedName": "3rd col"
+    },
+    {
+      "anchor": {
+        "x": 7.595393208804435,
+        "y": 7.405007242446917
+      },
+      "prevControl": {
+        "x": 7.401684428870576,
+        "y": 7.392093323784659
+      },
+      "nextControl": {
+        "x": 7.7340637564158,
+        "y": 7.414251945621009
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.395153853370769,
+        "y": 6.896548567871911
+      },
+      "prevControl": {
+        "x": 5.7279631676380465,
+        "y": 6.970506193264639
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Long Shoot 1"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.05,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 10.62,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "5 piece auto paths",
+  "previewStartingState": {
+    "rotation": 26.995838394086565,
+    "velocity": 0.0
+  },
+  "useDefaultConstraints": false
+}

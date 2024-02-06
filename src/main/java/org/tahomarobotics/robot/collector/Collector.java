@@ -109,6 +109,10 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
         }
     }
 
+    public boolean isDeployed() {
+        return deploymentState == DeploymentState.DEPLOYED;
+    }
+
     public void setDeployEject() {
         deploymentState = DeploymentState.EJECT;
         setDeployPosition(EJECT_POSITION);
@@ -206,7 +210,7 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
     public enum DeploymentState {
         DEPLOYED,
         STOWED,
-        EJECT;
+        EJECT
     }
 
     @Override

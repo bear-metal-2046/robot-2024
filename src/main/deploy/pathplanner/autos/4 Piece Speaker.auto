@@ -18,6 +18,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "CollectorDown"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "First Close"
@@ -26,7 +32,19 @@
         {
           "type": "named",
           "data": {
-            "name": "ShootCommand"
+            "name": "CollectorUp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "CollectorDown"
           }
         },
         {
@@ -38,7 +56,19 @@
         {
           "type": "named",
           "data": {
-            "name": "ShootCommand"
+            "name": "CollectorUp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "CollectorDown"
           }
         },
         {
@@ -50,7 +80,13 @@
         {
           "type": "named",
           "data": {
-            "name": "ShootCommand"
+            "name": "CollectorUp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         }
       ]

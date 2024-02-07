@@ -8,6 +8,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -42,9 +43,11 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
     private final List<SwerveModule> modules;
 
     private final SwerveDrivePoseEstimator poseEstimator;
+    private final SwerveDrivePoseEstimator correctedPoseEstimator;
     private final Field2d fieldPose = new Field2d();
-
     private final SwerveDriveKinematics kinematics;
+    private final SwerveDriveKinematics correctedKinematics;
+
     private final CalibrationData<Double[]> swerveCalibration;
 
     private final ATVision backATVision;
@@ -77,9 +80,24 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
                         .map(SwerveModule::getTranslationOffset)
                         .toArray(Translation2d[]::new)
         );
+        correctedKinematics = new org.tahomarobotics.robot.chassis.SwerveDriveKinematics(
+                modules.stream()
+                    .map(SwerveModule::getTranslationOffset)
+                    .toArray(Translation2d[]::new)
+        );
+
 
         poseEstimator = new SwerveDrivePoseEstimator(
                 kinematics,
+                new Rotation2d(),
+                getSwerveModulePositions(),
+                new Pose2d(0.0, 0.0, new Rotation2d(0.0)),
+                VecBuilder.fill(0.02, 0.02, 0.02),
+                VecBuilder.fill(0.1, 0.1, 0.01)
+        );
+
+        correctedPoseEstimator = new SwerveDrivePoseEstimator(
+                correctedKinematics,
                 new Rotation2d(),
                 getSwerveModulePositions(),
                 new Pose2d(0.0, 0.0, new Rotation2d(0.0)),
@@ -118,6 +136,7 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
         var modules = getSwerveModulePositions();
         synchronized (poseEstimator) {
             poseEstimator.resetPosition(gyro, modules, new Pose2d());
+            correctedPoseEstimator.resetPosition(gyro, modules, new Pose2d());
         }
 
         return this;
@@ -183,6 +202,12 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
         recordOutput("Chassis/Pose", pose);
 
         fieldPose.setRobotPose(pose);
+
+        synchronized (poseEstimator) {
+            var p = correctedPoseEstimator.getEstimatedPosition();
+            fieldPose.getObject("Corrected").setPose(p);
+        }
+
         SmartDashboard.putData(fieldPose);
     }
 
@@ -192,7 +217,6 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
     }
 
     // STATE
-
     public void drive(ChassisSpeeds velocity) {
         if (!isFieldOriented && DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Red) {
             velocity = new ChassisSpeeds(-velocity.vxMetersPerSecond, -velocity.vyMetersPerSecond, velocity.omegaRadiansPerSecond);
@@ -248,6 +272,7 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
         var modules = getSwerveModulePositions();
         synchronized (poseEstimator) {
             poseEstimator.resetPosition(gyro, modules, pose);
+            correctedPoseEstimator.resetPosition(gyro, modules, pose);
         }
         logger.info("Reset Pose: " + pose);
     }
@@ -329,6 +354,7 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
 
         synchronized (poseEstimator) {
             poseEstimator.update(yaw, modulePositions);
+            correctedPoseEstimator.update(yaw, modulePositions);
         }
     }
 

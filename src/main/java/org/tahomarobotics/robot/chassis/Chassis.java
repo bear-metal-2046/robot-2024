@@ -81,6 +81,7 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
                         .toArray(Translation2d[]::new)
         );
         correctedKinematics = new org.tahomarobotics.robot.chassis.SwerveDriveKinematics(
+                this::getYaw,
                 modules.stream()
                     .map(SwerveModule::getTranslationOffset)
                     .toArray(Translation2d[]::new)

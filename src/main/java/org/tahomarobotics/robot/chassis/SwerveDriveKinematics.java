@@ -7,6 +7,8 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import org.ejml.simple.SimpleMatrix;
 
+import java.util.function.Supplier;
+
 public class SwerveDriveKinematics extends edu.wpi.first.math.kinematics.SwerveDriveKinematics {
 
 
@@ -14,9 +16,11 @@ public class SwerveDriveKinematics extends edu.wpi.first.math.kinematics.SwerveD
     double negX = 1;
     double posY = 1;
     double negY = 1;
+    Supplier<Rotation2d> gyroSupplier;
 
-    public SwerveDriveKinematics(Translation2d... moduleTranslationsMeters) {
+    public SwerveDriveKinematics(Supplier<Rotation2d> gyroSupplier, Translation2d... moduleTranslationsMeters) {
         super(moduleTranslationsMeters);
+        this.gyroSupplier = gyroSupplier;
     }
 
     @Override
@@ -24,8 +28,10 @@ public class SwerveDriveKinematics extends edu.wpi.first.math.kinematics.SwerveD
 
         for(int i = 0; i < moduleDeltas.length; i++) {
             var m = moduleDeltas[i];
-            var c = m.angle.getCos();
-            var s = m.angle.getSin();
+            var g = gyroSupplier.get();
+            var fr = m.angle.plus(g);
+            var c = fr.getCos();
+            var s = fr.getSin();
             double x = m.distanceMeters * c;
             double y = m.distanceMeters * s;
 
@@ -33,7 +39,7 @@ public class SwerveDriveKinematics extends edu.wpi.first.math.kinematics.SwerveD
             y *= s > 0 ? posY : negY;
 
             var dist = Math.sqrt(x * x + y * y);
-            var angle = Math.atan2(y, x);
+            var angle = Math.atan2(y, x) - g.getRadians();
 
             moduleDeltas[i] = new SwerveModulePosition(dist, new Rotation2d(angle));
         }

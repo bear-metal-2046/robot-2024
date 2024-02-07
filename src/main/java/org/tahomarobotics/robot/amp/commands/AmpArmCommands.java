@@ -23,6 +23,8 @@ public class AmpArmCommands {
     private static final Supplier<Command> STOW_TO_SOURCE;
     public static final Supplier<Command> ARM_TO_STOW;
     public static Command AMP_ARM_CTRL;
+    public static Command AMP_ARM_CLIMB;
+    public static Command AMP_ARM_DECLIMB;
 
     static {
         AmpArm ampArm = AmpArm.getInstance();
@@ -109,5 +111,11 @@ public class AmpArmCommands {
                 return Commands.defer(() -> STOW_TO_SOURCE.get().andThen(Commands.runOnce(shooter::stop)), Set.of(ampArm));
             }
         });
+
+        AMP_ARM_CLIMB = Commands.runOnce(
+                () -> ampArm.setArmState(AmpArm.ArmState.CLIMB));
+
+        AMP_ARM_DECLIMB = Commands.runOnce(
+                () -> ampArm.setArmState(AmpArm.ArmState.STOW));
     }
 }

@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.util.RobustConfigurator;
+import org.tahomarobotics.robot.util.SysIdTest;
 
 class Climber{
     private final Logger logger;
@@ -32,11 +33,15 @@ class Climber{
     }
 
     public void setTargetPos(double targetPosition) {
-        climbMotor.setControl(positionControl.withPosition(targetPosition * ClimberConstants.POSITION_COEFFICIENT).withSlot(0));
+        climbMotor.setControl(positionControl.withPosition(targetPosition).withSlot(0));
+    }
+
+    public TalonFX getMotor() {
+        return climbMotor;
     }
 
     public double getPosition() {
-        return climbMotor.getPosition().getValueAsDouble();
+        return climbMotor.getPosition().refresh().getValue();
     }
 
     public double getVelocity() {
@@ -48,7 +53,7 @@ class Climber{
     }
 
     public void runWithVelocity(double targetVelocity) {
-        climbMotor.setControl(velocityControl.withVelocity(targetVelocity * ClimberConstants.POSITION_COEFFICIENT).withSlot(0));
+        climbMotor.setControl(velocityControl.withVelocity(targetVelocity).withSlot(0));
     }
 }
 

@@ -1,7 +1,9 @@
-package org.tahomarobotics.robot.climbers;
+package org.tahomarobotics.robot.climbers.commands;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import edu.wpi.first.wpilibj2.command.Command;
+import org.tahomarobotics.robot.climbers.ClimberConstants;
+import org.tahomarobotics.robot.climbers.Climbers;
 
 
 public class ClimbCommand extends Command {

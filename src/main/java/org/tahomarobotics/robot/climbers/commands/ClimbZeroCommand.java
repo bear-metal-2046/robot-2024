@@ -1,7 +1,9 @@
-package org.tahomarobotics.robot.climbers;
+package org.tahomarobotics.robot.climbers.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import org.tahomarobotics.robot.climbers.ClimberConstants;
+import org.tahomarobotics.robot.climbers.Climbers;
 
 
 public class ClimbZeroCommand extends Command {

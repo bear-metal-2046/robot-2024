@@ -127,6 +127,10 @@ public class AmpArm extends SubsystemIF {
                 setArmPosition(ARM_TRAP_POSE);
                 setWristPosition(WRIST_TRAP_POSE);
             }
+            case CLIMB -> {
+                setArmPosition(ARM_CLIMB_POSE);
+                setWristPosition(WRIST_MOVING_POSE);
+            }
         }
     }
 
@@ -239,14 +243,15 @@ public class AmpArm extends SubsystemIF {
         TRAP,
         STOW,
         AMP,
-        SOURCE;
+        SOURCE,
+        CLIMB
     }
 
     public enum RollerState {
         DISABLED,
         PASSING,
         COLLECTED,
-        SCORE;
+        SCORE
     }
 
     @Override

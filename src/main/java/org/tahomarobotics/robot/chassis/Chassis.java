@@ -288,8 +288,12 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
         // Calculate position and velocity adjustment
         double adj = Math.atan2(-tangentialComponent, shotSpeed);
         double adjSpeed = tangentialComponent / goalDis;
-        if (adj != 0) {
-            System.out.format("goal rot = %f - adjust = %f - total: %f\n", goalRot, adj, goalRot + adj);
+
+        // TODO: Why is this needed? I would expect the above code to work fine on both alliances without
+        // modifiers
+        if (DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Red) {
+            adj *= -1;
+            adjSpeed *= -1;
         }
 
         fieldPose.getObject("goal").setPose(goal);

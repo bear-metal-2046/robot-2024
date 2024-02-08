@@ -30,7 +30,7 @@ public class ShooterConstants {
 
     private static final Translation2d RED_SPEAKER_TARGET_POSITION = new Translation2d(16.53, 5.55);
     private static final Translation2d BLUE_SPEAKER_TARGET_POSITION = new Translation2d(0, 5.55);
-    static final Supplier<Translation2d> SPEAKER_TARGET_POSITION = () ->
+    public static final Supplier<Translation2d> SPEAKER_TARGET_POSITION = () ->
             DriverStation
                     .getAlliance()
                     .filter(a -> a == DriverStation.Alliance.Blue)

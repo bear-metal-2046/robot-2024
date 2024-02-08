@@ -33,8 +33,7 @@ import org.tahomarobotics.robot.vision.VisionConstants;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.tahomarobotics.robot.chassis.ChassisConstants.SPEAKER_TARGET_POSITION;
-import static org.tahomarobotics.robot.shooter.ShooterConstants.SHOOTER_PIVOT_OFFSET;
+import static org.tahomarobotics.robot.shooter.ShooterConstants.SPEAKER_TARGET_POSITION;
 
 public class Chassis extends SubsystemIF implements ToggledOutputs {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Chassis.class);
@@ -272,7 +271,7 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
         var goal = SPEAKER_TARGET_POSITION.get();
 
         // Get polar coordinates (theta + distance) from robot to goal
-        var robotToGoal = goal.getTranslation().minus(pose.getTranslation());
+        var robotToGoal = goal.minus(pose.getTranslation());
         var goalRot = MathUtil.angleModulus(robotToGoal.getAngle().getRadians() + Math.PI);
         var goalDis = robotToGoal.getNorm();
 
@@ -296,7 +295,7 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
             adjSpeed *= -1;
         }
 
-        fieldPose.getObject("goal").setPose(goal);
+        fieldPose.getObject("goal").setPose(new Pose2d(goal, new Rotation2d()));
 
         speeds.omegaRadiansPerSecond =
                 shootModeController.calculate(

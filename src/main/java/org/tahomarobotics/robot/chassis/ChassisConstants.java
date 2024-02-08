@@ -22,14 +22,9 @@ import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.*;
 import com.pathplanner.lib.util.PIDConstants;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.DriverStation;
 import org.tahomarobotics.robot.RobotConfiguration;
-
-import java.util.function.Supplier;
 
 /**
  * Constants for the chassis.
@@ -87,15 +82,6 @@ public final class ChassisConstants {
     @SuppressWarnings("unused")
     public static final double kA_DRIVE = SWERVE_DRIVE_MOTOR.rOhms * WHEEL_RADIUS * MASS
             / (DRIVE_REDUCTION * SWERVE_DRIVE_MOTOR.KtNMPerAmp);
-
-
-    private static final Pose2d RED_SPEAKER_TARGET_POSITION = new Pose2d(16.53, 5.55, Rotation2d.fromDegrees(0));
-    private static final Pose2d BLUE_SPEAKER_TARGET_POSITION = new Pose2d(0, 5.55, Rotation2d.fromDegrees(180));
-    static final Supplier<Pose2d> SPEAKER_TARGET_POSITION = () ->
-            DriverStation
-                    .getAlliance()
-                    .filter(a -> a == DriverStation.Alliance.Blue)
-                    .map(a -> BLUE_SPEAKER_TARGET_POSITION).orElse(RED_SPEAKER_TARGET_POSITION);
 
     /// DEVICE CONFIGURATION
 

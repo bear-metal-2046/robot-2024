@@ -2,17 +2,16 @@ package org.tahomarobotics.robot.chassis;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -24,6 +23,7 @@ import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.chassis.commands.AlignSwerveCommand;
 import org.tahomarobotics.robot.shooter.Shooter;
+import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.util.CalibrationData;
 import org.tahomarobotics.robot.util.SubsystemIF;
 import org.tahomarobotics.robot.util.ToggledOutputs;
@@ -32,6 +32,9 @@ import org.tahomarobotics.robot.vision.VisionConstants;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.tahomarobotics.robot.chassis.ChassisConstants.SPEAKER_TARGET_POSITION;
+import static org.tahomarobotics.robot.shooter.ShooterConstants.SHOOTER_PIVOT_OFFSET;
 
 public class Chassis extends SubsystemIF implements ToggledOutputs {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Chassis.class);
@@ -257,11 +260,45 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
     // SETTERS
 
     public void aimToShooter(ChassisSpeeds speeds) {
+        //
+        // Based off of 2022 Cheesy Poof shooting utils
+        // https://github.com/Team254/FRC-2022-Public/blob/6a24236b37f0fcb75ceb9d5dec767be58ea903c0/src/main/java/com/team254/frc2022/shooting/ShootingUtil.java#L26
+        //
+
+        // w * radius * 0.8 fudge factor
+        var shotSpeed = Units.inchesToMeters(Units.rotationsToRadians(ShooterConstants.SHOOTER_SPEED) * (1.75)) * 0.8; // meters/sec
+
+        var pose = getPose();
+        var goal = SPEAKER_TARGET_POSITION.get();
+
+        // Get polar coordinates (theta + distance) from robot to goal
+        var robotToGoal = goal.getTranslation().minus(pose.getTranslation());
+        var goalRot = MathUtil.angleModulus(robotToGoal.getAngle().getRadians() + Math.PI);
+        var goalDis = robotToGoal.getNorm();
+
+        // Get robot speed relative to angle from robot to goal
+        // X component is towards/from goal, Y component is tangential to goal
+        var curSpeeds = getCurrentChassisSpeeds();
+        var speedsTranslation = new Translation2d(curSpeeds.vxMetersPerSecond, curSpeeds.vyMetersPerSecond);
+        var speedsToGoal = speedsTranslation.rotateBy(robotToGoal.getAngle().unaryMinus());
+        var tangentialComponent = speedsToGoal.getY();
+
+        // TODO: use x component of speedsToGoal to adjust vertical shooter angle
+
+        // Calculate position and velocity adjustment
+        double adj = Math.atan2(-tangentialComponent, shotSpeed);
+        double adjSpeed = tangentialComponent / goalDis;
+        if (adj != 0) {
+            System.out.format("goal rot = %f - adjust = %f - total: %f\n", goalRot, adj, goalRot + adj);
+        }
+
+        fieldPose.getObject("goal").setPose(goal);
+
         speeds.omegaRadiansPerSecond =
                 shootModeController.calculate(
-                        getPose().getRotation().getRadians(),
-                        Shooter.getInstance().rotToSpeaker()
-                );
+                        pose.getRotation().getRadians(),
+                        goalRot + adj
+                ) - adjSpeed;
     }
 
     private void setSwerveStates(SwerveModuleState[] states) {

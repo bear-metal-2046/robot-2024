@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import java.util.function.Supplier;
 
 public class ShooterConstants {
-    static final double SHOOTER_SPEED = 100; // rps
+    public static final double SHOOTER_SPEED = 100; // rps
     public static final double TRANSFER_VELOCITY = 10; // rps
 
     static final double SHOOTER_SPEED_TOLERANCE = 0.25; // rps
@@ -24,7 +24,7 @@ public class ShooterConstants {
 
     static final double BIAS_AMT = Units.degreesToRotations(5) / 50;
 
-    static final Translation2d SHOOTER_PIVOT_OFFSET = new Translation2d(0.1238, 0.1899);
+    public static final Translation2d SHOOTER_PIVOT_OFFSET = new Translation2d(0.1238, 0.1899);
     private static final double SPEAKER_HEIGHT = Units.inchesToMeters(80);
     static final double SPEAKER_HEIGHT_DIFF = SPEAKER_HEIGHT - SHOOTER_PIVOT_OFFSET.getY();
 

@@ -150,7 +150,7 @@ class ShooterIO implements ToggledOutputs {
     void toggleShootMode() {
         if (shootingMode) {
             disable();
-        } else if (Indexer.getInstance().hasCollected()){
+        } else /*if (Indexer.getInstance().hasCollected())*/{
             enable();
         }
     }

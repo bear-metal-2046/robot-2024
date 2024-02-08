@@ -34,7 +34,7 @@ public class Climbers extends SubsystemIF implements ToggledOutputs {
     private Climbers() {
         leftClimber = new Climber(RobotMap.LEFT_CLIMB_MOTOR, "Left Climber");
         rightClimber = new Climber(RobotMap.RIGHT_CLIMB_MOTOR, "Right Climber");
-        test = new SysIdTest(this, leftClimber.getMotor());
+        test = new SysIdTest(this, leftClimber.getMotor(), rightClimber.getMotor());
     }
 
     @Override
@@ -96,9 +96,9 @@ public class Climbers extends SubsystemIF implements ToggledOutputs {
         rightClimber.stop();
     }
 
-    public void runWithVelocity(double targetVelocity) {
-        leftClimber.runWithVelocity(targetVelocity);
-        rightClimber.runWithVelocity(targetVelocity);
+    public void runWithVoltage(double targetVoltage) {
+        leftClimber.runWithVoltage(targetVoltage);
+        rightClimber.runWithVoltage(targetVoltage);
     }
 
     public void registerSysIdCommands(CommandXboxController controller) {

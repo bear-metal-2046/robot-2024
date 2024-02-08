@@ -17,12 +17,12 @@ public class ClimbZeroCommand extends Command {
     @Override
     public void initialize() {
         timer.start();
-        climbers.runWithVelocity(ClimberConstants.ZERO_SPEED);
+        climbers.runWithVoltage(ClimberConstants.ZERO_VOLTAGE);
     }
     
     @Override
     public boolean isFinished() {
-        return climbers.getLeftVel() < ClimberConstants.VELOCITY_EPSILON && climbers.getRightVel() < ClimberConstants.VELOCITY_EPSILON && timer.get() > 0.5;
+        return climbers.getLeftVel() < ClimberConstants.VELOCITY_EPSILON && climbers.getRightVel() < ClimberConstants.VELOCITY_EPSILON && timer.get() > 0.25;
     }
 
     @Override

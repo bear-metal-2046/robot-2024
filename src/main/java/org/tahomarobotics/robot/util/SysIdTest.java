@@ -103,13 +103,13 @@ public class SysIdTest extends SubsystemIF {
                                     .angularVelocity(
                                             velocity.mut_replace(motor.getVelocity().getValue(), RotationsPerSecond));
 
-                            log.motor("motor2")
-                                    .voltage(
-                                            voltage.mut_replace(
-                                                    motorOther.getMotorVoltage().getValue(), Volts))
-                                    .angularPosition(position.mut_replace(motorOther.getPosition().getValue(), Rotations))
-                                    .angularVelocity(
-                                            velocity.mut_replace(motorOther.getVelocity().getValue(), RotationsPerSecond));
+//                            log.motor("motor2")
+//                                    .voltage(
+//                                            voltage.mut_replace(
+//                                                    motorOther.getMotorVoltage().getValue(), Volts))
+//                                    .angularPosition(position.mut_replace(motorOther.getPosition().getValue(), Rotations))
+//                                    .angularVelocity(
+//                                            velocity.mut_replace(motorOther.getVelocity().getValue(), RotationsPerSecond));
                         },
                         subsystem));
     }

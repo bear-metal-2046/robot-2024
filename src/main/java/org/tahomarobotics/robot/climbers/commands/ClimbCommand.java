@@ -11,18 +11,17 @@ public class ClimbCommand extends Command {
 
     private final double pos;
 
-    private final Slot0Configs slotTuning;
+    private final int slot;
 
-    public ClimbCommand(double pos, Slot0Configs slotTuning) {
+    public ClimbCommand(double pos, int slot) {
         this.pos = pos;
-        this.slotTuning = slotTuning;
+        this.slot = slot;
         addRequirements(this.climbers);
     }
 
     @Override
     public void initialize() {
-        climbers.setSlotTuning(slotTuning);
-        climbers.setTargetPos(pos);
+        climbers.setTargetPos(pos, slot);
     }
 
     @Override

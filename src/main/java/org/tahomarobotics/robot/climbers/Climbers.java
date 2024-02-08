@@ -2,7 +2,9 @@ package org.tahomarobotics.robot.climbers;
 
 
 import com.ctre.phoenix6.configs.Slot0Configs;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.slf4j.Logger;
@@ -13,6 +15,7 @@ import org.tahomarobotics.robot.climbers.commands.ClimbCommand;
 import org.tahomarobotics.robot.climbers.commands.ClimbSequence;
 import org.tahomarobotics.robot.climbers.commands.ClimbZeroCommand;
 import org.tahomarobotics.robot.climbers.commands.DeclimbSequence;
+import org.tahomarobotics.robot.collector.commands.ZeroCollectorCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 import org.tahomarobotics.robot.util.SysIdTest;
 import org.tahomarobotics.robot.util.ToggledOutputs;
@@ -32,32 +35,9 @@ public class Climbers extends SubsystemIF implements ToggledOutputs {
     private final Climber rightClimber;
 
     private Climbers() {
-        leftClimber = new Climber(RobotMap.LEFT_CLIMB_MOTOR, "Left Climber");
-        rightClimber = new Climber(RobotMap.RIGHT_CLIMB_MOTOR, "Right Climber");
+        leftClimber = new Climber(RobotMap.LEFT_CLIMB_MOTOR, "Left Climber", true);
+        rightClimber = new Climber(RobotMap.RIGHT_CLIMB_MOTOR, "Right Climber", false);
         test = new SysIdTest(this, leftClimber.getMotor(), rightClimber.getMotor());
-    }
-
-    @Override
-    public SubsystemIF initialize() {
-        SmartDashboard.putData("Climb Zero Command", new ClimbZeroCommand());
-        SmartDashboard.putData("Climb Sequence", new ClimbSequence());
-        SmartDashboard.putData("DeClimb Sequence", new DeclimbSequence());
-        SmartDashboard.putData("Test Climb Command", new ClimbCommand(1, ClimberConstants.CLIMB_UNLADEN_SLOT)); // TODO: Test Command, remove after testing
-        SmartDashboard.putData("Test Climb Command Down", new ClimbCommand(0, ClimberConstants.CLIMB_UNLADEN_SLOT));
-        return this;
-    }
-
-    @Override
-    public boolean logOutputs() {
-        return OutputsConfiguration.CLIMBER;
-    }
-
-    @Override
-    public void periodic() {
-//        SmartDashboard.putNumber("Climb Left Position", getLeftPos());
-//        SmartDashboard.putNumber("Climb Right Position", getRightPos());
-        recordOutput("Climbers/Left Pos", getLeftPos());
-        recordOutput("Climbers/Right Pos", getRightPos());
     }
 
     public void zeroToCurrentPosition() {
@@ -65,14 +45,9 @@ public class Climbers extends SubsystemIF implements ToggledOutputs {
         rightClimber.zeroAtCurrentPosition();
     }
 
-    public void setSlotTuning(Slot0Configs slotConfig) {
-        leftClimber.setSlotTuning(slotConfig);
-        rightClimber.setSlotTuning(slotConfig);
-    }
-
-    public void setTargetPos(double targetPosition) {
-        leftClimber.setTargetPos(targetPosition);
-        rightClimber.setTargetPos(targetPosition);
+    public void setTargetPos(double targetPosition, int slot) {
+        leftClimber.setTargetPos(targetPosition, slot);
+        rightClimber.setTargetPos(targetPosition, slot);
     }
 
     public double getLeftPos() {
@@ -106,6 +81,33 @@ public class Climbers extends SubsystemIF implements ToggledOutputs {
         controller.povDown().whileTrue(test.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
         controller.povLeft().whileTrue(test.sysIdDynamic(SysIdRoutine.Direction.kForward));
         controller.povRight().whileTrue(test.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    }
+
+    @Override
+    public SubsystemIF initialize() {
+        Commands.waitUntil(RobotState::isEnabled)
+                .andThen(new ClimbZeroCommand())
+                .ignoringDisable(true).schedule();
+
+        SmartDashboard.putData("Climb Zero Command", new ClimbZeroCommand());
+        SmartDashboard.putData("Climb Sequence", new ClimbSequence());
+        SmartDashboard.putData("DeClimb Sequence", new DeclimbSequence());
+        SmartDashboard.putData("Test Climb Command", new ClimbCommand(1, ClimberConstants.UNLADEN_SLOT)); // TODO: Test Command, remove after testing
+        SmartDashboard.putData("Test Climb Command Down", new ClimbCommand(0, ClimberConstants.LADEN_SLOT));
+        return this;
+    }
+
+    @Override
+    public void periodic() {
+//        SmartDashboard.putNumber("Climb Left Position", getLeftPos());
+//        SmartDashboard.putNumber("Climb Right Position", getRightPos());
+        recordOutput("Climbers/Left Pos", getLeftPos());
+        recordOutput("Climbers/Right Pos", getRightPos());
+    }
+
+    @Override
+    public boolean logOutputs() {
+        return OutputsConfiguration.CLIMBER;
     }
 }
 

@@ -1,17 +1,20 @@
 package org.tahomarobotics.robot.climbers;
 
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.MathUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.util.RobustConfigurator;
+
+import static org.tahomarobotics.robot.climbers.ClimberConstants.BOTTOM_POSITION;
+import static org.tahomarobotics.robot.climbers.ClimberConstants.TOP_POSITION;
 
 class Climber{
 
@@ -29,14 +32,14 @@ class Climber{
         configurator.configureTalonFX(climbMotor, ClimberConstants.CLIMB_CONFIGURATION
                 .withMotorOutput(new MotorOutputConfigs()
                         .withInverted(isInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive)
-                        .withNeutralMode(NeutralModeValue.Coast)
+                        .withNeutralMode(NeutralModeValue.Brake)
                 ));
     }
 
     //MOTOR CONTROLERY
 
     public void setTargetPos(double targetPosition, int slot) {
-        climbMotor.setControl(positionControl.withPosition(targetPosition).withSlot(slot));
+        climbMotor.setControl(positionControl.withPosition(MathUtil.clamp(targetPosition, BOTTOM_POSITION, TOP_POSITION)).withSlot(slot));
     }
 
     public void runWithVoltage(double targetVoltage) {

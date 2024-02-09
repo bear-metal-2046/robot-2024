@@ -14,6 +14,8 @@ public class ClimbZeroCommand extends Command {
     private final Climbers climbers = Climbers.getInstance();
     private final Timer timer = new Timer();
 
+    private boolean left, right;
+
     public ClimbZeroCommand() {
         addRequirements(climbers);
     }
@@ -26,13 +28,15 @@ public class ClimbZeroCommand extends Command {
     @Override
     public void execute() {
         logger.info(climbers.getLeftVel() + "   " + climbers.getRightVel());
-        if (Math.abs(climbers.getLeftVel()) < ClimberConstants.VELOCITY_EPSILON && timer.hasElapsed(0.5)) {
+        if (left || Math.abs(climbers.getLeftVel()) < ClimberConstants.VELOCITY_EPSILON && timer.hasElapsed(0.5)) {
             climbers.stopLeft();
+            left = true;
         } else {
             climbers.runLeftWithVoltage(ClimberConstants.ZERO_VOLTAGE);
         }
-        if (Math.abs(climbers.getRightVel()) < ClimberConstants.VELOCITY_EPSILON && timer.hasElapsed(0.5)) {
+        if (right || Math.abs(climbers.getRightVel()) < ClimberConstants.VELOCITY_EPSILON && timer.hasElapsed(0.5)) {
             climbers.stopRight();
+            right = true;
         } else {
             climbers.runRightWithVoltage(ClimberConstants.ZERO_VOLTAGE);
         }
@@ -40,7 +44,7 @@ public class ClimbZeroCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return Math.abs(climbers.getLeftVel()) < ClimberConstants.VELOCITY_EPSILON && Math.abs(climbers.getRightVel()) < ClimberConstants.VELOCITY_EPSILON && timer.hasElapsed(0.5);
+        return left && right;
     }
 
     @Override

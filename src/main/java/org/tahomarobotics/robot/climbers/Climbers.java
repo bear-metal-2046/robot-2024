@@ -92,7 +92,8 @@ public class Climbers extends SubsystemIF implements ToggledOutputs {
         SmartDashboard.putData("Climb Zero Command", new ClimbZeroCommand());
         SmartDashboard.putData("Climb Sequence", new ClimbSequence());
         SmartDashboard.putData("DeClimb Sequence", new DeclimbSequence());
-        SmartDashboard.putData("Test Climb Command", new ClimbCommand(1, ClimberConstants.UNLADEN_SLOT)); // TODO: Test Command, remove after testing
+        SmartDashboard.putData("Test Climb Command UP", new ClimbCommand(ClimberConstants.TOP_POSITION, ClimberConstants.UNLADEN_SLOT)); // TODO: Test Command, remove after testing
+        SmartDashboard.putData("Test Climb Command DOWN", new ClimbCommand(ClimberConstants.BOTTOM_POSITION, ClimberConstants.UNLADEN_SLOT)); // TODO: Test Command, remove after testing
         SmartDashboard.putData("Test Climb Command Down", new ClimbCommand(0, ClimberConstants.LADEN_SLOT));
         return this;
     }

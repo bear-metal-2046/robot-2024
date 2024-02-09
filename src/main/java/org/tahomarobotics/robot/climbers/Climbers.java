@@ -105,6 +105,22 @@ public class Climbers extends SubsystemIF implements ToggledOutputs {
         recordOutput("Climbers/Right Pos", getRightPos());
     }
 
+    public void runLeftWithVoltage(double targetVoltage) {
+        leftClimber.runWithVoltage(targetVoltage);
+    }
+
+    public void runRightWithVoltage(double targetVoltage) {
+        rightClimber.runWithVoltage(targetVoltage);
+    }
+
+    public void stopLeft() {
+        leftClimber.stop();
+    }
+
+    public void stopRight() {
+        rightClimber.stop();
+    }
+
     @Override
     public boolean logOutputs() {
         return OutputsConfiguration.CLIMBER;

@@ -2,11 +2,9 @@ package org.tahomarobotics.robot.climbers.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import org.apache.logging.log4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.climbers.ClimberConstants;
 import org.tahomarobotics.robot.climbers.Climbers;
-import org.tahomarobotics.robot.collector.commands.ZeroCollectorCommand;
 
 
 public class ClimbZeroCommand extends Command {
@@ -27,18 +25,26 @@ public class ClimbZeroCommand extends Command {
 
     @Override
     public void execute() {
-        climbers.runWithVoltage(ClimberConstants.ZERO_VOLTAGE);
         logger.info(climbers.getLeftVel() + "   " + climbers.getRightVel());
+        if (Math.abs(climbers.getLeftVel()) < ClimberConstants.VELOCITY_EPSILON && timer.hasElapsed(0.5)) {
+            climbers.stopLeft();
+        } else {
+            climbers.runLeftWithVoltage(ClimberConstants.ZERO_VOLTAGE);
+        }
+        if (Math.abs(climbers.getRightVel()) < ClimberConstants.VELOCITY_EPSILON && timer.hasElapsed(0.5)) {
+            climbers.stopRight();
+        } else {
+            climbers.runRightWithVoltage(ClimberConstants.ZERO_VOLTAGE);
+        }
     }
 
     @Override
     public boolean isFinished() {
-        return Math.abs(climbers.getLeftVel()) < ClimberConstants.VELOCITY_EPSILON && Math.abs(climbers.getRightVel()) < ClimberConstants.VELOCITY_EPSILON && timer.get() > 0.5;
+        return Math.abs(climbers.getLeftVel()) < ClimberConstants.VELOCITY_EPSILON && Math.abs(climbers.getRightVel()) < ClimberConstants.VELOCITY_EPSILON && timer.hasElapsed(0.5);
     }
 
     @Override
     public void end(boolean interrupted) {
-        climbers.stop();
         climbers.zeroToCurrentPosition();
         logger.info("ZEROED CLIMBERS");
     }

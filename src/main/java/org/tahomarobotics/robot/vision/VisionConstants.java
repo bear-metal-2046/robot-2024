@@ -6,12 +6,12 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 
 public class VisionConstants {
-    private static final double BAR_HEIGHT_IN = 0.0;
+    private static final double BAR_HEIGHT_IN = 26.0;
 
     public enum ATCamera {
         LEFT("Left", new Transform3d(
                 new Translation3d(
-                        Units.inchesToMeters(0), Units.inchesToMeters(BAR_HEIGHT_IN), Units.inchesToMeters(0)
+                        Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(BAR_HEIGHT_IN)
                 ),
                 new Rotation3d(
                         0, 0, Units.degreesToRadians(15)
@@ -19,7 +19,7 @@ public class VisionConstants {
         )),
         RIGHT("Right", new Transform3d(
                 new Translation3d(
-                        Units.inchesToMeters(0), Units.inchesToMeters(BAR_HEIGHT_IN), Units.inchesToMeters(0)
+                        Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(BAR_HEIGHT_IN)
                 ),
                 new Rotation3d(
                         0, 0, Units.degreesToRadians(-15)
@@ -27,7 +27,7 @@ public class VisionConstants {
         )),
         BACK("Back", new Transform3d(
                 new Translation3d(
-                        Units.inchesToMeters(0), Units.inchesToMeters(BAR_HEIGHT_IN), Units.inchesToMeters(0)
+                        Units.inchesToMeters(2), Units.inchesToMeters(0), Units.inchesToMeters(BAR_HEIGHT_IN)
                 ),
                 new Rotation3d(
                         0, 0, Units.degreesToRadians(180)

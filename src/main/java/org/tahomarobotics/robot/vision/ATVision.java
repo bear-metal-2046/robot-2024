@@ -35,7 +35,6 @@ public class ATVision {
     private static final Logger logger = LoggerFactory.getLogger(ATVision.class);
     private final PhotonCamera camera;
     private final AprilTagFieldLayout fieldLayout;
-    private final PhotonPoseEstimator photonPoseEstimator;
     private final VisionConstants.ATCamera cameraSettings;
     private final Field2d fieldPose;
     private final SwerveDrivePoseEstimator poseEstimator;
@@ -54,15 +53,6 @@ public class ATVision {
         camera = new PhotonCamera(inst, cameraSettings.cameraName);
 
         fieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-
-        // Photon pose estimator will use all seen tags to run PnP once,
-        // instead of looking at each target individually
-        photonPoseEstimator = new PhotonPoseEstimator(
-                fieldLayout,
-                PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-                camera,
-                cameraSettings.offset
-        );
 
         // subscribe to new data from photon vision
         DoubleSubscriber latencySub = inst.getTable("photonvision").getSubTable(cameraSettings.cameraName).getDoubleTopic("latencyMillis").subscribe(0.0);
@@ -114,30 +104,27 @@ public class ATVision {
             }
         }
 
-        if (validTargets.size() > 1) {
-            Pose2d pose = new Pose2d(result.getMultiTagResult().estimatedPose.best.getTranslation().toTranslation2d(), result.getMultiTagResult().estimatedPose.best.getRotation().toRotation2d()).relativeTo(new Pose2d(cameraSettings.offset.getTranslation().toTranslation2d(), cameraSettings.offset.getRotation().toRotation2d()));
 
-            PhotonPipelineResult correctedResult = new PhotonPipelineResult(result.getLatencyMillis(), validTargets);
-            correctedResult.setTimestampSeconds(result.getTimestampSeconds());
-            Optional<EstimatedRobotPose> position = photonPoseEstimator.update(correctedResult);
+        if (result.getMultiTagResult().estimatedPose.isPresent) {
+            Pose3d pose = new Pose3d(result.getMultiTagResult().estimatedPose.best.getTranslation(), result.getMultiTagResult().estimatedPose.best.getRotation()).plus(cameraSettings.offset.inverse());
 
-            if (position.isEmpty()) return;
+            org.littletonrobotics.junction.Logger.recordOutput("ATCamera/Photon Pose", pose);
 
             double distances = 0;
-            for (PhotonTrackedTarget target : position.get().targetsUsed) {
+            for (PhotonTrackedTarget target : validTargets) {
                 Transform3d _pose = target.getBestCameraToTarget();
                 distances = Math.max(distances, Math.hypot(_pose.getX(), _pose.getY()));
             }
 
-            addVisionMeasurement(new ATCameraResult(
-                    cameraSettings,
-                    position.get().timestampSeconds, // Photon vision timestamp
-                    pose,
-                    distances,
-                    result.getMultiTagResult().fiducialIDsUsed.size()
-            ));
+//            addVisionMeasurement(new ATCameraResult(
+//                    cameraSettings,
+//                    result.getTimestampSeconds(), // Photon vision timestamp
+//                    pose.toPose2d(),
+//                    distances,
+//                    result.getMultiTagResult().fiducialIDsUsed.size()
+//            ));
         } else if (validTargets.size() == 1) {
-            processSingleTarget(validTargets.get(0), result.getTimestampSeconds());
+            //processSingleTarget(validTargets.get(0), result.getTimestampSeconds());
         }
     }
 

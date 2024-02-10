@@ -8,6 +8,7 @@ package org.tahomarobotics.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -42,6 +43,9 @@ public class OI extends SubsystemIF {
 
         configureBindings();
         setDefaultCommands();
+
+        SmartDashboard.putNumber("X", 0.0);
+        SmartDashboard.putNumber("Y", 0.0);
     }
 
     /**
@@ -65,6 +69,8 @@ public class OI extends SubsystemIF {
 
         //Shooting mode toggle
         driveController.rightBumper().onTrue(Commands.runOnce(shooter::toggleShootMode));
+
+        driveController.povUpLeft().onTrue(Commands.runOnce(() -> chassis.resetOdometry(new Pose2d(new Translation2d(SmartDashboard.getNumber("X", 0.0), SmartDashboard.getNumber("Y", 0.0)), Rotation2d.fromDegrees(180)))));
 
         // Shoot
         driveController.x().onTrue(new ShootCommand());

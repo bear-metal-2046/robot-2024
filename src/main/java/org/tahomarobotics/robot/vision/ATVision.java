@@ -78,13 +78,16 @@ public class ATVision {
                 cameraSettings.offset.inverse()
         );
 
-        addVisionMeasurement(new ATCameraResult(
-                cameraSettings,
-                timestampSeconds, // Photon vision timestamp
-                newRobotPose.toPose2d(),
-                distance,
-                1
-        ));
+        org.littletonrobotics.junction.Logger.recordOutput("ATCamera/Photon Pose 2D Single", newRobotPose.toPose2d());
+
+
+//        addVisionMeasurement(new ATCameraResult(
+//                cameraSettings,
+//                timestampSeconds, // Photon vision timestamp
+//                newRobotPose.toPose2d(),
+//                distance,
+//                1
+//        ));
     }
 
     /**
@@ -108,7 +111,10 @@ public class ATVision {
         if (result.getMultiTagResult().estimatedPose.isPresent) {
             Pose3d pose = new Pose3d(result.getMultiTagResult().estimatedPose.best.getTranslation(), result.getMultiTagResult().estimatedPose.best.getRotation()).plus(cameraSettings.offset.inverse());
 
-            org.littletonrobotics.junction.Logger.recordOutput("ATCamera/Photon Pose", pose);
+            org.littletonrobotics.junction.Logger.recordOutput("ATCamera/Photon Pose 3D", pose);
+
+            org.littletonrobotics.junction.Logger.recordOutput("ATCamera/Photon Pose 2D Multi", pose.toPose2d());
+
 
             double distances = 0;
             for (PhotonTrackedTarget target : validTargets) {
@@ -124,18 +130,17 @@ public class ATVision {
 //                    result.getMultiTagResult().fiducialIDsUsed.size()
 //            ));
         } else if (validTargets.size() == 1) {
-            //processSingleTarget(validTargets.get(0), result.getTimestampSeconds());
+            processSingleTarget(validTargets.get(0), result.getTimestampSeconds());
         }
     }
 
     private void addVisionMeasurement(ATCameraResult result) {
         Pose2d pose;
 
-        org.littletonrobotics.junction.Logger.recordOutput("ATCamera/Photon Pose", result.poseMeters());
-
 
         synchronized (poseEstimator) {
             pose = poseEstimator.getEstimatedPosition();
+
 
 
             Transform2d poseDiff = pose.minus(result.poseMeters());

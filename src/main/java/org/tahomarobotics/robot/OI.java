@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.chassis.commands.TeleopDriveCommand;
 import org.tahomarobotics.robot.collector.Collector;
@@ -22,6 +23,8 @@ import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.commands.ShootCommand;
 import org.tahomarobotics.robot.shooter.commands.ShooterDefaultCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
+
+import static org.tahomarobotics.robot.amp.commands.AmpArmCommands.AMP_ARM_CTRL;
 
 public class OI extends SubsystemIF {
     private final static OI INSTANCE = new OI();
@@ -55,14 +58,12 @@ public class OI extends SubsystemIF {
         Chassis chassis = Chassis.getInstance();
         Collector collector = Collector.getInstance();
         Shooter shooter = Shooter.getInstance();
+        AmpArm ampArm = AmpArm.getInstance();
 
         // Robot Heading Zeroing
         driveController.a().onTrue(Commands.runOnce(chassis::orientToZeroHeading));
         // Robot/Field Orientation
         driveController.b().onTrue(Commands.runOnce(chassis::toggleOrientation));
-
-        //For testing w/o ATs
-        driveController.y().onTrue(Commands.runOnce(() -> chassis.resetOdometry(new Pose2d(new Translation2d(15.19, 5.57), Rotation2d.fromDegrees(180)))));
 
         //Collector up and down
         driveController.leftBumper().onTrue(Commands.runOnce(collector::toggleDeploy));
@@ -78,6 +79,20 @@ public class OI extends SubsystemIF {
         driveController.povUp().whileTrue(Commands.run(shooter::biasUp));
         driveController.povDown().whileTrue(Commands.run(shooter::biasDown));
         driveController.povDownLeft().onTrue(Commands.runOnce(shooter::resetBias));
+
+        driveController.y().onTrue(AMP_ARM_CTRL);
+
+        driveController.rightTrigger(0.5)
+                .whileTrue(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.SCORE))
+                .onlyIf(ampArm::isAmp))
+                .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));
+
+        driveController.leftTrigger(0.01)
+                .whileTrue(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.PASSING))
+                .onlyIf(ampArm::isSource))
+                .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED))
+                .onlyIf(ampArm::isSource))
+                .onFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.COLLECTED)));
     }
 
     private void setDefaultCommands() {

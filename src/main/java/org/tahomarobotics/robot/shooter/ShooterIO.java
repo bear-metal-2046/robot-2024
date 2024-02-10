@@ -8,18 +8,19 @@ import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.geometry.Translation2d;
 import org.littletonrobotics.junction.AutoLog;
-import org.littletonrobotics.junction.Logger;
 import org.slf4j.LoggerFactory;
+import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.util.RobustConfigurator;
+import org.tahomarobotics.robot.util.ToggledOutputs;
 
 import static org.tahomarobotics.robot.shooter.ShooterConstants.*;
 
 
-class ShooterIO {
+class ShooterIO implements ToggledOutputs {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(ShooterIO.class);
 
     private final TalonFX shooterMotor;
@@ -32,6 +33,8 @@ class ShooterIO {
 
     private final MotionMagicVoltage pivotPositionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage motorVelocity = new MotionMagicVelocityVoltage(SHOOTER_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
+    private final MotionMagicVelocityVoltage transferVelocity = new MotionMagicVelocityVoltage(TRANSFER_VELOCITY).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
+    private final MotionMagicVelocityVoltage reverseIntakeVelocity = new MotionMagicVelocityVoltage(-TRANSFER_VELOCITY).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
 
     protected double angle = 0.0;
     protected double distance = 0.0;
@@ -67,11 +70,11 @@ class ShooterIO {
     // GETTERS
 
     double getShooterVelocity() {
-        return shooterVelocity.refresh().getValue();
+        return shooterVelocity.getValue();
     }
 
     double getPivotPosition() {
-        return BaseStatusSignal.getLatencyCompensatedValue(pivotPosition.refresh(), pivotVelocity.refresh());
+        return BaseStatusSignal.getLatencyCompensatedValue(pivotPosition, pivotVelocity);
     }
 
     boolean isSpinningAtVelocity() {
@@ -107,7 +110,7 @@ class ShooterIO {
     void setShooterAngle(double angle) {
         this.angle = angle;
 
-        Logger.recordOutput("Shooter/Target Angle", angle);
+        recordOutput("Shooter/Target Angle", angle);
 
         pivotMotor.setControl(pivotPositionControl.withPosition(angle));
     }
@@ -117,6 +120,16 @@ class ShooterIO {
     }
 
     void zero() { pivotMotor.setPosition(0.0); }
+
+    public void transferToAmp() {
+        shooterMotor.setControl(transferVelocity);
+        shooterMotorFollower.setControl(transferVelocity);
+    }
+
+    public void reverseIntake() {
+        shooterMotor.setControl(reverseIntakeVelocity);
+        shooterMotorFollower.setControl(reverseIntakeVelocity);
+    }
 
     // STATES
 
@@ -146,5 +159,14 @@ class ShooterIO {
 
     void processInputs(ShooterIOInputs inputs) {
         setShooterAngle(inputs.angle);
+    }
+
+    void refreshSignals() {
+        BaseStatusSignal.refreshAll(pivotPosition, pivotVelocity, shooterVelocity);
+    }
+
+    @Override
+    public boolean logOutputs() {
+        return OutputsConfiguration.SHOOTER;
     }
 }

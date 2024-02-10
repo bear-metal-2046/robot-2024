@@ -11,7 +11,7 @@ public class VisionConstants {
     public enum ATCamera {
         LEFT("Left", new Transform3d(
                 new Translation3d(
-                        Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(BAR_HEIGHT_IN)
+                        Units.inchesToMeters(0), Units.inchesToMeters(BAR_HEIGHT_IN), Units.inchesToMeters(0)
                 ),
                 new Rotation3d(
                         0, 0, Units.degreesToRadians(15)
@@ -19,7 +19,7 @@ public class VisionConstants {
         )),
         RIGHT("Right", new Transform3d(
                 new Translation3d(
-                        Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(BAR_HEIGHT_IN)
+                        Units.inchesToMeters(0), Units.inchesToMeters(BAR_HEIGHT_IN), Units.inchesToMeters(0)
                 ),
                 new Rotation3d(
                         0, 0, Units.degreesToRadians(-15)
@@ -28,7 +28,7 @@ public class VisionConstants {
         BACK("Back", new Transform3d(
                 new Translation3d(
                         Units.inchesToMeters(2), Units.inchesToMeters(0), Units.inchesToMeters(BAR_HEIGHT_IN)
-                ),
+                        ),
                 new Rotation3d(
                         0, 0, Units.degreesToRadians(180)
                 )

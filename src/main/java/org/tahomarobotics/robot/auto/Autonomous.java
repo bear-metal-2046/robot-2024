@@ -7,13 +7,21 @@ import com.pathplanner.lib.path.PathPlannerTrajectory;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.networktables.*;
+import edu.wpi.first.networktables.NetworkTableEvent;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.tahomarobotics.robot.amp.AmpArm;
+import org.tahomarobotics.robot.amp.commands.AmpArmCommands;
 import org.tahomarobotics.robot.chassis.Chassis;
+import org.tahomarobotics.robot.collector.Collector;
+import org.tahomarobotics.robot.shooter.Shooter;
+import org.tahomarobotics.robot.shooter.commands.ShootCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
 import java.util.ArrayList;
@@ -24,6 +32,9 @@ import java.util.Optional;
 public class Autonomous extends SubsystemIF {
     private static final Autonomous INSTANCE = new Autonomous();
     private final Chassis chassis = Chassis.getInstance();
+    private final Collector collector = Collector.getInstance();
+    private final Shooter shooter = Shooter.getInstance();
+    private final AmpArm ampArm = AmpArm.getInstance();
     private final LoggedDashboardChooser<Command> autoChooser;
     private final Field2d fieldPose;
 
@@ -45,8 +56,30 @@ public class Autonomous extends SubsystemIF {
                 e -> new InstantCommand(() -> postAutoTrajectory(fieldPose, autoSub.get())).ignoringDisable(true).schedule()
         );
 
-        NamedCommands.registerCommand("ShootCommand", new InstantCommand(() -> System.out.println("========SHOOT COMMAND CALLED=========")));
-        NamedCommands.registerCommand("ResetOdom", new InstantCommand(() -> chassis.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.get().getName()))));
+        NamedCommands.registerCommand("ResetOdometry", Commands.runOnce(() -> chassis.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.get().getName()))));
+
+        NamedCommands.registerCommand("Shoot",
+                Commands.runOnce(shooter::toggleShootMode)
+                        .andThen(new ShootCommand()));
+
+        NamedCommands.registerCommand("CollectorDown",
+                Commands.runOnce(collector::toggleDeploy)
+                        .andThen(() -> collector.setCollectionState(Collector.CollectionState.COLLECTING)));
+
+        NamedCommands.registerCommand("CollectorUp",
+                Commands.runOnce(collector::toggleDeploy));
+
+        NamedCommands.registerCommand("AmpArmToScore",
+                Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.AMP)));
+
+        NamedCommands.registerCommand("AmpArmEject",
+                Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.SCORE))
+                        .andThen(Commands.waitSeconds(1))
+                        .andThen(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));
+
+        NamedCommands.registerCommand("AmpArmToStow",
+                Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.STOW))
+                        .andThen(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));
     }
 
     public Command getSelectedAuto() {

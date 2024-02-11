@@ -12,26 +12,22 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.PhotonUtils;
-import org.photonvision.targeting.MultiTargetPNPResult;
-import org.photonvision.targeting.PNPResult;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tahomarobotics.robot.OutputsConfiguration;
+import org.tahomarobotics.robot.util.ToggledOutputs;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 
-public class ATVision {
+public class ATVision implements ToggledOutputs {
     private static final Logger logger = LoggerFactory.getLogger(ATVision.class);
     private final PhotonCamera camera;
     private final AprilTagFieldLayout fieldLayout;
@@ -81,13 +77,13 @@ public class ATVision {
         org.littletonrobotics.junction.Logger.recordOutput("ATCamera/Photon Pose 2D Single", newRobotPose.toPose2d());
 
 
-//        addVisionMeasurement(new ATCameraResult(
-//                cameraSettings,
-//                timestampSeconds, // Photon vision timestamp
-//                newRobotPose.toPose2d(),
-//                distance,
-//                1
-//        ));
+        addVisionMeasurement(new ATCameraResult(
+                cameraSettings,
+                timestampSeconds, // Photon vision timestamp
+                newRobotPose.toPose2d(),
+                distance,
+                1
+        ));
     }
 
     /**
@@ -107,14 +103,12 @@ public class ATVision {
             }
         }
 
+        var multiRes = result.getMultiTagResult().estimatedPose;
+        if (multiRes.isPresent && multiRes.ambiguity < 0.2) {
+            Pose3d pose = new Pose3d(multiRes.best.getTranslation(), multiRes.best.getRotation()).plus(cameraSettings.offset.inverse());
 
-        if (result.getMultiTagResult().estimatedPose.isPresent) {
-            Pose3d pose = new Pose3d(result.getMultiTagResult().estimatedPose.best.getTranslation(), result.getMultiTagResult().estimatedPose.best.getRotation()).plus(cameraSettings.offset.inverse());
-
-            org.littletonrobotics.junction.Logger.recordOutput("ATCamera/Photon Pose 3D", pose);
-
-            org.littletonrobotics.junction.Logger.recordOutput("ATCamera/Photon Pose 2D Multi", pose.toPose2d());
-
+            recordOutput("ATCamera/Photon Pose 3D", pose);
+            recordOutput("ATCamera/Photon Pose 2D Multi", pose.toPose2d());
 
             double distances = 0;
             for (PhotonTrackedTarget target : validTargets) {
@@ -122,13 +116,13 @@ public class ATVision {
                 distances = Math.max(distances, Math.hypot(_pose.getX(), _pose.getY()));
             }
 
-//            addVisionMeasurement(new ATCameraResult(
-//                    cameraSettings,
-//                    result.getTimestampSeconds(), // Photon vision timestamp
-//                    pose.toPose2d(),
-//                    distances,
-//                    result.getMultiTagResult().fiducialIDsUsed.size()
-//            ));
+            addVisionMeasurement(new ATCameraResult(
+                    cameraSettings,
+                    result.getTimestampSeconds(), // Photon vision timestamp
+                    pose.toPose2d(),
+                    distances,
+                    result.getMultiTagResult().fiducialIDsUsed.size()
+            ));
         } else if (validTargets.size() == 1) {
             processSingleTarget(validTargets.get(0), result.getTimestampSeconds());
         }
@@ -162,8 +156,8 @@ public class ATVision {
         if (result.numTargets() > 1 && distanceToTargets < VisionConstants.TARGET_DISTANCE_THRESHOLD) {
             // Multi-tag PnP provides very trustworthy data
             var stds = VecBuilder.fill(
-                    0.01 * distanceToTargets,
-                    0.01 * distanceToTargets,
+                    0.1,
+                    0.1,
                     Units.degreesToRadians(30)
             );
 
@@ -197,6 +191,11 @@ public class ATVision {
 
     public String getName() {
         return cameraSettings.cameraName;
+    }
+
+    @Override
+    public boolean logOutputs() {
+        return OutputsConfiguration.AT_VISION;
     }
 
     public record ATCameraResult(VisionConstants.ATCamera camera, double timestamp, Pose2d poseMeters,

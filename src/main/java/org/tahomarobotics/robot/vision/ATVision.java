@@ -104,6 +104,7 @@ public class ATVision implements ToggledOutputs {
         }
 
         var multiRes = result.getMultiTagResult().estimatedPose;
+        recordOutput("ATCamera/Reprojection Error", multiRes.bestReprojErr);
         if (multiRes.isPresent && multiRes.ambiguity < 0.2) {
             Pose3d pose = new Pose3d(multiRes.best.getTranslation(), multiRes.best.getRotation()).plus(cameraSettings.offset.inverse());
 

@@ -51,6 +51,10 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
         inputs.angle = MathUtil.clamp(angle + (io.inShootingMode() ? biasAngle : 0), MIN_PIVOT_ANGLE, MAX_PIVOT_ANGLE);
     }
 
+    public double getAngle() {
+        return io.getAngle();
+    }
+
     public void biasUp() {
         biasAngle += BIAS_AMT;
     }

@@ -54,6 +54,8 @@ public class AmpArmCommands {
         Shooter shooter = Shooter.getInstance();
 
         FEEDFORWARD = () -> Commands.sequence(
+                Commands.runOnce(() -> shooter.setAngle(0)),
+                Commands.waitUntil(() -> (Math.abs(shooter.getAngle()) - 2 < 0)),
                 Commands.runOnce(() -> {
                     shooter.transferToAmp();
                     ampArm.setRollerState(AmpArm.RollerState.PASSING);
@@ -70,6 +72,8 @@ public class AmpArmCommands {
         ).onlyIf(ampArm::isStowed).onlyIf(indexer::hasCollected);
 
         FEEDBACK = () -> Commands.sequence(
+                Commands.runOnce(() -> shooter.setAngle(0)),
+                Commands.waitUntil(() -> (Math.abs(shooter.getAngle()) - 2 < 0)),
                 Commands.waitUntil(ampArm::isWristAtPosition),
                 Commands.runOnce(() -> {
                     shooter.reverseIntake();

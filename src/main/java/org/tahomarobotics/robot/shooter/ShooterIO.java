@@ -162,7 +162,7 @@ class ShooterIO implements ToggledOutputs {
     }
 
     void refreshSignals() {
-        BaseStatusSignal.refreshAll(pivotVelocity, pivotVelocity, shooterVelocity);
+        BaseStatusSignal.refreshAll(pivotPosition, pivotVelocity, shooterVelocity);
     }
 
     @Override

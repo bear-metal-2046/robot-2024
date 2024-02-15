@@ -178,7 +178,7 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
 
     @Override
     public void periodic() {
-        BaseStatusSignal.refreshAll(deployPositionLeft, deployPositionRight, collectVelocity);
+        BaseStatusSignal.refreshAll(deployPositionLeft, deployPositionRight, collectVelocity, deployVelocity);
 
         recordOutput("Collector/Deploy State", deploymentState);
         recordOutput("Collector/Collection State", collectionState);

@@ -15,8 +15,8 @@ public class ShooterConstants {
     public static final double TRANSFER_VELOCITY = 10; // rps
 
     static final double SHOOTER_SPEED_TOLERANCE = 0.25; // rps
-    static final double MAX_PIVOT_ANGLE = 0.14;
-    static final double MIN_PIVOT_ANGLE = 0.01;
+    public static final double MAX_PIVOT_ANGLE = 0.14;
+    public static final double MIN_PIVOT_ANGLE = 0.01;
     static final double PIVOT_ANGLE_TOLERANCE = 0.0025;
     public static final double SHOOTER_COLLECT_PIVOT_ANGLE = MIN_PIVOT_ANGLE;
 

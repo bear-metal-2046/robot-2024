@@ -93,6 +93,10 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
         return io.rotToSpeaker();
     }
 
+    public boolean isAtAngle() {
+        return io.isAtAngle();
+    }
+
     public double angleToSpeaker() {
         return io.angleToSpeaker();
     }

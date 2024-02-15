@@ -157,9 +157,9 @@ public class ATVision implements ToggledOutputs {
         if (result.numTargets() > 1 && distanceToTargets < VisionConstants.TARGET_DISTANCE_THRESHOLD) {
             // Multi-tag PnP provides very trustworthy data
             var stds = VecBuilder.fill(
-                    0.1,
-                    0.1,
-                    Units.degreesToRadians(30)
+                    0.1397333333,
+                    0.1354,
+                    Units.degreesToRadians(1.372694632)
             );
 
             synchronized (poseEstimator) {

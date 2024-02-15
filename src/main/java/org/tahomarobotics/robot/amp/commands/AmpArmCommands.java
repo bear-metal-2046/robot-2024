@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.shooter.Shooter;
+import org.tahomarobotics.robot.shooter.ShooterConstants;
 
 import java.util.Set;
 import java.util.function.Supplier;
@@ -54,8 +55,8 @@ public class AmpArmCommands {
         Shooter shooter = Shooter.getInstance();
 
         FEEDFORWARD = () -> Commands.sequence(
-                Commands.runOnce(() -> shooter.setAngle(0)),
-                Commands.waitUntil(() -> (Math.abs(shooter.getAngle()) - 2 < 0)),
+                Commands.runOnce(() -> shooter.setAngle(ShooterConstants.MIN_PIVOT_ANGLE)),
+                Commands.waitUntil(shooter::isAtAngle),
                 Commands.runOnce(() -> {
                     shooter.transferToAmp();
                     ampArm.setRollerState(AmpArm.RollerState.PASSING);
@@ -72,8 +73,8 @@ public class AmpArmCommands {
         ).onlyIf(ampArm::isStowed).onlyIf(indexer::hasCollected);
 
         FEEDBACK = () -> Commands.sequence(
-                Commands.runOnce(() -> shooter.setAngle(0)),
-                Commands.waitUntil(() -> (Math.abs(shooter.getAngle()) - 2 < 0)),
+                Commands.runOnce(() -> shooter.setAngle(ShooterConstants.MIN_PIVOT_ANGLE)),
+                Commands.waitUntil(shooter::isAtAngle),
                 Commands.waitUntil(ampArm::isWristAtPosition),
                 Commands.runOnce(() -> {
                     shooter.reverseIntake();

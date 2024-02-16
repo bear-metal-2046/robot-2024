@@ -77,7 +77,9 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
         return io.getShooterVelocity();
     }
 
-    private double getPivotPosition() {
+    private double
+
+    getPivotPosition() {
         return io.getPivotPosition();
     }
 
@@ -89,16 +91,12 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
         return io.inShootingMode();
     }
 
-    public double rotToSpeaker() {
-        return io.rotToSpeaker();
-    }
-
     public boolean isAtAngle() {
         return io.isAtAngle();
     }
 
-    public double angleToSpeaker() {
-        return io.angleToSpeaker();
+    public void angleToSpeaker(double radialComponent) {
+        io.angleToSpeaker(radialComponent);
     }
 
     // PERIODIC

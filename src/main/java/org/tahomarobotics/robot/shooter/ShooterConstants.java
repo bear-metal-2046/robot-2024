@@ -14,7 +14,12 @@ public class ShooterConstants {
     public static final double SHOOTER_SPEED = 100; // rps
     public static final double TRANSFER_VELOCITY = 10; // rps
 
-    static final double SHOOTER_SPEED_TOLERANCE = 0.25; // rps
+    // w * radius * 0.8 fudge factor
+    public static final double SHOT_SPEED = Units.inchesToMeters(Units.rotationsToRadians(ShooterConstants.SHOOTER_SPEED) * (1.75)) * 0.8; // meters/sec
+    public static final double TIME_SHOT_OFFSET = 0.5;
+
+
+    static final double SHOOTER_SPEED_TOLERANCE = 20; // rps
     public static final double MAX_PIVOT_ANGLE = 0.14;
     public static final double MIN_PIVOT_ANGLE = 0.01;
     static final double PIVOT_ANGLE_TOLERANCE = 0.0025;

@@ -7,6 +7,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Timer;
 import org.littletonrobotics.junction.AutoLog;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.OutputsConfiguration;
@@ -38,6 +39,8 @@ class ShooterIO implements ToggledOutputs {
 
     protected double angle = 0.0;
     protected double distance = 0.0;
+    protected double prevRadVelocity = 0;
+    protected double prevTime = 0;
 
     private boolean shootingMode = false;
 
@@ -93,16 +96,26 @@ class ShooterIO implements ToggledOutputs {
         return shootingMode;
     }
 
-    double rotToSpeaker() {
-        return Chassis.getInstance().getPose().getTranslation()
-                .minus(SPEAKER_TARGET_POSITION.get()).getAngle().getRadians();
-    }
+    void angleToSpeaker(double radialComponent) {
 
-    double angleToSpeaker() {
+        double currentTime = Timer.getFPGATimestamp();
+        double elapsedTime = currentTime - prevTime;
+
+        double acc = (radialComponent - prevRadVelocity) / elapsedTime;
+
         Translation2d target = SPEAKER_TARGET_POSITION.get();
         distance = Chassis.getInstance().getPose().getTranslation().getDistance(target) + SHOOTER_PIVOT_OFFSET.getX();
 
-        return  0.04875446 + (0.201136 - 0.04875446)/(1 + Math.pow((distance/2.019404), 2.137465));
+
+        // This was for tying to compensate for the shooter being off when moving back and forth,
+        // but it turns out that the shooter is lagging behind the commands angle, so no matter how
+        // much time we try compensate, its always going to lag behind.
+        distance = (0.5 * acc * TIME_SHOT_OFFSET * TIME_SHOT_OFFSET) + (radialComponent * TIME_SHOT_OFFSET) + distance;
+
+        prevTime = currentTime;
+        prevRadVelocity = radialComponent;
+
+        setShooterAngle(0.04875446 + (0.201136 - 0.04875446)/(1 + Math.pow((distance/2.019404), 2.137465)));
     }
 
     // SETTERS

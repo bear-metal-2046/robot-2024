@@ -11,7 +11,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -230,7 +229,7 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
         }
 
         if (Shooter.getInstance().inShootingMode()) {
-            aimToShooter(velocity);
+            aimToSpeaker(velocity);
         }
 
         velocity = ChassisSpeeds.discretize(velocity, Robot.defaultPeriodSecs);
@@ -244,7 +243,7 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
         velocity = ChassisSpeeds.discretize(velocity, Robot.defaultPeriodSecs);
 
         if (Shooter.getInstance().inShootingMode()) {
-            aimToShooter(velocity);
+            aimToSpeaker(velocity);
         }
 
         var swerveModuleStates = kinematics.toSwerveModuleStates(velocity);
@@ -254,14 +253,12 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
 
     // SETTERS
 
-    public void aimToShooter(ChassisSpeeds speeds) {
+    public void aimToSpeaker(ChassisSpeeds speeds) {
+
         //
         // Based off of 2022 Cheesy Poof shooting utils
         // https://github.com/Team254/FRC-2022-Public/blob/6a24236b37f0fcb75ceb9d5dec767be58ea903c0/src/main/java/com/team254/frc2022/shooting/ShootingUtil.java#L26
         //
-
-        // w * radius * 0.8 fudge factor
-        var shotSpeed = Units.inchesToMeters(Units.rotationsToRadians(ShooterConstants.SHOOTER_SPEED) * (1.75)) * 0.8; // meters/sec
 
         var pose = getPose();
         var goal = SPEAKER_TARGET_POSITION.get();
@@ -275,16 +272,19 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
         // X component is towards/from goal, Y component is tangential to goal
         var curSpeeds = getCurrentChassisSpeeds();
         var speedsTranslation = new Translation2d(curSpeeds.vxMetersPerSecond, curSpeeds.vyMetersPerSecond);
-        var speedsToGoal = speedsTranslation.rotateBy(robotToGoal.getAngle().unaryMinus());
-        var tangentialComponent = speedsToGoal.getY();
 
-        // TODO: use x component of speedsToGoal to adjust vertical shooter angle
+        var speedsToGoal = speedsTranslation.rotateBy(robotToGoal.getAngle().unaryMinus());
+
+        double tangentialComponent = speedsToGoal.getY();
+        double radialComponent = speedsToGoal.getX();
+
+        // Shooter angle speed compensation
+        Shooter.getInstance().angleToSpeaker(radialComponent);
 
         // Calculate position and velocity adjustment
-        double adj = Math.atan2(-tangentialComponent, shotSpeed);
+        double adj = Math.atan2(-tangentialComponent, ShooterConstants.SHOT_SPEED);
         double adjSpeed = tangentialComponent / goalDis;
 
-        // TODO: Why is this needed? I would expect the above code to work fine on both alliances without
         // modifiers
         if (DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Red) {
             adj *= -1;

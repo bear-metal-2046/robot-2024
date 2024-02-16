@@ -253,7 +253,7 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
 
     // SETTERS
 
-    public void aimToSpeaker(ChassisSpeeds speeds) {
+    private void aimToSpeaker(ChassisSpeeds speeds) {
 
         //
         // Based off of 2022 Cheesy Poof shooting utils

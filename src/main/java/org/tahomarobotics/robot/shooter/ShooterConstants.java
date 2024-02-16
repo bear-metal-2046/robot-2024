@@ -11,11 +11,11 @@ import edu.wpi.first.wpilibj.DriverStation;
 import java.util.function.Supplier;
 
 public class ShooterConstants {
-    public static final double SHOOTER_SPEED = 100; // rps
+    public static final double SHOOTER_SPEED = 4500 / 60d; // rps
     public static final double TRANSFER_VELOCITY = 10; // rps
 
-    // w * radius * 0.8 fudge factor
-    public static final double SHOT_SPEED = Units.inchesToMeters(Units.rotationsToRadians(ShooterConstants.SHOOTER_SPEED) * (1.75)) * 0.8; // meters/sec
+    // w * radius * 0.5 fudge factor
+    public static final double SHOT_SPEED = Units.inchesToMeters(Units.rotationsToRadians(ShooterConstants.SHOOTER_SPEED) * (1.75)) * 0.5; // meters/sec
     public static final double TIME_SHOT_OFFSET = 0.5;
 
 

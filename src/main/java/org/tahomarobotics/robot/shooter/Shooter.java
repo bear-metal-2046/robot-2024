@@ -81,9 +81,7 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
         return io.getShooterVelocity();
     }
 
-    private double
-
-    getPivotPosition() {
+    private double getPivotPosition() {
         return io.getPivotPosition();
     }
 

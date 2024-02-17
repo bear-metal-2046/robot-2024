@@ -26,6 +26,8 @@ import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.util.CalibrationData;
 import org.tahomarobotics.robot.util.SubsystemIF;
 import org.tahomarobotics.robot.util.ToggledOutputs;
+import org.tahomarobotics.robot.vision.ATVision;
+import org.tahomarobotics.robot.vision.VisionConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -176,7 +178,7 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
         modules.forEach(SwerveModule::periodic);
         Pose2d pose = getPose();
 
-        recordOutput("Chassis/State", getSwerveModuleStates());
+        recordOutput("Chassis/States", getSwerveModuleStates());
         recordOutput("Chassis/DesiredState", getCurrentChassisSpeeds());
         recordOutput("Chassis/CurrentChassisSpeeds", getCurrentChassisSpeeds());
         recordOutput("Chassis/Gyro/Yaw", getYaw());
@@ -259,7 +261,7 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
         Shooter.getInstance().angleToSpeaker(radialComponent);
 
         // Calculate position and velocity adjustment
-        double adj = Math.atan2(-tangentialComponent, ShooterConstants.SHOT_SPEED);
+        double adj = Math.atan2(-tangentialComponent, ShooterConstants.SHOT_SPEED + radialComponent);
         double adjSpeed = tangentialComponent / goalDis;
 
         // modifiers

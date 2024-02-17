@@ -159,7 +159,7 @@ public class ATVision implements ToggledOutputs {
             var stds = VecBuilder.fill(
                     0.07307,
                     0.1354,
-                    Units.degreesToRadians(1.372694632)
+                    Units.degreesToRadians(13.72694632)
             );
 
             synchronized (poseEstimator) {

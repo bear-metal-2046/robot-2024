@@ -78,7 +78,9 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
                 new SwerveModule(RobotMap.BACK_RIGHT_MOD, angularOffsets[3])
         );
 
-        kinematics = new SwerveDriveKinematics(
+        kinematics = new NapCorrectingKinematics(
+                this::getYaw,
+                this::getPose,
                 modules.stream()
                     .map(SwerveModule::getTranslationOffset)
                     .toArray(Translation2d[]::new)

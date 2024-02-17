@@ -14,6 +14,7 @@ import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.chassis.Chassis;
+import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.ToggledOutputs;
 
@@ -135,7 +136,7 @@ class ShooterIO implements ToggledOutputs {
     void toggleShootMode() {
         if (shootingMode) {
             disable();
-        } else /*if (Indexer.getInstance().hasCollected())*/{
+        } else if (Indexer.getInstance().hasCollected()){
             enable();
         }
     }

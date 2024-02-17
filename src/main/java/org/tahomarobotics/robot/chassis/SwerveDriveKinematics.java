@@ -4,18 +4,16 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
-import org.ejml.simple.SimpleMatrix;
 
 import java.util.function.Supplier;
 
 public class SwerveDriveKinematics extends edu.wpi.first.math.kinematics.SwerveDriveKinematics {
 
 
-    double posX = 0.95;
-    double negX = 1;
+    double posX = 1;
+    static final double negX = 1.09;//0.95;
     double posY = 1;
-    double negY = 1;
+    static final double negY = 1.09;//1.098;
     Supplier<Rotation2d> gyroSupplier;
 
     public SwerveDriveKinematics(Supplier<Rotation2d> gyroSupplier, Translation2d... moduleTranslationsMeters) {

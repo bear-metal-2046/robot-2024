@@ -7,6 +7,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Timer;
 import org.littletonrobotics.junction.AutoLog;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.OutputsConfiguration;
@@ -30,6 +31,7 @@ class ShooterIO implements ToggledOutputs {
     private final StatusSignal<Double> shooterVelocity;
     private final StatusSignal<Double> pivotPosition;
     private final StatusSignal<Double> pivotVelocity;
+    private final StatusSignal<Double> motorVoltage;
 
     private final MotionMagicVoltage pivotPositionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage motorVelocity = new MotionMagicVelocityVoltage(SHOOTER_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
@@ -37,7 +39,6 @@ class ShooterIO implements ToggledOutputs {
     private final MotionMagicVelocityVoltage reverseIntakeVelocity = new MotionMagicVelocityVoltage(-TRANSFER_VELOCITY).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
 
     protected double angle = 0.0;
-    protected double distance = 0.0;
 
     private boolean shootingMode = false;
 
@@ -60,9 +61,10 @@ class ShooterIO implements ToggledOutputs {
         shooterVelocity = shooterMotor.getVelocity();
         pivotPosition = pivotMotor.getPosition();
         pivotVelocity = pivotMotor.getVelocity();
+        motorVoltage = shooterMotor.getMotorVoltage();
 
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY,
-                shooterVelocity, pivotPosition, pivotVelocity
+                shooterVelocity, pivotPosition, pivotVelocity, motorVoltage
         );
         ParentDevice.optimizeBusUtilizationForAll(pivotMotor, shooterMotorFollower, shooterMotor);
     }
@@ -93,18 +95,6 @@ class ShooterIO implements ToggledOutputs {
         return shootingMode;
     }
 
-    double rotToSpeaker() {
-        return Chassis.getInstance().getPose().getTranslation()
-                .minus(SPEAKER_TARGET_POSITION.get()).getAngle().getRadians();
-    }
-
-    double angleToSpeaker() {
-        Translation2d target = SPEAKER_TARGET_POSITION.get();
-        distance = Chassis.getInstance().getPose().getTranslation().getDistance(target) + SHOOTER_PIVOT_OFFSET.getX();
-
-        return  0.04875446 + (0.201136 - 0.04875446)/(1 + Math.pow((distance/2.019404), 2.137465));
-    }
-
     // SETTERS
 
     void setShooterAngle(double angle) {
@@ -113,10 +103,6 @@ class ShooterIO implements ToggledOutputs {
         recordOutput("Shooter/Target Angle", angle);
 
         pivotMotor.setControl(pivotPositionControl.withPosition(angle));
-    }
-
-    double getDistance() {
-        return distance;
     }
 
     void zero() { pivotMotor.setPosition(0.0); }

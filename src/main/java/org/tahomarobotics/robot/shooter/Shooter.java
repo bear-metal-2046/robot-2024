@@ -1,9 +1,12 @@
 package org.tahomarobotics.robot.shooter;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Timer;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.RobotConfiguration;
+import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.util.SubsystemIF;
 import org.tahomarobotics.robot.util.ToggledOutputs;
 
@@ -17,6 +20,7 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
     private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
     private double biasAngle = 0.0;
+    protected double distance = 0.0;
     // CONSTRUCTOR
 
     private Shooter() {
@@ -89,16 +93,20 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
         return io.inShootingMode();
     }
 
-    public double rotToSpeaker() {
-        return io.rotToSpeaker();
-    }
-
     public boolean isAtAngle() {
         return io.isAtAngle();
     }
 
-    public double angleToSpeaker() {
-        return io.angleToSpeaker();
+    public void angleToSpeaker(double radialVelocity) {
+
+        Translation2d target = SPEAKER_TARGET_POSITION.get();
+        distance = Chassis.getInstance().getPose().getTranslation().getDistance(target) + SHOOTER_PIVOT_OFFSET.getX();
+
+        recordOutput("Shooter/Target Angle Before Compensation", 0.04875446 + (0.201136 - 0.04875446)/(1 + Math.pow((distance/2.019404), 2.137465)));
+
+        distance = (radialVelocity * TIME_SHOT_OFFSET) + distance;
+
+        setAngle(0.04875446 + (0.201136 - 0.04875446)/(1 + Math.pow((distance/2.019404), 2.137465)) + 0.002);
     }
 
     // PERIODIC
@@ -111,7 +119,7 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
         Logger.processInputs("Shooter", inputs);
 
         recordOutput("Shooter/Bias", biasAngle);
-        recordOutput("Shooter/Distance", io.getDistance());
+        recordOutput("Shooter/Distance", distance);
         recordOutput("Shooter/Velocity", getShooterVelocity());
         recordOutput("Shooter/Angle", getPivotPosition());
         recordOutput("Shooter/Angle (Degrees)", getPivotPosition() * 360);

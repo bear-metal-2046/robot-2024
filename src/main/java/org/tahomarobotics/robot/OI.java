@@ -17,7 +17,6 @@ import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.indexer.commands.IndexerDefaultCommand;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.commands.ShootCommand;
-import org.tahomarobotics.robot.shooter.commands.ShooterDefaultCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
 import static org.tahomarobotics.robot.amp.commands.AmpArmCommands.AMP_ARM_CTRL;
@@ -104,8 +103,6 @@ public class OI extends SubsystemIF {
         ));
 
         Indexer.getInstance().setDefaultCommand(new IndexerDefaultCommand());
-
-        Shooter.getInstance().setDefaultCommand(new ShooterDefaultCommand());
     }
 
     private static double deadband(double value, double deadZone) {

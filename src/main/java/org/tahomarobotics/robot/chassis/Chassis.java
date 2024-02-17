@@ -2,12 +2,11 @@ package org.tahomarobotics.robot.chassis;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -23,12 +22,17 @@ import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.chassis.commands.AlignSwerveCommand;
 import org.tahomarobotics.robot.shooter.Shooter;
+import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.util.CalibrationData;
 import org.tahomarobotics.robot.util.SubsystemIF;
 import org.tahomarobotics.robot.util.ToggledOutputs;
+import org.tahomarobotics.robot.vision.ATVision;
+import org.tahomarobotics.robot.vision.VisionConstants;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.tahomarobotics.robot.shooter.ShooterConstants.SPEAKER_TARGET_POSITION;
 
 public class Chassis extends SubsystemIF implements ToggledOutputs {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Chassis.class);
@@ -46,9 +50,7 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
 
     private final CalibrationData<Double[]> swerveCalibration;
 
-    //private final ATVision backATVision;
-    //private final ATVision leftATVision;
-    //private final ATVision rightATVision;
+    private final ATVision backATVision;
 
     private final Thread odometryThread;
 
@@ -94,9 +96,8 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
         odometryThread = new Thread(Robot.isReal() ? this::odometryThread : this::simulatedOdometryThread);
         odometryThread.start();
 
-        //backATVision = new ATVision(VisionConstants.ATCamera.BACK, fieldPose, poseEstimator);
-        //leftATVision = new ATVision(VisionConstants.ATCamera.LEFT, fieldPose, poseEstimator);
-        //rightATVision = new ATVision(VisionConstants.ATCamera.RIGHT, fieldPose, poseEstimator);
+
+        backATVision = new ATVision(VisionConstants.ATCamera.BACK, fieldPose, poseEstimator);
     }
 
     public static Chassis getInstance() {
@@ -177,7 +178,7 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
         modules.forEach(SwerveModule::periodic);
         Pose2d pose = getPose();
 
-        recordOutput("Chassis/State", getSwerveModuleStates());
+        recordOutput("Chassis/States", getSwerveModuleStates());
         recordOutput("Chassis/DesiredState", getCurrentChassisSpeeds());
         recordOutput("Chassis/CurrentChassisSpeeds", getCurrentChassisSpeeds());
         recordOutput("Chassis/Gyro/Yaw", getYaw());
@@ -207,7 +208,7 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
         }
 
         if (Shooter.getInstance().inShootingMode()) {
-            aimToShooter(velocity);
+            aimToSpeaker(velocity);
         }
 
         velocity = ChassisSpeeds.discretize(velocity, Robot.defaultPeriodSecs);
@@ -221,7 +222,7 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
         velocity = ChassisSpeeds.discretize(velocity, Robot.defaultPeriodSecs);
 
         if (Shooter.getInstance().inShootingMode()) {
-            aimToShooter(velocity);
+            aimToSpeaker(velocity);
         }
 
         var swerveModuleStates = kinematics.toSwerveModuleStates(velocity);
@@ -231,12 +232,51 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
 
     // SETTERS
 
-    public void aimToShooter(ChassisSpeeds speeds) {
+    private void aimToSpeaker(ChassisSpeeds speeds) {
+
+        //
+        // Based off of 2022 Cheesy Poof shooting utils
+        // https://github.com/Team254/FRC-2022-Public/blob/6a24236b37f0fcb75ceb9d5dec767be58ea903c0/src/main/java/com/team254/frc2022/shooting/ShootingUtil.java#L26
+        //
+
+        var pose = getPose();
+        var goal = SPEAKER_TARGET_POSITION.get();
+
+        // Get polar coordinates (theta + distance) from robot to goal
+        var robotToGoal = goal.minus(pose.getTranslation());
+        var goalRot = MathUtil.angleModulus(robotToGoal.getAngle().getRadians() + Math.PI);
+        var goalDis = robotToGoal.getNorm();
+
+        // Get robot speed relative to angle from robot to goal
+        // X component is towards/from goal, Y component is tangential to goal
+        var curSpeeds = getCurrentChassisSpeeds();
+        var speedsTranslation = new Translation2d(curSpeeds.vxMetersPerSecond, curSpeeds.vyMetersPerSecond);
+
+        var speedsToGoal = speedsTranslation.rotateBy(robotToGoal.getAngle().unaryMinus());
+
+        double tangentialComponent = speedsToGoal.getY();
+        double radialComponent = speedsToGoal.getX();
+
+        // Shooter angle speed compensation
+        Shooter.getInstance().angleToSpeaker(radialComponent);
+
+        // Calculate position and velocity adjustment
+        double adj = Math.atan2(-tangentialComponent, ShooterConstants.SHOT_SPEED + radialComponent);
+        double adjSpeed = tangentialComponent / goalDis;
+
+        // modifiers
+        if (DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Red) {
+            adj *= -1;
+            adjSpeed *= -1;
+        }
+
+        fieldPose.getObject("goal").setPose(new Pose2d(goal, new Rotation2d()));
+
         speeds.omegaRadiansPerSecond =
                 shootModeController.calculate(
-                        getPose().getRotation().getRadians(),
-                        Shooter.getInstance().rotToSpeaker()
-                );
+                        pose.getRotation().getRadians(),
+                        goalRot + adj
+                ) - adjSpeed;
     }
 
     private void setSwerveStates(SwerveModuleState[] states) {

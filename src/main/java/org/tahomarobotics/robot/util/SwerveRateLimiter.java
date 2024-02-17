@@ -22,6 +22,7 @@ package org.tahomarobotics.robot.util;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.util.WPIUtilJNI;
+import edu.wpi.first.wpilibj.Timer;
 
 public class SwerveRateLimiter {
 
@@ -50,7 +51,7 @@ public class SwerveRateLimiter {
             return output;
         }
         // calculate elapsed time
-        double currentTime = WPIUtilJNI.now() * 1e-6;
+        double currentTime = Timer.getFPGATimestamp();
         double elapsedTime = currentTime - previousTime;
         previousTime = currentTime;
 

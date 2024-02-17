@@ -11,12 +11,16 @@ import edu.wpi.first.wpilibj.DriverStation;
 import java.util.function.Supplier;
 
 public class ShooterConstants {
-    static final double SHOOTER_SPEED = 100; // rps
+    public static final double SHOOTER_SPEED = 4500 / 60d; // rps
     public static final double TRANSFER_VELOCITY = 10; // rps
 
-    static final double SHOOTER_SPEED_TOLERANCE = 0.25; // rps
-    static final double MAX_PIVOT_ANGLE = 0.14;
-    static final double MIN_PIVOT_ANGLE = 0.01;
+    public static final double SHOT_SPEED = Units.inchesToMeters(Units.rotationsToRadians(ShooterConstants.SHOOTER_SPEED) * (1.75)) * 0.5; // meters/sec
+    public static final double TIME_SHOT_OFFSET = 0.5;
+
+
+    static final double SHOOTER_SPEED_TOLERANCE = 20; // rps
+    public static final double MAX_PIVOT_ANGLE = 0.14;
+    public static final double MIN_PIVOT_ANGLE = 0.01;
     static final double PIVOT_ANGLE_TOLERANCE = 0.0025;
     public static final double SHOOTER_COLLECT_PIVOT_ANGLE = MIN_PIVOT_ANGLE;
 
@@ -24,13 +28,13 @@ public class ShooterConstants {
 
     static final double BIAS_AMT = Units.degreesToRotations(5) / 50;
 
-    static final Translation2d SHOOTER_PIVOT_OFFSET = new Translation2d(0.1238, 0.1899);
+    public static final Translation2d SHOOTER_PIVOT_OFFSET = new Translation2d(0.1238, 0.1899);
     private static final double SPEAKER_HEIGHT = Units.inchesToMeters(80);
     static final double SPEAKER_HEIGHT_DIFF = SPEAKER_HEIGHT - SHOOTER_PIVOT_OFFSET.getY();
 
     private static final Translation2d RED_SPEAKER_TARGET_POSITION = new Translation2d(16.53, 5.55);
     private static final Translation2d BLUE_SPEAKER_TARGET_POSITION = new Translation2d(0, 5.55);
-    static final Supplier<Translation2d> SPEAKER_TARGET_POSITION = () ->
+    public static final Supplier<Translation2d> SPEAKER_TARGET_POSITION = () ->
             DriverStation
                     .getAlliance()
                     .filter(a -> a == DriverStation.Alliance.Blue)

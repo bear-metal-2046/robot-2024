@@ -6,6 +6,7 @@
 package org.tahomarobotics.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.IterativeRobotBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -22,6 +23,7 @@ import org.tahomarobotics.robot.identity.RobotIdentity;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.util.BuildConstants;
+import org.tahomarobotics.robot.util.FauxWatchdog;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
 import java.nio.file.Path;
@@ -33,6 +35,11 @@ public class Robot extends LoggedRobot {
 
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final List<SubsystemIF> subsystems = new ArrayList<>();
+
+    public Robot() {
+        disableWatchdog(this, IterativeRobotBase.class);
+        disableWatchdog(CommandScheduler.getInstance(), CommandScheduler.class);
+    }
 
     @Override
     public void robotInit() {
@@ -85,6 +92,15 @@ public class Robot extends LoggedRobot {
 
         // Start the logger, any subsequent Logger configuration is not allowed.
         Logger.start();
+    }
+
+    <T> void disableWatchdog(T inst, Class<?> clazz) {
+        try {
+            var field = clazz.getDeclaredField("m_watchdog");
+            field.setAccessible(true);
+            field.set(inst, new FauxWatchdog());
+            logger.info("Disabled " + inst.getClass() + "'s watchdog!");
+        } catch (NoSuchFieldException | IllegalAccessException ignored) {}
     }
     
     

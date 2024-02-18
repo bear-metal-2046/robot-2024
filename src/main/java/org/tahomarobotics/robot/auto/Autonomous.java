@@ -63,7 +63,7 @@ public class Autonomous extends SubsystemIF {
         );
 
         NamedCommands.registerCommand("Shoot",
-                Commands.runOnce(shooter::enable)
+                Commands.waitUntil(indexer::hasCollected).andThen(Commands.runOnce(shooter::enable))
                 .andThen(new ShootCommand()));
 
         NamedCommands.registerCommand("CollectorDown", Commands.runOnce(collector::setDeployed)

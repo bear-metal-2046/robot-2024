@@ -9,11 +9,8 @@ import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.wpilibj.RobotState;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.OutputsConfiguration;
-import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.collector.commands.ZeroCollectorCommand;
@@ -98,10 +95,6 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
         return collectVelocity.getValue();
     }
 
-    public boolean isZeroed() {
-        return isZeroed;
-    }
-
 
     // DEPLOYMENT CONTROL
 
@@ -175,6 +168,7 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
     public boolean isCollecting() {
         return collectionState == CollectionState.COLLECTING;
     }
+
     public boolean isEjecting() {
         return collectionState == CollectionState.EJECTING;
     }
@@ -205,8 +199,14 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
         isZeroed = true;
     }
 
-    private void executeTeleOp() {
+    public boolean isZeroed() {
+        return isZeroed;
+    }
 
+
+    //STATE MACHINES
+
+    private void teleopStateMachine() {
         switch (getCollectionState()) {
             case DISABLED -> {
                 stopCollect();
@@ -236,7 +236,7 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
         }
     }
 
-    private void executeAuto() {
+    private void autoStateMachine() {
         switch (getCollectionState()) {
             case DISABLED -> {
                 stopCollect();
@@ -265,9 +265,9 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
         recordOutput("Collector/Collect Velocity", collectVelocity.getValue());
 
         if (RobotState.isAutonomous()) {
-            executeAuto();
+            autoStateMachine();
         } else {
-            executeTeleOp();
+            teleopStateMachine();
         }
     }
 

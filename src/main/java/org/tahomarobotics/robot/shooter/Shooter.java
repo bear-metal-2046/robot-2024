@@ -2,7 +2,6 @@ package org.tahomarobotics.robot.shooter;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.Timer;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.RobotConfiguration;
@@ -135,10 +134,10 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
         Logger.processInputs("Shooter", inputs);
 
         recordOutput("Shooter/Bias", biasAngle);
-        recordOutput("Shooter/Distance", distance);
-        recordOutput("Shooter/isAtAngle", isAtAngle());
-        recordOutput("Shooter/isSpinningGood", isSpinningAtVelocity());
-        recordOutput("Shooter/In Shooting Mode", inShootingMode());
+        recordOutput("Shooter/Distance To Speaker", distance);
+        recordOutput("Shooter/Is at Angle", isAtAngle());
+        recordOutput("Shooter/Is Spinning At velocity", isSpinningAtVelocity());
+        recordOutput("Shooter/Is In Shooting Mode", inShootingMode());
         recordOutput("Shooter/Velocity", getShooterVelocity());
         recordOutput("Shooter/Angle", getPivotPosition());
         recordOutput("Shooter/Angle (Degrees)", getPivotPosition() * 360);

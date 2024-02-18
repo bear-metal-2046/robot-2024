@@ -14,18 +14,16 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.amp.AmpArm;
-import org.tahomarobotics.robot.amp.commands.AmpArmCommands;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.collector.commands.ZeroCollectorCommand;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.shooter.Shooter;
-import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.shooter.commands.ShootCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
@@ -36,6 +34,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class Autonomous extends SubsystemIF {
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Autonomous.class);
     private static final Autonomous INSTANCE = new Autonomous();
     private final Chassis chassis = Chassis.getInstance();
     private final Collector collector = Collector.getInstance();
@@ -136,6 +135,7 @@ public class Autonomous extends SubsystemIF {
 
     public void postAutoTrajectory(Field2d field, String autoName) {
         if (!new File(Filesystem.getDeployDirectory(), "pathplanner/autos/" + autoName + ".auto").exists()) {
+            logger.error("Auto file with the name: " + autoName + " was not found");
             return;
         }
         var autoPaths = PathPlannerAuto.getPathGroupFromAutoFile(autoName);

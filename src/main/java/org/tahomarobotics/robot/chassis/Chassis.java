@@ -6,7 +6,9 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -61,7 +63,7 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
 
     private final PIDController shootModeController;
 
-    private double targetAngle;
+    private double targetShootingAngle;
 
     // CONSTRUCTOR
 
@@ -188,7 +190,7 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
         recordOutput("Chassis/Gyro/Yaw", getYaw());
         recordOutput("Chassis/Pose", pose);
         recordOutput("Chassis/isAtShootingAngle", isReadyToShoot());
-        recordOutput("Chassis/target shooting angle", targetAngle);
+        recordOutput("Chassis/target shooting angle", targetShootingAngle);
 
         fieldPose.setRobotPose(pose);
         SmartDashboard.putData(fieldPose);
@@ -271,14 +273,14 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
             adjSpeed *= -1;
         }
 
-        targetAngle = goalRot + adj;
+        targetShootingAngle = goalRot + adj;
 
         fieldPose.getObject("goal").setPose(new Pose2d(goal, new Rotation2d()));
 
         speeds.omegaRadiansPerSecond =
                 shootModeController.calculate(
                         pose.getRotation().getRadians(),
-                        targetAngle
+                        targetShootingAngle
                 ) - adjSpeed;
     }
 

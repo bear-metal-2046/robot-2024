@@ -6,8 +6,6 @@ import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.Timer;
 import org.littletonrobotics.junction.AutoLog;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.OutputsConfiguration;
@@ -141,12 +139,12 @@ class ShooterIO implements ToggledOutputs {
         }
     }
 
-    void disableShootMode() {
-        shootingMode = false;
-    }
-
     void enableShootMode() {
         shootingMode = true;
+    }
+
+    void disableShootMode() {
+        shootingMode = false;
     }
 
     // INPUTS

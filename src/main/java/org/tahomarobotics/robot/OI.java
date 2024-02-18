@@ -12,7 +12,6 @@ import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.chassis.commands.TeleopDriveCommand;
 import org.tahomarobotics.robot.collector.Collector;
-import org.tahomarobotics.robot.collector.commands.CollectorDefaultCommand;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.indexer.commands.IndexerDefaultCommand;
 import org.tahomarobotics.robot.shooter.Shooter;
@@ -84,6 +83,14 @@ public class OI extends SubsystemIF {
                 .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED))
                 .onlyIf(ampArm::isSource))
                 .onFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.COLLECTED)));
+
+        driveController.leftTrigger(0.5)
+                .onTrue(Commands.runOnce(() -> collector.setIsCollecting(true)))
+                .onFalse(Commands.runOnce(() -> collector.setIsCollecting(false)));
+
+        driveController.povLeft()
+                .onTrue(Commands.runOnce(() -> collector.setIsEjecting(true)))
+                .onFalse(Commands.runOnce(() -> collector.setIsEjecting(false)));
     }
 
     private void setDefaultCommands() {
@@ -92,13 +99,6 @@ public class OI extends SubsystemIF {
                     inputs.x = -desensitizePowerBased(driveController.getLeftY(), FORWARD_SENSITIVITY);
                     inputs.y = -desensitizePowerBased(driveController.getLeftX(), FORWARD_SENSITIVITY);
                     inputs.rot = -desensitizePowerBased(driveController.getRightX(), ROTATIONAL_SENSITIVITY);
-                }
-        ));
-
-        Collector.getInstance().setDefaultCommand(new CollectorDefaultCommand(
-                inputs -> {
-                    inputs.trigger = deadband(driveController.getLeftTriggerAxis(), 0.5);
-                    inputs.eject = driveController.povLeft().getAsBoolean();
                 }
         ));
 

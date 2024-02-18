@@ -6,6 +6,7 @@
 package org.tahomarobotics.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -33,6 +34,8 @@ public class Robot extends LoggedRobot {
 
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final List<SubsystemIF> subsystems = new ArrayList<>();
+
+    private Command autoCommand;
 
     @Override
     public void robotInit() {
@@ -83,6 +86,8 @@ public class Robot extends LoggedRobot {
             }
         }
 
+        Logger.disableDeterministicTimestamps();
+
         // Start the logger, any subsequent Logger configuration is not allowed.
         Logger.start();
     }
@@ -107,7 +112,8 @@ public class Robot extends LoggedRobot {
     @Override
     public void autonomousInit() {
         subsystems.forEach(SubsystemIF::onAutonomousInit);
-        Autonomous.getInstance().getSelectedAuto().schedule();
+        autoCommand = Autonomous.getInstance().getSelectedAuto();
+        autoCommand.schedule();
 
         logger.info("-=-=-=- AUTONOMOUS initiated -=-=-=-");
     }
@@ -116,6 +122,10 @@ public class Robot extends LoggedRobot {
     @Override
     public void autonomousPeriodic() {}
 
+    @Override
+    public void autonomousExit() {
+        if (autoCommand != null ) autoCommand.cancel();
+    }
 
     @Override
     public void teleopInit() {

@@ -9,11 +9,15 @@ import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.OutputsConfiguration;
+import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.collector.commands.ZeroCollectorCommand;
+import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.util.RobustConfigurator;
@@ -44,6 +48,10 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
 
     private CollectionState collectionState = CollectionState.DISABLED;
     private DeploymentState deploymentState = DeploymentState.STOWED;
+
+    private boolean isCollecting;
+    private boolean isEjecting;
+    private boolean isZeroed = false;
 
     private Collector() {
         RobustConfigurator configurator = new RobustConfigurator(logger);
@@ -88,6 +96,10 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
 
     public double getCollectVelocity() {
         return collectVelocity.getValue();
+    }
+
+    public boolean isZeroed() {
+        return isZeroed;
     }
 
 
@@ -148,6 +160,14 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
         collectionState = state;
     }
 
+    public void setIsCollecting(boolean collecting) {
+        isCollecting = collecting;
+    }
+
+    public void setIsEjecting(boolean ejecting) {
+        isEjecting = ejecting;
+    }
+
     public CollectionState getCollectionState() {
         return collectionState;
     }
@@ -181,6 +201,54 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
     public void zeroCollector() {
         deployLeft.setPosition(0);
         deployRight.setPosition(0);
+
+        isZeroed = true;
+    }
+
+    private void executeTeleOp() {
+
+        switch (getCollectionState()) {
+            case DISABLED -> {
+                stopCollect();
+
+                if (isInEject()) toggleDeploy();
+
+                if (isCollecting && !isStowed() && !Indexer.getInstance().hasCollected()) setCollectionState(Collector.CollectionState.COLLECTING);
+
+                if (isEjecting) setCollectionState(Collector.CollectionState.EJECTING);
+            }
+            case COLLECTING -> {
+                collect();
+
+                if (Indexer.getInstance().hasCollected()) toggleDeploy();
+
+                if ((!isCollecting && !Indexer.getInstance().isIndexing()) || isStowed()) setCollectionState(Collector.CollectionState.DISABLED);
+            }
+            case EJECTING -> {
+                eject();
+
+                if (!isStowed()) setDeployEject();
+
+                if (isCollecting && !isStowed()) setCollectionState(Collector.CollectionState.COLLECTING);
+
+                if (!isEjecting) setCollectionState(Collector.CollectionState.DISABLED);
+            }
+        }
+    }
+
+    private void executeAuto() {
+        switch (getCollectionState()) {
+            case DISABLED -> {
+                stopCollect();
+
+                if (isDeployed()) setCollectionState(Collector.CollectionState.COLLECTING);
+            }
+            case COLLECTING -> {
+                collect();
+
+                if (isStowed()) setCollectionState(Collector.CollectionState.DISABLED);
+            }
+        }
     }
 
 
@@ -195,14 +263,22 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
         recordOutput("Collector/Deploy Left Position", deployPositionLeft.getValue());
         recordOutput("Collector/Deploy Velocity", deployVelocity.getValue());
         recordOutput("Collector/Collect Velocity", collectVelocity.getValue());
+
+        if (RobotState.isAutonomous()) {
+            executeAuto();
+        } else {
+            executeTeleOp();
+        }
     }
 
     @Override
     public SubsystemIF initialize() {
 
-        Commands.waitUntil(RobotState::isEnabled)
-                .andThen(new ZeroCollectorCommand())
-                .ignoringDisable(true).schedule();
+        Commands.waitUntil(() -> RobotState.isEnabled() && RobotState.isTeleop())
+                .andThen(Commands.print("ZEROING COLLECTOR"))
+                .andThen(new ZeroCollectorCommand().onlyIf(() -> !isZeroed()))
+                .ignoringDisable(true)
+                .schedule();
 
         return this;
     }

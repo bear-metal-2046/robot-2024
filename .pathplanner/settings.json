@@ -4,8 +4,8 @@
   "holonomicMode": true,
   "pathFolders": [
     "4 piece speaker paths",
-    "Fast 4 piece speaker",
-    "5 piece auto paths"
+    "5 piece auto paths",
+    "Fast 4 piece speaker"
   ],
   "autoFolders": [],
   "defaultMaxVel": 3.0,

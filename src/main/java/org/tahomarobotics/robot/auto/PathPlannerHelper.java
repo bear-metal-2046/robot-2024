@@ -34,7 +34,7 @@ public class PathPlannerHelper {
                 chassis
         );
 
-        return new LoggedDashboardChooser<>("Auto", AutoBuilder.buildAutoChooser("Test Auto"));
+        return new LoggedDashboardChooser<>("Auto", AutoBuilder.buildAutoChooser(""));
     }
 
 }

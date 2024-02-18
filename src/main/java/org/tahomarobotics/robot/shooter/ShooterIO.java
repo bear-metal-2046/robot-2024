@@ -88,7 +88,7 @@ class ShooterIO implements ToggledOutputs {
     }
 
     boolean isReadyToShoot() {
-        return isAtAngle() && isSpinningAtVelocity();
+        return isAtAngle() && isSpinningAtVelocity() && Chassis.getInstance().isReadyToShoot();
     }
 
     boolean inShootingMode() {

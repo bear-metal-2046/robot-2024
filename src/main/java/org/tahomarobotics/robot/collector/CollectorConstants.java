@@ -22,19 +22,22 @@ public class CollectorConstants {
     public final static double COLLECT_MAX_ACCEL = COLLECT_MAX_RPS / 0.25;
     public final static double COLLECT_MAX_JERK = COLLECT_MAX_ACCEL / 0.125;
 
-    public final static double STOW_POSITION, COLLECT_POSITION, EJECT_POSITION;
+    public final static double STOW_POSITION, COLLECT_POSITION, EJECT_POSITION, ZERO_POSITION;
 
     static {
         switch (RobotIdentity.getInstance().getRobotID()) {
             case PLAYBEAR_CARTI, BEARITONE -> {
-                STOW_POSITION = Units.degreesToRotations(16.962890625);
-                COLLECT_POSITION = Units.degreesToRotations(138.25195312499997);
-                EJECT_POSITION = Units.degreesToRotations(109.951171875);
+                STOW_POSITION = Units.degreesToRotations(90.0000000);
+                COLLECT_POSITION = Units.degreesToRotations(211.46484375);
+                EJECT_POSITION = Units.degreesToRotations(183.69140625);
+                ZERO_POSITION = Units.degreesToRotations(73.037109375);
             }
             default -> {
+                // TODO: Get these positions.
                 STOW_POSITION = Units.degreesToRotations(10);
                 COLLECT_POSITION = Units.degreesToRotations(137.5);
                 EJECT_POSITION = Units.degreesToRotations(100);
+                ZERO_POSITION = Units.degreesToRotations(80);
             }
         }
     }
@@ -77,16 +80,24 @@ public class CollectorConstants {
                     .withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT)
                     .withStatorCurrentLimitEnable(true)
                     .withSupplyCurrentLimitEnable(true))
-            .withSlot0(new Slot0Configs() {{
-                        GravityType = GravityTypeValue.Arm_Cosine;
-                    }}
-                    .withKP(53.655)
-                    .withKD(4.0302)
-                    .withKS(0.098451)
-                    .withKV(1.7039)
-                    .withKA(0.18671)
-                    .withKG(0.2808)
-            )
+            .withSlot0(switch (RobotIdentity.getInstance().getRobotID()) {
+                case BEARITONE, PLAYBEAR_CARTI -> new Slot0Configs()
+                        .withGravityType(GravityTypeValue.Arm_Cosine)
+                        .withKP(55.903)
+                        .withKD(4.8502)
+                        .withKS(0.086158)
+                        .withKV(1.8207)
+                        .withKA(0.25676)
+                        .withKG(0.25583);
+                default -> new Slot0Configs()
+                        .withGravityType(GravityTypeValue.Arm_Cosine)
+                        .withKP(53.655)
+                        .withKD(4.0302)
+                        .withKS(0.098451)
+                        .withKV(1.7039)
+                        .withKA(0.18671)
+                        .withKG(0.2808);
+            })
             .withMotionMagic(new MotionMagicConfigs()
                     .withMotionMagicCruiseVelocity(DEPLOY_MAX_RPS)
                     .withMotionMagicAcceleration(DEPLOY_MAX_ACCEL)

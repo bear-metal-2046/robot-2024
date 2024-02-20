@@ -38,9 +38,7 @@ public class CollectorConstants {
             }
         }
     }
-
-    public final static double EPSILON = 0.01;
-
+    
     private final static double SUPPLY_CURRENT_LIMIT = 40;
     private final static double STATOR_CURRENT_LIMIT = 60;
 
@@ -50,11 +48,18 @@ public class CollectorConstants {
                     .withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT)
                     .withStatorCurrentLimitEnable(true)
                     .withSupplyCurrentLimitEnable(true))
-            .withSlot0(new Slot0Configs()
-                    .withKP(0.23711)
-                    .withKS(0.56717)
-                    .withKV(0.23279)
-                    .withKA(0.025363))
+            .withSlot0(switch (RobotIdentity.getInstance().getRobotID()) {
+                case BEARITONE, PLAYBEAR_CARTI -> new Slot0Configs()
+                        .withKP(.11795)
+                        .withKS(.27235)
+                        .withKV(.2485)
+                        .withKA(.010979);
+                default -> new Slot0Configs()
+                        .withKP(0.23711)
+                        .withKS(0.56717)
+                        .withKV(0.23279)
+                        .withKA(0.025363);
+            })
             .withMotionMagic(new MotionMagicConfigs()
                     .withMotionMagicCruiseVelocity(COLLECT_MAX_RPS)
                     .withMotionMagicAcceleration(COLLECT_MAX_ACCEL)

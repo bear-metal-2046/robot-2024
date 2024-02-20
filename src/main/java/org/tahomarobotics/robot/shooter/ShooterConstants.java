@@ -30,12 +30,12 @@ public class ShooterConstants {
     static {
         switch (RobotIdentity.getInstance().getRobotID()) {
             case PLAYBEAR_CARTI, BEARITONE -> {
-                SHOOTER_SPEED = 6000 / 60d;
+                SHOOTER_SPEED = 100.0;
                 MAX_PIVOT_ANGLE = Units.degreesToRotations(51.50390625);
                 SHOOTER_GEAR_REDUCTION = (30.0 / 18.0);
             }
             default -> {
-                SHOOTER_SPEED = 4500 / 60d;
+                SHOOTER_SPEED = 75.0;
                 MAX_PIVOT_ANGLE = Units.degreesToRotations(50.4);
                 SHOOTER_GEAR_REDUCTION = 1.0;
             }
@@ -43,6 +43,9 @@ public class ShooterConstants {
     }
 
     static final double BIAS_AMT = Units.degreesToRotations(5) / 50;
+
+    static final double STATOR_CURRENT_LIMIT = 80.0;
+    static final double SUPPLY_CURRENT_LIMIT = 40.0;
 
     public static final Translation2d SHOOTER_PIVOT_OFFSET = new Translation2d(0.1238, 0.1899);
 
@@ -55,6 +58,11 @@ public class ShooterConstants {
                     .map(a -> BLUE_SPEAKER_TARGET_POSITION).orElse(RED_SPEAKER_TARGET_POSITION);
 
     static final TalonFXConfiguration shooterMotorConfiguration = new TalonFXConfiguration()
+            .withCurrentLimits(new CurrentLimitsConfigs()
+                    .withStatorCurrentLimit(STATOR_CURRENT_LIMIT)
+                    .withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT)
+                    .withStatorCurrentLimitEnable(true)
+                    .withSupplyCurrentLimitEnable(true))
             .withSlot0(new Slot0Configs()
                     .withKP(0.086027)
                     .withKS(0.077906)

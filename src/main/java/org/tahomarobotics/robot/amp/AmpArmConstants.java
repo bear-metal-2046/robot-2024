@@ -5,6 +5,7 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import org.tahomarobotics.robot.collector.CollectorConstants;
+import org.tahomarobotics.robot.identity.RobotIdentity;
 
 public class AmpArmConstants {
     static final double POSITION_TOLERANCE = 0.1;
@@ -43,13 +44,24 @@ public class AmpArmConstants {
 
     // WRIST
 
-    static final double WRIST_GEAR_REDUCTION = (12.0 / 72.0) * (18.0 / 24.0) * (24.0 / 18.0);
+    static final double WRIST_GEAR_REDUCTION;
 
     public static final double WRIST_MOVING_POSE = 0.18798828125; // Rotations
     public static final double WRIST_STOW_POSE = 0; // Rotations
     public static final double WRIST_AMP_POSE = 0.366455078125; // Rotations
     public static final double WRIST_TRAP_POSE = 0.75; // Rotations
     public static final double WRIST_SOURCE_POSE = 0.158203125; // Rotations
+
+    static {
+        switch (RobotIdentity.getInstance().getRobotID()) {
+            case BEARITONE, PLAYBEAR_CARTI -> {
+                WRIST_GEAR_REDUCTION = 12d / 60d;
+            }
+            default -> {
+                WRIST_GEAR_REDUCTION = 12d / 72d;
+            }
+        }
+    }
 
     static final TalonFXConfiguration wristMotorConfiguration = new TalonFXConfiguration()
             .withSlot0(new Slot0Configs()
@@ -71,9 +83,20 @@ public class AmpArmConstants {
 
     // ROLLERS
 
-    static final double ROLLER_GEAR_REDUCTION = (12.0 / 72.0) * (18.0 / 24.0) * (24.0 / 18.0);
+    static final double ROLLER_GEAR_REDUCTION;
 
     static final double VELOCITY_TOLERANCE = 0.75;
+
+    static {
+        switch (RobotIdentity.getInstance().getRobotID()) {
+            case BEARITONE, PLAYBEAR_CARTI -> {
+                ROLLER_GEAR_REDUCTION = 12d / 60d;
+            }
+            default -> {
+                ROLLER_GEAR_REDUCTION = 12d / 72d;
+            }
+        }
+    }
 
     static final TalonFXConfiguration rollerMotorConfiguration = new TalonFXConfiguration()
             .withSlot0(new Slot0Configs()

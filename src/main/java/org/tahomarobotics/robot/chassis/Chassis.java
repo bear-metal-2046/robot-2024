@@ -275,6 +275,11 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
             adjSpeed *= -1;
         }
 
+        double diff = pose.getRotation().getRadians() - (goalRot + adj);
+        recordOutput("Chassis/Angle Difference", diff);
+        recordOutput("Chassis/Adjustment", adj);
+        recordOutput("Chassis/Adjustment Speed", adjSpeed);
+
         fieldPose.getObject("goal").setPose(new Pose2d(goal, new Rotation2d()));
 
         speeds.omegaRadiansPerSecond =
@@ -282,6 +287,8 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
                         pose.getRotation().getRadians(),
                         goalRot + adj
                 ) - adjSpeed;
+
+        recordOutput("Chassis/Angular Velocity Output", speeds.omegaRadiansPerSecond);
     }
 
     private void setSwerveStates(SwerveModuleState[] states) {

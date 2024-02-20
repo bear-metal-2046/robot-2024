@@ -28,7 +28,7 @@ public class VisionConstants {
                         Units.inchesToMeters(3), Units.inchesToMeters(3.7145), Units.inchesToMeters(27.5)
                         ),
                 new Rotation3d(
-                        0, Units.degreesToRadians(-25), Units.degreesToRadians(18)
+                        0, Units.degreesToRadians(-25), Units.degreesToRadians(162)
                 )
         )),
         SHOOTER_RIGHT("Shooter Right", new Transform3d(
@@ -36,7 +36,7 @@ public class VisionConstants {
                         Units.inchesToMeters(3), Units.inchesToMeters(-3.7145), Units.inchesToMeters(27.5)
                 ),
                 new Rotation3d(
-                        0, Units.degreesToRadians(-25), Units.degreesToRadians(-18)
+                        0, Units.degreesToRadians(-25), Units.degreesToRadians(198)
                 )
         ));
 

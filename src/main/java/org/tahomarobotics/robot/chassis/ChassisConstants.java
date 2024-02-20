@@ -24,7 +24,10 @@ import com.pathplanner.lib.util.PIDConstants;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
+import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
+import org.tahomarobotics.robot.identity.RobotIdentity;
 
 /**
  * Constants for the chassis.
@@ -47,16 +50,27 @@ public final class ChassisConstants {
     public static final double WHEEL_RADIUS = 0.04;
     public static final double WHEEL_CIRCUMFERENCE = 2 * Math.PI * WHEEL_RADIUS;
 
-    public static final double DRIVE_REDUCTION = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0);
-    public static final double DRIVE_POSITION_COEFFICIENT = WHEEL_CIRCUMFERENCE * DRIVE_REDUCTION; // r/s -> m/s
-    @SuppressWarnings("unused")
+    public static final double DRIVE_REDUCTION;
     public static final double STEER_REDUCTION = (14.0 / 50.0) * (10.0 / 60.0);
+
+    static {
+        switch (RobotIdentity.getInstance().getRobotID()) {
+            case PLAYBEAR_CARTI, BEARITONE -> {
+                DRIVE_REDUCTION = (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
+            }
+            default -> {
+                DRIVE_REDUCTION = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0);
+            }
+        }
+    }
+
+    public static final double DRIVE_POSITION_COEFFICIENT = WHEEL_CIRCUMFERENCE * DRIVE_REDUCTION; // r/s -> m/s
 
     //Placeholder PID values
     public static final PIDConstants AUTO_TRANSLATION_PID = new PIDConstants(1.5,0,0.5);
     public static final PIDConstants AUTO_ROTATION_PID = new PIDConstants(1.5, 0, 0);
 
-    public static final PIDController SHOOT_MODE_CONTROLLER = new PIDController(5, 0, 0.5);
+    public static final PIDController SHOOT_MODE_CONTROLLER = new PIDController(Units.degreesToRadians(10), 0, 0, Robot.defaultPeriodSecs);
 
     public static final double DRIVE_SUPPLY_CURRENT_LIMIT = 40.0; // Amps
     public static final double DRIVE_STATOR_CURRENT_LIMIT = 80.0;

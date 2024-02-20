@@ -10,7 +10,14 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import static edu.wpi.first.units.MutableMeasure.mutable;
 import static edu.wpi.first.units.Units.*;
 
+
+@SuppressWarnings("unused")
 public class SysIdTest extends SubsystemIF {
+//        driveController.povUp().whileTrue(SUBSYSTEM.test.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+//        driveController.povDown().whileTrue(SUBSYSTEM.test.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+//        driveController.povLeft().whileTrue(SUBSYSTEM.test.sysIdDynamic(SysIdRoutine.Direction.kForward));
+//        driveController.povRight().whileTrue(SUBSYSTEM.test.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
     private final TalonFX motor;
     private final TalonFX motorOther;
     private final VoltageOut control = new VoltageOut(0);
@@ -44,18 +51,14 @@ public class SysIdTest extends SubsystemIF {
                         null,     // Default timeout is acceptable
                         null),
                 new SysIdRoutine.Mechanism(
-                        (Measure<Voltage> volts) ->  {
-                            motor.setControl(control.withOutput(volts.in(Volts)));
-                        },
-                        log -> {
-                            log.motor("motor")
-                                    .voltage(
-                                            voltage.mut_replace(
-                                                    motor.getMotorVoltage().getValue(), Volts))
-                                    .angularPosition(position.mut_replace(motor.getPosition().getValue(), Rotations))
-                                    .angularVelocity(
-                                            velocity.mut_replace(motor.getVelocity().getValue(), RotationsPerSecond));
-                        },
+                        (Measure<Voltage> volts) -> motor.setControl(control.withOutput(volts.in(Volts))),
+                        log -> log.motor("motor")
+                                .voltage(
+                                        voltage.mut_replace(
+                                                motor.getMotorVoltage().getValue(), Volts))
+                                .angularPosition(position.mut_replace(motor.getPosition().getValue(), Rotations))
+                                .angularVelocity(
+                                        velocity.mut_replace(motor.getVelocity().getValue(), RotationsPerSecond)),
                         subsystem));
     }
 

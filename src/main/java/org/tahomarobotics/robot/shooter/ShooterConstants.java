@@ -17,7 +17,7 @@ public class ShooterConstants {
 
     public static final double TIME_SHOT_OFFSET = 0.5;
 
-    static final double SHOOTER_SPEED_TOLERANCE = 20; // rps
+    static final double SHOOTER_SPEED_TOLERANCE = 2.5; // rps
     public static final double MAX_PIVOT_ANGLE;
     public static final double MIN_PIVOT_ANGLE = 0.01;
     static final double PIVOT_ANGLE_TOLERANCE = 0.0025;
@@ -68,17 +68,18 @@ public class ShooterConstants {
                     .withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT)
                     .withStatorCurrentLimitEnable(true)
                     .withSupplyCurrentLimitEnable(true))
-            .withSlot0(new Slot0Configs()
-                    .withKP(0.086027)
-                    .withKS(0.077906)
-                    .withKV(0.11218)
-                    .withKA(0.012355))
-            .withSlot1(new Slot1Configs()
-                    .withKP(27.034)
-                    .withKD(0.74151)
-                    .withKS(0.077906)
-                    .withKV(0.11218)
-                    .withKA(0.012355))
+            .withSlot0(switch (RobotIdentity.getInstance().getRobotID()) {
+                case BEARITONE, PLAYBEAR_CARTI -> new Slot0Configs()
+                        .withKP(.076223)
+                        .withKS(.10456)
+                        .withKV(.071642)
+                        .withKA(.015732);
+                default -> new Slot0Configs()
+                        .withKP(0.086027)
+                        .withKS(0.077906)
+                        .withKV(0.11218)
+                        .withKA(0.012355);
+            })
             .withMotorOutput(new MotorOutputConfigs()
                     .withNeutralMode(NeutralModeValue.Brake)
                     .withInverted(InvertedValue.Clockwise_Positive))

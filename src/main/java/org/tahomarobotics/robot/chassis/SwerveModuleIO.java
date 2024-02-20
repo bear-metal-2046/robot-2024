@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import org.littletonrobotics.junction.AutoLog;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.RobotConfiguration;
@@ -24,7 +25,7 @@ import java.util.List;
 import static org.tahomarobotics.robot.chassis.ChassisConstants.*;
 
 public class SwerveModuleIO implements ToggledOutputs {
-    private final org.slf4j.Logger logger;
+    private final Logger logger;
 
     // MEMBER VARIABLES
 
@@ -56,7 +57,7 @@ public class SwerveModuleIO implements ToggledOutputs {
     // CONSTRUCTOR
 
     SwerveModuleIO(RobotMap.SwerveModuleDescriptor descriptor, double angularOffset) {
-        logger = LoggerFactory.getLogger("SwerveModule." + descriptor.moduleName());
+        logger = LoggerFactory.getLogger(this.getClass());
         name = "Chassis/Modules/" + descriptor.moduleName();
         configurator = new RobustConfigurator(logger);
 
@@ -66,9 +67,9 @@ public class SwerveModuleIO implements ToggledOutputs {
         steerMotor = new TalonFX(descriptor.steerId(), RobotConfiguration.CANBUS_NAME);
         steerAbsEncoder = new CANcoder(descriptor.encoderId(), RobotConfiguration.CANBUS_NAME);
 
-        configurator.configureTalonFX(driveMotor, driveMotorConfiguration);
-        configurator.configureTalonFX(steerMotor, steerMotorConfiguration, descriptor.encoderId());
-        configurator.configureCancoder(steerAbsEncoder, encoderConfiguration, angularOffset);
+        configurator.configureTalonFX(driveMotor, driveMotorConfiguration, descriptor.moduleName() + " drive motor");
+        configurator.configureTalonFX(steerMotor, steerMotorConfiguration, descriptor.encoderId(), descriptor.moduleName() + " steer motor");
+        configurator.configureCancoder(steerAbsEncoder, encoderConfiguration, angularOffset, descriptor.moduleName() + " cancoder");
 
         drivePosition = driveMotor.getPosition();
         driveVelocity = driveMotor.getVelocity();

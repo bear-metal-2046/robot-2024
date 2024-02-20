@@ -52,9 +52,9 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
         deployRight = new TalonFX(RobotMap.DEPLOY_MOTOR_RIGHT);
         collectMotor = new TalonFX(RobotMap.COLLECTOR_MOTOR);
 
-        configurator.configureTalonFX(deployLeft, deployMotorConfiguration);
-        configurator.configureTalonFX(deployRight, deployMotorConfiguration.withMotorOutput(deployMotorConfiguration.MotorOutput.withInverted(InvertedValue.CounterClockwise_Positive)));
-        configurator.configureTalonFX(collectMotor, collectMotorConfiguration);
+        configurator.configureTalonFX(deployLeft, deployMotorConfiguration, "deploy left motor");
+        configurator.configureTalonFX(deployRight, deployMotorConfiguration.withMotorOutput(deployMotorConfiguration.MotorOutput.withInverted(InvertedValue.CounterClockwise_Positive)), "deploy right motor");
+        configurator.configureTalonFX(collectMotor, collectMotorConfiguration, "collect motor");
 
         deployPositionLeft = deployLeft.getPosition();
         deployPositionRight = deployRight.getPosition();

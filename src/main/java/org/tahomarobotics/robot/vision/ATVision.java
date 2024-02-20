@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableEvent;
@@ -21,6 +22,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.OutputsConfiguration;
+import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.util.ToggledOutputs;
 
 import java.util.ArrayList;
@@ -166,8 +168,10 @@ public class ATVision implements ToggledOutputs {
             );
 
             synchronized (poseEstimator) {
-                poseEstimator.addVisionMeasurement(result.poseMeters(), result.timestamp(), stds);
-                updates++;
+                if (Chassis.getInstance().getCurrentChassisSpeeds().equals(new ChassisSpeeds())) {
+                    poseEstimator.addVisionMeasurement(result.poseMeters(), result.timestamp(), stds);
+                    updates++;
+                }
             }
         } else if (result.numTargets() == 1 && distanceToTargets < VisionConstants.SINGLE_TARGET_DISTANCE_THRESHOLD) {
             // Single tag results are not very trustworthy. Do not use headings from them
@@ -179,8 +183,10 @@ public class ATVision implements ToggledOutputs {
             );
 
             synchronized (poseEstimator) {
-                poseEstimator.addVisionMeasurement(noHdgPose, result.timestamp(), stds);
-                updates++;
+                if (Chassis.getInstance().getCurrentChassisSpeeds().equals(new ChassisSpeeds())) {
+                    poseEstimator.addVisionMeasurement(noHdgPose, result.timestamp(), stds);
+                    updates++;
+                }
             }
         }
     }

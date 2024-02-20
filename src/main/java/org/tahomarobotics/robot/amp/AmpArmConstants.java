@@ -5,6 +5,7 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import org.tahomarobotics.robot.collector.CollectorConstants;
+import org.tahomarobotics.robot.identity.RobotIdentity;
 
 public class AmpArmConstants {
     static final double POSITION_TOLERANCE = 0.1;
@@ -43,7 +44,10 @@ public class AmpArmConstants {
 
     // WRIST
 
-    static final double WRIST_GEAR_REDUCTION = (12.0 / 72.0) * (18.0 / 24.0) * (24.0 / 18.0);
+    static final double WRIST_GEAR_REDUCTION = switch (RobotIdentity.getInstance().getRobotID()) {
+        case PLAYBEAR_CARTI -> (12.0 / 60.0);
+        default -> (12.0 / 72.0);
+    };
 
     public static final double WRIST_MOVING_POSE = 0.18798828125; // Rotations
     public static final double WRIST_STOW_POSE = 0; // Rotations
@@ -71,7 +75,10 @@ public class AmpArmConstants {
 
     // ROLLERS
 
-    static final double ROLLER_GEAR_REDUCTION = (12.0 / 72.0) * (18.0 / 24.0) * (24.0 / 18.0);
+    static final double ROLLER_GEAR_REDUCTION = switch (RobotIdentity.getInstance().getRobotID()) {
+        case PLAYBEAR_CARTI -> (12.0 / 60.0);
+        default -> (12.0 / 72.0);
+    };
 
     static final double VELOCITY_TOLERANCE = 0.75;
 

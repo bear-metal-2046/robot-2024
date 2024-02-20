@@ -45,7 +45,6 @@ public class Autonomous extends SubsystemIF {
     }
 
     private Autonomous() {
-        autoChooser = PathPlannerHelper.getAutoChooser(chassis);
 
         NetworkTableInstance netInstance = NetworkTableInstance.getDefault();
         StringSubscriber autoSub = netInstance.getTable("SmartDashboard/Auto").getStringTopic("selected").subscribe("Test Auto");
@@ -55,8 +54,6 @@ public class Autonomous extends SubsystemIF {
                 EnumSet.of(NetworkTableEvent.Kind.kValueAll),
                 e -> new InstantCommand(() -> postAutoTrajectory(fieldPose, autoSub.get())).ignoringDisable(true).schedule()
         );
-
-        NamedCommands.registerCommand("ResetOdometry", Commands.runOnce(() -> chassis.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.get().getName()))));
 
         NamedCommands.registerCommand("Shoot",
                 Commands.runOnce(shooter::toggleShootMode)
@@ -80,6 +77,8 @@ public class Autonomous extends SubsystemIF {
         NamedCommands.registerCommand("AmpArmToStow",
                 Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.STOW))
                         .andThen(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));
+
+        autoChooser = PathPlannerHelper.getAutoChooser(chassis);
     }
 
     public Command getSelectedAuto() {

@@ -6,31 +6,37 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 
 public class VisionConstants {
-    private static final double BAR_HEIGHT_IN = 26.0;
-
     public enum ATCamera {
-        LEFT("Left", new Transform3d(
+        COLLECTOR_LEFT("Collector Left", new Transform3d(
                 new Translation3d(
-                        Units.inchesToMeters(0), Units.inchesToMeters(BAR_HEIGHT_IN), Units.inchesToMeters(0)
+                        Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(0)
                 ),
                 new Rotation3d(
                         0, 0, Units.degreesToRadians(15)
                 )
         )),
-        RIGHT("Right", new Transform3d(
+        COLLECTOR_RIGHT("Collector Right", new Transform3d(
                 new Translation3d(
-                        Units.inchesToMeters(0), Units.inchesToMeters(BAR_HEIGHT_IN), Units.inchesToMeters(0)
+                        Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(0)
                 ),
                 new Rotation3d(
                         0, 0, Units.degreesToRadians(-15)
                 )
         )),
-        BACK("Back", new Transform3d(
+        SHOOTER_LEFT("Shooter Left", new Transform3d(
                 new Translation3d(
-                        Units.inchesToMeters(2), Units.inchesToMeters(0), Units.inchesToMeters(BAR_HEIGHT_IN)
+                        Units.inchesToMeters(3), Units.inchesToMeters(3.7145), Units.inchesToMeters(27.5)
                         ),
                 new Rotation3d(
-                        0, 0, Units.degreesToRadians(180)
+                        0, Units.degreesToRadians(-25), Units.degreesToRadians(18)
+                )
+        )),
+        SHOOTER_RIGHT("Shooter Right", new Transform3d(
+                new Translation3d(
+                        Units.inchesToMeters(3), Units.inchesToMeters(-3.7145), Units.inchesToMeters(27.5)
+                ),
+                new Rotation3d(
+                        0, Units.degreesToRadians(-25), Units.degreesToRadians(-18)
                 )
         ));
 

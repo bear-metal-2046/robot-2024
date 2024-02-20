@@ -5,11 +5,12 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.util.Units;
+import org.tahomarobotics.robot.identity.RobotIdentity;
 
 public class CollectorConstants {
 
     private final static double DEPLOY_GEAR_REDUCTION = (10d / 72d) * (16d / 40d);
-    public final static double COLLECT_GEAR_REDUCTION = (18d / 36);
+    public final static double COLLECT_GEAR_REDUCTION = (18d / 36d);
 
     //Deploy Motion Profile Constraints
     private final static double DEPLOY_MAX_RPS = 2.5;
@@ -21,9 +22,22 @@ public class CollectorConstants {
     public final static double COLLECT_MAX_ACCEL = COLLECT_MAX_RPS / 0.25;
     public final static double COLLECT_MAX_JERK = COLLECT_MAX_ACCEL / 0.125;
 
-    public final static double STOW_POSITION = Units.degreesToRotations(10);
-    public final static double COLLECT_POSITION = Units.degreesToRotations(137.5);
-    public final static double EJECT_POSITION = Units.degreesToRotations(100);
+    public final static double STOW_POSITION, COLLECT_POSITION, EJECT_POSITION;
+
+    static {
+        switch (RobotIdentity.getInstance().getRobotID()) {
+            case PLAYBEAR_CARTI, BEARITONE -> {
+                STOW_POSITION = Units.degreesToRotations(16.962890625);
+                COLLECT_POSITION = Units.degreesToRotations(138.25195312499997);
+                EJECT_POSITION = Units.degreesToRotations(109.951171875);
+            }
+            default -> {
+                STOW_POSITION = Units.degreesToRotations(10);
+                COLLECT_POSITION = Units.degreesToRotations(137.5);
+                EJECT_POSITION = Units.degreesToRotations(100);
+            }
+        }
+    }
 
     public final static double EPSILON = 0.01;
 

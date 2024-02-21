@@ -13,6 +13,7 @@ import java.util.function.Supplier;
 
 public class ShooterConstants {
     public static final double SHOOTER_SPEED; // rps
+    public static final double IDLE_SPEED; // rps
     public static final double TRANSFER_VELOCITY = 10; // rps
 
     public static final double TIME_SHOT_OFFSET = 0.5;
@@ -32,12 +33,14 @@ public class ShooterConstants {
         switch (RobotIdentity.getInstance().getRobotID()) {
             case PLAYBEAR_CARTI, BEARITONE -> {
                 SHOOTER_SPEED = 100.0;
+                IDLE_SPEED = 75.0;
                 MAX_PIVOT_ANGLE = Units.degreesToRotations(51.50390625);
                 SHOOTER_GEAR_REDUCTION = (30.0 / 18.0);
                 PIVOT_INVERSION = InvertedValue.Clockwise_Positive;
             }
             default -> {
                 SHOOTER_SPEED = 75.0;
+                IDLE_SPEED = 50.0;
                 MAX_PIVOT_ANGLE = Units.degreesToRotations(50.4);
                 SHOOTER_GEAR_REDUCTION = 1.0;
                 PIVOT_INVERSION = InvertedValue.CounterClockwise_Positive;

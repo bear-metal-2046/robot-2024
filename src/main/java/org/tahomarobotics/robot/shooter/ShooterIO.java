@@ -34,6 +34,7 @@ class ShooterIO implements ToggledOutputs {
 
     private final MotionMagicVoltage pivotPositionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage motorVelocity = new MotionMagicVelocityVoltage(SHOOTER_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
+    private final MotionMagicVelocityVoltage idleVelocity = new MotionMagicVelocityVoltage(IDLE_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage transferVelocity = new MotionMagicVelocityVoltage(TRANSFER_VELOCITY).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage reverseIntakeVelocity = new MotionMagicVelocityVoltage(-TRANSFER_VELOCITY).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
 
@@ -134,6 +135,13 @@ class ShooterIO implements ToggledOutputs {
     }
 
     void disable() {
+        shootingMode = false;
+
+        shooterMotor.setControl(idleVelocity);
+        shooterMotorFollower.setControl(idleVelocity);
+    }
+
+    void stop() {
         shootingMode = false;
 
         shooterMotor.stopMotor();

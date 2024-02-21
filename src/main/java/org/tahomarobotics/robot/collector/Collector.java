@@ -15,6 +15,7 @@ import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.collector.commands.ZeroCollectorCommand;
+import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.util.RobustConfigurator;
@@ -47,7 +48,8 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
     private CollectionState collectionState = CollectionState.DISABLED;
     private DeploymentState deploymentState = DeploymentState.STOWED;
 
-    public SysIdTest test;
+    private boolean isCollecting;
+    private boolean isEjecting;
 
     private Collector() {
         RobustConfigurator configurator = new RobustConfigurator(logger);
@@ -73,8 +75,6 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
         );
 
         ParentDevice.optimizeBusUtilizationForAll(deployLeft, deployRight, collectMotor);
-
-        test = new SysIdTest(this, deployLeft, deployRight);
     }
 
     // GETTERS
@@ -125,6 +125,14 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
 
 
     // COLLECTOR CONTROL
+
+    public void setIsCollecting(boolean collecting) {
+        isCollecting = collecting;
+    }
+
+    public void setIsEjecting(boolean ejecting) {
+        isEjecting = ejecting;
+    }
 
     public void collect() {
         collectMotor.setControl(collectVelocityControl.withVelocity(COLLECT_MAX_RPS));
@@ -181,6 +189,53 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
     }
 
 
+    //STATE MACHINES
+
+    private void teleopStateMachine() {
+        switch (getCollectionState()) {
+            case DISABLED -> {
+                stopCollect();
+
+                if (isInEject()) toggleDeploy();
+
+                if (isCollecting && !isStowed() && !Indexer.getInstance().hasCollected()) setCollectionState(Collector.CollectionState.COLLECTING);
+
+                if (isEjecting) setCollectionState(Collector.CollectionState.EJECTING);
+            }
+            case COLLECTING -> {
+                collect();
+
+                if (Indexer.getInstance().hasCollected()) toggleDeploy();
+
+                if ((!isCollecting && !Indexer.getInstance().isIndexing()) || isStowed()) setCollectionState(Collector.CollectionState.DISABLED);
+            }
+            case EJECTING -> {
+                eject();
+
+                if (!isStowed()) setDeployEject();
+
+                if (isCollecting && !isStowed()) setCollectionState(Collector.CollectionState.COLLECTING);
+
+                if (!isEjecting) setCollectionState(Collector.CollectionState.DISABLED);
+            }
+        }
+    }
+
+    private void autoStateMachine() {
+        switch (getCollectionState()) {
+            case DISABLED -> {
+                stopCollect();
+
+                if (isDeployed()) setCollectionState(Collector.CollectionState.COLLECTING);
+            }
+            case COLLECTING -> {
+                collect();
+
+                if (isStowed()) setCollectionState(Collector.CollectionState.DISABLED);
+            }
+        }
+    }
+
     @Override
     public void periodic() {
         BaseStatusSignal.refreshAll(deployPositionLeft, deployPositionRight, collectVelocity, deployVelocity);
@@ -192,6 +247,12 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
         recordOutput("Collector/Deploy Left Position", deployPositionLeft.getValue());
         recordOutput("Collector/Deploy Velocity", deployVelocity.getValue());
         recordOutput("Collector/Collect Velocity", collectVelocity.getValue());
+
+        if (RobotState.isAutonomous()) {
+            autoStateMachine();
+        } else {
+            teleopStateMachine();
+        }
     }
 
     @Override

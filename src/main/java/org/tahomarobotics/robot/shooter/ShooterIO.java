@@ -4,6 +4,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -93,6 +94,10 @@ class ShooterIO implements ToggledOutputs {
         return shootingMode;
     }
 
+    double getPivotVelocity() {
+        return pivotVelocity.getValue();
+    }
+
     // SETTERS
 
     void setShooterAngle(double angle) {
@@ -105,14 +110,18 @@ class ShooterIO implements ToggledOutputs {
 
     void zero() { pivotMotor.setPosition(0.0); }
 
-    public void transferToAmp() {
+    void transferToAmp() {
         shooterMotor.setControl(transferVelocity);
         shooterMotorFollower.setControl(transferVelocity);
     }
 
-    public void reverseIntake() {
+    void reverseIntake() {
         shooterMotor.setControl(reverseIntakeVelocity);
         shooterMotorFollower.setControl(reverseIntakeVelocity);
+    }
+
+    void setPivotVoltage(double voltage) {
+        pivotMotor.setControl(new VoltageOut(voltage));
     }
 
     // STATES

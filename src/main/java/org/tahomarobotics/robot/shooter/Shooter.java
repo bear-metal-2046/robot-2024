@@ -7,6 +7,7 @@ import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.chassis.Chassis;
+import org.tahomarobotics.robot.identity.RobotIdentity;
 import org.tahomarobotics.robot.util.SubsystemIF;
 import org.tahomarobotics.robot.util.ToggledOutputs;
 
@@ -108,7 +109,11 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
 
         distance = (radialVelocity * TIME_SHOT_OFFSET) + distance;
 
-        setAngle(0.04875446 + (0.201136 - 0.04875446)/(1 + Math.pow((distance/2.019404), 2.137465)) + 0.002);
+        setAngle(switch (RobotIdentity.getInstance().getRobotID()) {
+            // y = 0.07068257 + 0.1999213*e^(-0.5485811*x)
+            case PLAYBEAR_CARTI, BEARITONE -> 0.07068257 + 0.1999213 * Math.pow(Math.E, -0.5485811 * distance);
+            default -> 0.04875446 + (0.201136 - 0.04875446)/(1 + Math.pow((distance/2.019404), 2.137465)) + 0.002;
+        });
     }
 
     // PERIODIC

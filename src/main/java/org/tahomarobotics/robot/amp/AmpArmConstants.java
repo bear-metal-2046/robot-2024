@@ -24,7 +24,7 @@ public class AmpArmConstants {
         switch (RobotIdentity.getInstance().getRobotID()) {
             case PLAYBEAR_CARTI, BEARITONE -> {
                 ARM_STOW_POSE = Units.degreesToRotations(-90.000000);
-                ARM_AMP_POSE = Units.degreesToRotations(72.0703125);
+                ARM_AMP_POSE = Units.degreesToRotations(82.0703125);
                 ARM_TRAP_POSE = Units.degreesToRotations(76.46484375);
                 ARM_SOURCE_POSE = Units.degreesToRotations(68.203125);
             }
@@ -77,7 +77,7 @@ public class AmpArmConstants {
         switch (RobotIdentity.getInstance().getRobotID()) {
             case PLAYBEAR_CARTI, BEARITONE -> {
                 WRIST_MOVING_POSE = Units.degreesToRotations(87.3632);
-                WRIST_AMP_POSE = Units.degreesToRotations(133.505859375);
+                WRIST_AMP_POSE = Units.degreesToRotations(118.505859375);
                 WRIST_TRAP_POSE = Units.degreesToRotations(22.93945312);
                 WRIST_SOURCE_POSE = Units.degreesToRotations(53.7890625);
             }
@@ -102,21 +102,12 @@ public class AmpArmConstants {
     }
 
     static final TalonFXConfiguration wristMotorConfiguration = new TalonFXConfiguration()
-            .withSlot0(switch (RobotIdentity.getInstance().getRobotID()) {
-                case BEARITONE, PLAYBEAR_CARTI ->
-                        new Slot0Configs()
-                            .withKP(63.936)
-                            .withKD(1)
-//                                .withKS(-0.49642)
-                            .withKV(0.5577)
-                            .withKA(1.5929);
-                default -> new Slot0Configs()
-                                .withKP(51.509)
-                                .withKD(1)
-//                                .withKS(-0.14318)
-                                .withKV(0.73388)
-                                .withKA(0.12356);
-            })
+            .withSlot0(new Slot0Configs()
+                    .withKP(51.509)
+                    .withKD(1)
+                    .withKS(-0.14318)
+                    .withKV(0.73388)
+                    .withKA(0.12356))
             .withMotorOutput(new MotorOutputConfigs()
                     .withNeutralMode(NeutralModeValue.Brake)
                     .withInverted(InvertedValue.Clockwise_Positive))

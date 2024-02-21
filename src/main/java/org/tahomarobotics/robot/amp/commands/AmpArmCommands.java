@@ -37,8 +37,9 @@ public class AmpArmCommands {
         ARM_TO_STOW = () -> Commands.sequence(
                 Commands.runOnce(() -> ampArm.setWristPosition(WRIST_MOVING_POSE)),
                 Commands.runOnce(() -> ampArm.setArmPosition(ARM_STOW_POSE)),
-                Commands.waitUntil(ampArm::isArmAtPosition),
-                Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.STOW))
+                Commands.waitUntil(ampArm::isArmAtPosition).alongWith(
+                        Commands.waitUntil(() -> ampArm.getArmPosition() < 0.0)
+                                .andThen(Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.STOW))))
         );
 
         STOW_TO_SOURCE = () -> Commands.sequence(

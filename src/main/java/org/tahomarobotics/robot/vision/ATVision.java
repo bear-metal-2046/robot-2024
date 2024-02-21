@@ -97,6 +97,13 @@ public class ATVision implements ToggledOutputs {
      * @param result - new data from a camera
      */
     private void processVisionUpdate(PhotonPipelineResult result) {
+
+        var speeds = Chassis.getInstance().getCurrentChassisSpeeds();
+
+        if (Math.abs(speeds.vxMetersPerSecond) < 0.1 && Math.abs(speeds.vyMetersPerSecond) < 0.1) {
+            return;
+        }
+
         List<PhotonTrackedTarget> validTargets = new ArrayList<>();
 
         // Limelight can sometimes return tags that do not exist. Filter these out so that we have an accurate count.
@@ -168,10 +175,8 @@ public class ATVision implements ToggledOutputs {
             );
 
             synchronized (poseEstimator) {
-                if (Chassis.getInstance().getCurrentChassisSpeeds().equals(new ChassisSpeeds())) {
-                    poseEstimator.addVisionMeasurement(result.poseMeters(), result.timestamp(), stds);
-                    updates++;
-                }
+                poseEstimator.addVisionMeasurement(result.poseMeters(), result.timestamp(), stds);
+                updates++;
             }
         } else if (result.numTargets() == 1 && distanceToTargets < VisionConstants.SINGLE_TARGET_DISTANCE_THRESHOLD) {
             // Single tag results are not very trustworthy. Do not use headings from them
@@ -183,10 +188,8 @@ public class ATVision implements ToggledOutputs {
             );
 
             synchronized (poseEstimator) {
-                if (Chassis.getInstance().getCurrentChassisSpeeds().equals(new ChassisSpeeds())) {
-                    poseEstimator.addVisionMeasurement(noHdgPose, result.timestamp(), stds);
-                    updates++;
-                }
+                poseEstimator.addVisionMeasurement(noHdgPose, result.timestamp(), stds);
+                updates++;
             }
         }
     }

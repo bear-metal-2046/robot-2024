@@ -2,6 +2,7 @@ package org.tahomarobotics.robot.shooter;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.RobotConfiguration;
@@ -35,6 +36,8 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
 
     @Override
     public SubsystemIF initialize() {
+        SmartDashboard.putBoolean("Outputs/Shooter", OutputsConfiguration.SHOOTER);
+
         io.zero();
 
         return this;
@@ -133,6 +136,6 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
 
     @Override
     public boolean logOutputs() {
-        return OutputsConfiguration.SHOOTER;
+        return SmartDashboard.getBoolean("Outputs/Shooter", OutputsConfiguration.SHOOTER);
     }
 }

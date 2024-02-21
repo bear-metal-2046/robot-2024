@@ -13,6 +13,7 @@ import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
@@ -40,6 +41,8 @@ public class ATVision implements ToggledOutputs {
         this.cameraSettings = cameraSettings;
         this.fieldPose = fieldPose;
         this.poseEstimator = poseEstimator;
+
+        SmartDashboard.putBoolean("Outputs/ATVision", OutputsConfiguration.AT_VISION);
 
         // normally this would the default client connecting to robot
         // connect to server running on camera (for debugging0
@@ -196,7 +199,7 @@ public class ATVision implements ToggledOutputs {
 
     @Override
     public boolean logOutputs() {
-        return OutputsConfiguration.AT_VISION;
+        return SmartDashboard.getBoolean("Outputs/ATVision", OutputsConfiguration.AT_VISION);
     }
 
     public record ATCameraResult(VisionConstants.ATCamera camera, double timestamp, Pose2d poseMeters,

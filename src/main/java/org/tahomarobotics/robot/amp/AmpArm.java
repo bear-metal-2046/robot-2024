@@ -72,7 +72,7 @@ public class AmpArm extends SubsystemIF implements ToggledOutputs {
         return INSTANCE;
     }
 
-    private double getArmPosition() {
+    public double getArmPosition() {
         return BaseStatusSignal.getLatencyCompensatedValue(armPosition.refresh(), armVelocity.refresh());
     }
 

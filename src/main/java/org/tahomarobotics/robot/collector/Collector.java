@@ -18,6 +18,7 @@ import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
+import org.tahomarobotics.robot.util.SysIdTest;
 import org.tahomarobotics.robot.util.ToggledOutputs;
 
 import static org.tahomarobotics.robot.collector.CollectorConstants.*;
@@ -45,6 +46,8 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
     private CollectionState collectionState = CollectionState.DISABLED;
     private DeploymentState deploymentState = DeploymentState.STOWED;
 
+    public SysIdTest test;
+
     private Collector() {
         RobustConfigurator configurator = new RobustConfigurator(logger);
 
@@ -69,6 +72,8 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
         );
 
         ParentDevice.optimizeBusUtilizationForAll(deployLeft, deployRight, collectMotor);
+
+        test = new SysIdTest(this, deployLeft, deployRight);
     }
 
 
@@ -171,8 +176,8 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
     }
 
     public void zeroCollector() {
-        deployLeft.setPosition(0);
-        deployRight.setPosition(0);
+        deployLeft.setPosition(ZERO_POSITION);
+        deployRight.setPosition(ZERO_POSITION);
     }
 
 

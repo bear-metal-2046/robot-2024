@@ -4,6 +4,7 @@ import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.util.Units;
 import org.tahomarobotics.robot.collector.CollectorConstants;
 import org.tahomarobotics.robot.identity.RobotIdentity;
 
@@ -17,21 +18,44 @@ public class AmpArmConstants {
     static final double ARM_MIN_POSE = -90d/360d;
     static final double ARM_MAX_POSE = 90d/360d;
 
-    public static final double ARM_STOW_POSE = -0.25; // Rotations
-    public static final double ARM_AMP_POSE = 0.437255859375; // Rotations
-    public static final double ARM_TRAP_POSE = 0.3; // Rotations
-    public static final double ARM_SOURCE_POSE = 0.396484375; // Rotations
+    public static final double ARM_STOW_POSE, ARM_AMP_POSE, ARM_TRAP_POSE, ARM_SOURCE_POSE;
+
+    static {
+        switch (RobotIdentity.getInstance().getRobotID()) {
+            case PLAYBEAR_CARTI, BEARITONE -> {
+                ARM_STOW_POSE = Units.degreesToRotations(-90.000000);
+                ARM_AMP_POSE = Units.degreesToRotations(82.0703125);
+                ARM_TRAP_POSE = Units.degreesToRotations(76.46484375);
+                ARM_SOURCE_POSE = Units.degreesToRotations(68.203125);
+            }
+            default -> {
+                ARM_STOW_POSE = Units.degreesToRotations(-90.000000);
+                ARM_AMP_POSE = Units.degreesToRotations(157.412109375);
+                ARM_TRAP_POSE = Units.degreesToRotations(108);
+                ARM_SOURCE_POSE = Units.degreesToRotations(142.734375);
+            }
+        }
+    }
 
     static final TalonFXConfiguration armMotorConfiguration = new TalonFXConfiguration()
-            .withSlot0(new Slot0Configs() {{
-                GravityType = GravityTypeValue.Arm_Cosine;
-            }}
-                    .withKP(59.808)
-                    .withKD(9.8046)
-                    .withKS(0.072852)
-                    .withKV(5.3303)
-                    .withKA(0.73507)
-                    .withKG(0.1853))
+            .withSlot0(switch (RobotIdentity.getInstance().getRobotID()) {
+                case BEARITONE, PLAYBEAR_CARTI -> new Slot0Configs()
+                        .withGravityType(GravityTypeValue.Arm_Cosine)
+                        .withKP(58.611)
+                        .withKD(8.7205)
+                        .withKS(0.17479)
+                        .withKV(4.8674)
+                        .withKA(0.59266)
+                        .withKG(0.15206);
+                default -> new Slot0Configs()
+                        .withGravityType(GravityTypeValue.Arm_Cosine)
+                        .withKP(59.808)
+                        .withKD(9.8046)
+                        .withKS(0.072852)
+                        .withKV(5.3303)
+                        .withKA(0.73507)
+                        .withKG(0.1853);
+            })
             .withMotorOutput(new MotorOutputConfigs()
                     .withNeutralMode(NeutralModeValue.Brake)
                     .withInverted(InvertedValue.Clockwise_Positive))
@@ -46,11 +70,25 @@ public class AmpArmConstants {
 
     static final double WRIST_GEAR_REDUCTION;
 
-    public static final double WRIST_MOVING_POSE = 0.18798828125; // Rotations
-    public static final double WRIST_STOW_POSE = 0; // Rotations
-    public static final double WRIST_AMP_POSE = 0.366455078125; // Rotations
-    public static final double WRIST_TRAP_POSE = 0.75; // Rotations
-    public static final double WRIST_SOURCE_POSE = 0.158203125; // Rotations
+    public static final double WRIST_MOVING_POSE, WRIST_AMP_POSE, WRIST_TRAP_POSE, WRIST_SOURCE_POSE;
+    public static final double WRIST_STOW_POSE = 0;
+
+    static {
+        switch (RobotIdentity.getInstance().getRobotID()) {
+            case PLAYBEAR_CARTI, BEARITONE -> {
+                WRIST_MOVING_POSE = Units.degreesToRotations(87.3632);
+                WRIST_AMP_POSE = Units.degreesToRotations(118.505859375);
+                WRIST_TRAP_POSE = Units.degreesToRotations(22.93945312);
+                WRIST_SOURCE_POSE = Units.degreesToRotations(53.7890625);
+            }
+            default -> {
+                WRIST_MOVING_POSE = Units.degreesToRotations(67.67578125);
+                WRIST_AMP_POSE = Units.degreesToRotations(131.923828125);
+                WRIST_TRAP_POSE = Units.degreesToRotations(270);
+                WRIST_SOURCE_POSE = Units.degreesToRotations(56.953125);
+            }
+        }
+    }
 
     static {
         switch (RobotIdentity.getInstance().getRobotID()) {
@@ -69,8 +107,7 @@ public class AmpArmConstants {
                     .withKD(1)
                     .withKS(-0.14318)
                     .withKV(0.73388)
-                    .withKA(0.12356)
-            )
+                    .withKA(0.12356))
             .withMotorOutput(new MotorOutputConfigs()
                     .withNeutralMode(NeutralModeValue.Brake)
                     .withInverted(InvertedValue.Clockwise_Positive))
@@ -99,17 +136,32 @@ public class AmpArmConstants {
     }
 
     static final TalonFXConfiguration rollerMotorConfiguration = new TalonFXConfiguration()
-            .withSlot0(new Slot0Configs()
-                    .withKP(0.93798)
-                    .withKS(0.054983)
-                    .withKV(0.6432)
-                    .withKA(0.27624))
-            .withSlot1(new Slot1Configs()
+            .withSlot0(switch (RobotIdentity.getInstance().getRobotID()) {
+                case BEARITONE, PLAYBEAR_CARTI -> new Slot0Configs()
+                        .withKP(0.3706)
+                        .withKS(0.066923)
+                        .withKV(0.57611)
+                        .withKA(0.21145);
+                default -> new Slot0Configs()
+                        .withKP(0.93798)
+                        .withKS(0.054983)
+                        .withKV(0.6432)
+                        .withKA(0.27624);
+            })
+            .withSlot1(switch (RobotIdentity.getInstance().getRobotID()) {
+                case BEARITONE, PLAYBEAR_CARTI -> new Slot1Configs()
+                        .withKP(55.146)
+                        .withKD(4.4491)
+                        .withKS(0.066923)
+                        .withKV(0.57611)
+                        .withKA(0.21145);
+                default -> new Slot1Configs()
                     .withKP(56.797)
                     .withKD(5.1735)
                     .withKS(0.054983)
                     .withKV(0.6432)
-                    .withKA(0.27624))
+                    .withKA(0.27624);
+            })
             .withMotorOutput(new MotorOutputConfigs()
                     .withNeutralMode(NeutralModeValue.Brake)
                     .withInverted(InvertedValue.Clockwise_Positive))

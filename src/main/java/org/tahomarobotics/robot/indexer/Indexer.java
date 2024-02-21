@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
+import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.collector.CollectorConstants;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.util.RobustConfigurator;
@@ -180,6 +181,53 @@ public class Indexer extends SubsystemIF implements ToggledOutputs {
     public void transitionToEjecting() {
         setState(State.EJECTING);
     }
+    
+    
+    //STATE MACHINE
+    
+    private void stateMachine() {
+        switch (getState()) {
+            case DISABLED -> {
+                disable();
+
+                if (Collector.getInstance().isCollecting() && !hasCollected()) transitionToCollecting();
+                if (Collector.getInstance().isEjecting()) transitionToEjecting();
+            }
+            case COLLECTING -> {
+                collect();
+
+                if (!Collector.getInstance().isCollecting()) transitionToDisabled();
+                if (getCollectorBeanBake()) transitionToIndexing();
+                if (Collector.getInstance().isEjecting()) transitionToEjecting();
+            }
+            case INDEXING -> {
+                index();
+
+                if (Collector.getInstance().isEjecting()) transitionToEjecting();
+            }
+            case EJECTING -> {
+                eject();
+
+                if (!Collector.getInstance().isEjecting()) transitionToDisabled();
+            }
+            case TRANSFERRING -> {
+                transfer();
+
+                if (!getCollectorBeanBake()) transitionToDisabled();
+            }
+            case COLLECTED -> {
+                disable();
+
+                // Fix possible broken state
+                if (!getCollectorBeanBake()) {
+                    logger.error("Indexer in COLLECTED state with no note detected! Transitioning to DISABLED...");
+                    transitionToDisabled();
+                }
+                if (Collector.getInstance().isEjecting()) transitionToEjecting();
+            }
+        }
+    }
+    
 
     // PERIODIC
 
@@ -196,6 +244,8 @@ public class Indexer extends SubsystemIF implements ToggledOutputs {
         recordOutput("Indexer/BeamBreak One", getCollectorBeanBake());
         recordOutput("Indexer/BeamBreak Two", getShooterBeanBake());
         recordOutput("Indexer/Collected", hasCollected());
+        
+        stateMachine();
     }
 
     // STATES

@@ -12,8 +12,6 @@ import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.chassis.commands.TeleopDriveCommand;
 import org.tahomarobotics.robot.collector.Collector;
-import org.tahomarobotics.robot.indexer.Indexer;
-import org.tahomarobotics.robot.indexer.commands.IndexerDefaultCommand;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.commands.ShootCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
@@ -101,8 +99,6 @@ public class OI extends SubsystemIF {
                     inputs.rot = -desensitizePowerBased(driveController.getRightX(), ROTATIONAL_SENSITIVITY);
                 }
         ));
-
-        Indexer.getInstance().setDefaultCommand(new IndexerDefaultCommand());
     }
 
     private static double deadband(double value, double deadZone) {

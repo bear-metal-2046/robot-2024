@@ -22,6 +22,7 @@ import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.identity.RobotIdentity;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.shooter.Shooter;
+import org.tahomarobotics.robot.shuffleboard.OutputsConfigurationTab;
 import org.tahomarobotics.robot.util.BuildConstants;
 import org.tahomarobotics.robot.util.FauxWatchdog;
 import org.tahomarobotics.robot.util.SubsystemIF;
@@ -56,6 +57,8 @@ public class Robot extends LoggedRobot {
         subsystems.add(AmpArm.getInstance().initialize());
         subsystems.add(Indexer.getInstance().initialize());
         subsystems.add(RobotIdentity.getInstance().initialize());
+
+        OutputsConfigurationTab.create();
 
         logger.info("Robot Initialized.");
     }

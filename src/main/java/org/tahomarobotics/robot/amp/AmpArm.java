@@ -198,7 +198,7 @@ public class AmpArm extends SubsystemIF implements ToggledOutputs {
 
     @Override
     public SubsystemIF initialize() {
-        SmartDashboard.putBoolean("Outputs/Shooter", OutputsConfiguration.SHOOTER);
+        SmartDashboard.putBoolean("Outputs/AmpArm", OutputsConfiguration.AMP_ARM);
 
         Commands.waitUntil(RobotState::isEnabled)
                 .andThen(Commands.runOnce(() -> {

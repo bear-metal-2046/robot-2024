@@ -69,7 +69,7 @@ public class AmpArmCommands {
                 Commands.runOnce(() -> {
                     ampArm.setRollerState(AmpArm.RollerState.COLLECTED);
                     indexer.transitionToDisabled();
-                    shooter.disable();
+                    shooter.stop();
                 })
         ).onlyIf(ampArm::isStowed).onlyIf(indexer::hasCollected);
 
@@ -100,16 +100,12 @@ public class AmpArmCommands {
 
         AMP_ARM_CTRL = Commands.deferredProxy(() -> {
             if ((ampArm.isSource() || ampArm.isAmp()) && ampArm.isCollected()) {
-                logger.info("Running Arm to Stow then Feedback...");
                 return Commands.defer(() -> ARM_TO_STOW.get().andThen(FEEDBACK.get()), Set.of(ampArm, indexer, shooter));
             } if (ampArm.isAmp() || ampArm.isSource()) {
-                logger.info("Running Arm to Stow...");
                 return Commands.defer(ARM_TO_STOW, Set.of(ampArm));
             } if (indexer.hasCollected()) {
-                logger.info("Running Feedforward then Stow to Amp...");
                 return Commands.defer(() -> FEEDFORWARD.get().andThen(STOW_TO_AMP.get()), Set.of(ampArm, indexer, shooter));
             } else {
-                logger.info("Running Stow to Source...");
                 return Commands.defer(STOW_TO_SOURCE, Set.of(ampArm));
             }
         });

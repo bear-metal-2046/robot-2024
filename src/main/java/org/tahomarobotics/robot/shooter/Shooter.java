@@ -2,6 +2,8 @@ package org.tahomarobotics.robot.shooter;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.NetworkTableEvent;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -13,6 +15,8 @@ import org.tahomarobotics.robot.identity.RobotIdentity;
 import org.tahomarobotics.robot.shooter.commands.ZeroShooterCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 import org.tahomarobotics.robot.util.ToggledOutputs;
+
+import java.util.EnumSet;
 
 import static org.tahomarobotics.robot.shooter.ShooterConstants.*;
 
@@ -41,7 +45,8 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
     @Override
     public SubsystemIF initialize() {
         SmartDashboard.putBoolean("Outputs/Shooter", OutputsConfiguration.SHOOTER);
-        SmartDashboard.putBoolean("Debug/NoIdleVelocity", false);
+        SmartDashboard.putBoolean("Debug/NoIdleVelocity", true);
+        NetworkTableInstance.getDefault().addListener(SmartDashboard.getEntry("Debug/NoIdleVelocity"), EnumSet.of(NetworkTableEvent.Kind.kValueAll), e -> disable());
 
         Commands.waitUntil(RobotState::isEnabled)
                 .andThen(new ZeroShooterCommand().andThen(Commands.runOnce(this::disable)))

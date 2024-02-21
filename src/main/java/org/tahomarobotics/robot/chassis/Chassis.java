@@ -61,6 +61,8 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
 
     private final PIDController shootModeController;
 
+    private ChassisSpeeds currentChassisSpeeds = new ChassisSpeeds();
+
     // CONSTRUCTOR
 
     private Chassis() {
@@ -175,7 +177,7 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
     }
 
     public ChassisSpeeds getCurrentChassisSpeeds() {
-        return kinematics.toChassisSpeeds(getSwerveModuleStates());
+        return currentChassisSpeeds;
     }
 
     // PERIODIC
@@ -185,8 +187,10 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
         modules.forEach(SwerveModule::periodic);
         Pose2d pose = getPose();
 
+        currentChassisSpeeds = kinematics.toChassisSpeeds(getSwerveModuleStates());
+
         recordOutput("Chassis/States", getSwerveModuleStates());
-        recordOutput("Chassis/DesiredState", getCurrentChassisSpeeds());
+        recordOutput("Chassis/DesiredState", getSwerveModuleDesiredStates());
         recordOutput("Chassis/CurrentChassisSpeeds", getCurrentChassisSpeeds());
         recordOutput("Chassis/Gyro/Yaw", getYaw());
         recordOutput("Chassis/Pose", pose);

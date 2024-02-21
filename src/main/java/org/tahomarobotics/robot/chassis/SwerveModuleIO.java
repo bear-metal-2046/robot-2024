@@ -25,7 +25,7 @@ import java.util.List;
 import static org.tahomarobotics.robot.chassis.ChassisConstants.*;
 
 public class SwerveModuleIO implements ToggledOutputs {
-    private final Logger logger;
+    private static final Logger logger = LoggerFactory.getLogger(SwerveModuleIO.class);
 
     // MEMBER VARIABLES
 
@@ -57,7 +57,6 @@ public class SwerveModuleIO implements ToggledOutputs {
     // CONSTRUCTOR
 
     SwerveModuleIO(RobotMap.SwerveModuleDescriptor descriptor, double angularOffset) {
-        logger = LoggerFactory.getLogger(this.getClass());
         name = "Chassis/Modules/" + descriptor.moduleName();
         configurator = new RobustConfigurator(logger);
 

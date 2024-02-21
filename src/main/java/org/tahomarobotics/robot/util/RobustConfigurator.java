@@ -17,7 +17,7 @@ public class RobustConfigurator {
     private static final int RETRIES = 5;
     private final Logger logger;
 
-    private final String detail;
+    private String detail;
 
     private void retryConfigurator(Supplier<StatusCode> func) {
         boolean success = false;
@@ -51,8 +51,20 @@ public class RobustConfigurator {
         retryConfigurator(() -> configurator.apply(configuration));
     }
 
+    public void configureTalonFX(TalonFX motor, TalonFXConfiguration configuration, String device) {
+        var configurator = motor.getConfigurator();
+        this.detail = " for " + device;
+        retryConfigurator(() -> configurator.apply(configuration));
+    }
+
     public void configureTalonFX(TalonFX motor, TalonFXConfiguration configuration, int encoderId) {
         configuration.Feedback.FeedbackRemoteSensorID = encoderId;
+        configureTalonFX(motor, configuration);
+    }
+
+    public void configureTalonFX(TalonFX motor, TalonFXConfiguration configuration, int encoderId, String device) {
+        configuration.Feedback.FeedbackRemoteSensorID = encoderId;
+        this.detail = " for " + device;
         configureTalonFX(motor, configuration);
     }
 
@@ -75,6 +87,13 @@ public class RobustConfigurator {
 
     public void configureCancoder(CANcoder encoder, MagnetSensorConfigs configuration, double angularOffset) {
         configuration.withMagnetOffset(angularOffset);
+        var configurator = encoder.getConfigurator();
+        retryConfigurator(() -> configurator.apply(configuration));
+    }
+
+    public void configureCancoder(CANcoder encoder, MagnetSensorConfigs configuration, double angularOffset, String device) {
+        configuration.withMagnetOffset(angularOffset);
+        this.detail = " for " + device;
         var configurator = encoder.getConfigurator();
         retryConfigurator(() -> configurator.apply(configuration));
     }

@@ -51,9 +51,9 @@ class ShooterIO implements ToggledOutputs {
         shooterMotor = new TalonFX(RobotMap.TOP_SHOOTER_MOTOR);
         shooterMotorFollower = new TalonFX(RobotMap.BOTTOM_SHOOTER_MOTOR);
 
-        configurator.configureTalonFX(pivotMotor, pivotMotorConfiguration);
-        configurator.configureTalonFX(shooterMotor, shooterMotorConfiguration);
-        configurator.configureTalonFX(shooterMotorFollower, shooterMotorConfiguration);
+        configurator.configureTalonFX(pivotMotor, pivotMotorConfiguration, "pivot motor");
+        configurator.configureTalonFX(shooterMotor, shooterMotorConfiguration, "shooter motor");
+        configurator.configureTalonFX(shooterMotorFollower, shooterMotorConfiguration, "shooter motor follower");
 
         shooterVelocity = shooterMotor.getVelocity();
         pivotPosition = pivotMotor.getPosition();

@@ -48,9 +48,9 @@ public class AmpArm extends SubsystemIF implements ToggledOutputs {
         wristMotor = new TalonFX(RobotMap.WRIST_MOTOR);
         rollersMotor = new TalonFX(RobotMap.ROLLERS_MOTOR);
 
-        configurator.configureTalonFX(armMotor, armMotorConfiguration);
-        configurator.configureTalonFX(wristMotor, wristMotorConfiguration);
-        configurator.configureTalonFX(rollersMotor, rollerMotorConfiguration);
+        configurator.configureTalonFX(armMotor, armMotorConfiguration, "arm motor");
+        configurator.configureTalonFX(wristMotor, wristMotorConfiguration, "wrist motor");
+        configurator.configureTalonFX(rollersMotor, rollerMotorConfiguration, "roller motor");
 
         armPosition = armMotor.getPosition();
         wristPosition = wristMotor.getPosition();

@@ -19,7 +19,10 @@ import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.commands.ShootCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
+import java.util.Set;
+
 import static org.tahomarobotics.robot.amp.commands.AmpArmCommands.AMP_ARM_CTRL;
+import static org.tahomarobotics.robot.amp.commands.AmpArmCommands.ARM_TO_STOW;
 
 public class OI extends SubsystemIF {
     private final static OI INSTANCE = new OI();
@@ -76,6 +79,7 @@ public class OI extends SubsystemIF {
         driveController.rightTrigger(0.5)
                 .whileTrue(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.SCORE))
                 .onlyIf(ampArm::isAmp))
+                .onFalse(Commands.waitSeconds(0.25).andThen(Commands.defer(ARM_TO_STOW, Set.of(ampArm))).onlyIf(ampArm::isAmp))
                 .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));
 
         driveController.leftTrigger(0.01)

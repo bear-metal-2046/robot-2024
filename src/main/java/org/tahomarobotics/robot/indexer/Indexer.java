@@ -61,6 +61,7 @@ public class Indexer extends SubsystemIF implements ToggledOutputs {
     @Override
     public SubsystemIF initialize() {
         SmartDashboard.putData("Reset Indexer", runOnce(() -> setState(State.DISABLED)));
+        SmartDashboard.putBoolean("Outputs/Indexer", OutputsConfiguration.INDEXER);
 
         return this;
     }
@@ -211,6 +212,6 @@ public class Indexer extends SubsystemIF implements ToggledOutputs {
 
     @Override
     public boolean logOutputs() {
-        return OutputsConfiguration.INDEXER;
+        return SmartDashboard.getBoolean("Outputs/Indexer", OutputsConfiguration.INDEXER);
     }
 }

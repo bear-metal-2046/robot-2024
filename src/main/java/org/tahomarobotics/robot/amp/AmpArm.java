@@ -8,6 +8,7 @@ import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.RobotConfiguration;
@@ -64,7 +65,6 @@ public class AmpArm extends SubsystemIF implements ToggledOutputs {
 
         ParentDevice.optimizeBusUtilizationForAll(armMotor, wristMotor, rollersMotor);
     }
-
 
     // GETTERS
 
@@ -198,6 +198,8 @@ public class AmpArm extends SubsystemIF implements ToggledOutputs {
 
     @Override
     public SubsystemIF initialize() {
+        SmartDashboard.putBoolean("Outputs/Shooter", OutputsConfiguration.SHOOTER);
+
         Commands.waitUntil(RobotState::isEnabled)
                 .andThen(Commands.runOnce(() -> {
                     armMotor.setPosition(-0.25);
@@ -229,6 +231,6 @@ public class AmpArm extends SubsystemIF implements ToggledOutputs {
 
     @Override
     public boolean logOutputs() {
-        return OutputsConfiguration.AMP_ARM;
+        return SmartDashboard.getBoolean("Outputs/AmpArm", OutputsConfiguration.AMP_ARM);
     }
 }

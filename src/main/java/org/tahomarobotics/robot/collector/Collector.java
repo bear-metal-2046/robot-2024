@@ -9,6 +9,7 @@ import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.RobotConfiguration;
@@ -75,7 +76,6 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
 
         test = new SysIdTest(this, deployLeft, deployRight);
     }
-
 
     // GETTERS
 
@@ -196,6 +196,7 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
 
     @Override
     public SubsystemIF initialize() {
+        SmartDashboard.putBoolean("Outputs/Collector", OutputsConfiguration.COLLECTOR);
 
         Commands.waitUntil(RobotState::isEnabled)
                 .andThen(new ZeroCollectorCommand())
@@ -220,6 +221,6 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
 
     @Override
     public boolean logOutputs() {
-        return OutputsConfiguration.COLLECTOR;
+        return SmartDashboard.getBoolean("Outputs/Collector", OutputsConfiguration.COLLECTOR);
     }
 }

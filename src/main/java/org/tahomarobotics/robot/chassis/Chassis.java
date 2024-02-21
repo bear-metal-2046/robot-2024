@@ -118,6 +118,8 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
     @Override
     public SubsystemIF initialize() {
         SmartDashboard.putData("Align Swerves", new AlignSwerveCommand());
+        SmartDashboard.putBoolean("Outputs/Chassis", OutputsConfiguration.CHASSIS);
+        SmartDashboard.putBoolean("Outputs/SwerveModules", OutputsConfiguration.SWERVE_MODULE);
 
         gyroIO.zero();
 
@@ -379,6 +381,6 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
 
     @Override
     public boolean logOutputs() {
-        return OutputsConfiguration.CHASSIS;
+        return SmartDashboard.getBoolean("Outputs/Chassis", OutputsConfiguration.CHASSIS);
     }
 }

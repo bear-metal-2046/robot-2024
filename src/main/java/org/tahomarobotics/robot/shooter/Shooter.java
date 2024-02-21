@@ -41,9 +41,10 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
     @Override
     public SubsystemIF initialize() {
         SmartDashboard.putBoolean("Outputs/Shooter", OutputsConfiguration.SHOOTER);
+        SmartDashboard.putBoolean("Debug/NoIdleVelocity", false);
 
         Commands.waitUntil(RobotState::isEnabled)
-                .andThen(new ZeroShooterCommand())
+                .andThen(new ZeroShooterCommand().andThen(Commands.runOnce(this::disable)))
                 .ignoringDisable(true).schedule();
 
         io.zero();
@@ -55,6 +56,10 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
 
     public void disable() {
         io.disable();
+    }
+
+    public void stop() {
+        io.stop();
     }
 
     public void toggleShootMode() {
@@ -155,7 +160,7 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
 
     @Override
     public void onDisabledInit() {
-        disable();
+        stop();
     }
 
     @Override

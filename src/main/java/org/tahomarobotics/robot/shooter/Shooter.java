@@ -3,11 +3,14 @@ package org.tahomarobotics.robot.shooter;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj2.command.Commands;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.identity.RobotIdentity;
+import org.tahomarobotics.robot.shooter.commands.ZeroShooterCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 import org.tahomarobotics.robot.util.ToggledOutputs;
 
@@ -38,6 +41,10 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
     @Override
     public SubsystemIF initialize() {
         SmartDashboard.putBoolean("Outputs/Shooter", OutputsConfiguration.SHOOTER);
+
+        Commands.waitUntil(RobotState::isEnabled)
+                .andThen(new ZeroShooterCommand())
+                .ignoringDisable(true).schedule();
 
         io.zero();
 
@@ -100,6 +107,10 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
         return io.isAtAngle();
     }
 
+    public double getPivotVelocity() {
+        return io.getPivotVelocity();
+    }
+
     public void angleToSpeaker(double radialVelocity) {
 
         Translation2d target = SPEAKER_TARGET_POSITION.get();
@@ -114,6 +125,14 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
             case PLAYBEAR_CARTI, BEARITONE -> 0.07068257 + 0.1999213 * Math.pow(Math.E, -0.5485811 * distance);
             default -> 0.04875446 + (0.201136 - 0.04875446)/(1 + Math.pow((distance/2.019404), 2.137465)) + 0.002;
         });
+    }
+
+    public void setPivotVoltage(double voltage) {
+        io.setPivotVoltage(voltage);
+    }
+
+    public void zero() {
+        io.zero();
     }
 
     // PERIODIC

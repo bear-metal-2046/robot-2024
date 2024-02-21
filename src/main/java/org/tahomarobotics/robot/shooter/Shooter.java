@@ -55,11 +55,7 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
     // SETTERS
 
     public void disable() {
-        if (SmartDashboard.getBoolean("Debug/NoIdleVelocity", false)) {
-            io.stop();
-        } else {
-            io.disable();
-        }
+        io.disable();
     }
 
     public void stop() {

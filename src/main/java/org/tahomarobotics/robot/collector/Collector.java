@@ -199,6 +199,7 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
         SmartDashboard.putBoolean("Outputs/Collector", OutputsConfiguration.COLLECTOR);
 
         Commands.waitUntil(RobotState::isEnabled)
+                .andThen(Commands.waitSeconds(0.25))
                 .andThen(new ZeroCollectorCommand())
                 .ignoringDisable(true).schedule();
 

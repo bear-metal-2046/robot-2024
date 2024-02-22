@@ -1,11 +1,13 @@
 package org.tahomarobotics.robot.shooter.commands;
 
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.shooter.Shooter;
+import org.tahomarobotics.robot.shooter.ShooterConstants;
 
 public class ShootCommand extends SequentialCommandGroup {
     private static final Logger logger = LoggerFactory.getLogger(ShootCommand.class);
@@ -19,9 +21,9 @@ public class ShootCommand extends SequentialCommandGroup {
                 Commands.sequence(
                         Commands.waitUntil(shooter::isReadyToShoot),
                         Commands.runOnce(indexer::transitionToTransferring),
-                        Commands.waitUntil(() -> !indexer.isTransferring()),
-                        Commands.waitSeconds(0.5),
-                        Commands.runOnce(shooter::disable)
+                        Commands.waitSeconds(0.1),
+                        Commands.either(Commands.runOnce(shooter::disable), Commands.runOnce(shooter::disableShootMode), () -> !RobotState.isAutonomous()),
+                        Commands.runOnce(() -> shooter.setAngle(ShooterConstants.SHOOTER_COLLECT_PIVOT_ANGLE))
                 ).onlyIf(shooter::inShootingMode)
         );
     }

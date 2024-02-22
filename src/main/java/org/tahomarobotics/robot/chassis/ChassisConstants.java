@@ -24,6 +24,7 @@ import com.pathplanner.lib.util.PIDConstants;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.identity.RobotIdentity;
 
@@ -70,7 +71,11 @@ public final class ChassisConstants {
     public static final PIDConstants AUTO_TRANSLATION_PID = new PIDConstants(1.5,0,0.5);
     public static final PIDConstants AUTO_ROTATION_PID = new PIDConstants(1.5, 0, 0);
 
-    public static final PIDController SHOOT_MODE_CONTROLLER = new PIDController(5, 0, 0.5);
+    private static final double SHOOT_ROTATION_TARGET_TOLERANCE = Units.degreesToRadians(10);
+
+    public static final PIDController SHOOT_MODE_CONTROLLER = new PIDController(5, 0, 0.5) {{
+        setTolerance(SHOOT_ROTATION_TARGET_TOLERANCE);
+    }};
 
     public static final double DRIVE_SUPPLY_CURRENT_LIMIT = 40.0; // Amps
     public static final double DRIVE_STATOR_CURRENT_LIMIT = 80.0;

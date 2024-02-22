@@ -16,10 +16,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.amp.commands.AmpArmCommands;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.collector.Collector;
+import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.commands.ShootCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
@@ -30,10 +32,12 @@ import java.util.List;
 import java.util.Optional;
 
 public class Autonomous extends SubsystemIF {
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Autonomous.class);
     private static final Autonomous INSTANCE = new Autonomous();
     private final Chassis chassis = Chassis.getInstance();
     private final Collector collector = Collector.getInstance();
     private final Shooter shooter = Shooter.getInstance();
+    private final Indexer indexer = Indexer.getInstance();
     private final AmpArm ampArm = AmpArm.getInstance();
     private final LoggedDashboardChooser<Command> autoChooser;
     private final Field2d fieldPose;
@@ -45,10 +49,11 @@ public class Autonomous extends SubsystemIF {
     }
 
     private Autonomous() {
-        autoChooser = PathPlannerHelper.getAutoChooser(chassis);
+
+
 
         NetworkTableInstance netInstance = NetworkTableInstance.getDefault();
-        StringSubscriber autoSub = netInstance.getTable("SmartDashboard/Auto").getStringTopic("selected").subscribe("Test Auto");
+        StringSubscriber autoSub = netInstance.getTable("SmartDashboard/Auto").getStringTopic("selected").subscribe("");
         fieldPose = chassis.getField();
         netInstance.addListener(
                 autoSub,
@@ -56,15 +61,12 @@ public class Autonomous extends SubsystemIF {
                 e -> new InstantCommand(() -> postAutoTrajectory(fieldPose, autoSub.get())).ignoringDisable(true).schedule()
         );
 
-        NamedCommands.registerCommand("ResetOdometry", Commands.runOnce(() -> chassis.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.get().getName()))));
-
         NamedCommands.registerCommand("Shoot",
-                Commands.runOnce(shooter::toggleShootMode)
+                Commands.waitUntil(indexer::hasCollected).andThen(Commands.runOnce(shooter::enable))
                         .andThen(new ShootCommand()));
 
-        NamedCommands.registerCommand("CollectorDown",
-                Commands.runOnce(collector::toggleDeploy)
-                        .andThen(() -> collector.setCollectionState(Collector.CollectionState.COLLECTING)));
+        NamedCommands.registerCommand("CollectorDown", Commands.runOnce(collector::setDeployed)
+                .andThen(Commands.runOnce(() -> collector.setCollectionState(Collector.CollectionState.COLLECTING))));
 
         NamedCommands.registerCommand("CollectorUp",
                 Commands.runOnce(collector::toggleDeploy));
@@ -80,6 +82,8 @@ public class Autonomous extends SubsystemIF {
         NamedCommands.registerCommand("AmpArmToStow",
                 Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.STOW))
                         .andThen(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));
+
+        autoChooser = PathPlannerHelper.getAutoChooser(chassis);
     }
 
     public Command getSelectedAuto() {

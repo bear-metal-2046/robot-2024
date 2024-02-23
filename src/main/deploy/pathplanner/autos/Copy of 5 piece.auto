@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7635575631511622,
-      "y": 4.483681039434152
+      "x": 0.7543128599770712,
+      "y": 4.428212820389605
     },
-    "rotation": -58.57043438516156
+    "rotation": -60.52411099675428
   },
   "command": {
     "type": "sequential",
@@ -16,9 +16,9 @@
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "Shoot"
+                  "pathName": "5 Piece 1"
                 }
               },
               {
@@ -28,37 +28,30 @@
                 }
               },
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "5 Piece 1"
+                  "name": "Shoot"
                 }
               }
             ]
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Shoot"
+            "pathName": "6 piece wavyyy"
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "5 piece 2"
-                }
-              }
-            ]
+            "pathName": "5 piece 3"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Shoot"
+            "pathName": "5 piece 4"
           }
         }
       ]

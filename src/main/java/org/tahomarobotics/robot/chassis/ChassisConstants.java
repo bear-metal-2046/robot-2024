@@ -71,7 +71,7 @@ public final class ChassisConstants {
     public static final PIDConstants AUTO_TRANSLATION_PID = new PIDConstants(1.5,0,0.5);
     public static final PIDConstants AUTO_ROTATION_PID = new PIDConstants(1.5, 0, 0);
 
-    private static final double SHOOT_ROTATION_TARGET_TOLERANCE = Units.degreesToRadians(10);
+    private static final double SHOOT_ROTATION_TARGET_TOLERANCE = Units.degreesToRadians(5.0);
 
     public static final PIDController SHOOT_MODE_CONTROLLER = new PIDController(5, 0, 0.5) {{
         setTolerance(SHOOT_ROTATION_TARGET_TOLERANCE);

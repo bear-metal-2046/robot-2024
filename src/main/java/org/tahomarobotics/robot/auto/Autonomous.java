@@ -11,6 +11,7 @@ import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -21,11 +22,14 @@ import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.amp.commands.AmpArmCommands;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.collector.Collector;
+import org.tahomarobotics.robot.collector.commands.ZeroCollectorCommand;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.commands.ShootCommand;
+import org.tahomarobotics.robot.shooter.commands.ZeroShooterCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -50,8 +54,6 @@ public class Autonomous extends SubsystemIF {
 
     private Autonomous() {
 
-
-
         NetworkTableInstance netInstance = NetworkTableInstance.getDefault();
         StringSubscriber autoSub = netInstance.getTable("SmartDashboard/Auto").getStringTopic("selected").subscribe("");
         fieldPose = chassis.getField();
@@ -62,7 +64,7 @@ public class Autonomous extends SubsystemIF {
         );
 
         NamedCommands.registerCommand("Shoot",
-                Commands.waitUntil(indexer::hasCollected).andThen(Commands.runOnce(shooter::enable))
+                Commands.race(Commands.waitUntil(indexer::hasCollected), Commands.waitSeconds(1)).andThen(Commands.runOnce(shooter::enable))
                         .andThen(new ShootCommand()));
 
         NamedCommands.registerCommand("CollectorDown", Commands.runOnce(collector::setDeployed)
@@ -132,6 +134,9 @@ public class Autonomous extends SubsystemIF {
     }
 
     public void postAutoTrajectory(Field2d field, String autoName) {
+        if (autoName.equalsIgnoreCase("InstantCommand") || autoName.isEmpty()) {
+            return;
+        }
         var autoPaths = PathPlannerAuto.getPathGroupFromAutoFile(autoName);
         if (!autoPaths.isEmpty()) {
             var firstPath = autoPaths.get(0);

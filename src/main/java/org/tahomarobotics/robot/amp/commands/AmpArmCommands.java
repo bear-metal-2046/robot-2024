@@ -102,11 +102,11 @@ public class AmpArmCommands {
             if ((ampArm.isSource() || ampArm.isAmp()) && ampArm.isCollected()) {
                 return Commands.defer(() -> ARM_TO_STOW.get().andThen(FEEDBACK.get()), Set.of(ampArm, indexer, shooter));
             } if (ampArm.isAmp() || ampArm.isSource()) {
-                return Commands.defer(ARM_TO_STOW, Set.of(ampArm));
+                return Commands.defer(() -> ARM_TO_STOW.get().andThen(Commands.runOnce(shooter::disable)), Set.of(ampArm, shooter));
             } if (indexer.hasCollected()) {
                 return Commands.defer(() -> FEEDFORWARD.get().andThen(STOW_TO_AMP.get()), Set.of(ampArm, indexer, shooter));
             } else {
-                return Commands.defer(STOW_TO_SOURCE, Set.of(ampArm));
+                return Commands.defer(() -> STOW_TO_SOURCE.get().andThen(Commands.runOnce(shooter::stop)), Set.of(ampArm));
             }
         });
     }

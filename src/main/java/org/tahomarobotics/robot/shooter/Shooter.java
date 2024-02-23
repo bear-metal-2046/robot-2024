@@ -63,6 +63,10 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
         io.disableShooter();
     }
 
+    public void idle() {
+        io.idle();
+    }
+
     public void enable() {
         io.enableShooter();
     }

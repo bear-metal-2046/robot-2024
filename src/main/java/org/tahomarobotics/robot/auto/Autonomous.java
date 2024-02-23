@@ -128,7 +128,7 @@ public class Autonomous extends SubsystemIF {
     }
 
     private void postAutoTrajectory(Field2d field, String autoName) {
-        if (autoName.equals(AutoConstants.DEFAULT_AUTO_NAME)) {
+        if (autoName == null || autoName.equals(AutoConstants.DEFAULT_AUTO_NAME)) {
             chassis.resetOdometry(new Pose2d());
             field.getObject("Trajectory").setTrajectory(new Trajectory());
             return;

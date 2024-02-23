@@ -6,6 +6,10 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import org.tahomarobotics.robot.amp.commands.AmpArmCommands;
 import org.tahomarobotics.robot.climbers.ClimberConstants;
 
+@Deprecated
+// We do not plan to declimb at all this season, and the hooks are not shaped
+// currently to be friendly to a declimb.
+
 public class DeclimbSequence extends SequentialCommandGroup {
     public DeclimbSequence() {
         super(

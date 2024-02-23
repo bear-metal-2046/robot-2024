@@ -11,4 +11,5 @@ public class OutputsConfiguration {
     public static final boolean SHOOTER = false;
     public static final boolean AMP_ARM = false;
     public static final boolean AT_VISION = false;
+    public static final boolean OBJECT_DETECTION = false;
 }

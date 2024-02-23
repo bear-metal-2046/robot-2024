@@ -1,7 +1,6 @@
 package org.tahomarobotics.robot.chassis;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.StatusCode;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
@@ -28,6 +27,7 @@ import org.tahomarobotics.robot.util.CalibrationData;
 import org.tahomarobotics.robot.util.SubsystemIF;
 import org.tahomarobotics.robot.util.ToggledOutputs;
 import org.tahomarobotics.robot.vision.ATVision;
+import org.tahomarobotics.robot.vision.ObjectDetectionCamera;
 import org.tahomarobotics.robot.vision.VisionConstants;
 
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
     private final CalibrationData<Double[]> swerveCalibration;
 
     private final ATVision collectorLeftVision;
-    private final ATVision collectorRightVision;
+    private final ObjectDetectionCamera collectorRightVision;
     private final ATVision shooterLeftVision;
     private final ATVision shooterRightVision;
 
@@ -108,10 +108,10 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
         odometryThread.start();
 
 
-        collectorLeftVision = new ATVision(VisionConstants.ATCamera.COLLECTOR_LEFT, fieldPose, poseEstimator);
-        collectorRightVision = new ATVision(VisionConstants.ATCamera.COLLECTOR_RIGHT, fieldPose, poseEstimator);
-        shooterLeftVision = new ATVision(VisionConstants.ATCamera.SHOOTER_LEFT, fieldPose, poseEstimator);
-        shooterRightVision = new ATVision(VisionConstants.ATCamera.SHOOTER_RIGHT, fieldPose, poseEstimator);
+        collectorLeftVision = new ATVision(VisionConstants.Camera.COLLECTOR_LEFT, fieldPose, poseEstimator);
+        collectorRightVision = new ObjectDetectionCamera(VisionConstants.Camera.COLLECTOR_RIGHT);
+        shooterLeftVision = new ATVision(VisionConstants.Camera.SHOOTER_LEFT, fieldPose, poseEstimator);
+        shooterRightVision = new ATVision(VisionConstants.Camera.SHOOTER_RIGHT, fieldPose, poseEstimator);
     }
 
     public static Chassis getInstance() {

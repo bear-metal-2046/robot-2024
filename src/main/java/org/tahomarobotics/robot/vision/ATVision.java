@@ -32,12 +32,12 @@ public class ATVision implements ToggledOutputs {
     private static final Logger logger = LoggerFactory.getLogger(ATVision.class);
     private final PhotonCamera camera;
     private final AprilTagFieldLayout fieldLayout;
-    private final VisionConstants.ATCamera cameraSettings;
+    private final VisionConstants.Camera cameraSettings;
     private final Field2d fieldPose;
     private final SwerveDrivePoseEstimator poseEstimator;
     private int updates = 0;
 
-    public ATVision(VisionConstants.ATCamera cameraSettings, Field2d fieldPose, SwerveDrivePoseEstimator poseEstimator) {
+    public ATVision(VisionConstants.Camera cameraSettings, Field2d fieldPose, SwerveDrivePoseEstimator poseEstimator) {
         this.cameraSettings = cameraSettings;
         this.fieldPose = fieldPose;
         this.poseEstimator = poseEstimator;
@@ -202,7 +202,7 @@ public class ATVision implements ToggledOutputs {
         return SmartDashboard.getBoolean("Outputs/ATVision", OutputsConfiguration.AT_VISION);
     }
 
-    public record ATCameraResult(VisionConstants.ATCamera camera, double timestamp, Pose2d poseMeters,
+    public record ATCameraResult(VisionConstants.Camera camera, double timestamp, Pose2d poseMeters,
                                  double distanceToTargets, int numTargets) {
     }
 }

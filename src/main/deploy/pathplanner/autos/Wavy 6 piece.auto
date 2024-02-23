@@ -18,7 +18,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "5 Piece 1"
+                  "pathName": "6 Piece 1"
                 }
               },
               {
@@ -45,13 +45,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "5 piece 3"
+            "pathName": "6 piece 3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "5 piece 4"
+            "pathName": "6 piece 4"
           }
         }
       ]

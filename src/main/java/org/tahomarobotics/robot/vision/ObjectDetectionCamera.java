@@ -57,7 +57,7 @@ public class ObjectDetectionCamera implements ToggledOutputs {
 
         double yOffset = (Math.tan(Units.degreesToRadians(-target.getYaw())) * xOffset) + cameraSettings.offset.getY();
 
-        notePosition = new Translation3d(xOffset, yOffset, Units.inchesToMeters(1) - cameraSettings.offset.getZ());
+        notePosition = new Translation3d(xOffset, yOffset, Units.inchesToMeters(1));
         recordOutput("Object Detection/Note Position", notePosition);
     }
 

@@ -128,7 +128,7 @@ public class AmpArm extends SubsystemIF {
                 setWristPosition(WRIST_TRAP_POSE);
             }
             case CLIMB -> {
-                setArmPosition(ARM_CLIMB_POSE);
+                setArmPosition(ARM_TRAP_POSE);
                 setWristPosition(WRIST_MOVING_POSE);
             }
         }

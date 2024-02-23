@@ -55,11 +55,11 @@ public class Robot extends LoggedRobot {
         subsystems.add(OI.getInstance().initialize());
         subsystems.add(Chassis.getInstance().initialize());
         subsystems.add(Collector.getInstance().initialize());
-        subsystems.add(Autonomous.getInstance().initialize());
         subsystems.add(Shooter.getInstance().initialize());
         subsystems.add(AmpArm.getInstance().initialize());
         subsystems.add(Indexer.getInstance().initialize());
         subsystems.add(RobotIdentity.getInstance().initialize());
+        subsystems.add(Autonomous.getInstance().initialize());
 
         OutputsConfigurationTab.create();
 

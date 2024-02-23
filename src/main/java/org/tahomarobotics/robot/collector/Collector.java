@@ -50,6 +50,7 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
 
     private boolean isCollecting;
     private boolean isEjecting;
+    private boolean isZeroed;
 
     private Collector() {
         RobustConfigurator configurator = new RobustConfigurator(logger);
@@ -105,12 +106,10 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
 
     public void toggleDeploy() {
         if (deploymentState == DeploymentState.STOWED || deploymentState == DeploymentState.EJECT) {
-            deploymentState = DeploymentState.DEPLOYED;
-            setDeployPosition(COLLECT_POSITION);
+            setDeployed();
             Shooter.getInstance().setAngle(ShooterConstants.SHOOTER_COLLECT_PIVOT_ANGLE);
         } else {
-            deploymentState = DeploymentState.STOWED;
-            setDeployPosition(STOW_POSITION);
+            setStowed();
         }
     }
 
@@ -121,6 +120,16 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
     public void setDeployEject() {
         deploymentState = DeploymentState.EJECT;
         setDeployPosition(EJECT_POSITION);
+    }
+
+    public void setDeployed() {
+        deploymentState = DeploymentState.DEPLOYED;
+        setDeployPosition(COLLECT_POSITION);
+    }
+
+    public void setStowed() {
+        deploymentState = DeploymentState.STOWED;
+        setDeployPosition(STOW_POSITION);
     }
 
 
@@ -186,6 +195,12 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
     public void zeroCollector() {
         deployLeft.setPosition(ZERO_POSITION);
         deployRight.setPosition(ZERO_POSITION);
+
+        isZeroed = true;
+    }
+
+    public boolean isZeroed() {
+        return isZeroed;
     }
 
 
@@ -263,6 +278,13 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
                 .andThen(Commands.waitSeconds(0.25))
                 .andThen(new ZeroCollectorCommand())
                 .ignoringDisable(true).schedule();
+
+        Commands.waitUntil(() -> RobotState.isEnabled() && RobotState.isTeleop())
+                .andThen(Commands.print("ZEROING COLLECTOR"))
+                .andThen(Commands.waitSeconds(0.25))
+                .andThen(new ZeroCollectorCommand().onlyIf(() -> !isZeroed()))
+                .ignoringDisable(true)
+                .schedule();
 
         return this;
     }

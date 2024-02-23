@@ -12,6 +12,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -43,6 +44,8 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
     // Member Variables
     private final List<SwerveModule> modules;
 
+    private ChassisSpeeds desiredSpeeds = new ChassisSpeeds();
+
     private final SwerveDrivePoseEstimator poseEstimator;
 
     private final Field2d fieldPose = new Field2d();
@@ -60,6 +63,8 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
     private boolean isFieldOriented = true;
 
     private final PIDController shootModeController;
+
+    private double targetShootingAngle;
 
     private ChassisSpeeds currentChassisSpeeds = new ChassisSpeeds();
 
@@ -196,9 +201,22 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
         recordOutput("Chassis/CurrentChassisSpeeds", getCurrentChassisSpeeds());
         recordOutput("Chassis/Gyro/Yaw", getYaw());
         recordOutput("Chassis/Pose", pose);
+        recordOutput("Chassis/isAtShootingAngle", isReadyToShoot());
+        recordOutput("Chassis/target shooting angle", targetShootingAngle);
 
         fieldPose.setRobotPose(pose);
         SmartDashboard.putData(fieldPose);
+
+        if (RobotState.isEnabled()) {
+
+            if (Shooter.getInstance().inShootingMode()) {
+                aimToSpeaker(desiredSpeeds);
+            }
+
+            var swerveModuleStates = kinematics.toSwerveModuleStates(desiredSpeeds);
+            SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, ChassisConstants.MAX_VELOCITY);
+            setSwerveStates(swerveModuleStates);
+        }
     }
 
     @Override
@@ -220,27 +238,11 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
             velocity = ChassisSpeeds.fromFieldRelativeSpeeds(velocity, getPose().getRotation());
         }
 
-        if (Shooter.getInstance().inShootingMode()) {
-            aimToSpeaker(velocity);
-        }
-
-        velocity = ChassisSpeeds.discretize(velocity, Robot.defaultPeriodSecs);
-
-        var swerveModuleStates = kinematics.toSwerveModuleStates(velocity);
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, ChassisConstants.MAX_VELOCITY);
-        setSwerveStates(swerveModuleStates);
+        desiredSpeeds = ChassisSpeeds.discretize(velocity, Robot.defaultPeriodSecs);
     }
 
     public void autoDrive(ChassisSpeeds velocity) {
-        velocity = ChassisSpeeds.discretize(velocity, Robot.defaultPeriodSecs);
-
-        if (Shooter.getInstance().inShootingMode()) {
-            aimToSpeaker(velocity);
-        }
-
-        var swerveModuleStates = kinematics.toSwerveModuleStates(velocity);
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, ChassisConstants.MAX_VELOCITY);
-        setSwerveStates(swerveModuleStates);
+        desiredSpeeds = ChassisSpeeds.discretize(velocity, Robot.defaultPeriodSecs);
     }
 
     // SETTERS
@@ -283,13 +285,19 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
             adjSpeed *= -1;
         }
 
+        targetShootingAngle = goalRot + adj;
+
         fieldPose.getObject("goal").setPose(new Pose2d(goal, new Rotation2d()));
 
         speeds.omegaRadiansPerSecond =
                 shootModeController.calculate(
                         pose.getRotation().getRadians(),
-                        goalRot + adj
+                        targetShootingAngle
                 ) - adjSpeed;
+    }
+
+    public boolean isReadyToShoot() {
+        return shootModeController.atSetpoint();
     }
 
     private void setSwerveStates(SwerveModuleState[] states) {
@@ -347,7 +355,7 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
         while (true) {
 
             // Wait for all signals to arrive
-            StatusCode status = BaseStatusSignal.waitForAll(2 / RobotConfiguration.ODOMETRY_UPDATE_FREQUENCY, signals);
+            StatusCode status = BaseStatusSignal.waitForAll(8 / RobotConfiguration.ODOMETRY_UPDATE_FREQUENCY, signals);
 
             if (status.isError()) logger.error("Failed to waitForAll updates" + status.getDescription());
 

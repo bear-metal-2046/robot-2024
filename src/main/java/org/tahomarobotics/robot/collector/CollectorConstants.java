@@ -43,7 +43,7 @@ public class CollectorConstants {
     }
     
     private final static double SUPPLY_CURRENT_LIMIT = 40;
-    private final static double STATOR_CURRENT_LIMIT = 60;
+    private final static double STATOR_CURRENT_LIMIT = 80;
 
     static final TalonFXConfiguration collectMotorConfiguration = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()

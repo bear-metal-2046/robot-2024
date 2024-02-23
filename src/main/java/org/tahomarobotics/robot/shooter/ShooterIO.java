@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
+import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.ToggledOutputs;
@@ -88,7 +89,7 @@ class ShooterIO implements ToggledOutputs {
     }
 
     boolean isReadyToShoot() {
-        return isAtAngle() && isSpinningAtVelocity();
+        return isAtAngle() && isSpinningAtVelocity() && Chassis.getInstance().isReadyToShoot();
     }
 
     boolean inShootingMode() {
@@ -127,14 +128,14 @@ class ShooterIO implements ToggledOutputs {
 
     // STATES
 
-    void enable() {
+    void enableShooter() {
         shootingMode = true;
 
         shooterMotor.setControl(motorVelocity);
         shooterMotorFollower.setControl(motorVelocity);
     }
 
-    void disable() {
+    void disableShooter() {
         if (SmartDashboard.getBoolean("Debug/NoIdleVelocity", false)) {
             stop();
         } else {
@@ -154,10 +155,18 @@ class ShooterIO implements ToggledOutputs {
 
     void toggleShootMode() {
         if (shootingMode) {
-            disable();
+            disableShooter();
         } else if (Indexer.getInstance().hasCollected()){
-            enable();
+            enableShooter();
         }
+    }
+
+    void enableShootMode() {
+        shootingMode = true;
+    }
+
+    void disableShootMode() {
+        shootingMode = false;
     }
 
     // INPUTS

@@ -1,10 +1,10 @@
 {
-  "robotWidth": 0.71,
-  "robotLength": 0.71,
+  "robotWidth": 0.915,
+  "robotLength": 0.92,
   "holonomicMode": true,
   "pathFolders": [
-    "4 piece speaker paths",
-    "Fast 4 piece speaker"
+    "6 piece auto paths",
+    "Weird 6 piece auto paths"
   ],
   "autoFolders": [],
   "defaultMaxVel": 3.0,

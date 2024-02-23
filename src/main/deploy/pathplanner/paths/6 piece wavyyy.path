@@ -1,0 +1,109 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.409114728139366,
+        "y": 4.38198930451915
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 0.430748248883885,
+        "y": 5.389661950495073
+      },
+      "isLocked": false,
+      "linkedName": "1st col"
+    },
+    {
+      "anchor": {
+        "x": 2.8158816677993714,
+        "y": 5.657758342543713
+      },
+      "prevControl": {
+        "x": 2.797964237721823,
+        "y": 5.406914321458033
+      },
+      "nextControl": {
+        "x": 2.8343710741475534,
+        "y": 5.916610031418261
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.686455823362097,
+        "y": 6.813346239305091
+      },
+      "prevControl": {
+        "x": 0.5971529060175237,
+        "y": 6.36035578377463
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.75,
+      "rotationDegrees": 21.216858524556514,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Shoot"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 1.05,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Shoot"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 1.5,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 31.476839349583997,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Weird 6 piece auto paths",
+  "previewStartingState": {
+    "rotation": -26.565051177078058,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

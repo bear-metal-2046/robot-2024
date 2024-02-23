@@ -60,7 +60,19 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
     // SETTERS
 
     public void disable() {
-        io.disable();
+        io.disableShooter();
+    }
+
+    public void enable() {
+        io.enableShooter();
+    }
+
+    public void disableShootMode() {
+        io.disableShootMode();
+    }
+
+    public void enableShootMode() {
+        io.enableShootMode();
     }
 
     public void stop() {
@@ -109,6 +121,10 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
         return io.isReadyToShoot();
     }
 
+    public boolean isSpinningAtVelocity() {
+        return io.isSpinningAtVelocity();
+    }
+
     public boolean inShootingMode() {
         return io.inShootingMode();
     }
@@ -155,6 +171,10 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
         Logger.processInputs("Shooter", inputs);
 
         recordOutput("Shooter/Bias", biasAngle);
+        recordOutput("Shooter/Distance To Speaker", distance);
+        recordOutput("Shooter/Is at Angle", isAtAngle());
+        recordOutput("Shooter/Is Spinning At velocity", isSpinningAtVelocity());
+        recordOutput("Shooter/Is In Shooting Mode", inShootingMode());
         recordOutput("Shooter/Distance", distance);
         recordOutput("Shooter/Velocity", getShooterVelocity());
         recordOutput("Shooter/Angle", getPivotPosition());

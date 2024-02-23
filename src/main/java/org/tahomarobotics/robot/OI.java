@@ -64,8 +64,6 @@ public class OI extends SubsystemIF {
         //Shooting mode toggle
         driveController.rightBumper().onTrue(Commands.runOnce(shooter::toggleShootMode));
 
-        // Shoot
-        driveController.x().onTrue(new ShootCommand());
 
         driveController.povUp().whileTrue(Commands.run(shooter::biasUp));
         driveController.povDown().whileTrue(Commands.run(shooter::biasDown));
@@ -79,6 +77,7 @@ public class OI extends SubsystemIF {
                 .onFalse(Commands.waitSeconds(0.25).andThen(
                         Commands.defer(() -> ARM_TO_STOW.get().andThen(Commands.runOnce(shooter::disable)),
                         Set.of(ampArm))).onlyIf(ampArm::isAmp))
+                .onTrue(new ShootCommand())
                 .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));
 
         driveController.leftTrigger(0.01)

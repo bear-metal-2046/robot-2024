@@ -353,12 +353,8 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
 
 
         while (true) {
-
             // Wait for all signals to arrive
-            StatusCode status = BaseStatusSignal.waitForAll(8 / RobotConfiguration.ODOMETRY_UPDATE_FREQUENCY, signals);
-
-            if (status.isError()) logger.error("Failed to waitForAll updates" + status.getDescription());
-
+            BaseStatusSignal.waitForAll(4 / RobotConfiguration.ODOMETRY_UPDATE_FREQUENCY, signals);
             updatePosition();
         }
     }

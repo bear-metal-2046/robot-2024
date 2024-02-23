@@ -139,11 +139,15 @@ class ShooterIO implements ToggledOutputs {
         if (SmartDashboard.getBoolean("Debug/NoIdleVelocity", false)) {
             stop();
         } else {
-            shootingMode = false;
-
-            shooterMotor.setControl(idleVelocity);
-            shooterMotorFollower.setControl(idleVelocity);
+            idle();
         }
+    }
+
+    void idle() {
+        shootingMode = false;
+
+        shooterMotor.setControl(idleVelocity);
+        shooterMotorFollower.setControl(idleVelocity);
     }
 
     void stop() {

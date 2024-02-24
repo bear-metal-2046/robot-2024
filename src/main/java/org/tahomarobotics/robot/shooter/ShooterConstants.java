@@ -16,7 +16,9 @@ public class ShooterConstants {
     public static final double IDLE_SPEED; // rps
     public static final double TRANSFER_VELOCITY = 10; // rps
 
-    public static final double TIME_SHOT_OFFSET = 0.5;
+    public static final double TIME_SHOT_OFFSET_POSITIVE = 0.8;  // The number of seconds forward in time the shooter
+                                                                 // should calculate for when moving away from the speaker
+    public static final double TIME_SHOT_OFFSET_NEGATIVE = 0.25; // The same as ^ but for moving towards the speaker
 
     static final double SHOOTER_SPEED_TOLERANCE = 2.5; // rps
     public static final double MAX_PIVOT_ANGLE;
@@ -48,7 +50,7 @@ public class ShooterConstants {
         }
     }
 
-    public static final double SHOT_SPEED = Units.inchesToMeters(Units.rotationsToRadians(SHOOTER_SPEED) * (1.75)) * 0.5; // meters/sec
+    public static final double SHOT_SPEED = Units.inchesToMeters(Units.rotationsToRadians(SHOOTER_SPEED) * (1.75)) * 0.8; // meters/sec
 
     static final double BIAS_AMT = Units.degreesToRotations(5) / 50;
 

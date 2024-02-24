@@ -12,6 +12,27 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "1PTH"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "2PTH"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "3PTH"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4PTH"
           "type": "parallel",
           "data": {
             "commands": [
@@ -39,12 +60,14 @@
         {
           "type": "path",
           "data": {
+            "pathName": "5PTH"
             "pathName": "4S-2"
           }
         },
         {
           "type": "path",
           "data": {
+            "pathName": "6PTH"
             "pathName": "4S-3"
           }
         }

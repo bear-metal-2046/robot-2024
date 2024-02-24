@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Threads;
@@ -292,7 +293,7 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
         speeds.omegaRadiansPerSecond =
                 shootModeController.calculate(
                         pose.getRotation().getRadians(),
-                        targetShootingAngle
+                        targetShootingAngle - Units.degreesToRadians(3)
                 ) - adjSpeed;
     }
 

@@ -146,9 +146,11 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
         Translation2d target = SPEAKER_TARGET_POSITION.get();
         distance = Chassis.getInstance().getPose().getTranslation().getDistance(target) + SHOOTER_PIVOT_OFFSET.getX();
 
-        recordOutput("Shooter/Target Angle Before Compensation", 0.04875446 + (0.201136 - 0.04875446)/(1 + Math.pow((distance/2.019404), 2.137465)));
-
-        distance = (radialVelocity * TIME_SHOT_OFFSET) + distance;
+        recordOutput("Shooter/Radial Velocity", radialVelocity);
+        recordOutput("Shooter/Target Angle Before Compensation", 0.07068257 + 0.1999213 * Math.pow(Math.E, -0.5485811 * distance));
+        distance = (radialVelocity *
+                (radialVelocity > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE))
+                + distance;
 
         setAngle(switch (RobotIdentity.getInstance().getRobotID()) {
             // y = 0.07068257 + 0.1999213*e^(-0.5485811*x)

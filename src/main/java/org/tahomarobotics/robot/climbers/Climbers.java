@@ -1,7 +1,6 @@
 package org.tahomarobotics.robot.climbers;
 
 
-import com.ctre.phoenix6.configs.Slot0Configs;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -14,8 +13,8 @@ import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.climbers.commands.ClimbCommand;
 import org.tahomarobotics.robot.climbers.commands.ClimbSequence;
 import org.tahomarobotics.robot.climbers.commands.ClimbZeroCommand;
-import org.tahomarobotics.robot.climbers.commands.DeclimbSequence;
-import org.tahomarobotics.robot.collector.commands.ZeroCollectorCommand;
+import org.tahomarobotics.robot.shooter.Shooter;
+import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.util.SubsystemIF;
 import org.tahomarobotics.robot.util.SysIdTest;
 import org.tahomarobotics.robot.util.ToggledOutputs;
@@ -85,16 +84,19 @@ public class Climbers extends SubsystemIF implements ToggledOutputs {
 
     @Override
     public SubsystemIF initialize() {
+        SmartDashboard.putBoolean("Outputs/Climbers", OutputsConfiguration.CLIMBERS);
+
         Commands.waitUntil(RobotState::isEnabled)
                 .andThen(new ClimbZeroCommand())
                 .ignoringDisable(true).schedule();
 
         SmartDashboard.putData("Climb Zero Command", new ClimbZeroCommand());
         SmartDashboard.putData("Climb Sequence", new ClimbSequence());
-        SmartDashboard.putData("DeClimb Sequence", new DeclimbSequence());
         SmartDashboard.putData("Test Climb Command UP", new ClimbCommand(ClimberConstants.TOP_POSITION, ClimberConstants.UNLADEN_SLOT)); // TODO: Test Command, remove after testing
-        SmartDashboard.putData("Test Climb Command DOWN", new ClimbCommand(ClimberConstants.BOTTOM_POSITION, ClimberConstants.UNLADEN_SLOT)); // TODO: Test Command, remove after testing
-        SmartDashboard.putData("Test Climb Command Down", new ClimbCommand(0, ClimberConstants.LADEN_SLOT));
+        SmartDashboard.putData("Test Climb Shooter Command UP", Commands.runOnce(() -> Shooter.getInstance().setAngle(ShooterConstants.MAX_PIVOT_ANGLE))); // TODO: Test Command, remove after testing
+        SmartDashboard.putData("Test Climb Command DOWN", new ClimbCommand(ClimberConstants.BOTTOM_POSITION, ClimberConstants.LADEN_SLOT)); // TODO: Test Command, remove after testing
+        SmartDashboard.putData("Test Climb Command MOSTLY-DOWN", new ClimbCommand(ClimberConstants.BOTTOM_POSITION + 0.05, ClimberConstants.LADEN_SLOT)); // TODO: Test Command, remove after testing
+//        SmartDashboard.putData("Test Climb Command Down", new ClimbCommand(0, ClimberConstants.LADEN_SLOT));
         return this;
     }
 
@@ -124,7 +126,7 @@ public class Climbers extends SubsystemIF implements ToggledOutputs {
 
     @Override
     public boolean logOutputs() {
-        return OutputsConfiguration.CLIMBER;
+        return SmartDashboard.getBoolean("Outputs/Climbers", OutputsConfiguration.CLIMBERS);
     }
 }
 

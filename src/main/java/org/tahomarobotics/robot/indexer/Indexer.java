@@ -7,6 +7,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.tahomarobotics.robot.OI;
 import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
@@ -162,6 +163,8 @@ public class Indexer extends SubsystemIF implements ToggledOutputs {
 
     public void transitionToCollected() {
         setState(State.COLLECTED);
+        OI.getInstance().rumbleDrive();
+        OI.getInstance().rumbleManip();
     }
 
     public void transitionToTransferring() {

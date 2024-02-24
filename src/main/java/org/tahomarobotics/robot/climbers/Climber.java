@@ -1,12 +1,12 @@
 package org.tahomarobotics.robot.climbers;
 
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +19,9 @@ import static org.tahomarobotics.robot.climbers.ClimberConstants.TOP_POSITION;
 class Climber{
 
     private final Logger logger;
-    private final TalonFX climbMotor;
+    private final TalonFX motor;
+
+    public final StatusSignal<Double> voltage, current;
 
     private final MotionMagicVoltage positionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage velocityControl = new MotionMagicVelocityVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
@@ -28,45 +30,52 @@ class Climber{
         logger = LoggerFactory.getLogger(name);
 
         RobustConfigurator configurator = new RobustConfigurator(logger);
-        climbMotor = new TalonFX(motorID);
-        configurator.configureTalonFX(climbMotor, ClimberConstants.CLIMB_CONFIGURATION
-                .withMotorOutput(new MotorOutputConfigs()
+        motor = new TalonFX(motorID);
+        configurator.configureTalonFX(motor, ClimberConstants.CLIMB_CONFIGURATION
+                .withMotorOutput(ClimberConstants.CLIMB_CONFIGURATION.MotorOutput
                         .withInverted(isInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive)
-                        .withNeutralMode(NeutralModeValue.Brake)
                 ));
+
+        voltage = motor.getMotorVoltage();
+        current = motor.getStatorCurrent();
+
+        BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY,
+                voltage, current);
+
+        motor.optimizeBusUtilization();
     }
 
     //MOTOR CONTROLERY
 
     public void setTargetPos(double targetPosition, int slot) {
-        climbMotor.setControl(positionControl.withPosition(MathUtil.clamp(targetPosition, BOTTOM_POSITION, TOP_POSITION)).withSlot(slot));
+        motor.setControl(positionControl.withPosition(MathUtil.clamp(targetPosition, BOTTOM_POSITION, TOP_POSITION)).withSlot(slot));
     }
 
     public void runWithVoltage(double targetVoltage) {
-        climbMotor.setControl(new VoltageOut(targetVoltage));
+        motor.setControl(new VoltageOut(targetVoltage));
     }
 
     public void zeroAtCurrentPosition() {
-        climbMotor.setPosition(0);
+        motor.setPosition(0);
     }
 
     public void stop() {
-        climbMotor.stopMotor();
+        motor.stopMotor();
     }
 
 
     // GETTERS
 
     public TalonFX getMotor() {
-        return climbMotor;
+        return motor;
     }
 
     public double getPosition() {
-        return climbMotor.getPosition().refresh().getValue();
+        return motor.getPosition().refresh().getValue();
     }
 
     public double getVelocity() {
-        return climbMotor.getVelocity().getValueAsDouble();
+        return motor.getVelocity().getValueAsDouble();
     }
 }
 

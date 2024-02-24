@@ -17,13 +17,13 @@ public class ClimberConstants {
     public static final double POSITION_EPSILON = 0.005;
     public static final double VELOCITY_EPSILON = 0.005;
 
-    public static final double CLIMB_MAX_VEL = 0.25; // meter per sec
-    public static final double CLIMB_MAX_ACCEL = 1;
-    public static final double CLIMB_MAX_JERK = 5;
+    public static final double CLIMB_MAX_VEL = 0.5; // meter per sec
+    public static final double CLIMB_MAX_ACCEL = 2;
+    public static final double CLIMB_MAX_JERK = 10;
 
     public static final double TOP_POSITION = 0.56;
 
-    public static final double BOTTOM_POSITION = 0.05;
+    public static final double BOTTOM_POSITION = 0.02;
 
     public static final int UNLADEN_SLOT = 0;
     public static final int LADEN_SLOT = 1;

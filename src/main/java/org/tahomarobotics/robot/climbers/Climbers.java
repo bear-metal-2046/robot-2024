@@ -106,6 +106,10 @@ public class Climbers extends SubsystemIF implements ToggledOutputs {
 //        SmartDashboard.putNumber("Climb Right Position", getRightPos());
         recordOutput("Climbers/Left Pos", getLeftPos());
         recordOutput("Climbers/Right Pos", getRightPos());
+        recordOutput("Climbers/Left Voltage", leftClimber.voltage.refresh().getValueAsDouble());
+        recordOutput("Climbers/Right Voltage", rightClimber.voltage.refresh().getValueAsDouble());
+        recordOutput("Climbers/Left Current", leftClimber.current.refresh().getValueAsDouble());
+        recordOutput("Climbers/Right Current", rightClimber.current.refresh().getValueAsDouble());
     }
 
     public void runLeftWithVoltage(double targetVoltage) {

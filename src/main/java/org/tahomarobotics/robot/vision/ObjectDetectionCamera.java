@@ -50,14 +50,14 @@ public class ObjectDetectionCamera implements ToggledOutputs {
         var target = result.getBestTarget();
         double xOffset = PhotonUtils.calculateDistanceToTargetMeters(
                 cameraSettings.offset.getZ(),
-                Units.inchesToMeters(1),
+                0,
                 cameraSettings.offset.getRotation().getY(),
                 Units.degreesToRadians(target.getPitch())
         ) + cameraSettings.offset.getX();
 
         double yOffset = (Math.tan(Units.degreesToRadians(-target.getYaw())) * xOffset) + cameraSettings.offset.getY();
 
-        notePosition = new Translation3d(xOffset, yOffset, Units.inchesToMeters(1) - cameraSettings.offset.getZ());
+        notePosition = new Translation3d(xOffset, yOffset, 0);
         recordOutput("Object Detection/Note Position", notePosition);
     }
 

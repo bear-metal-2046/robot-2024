@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.964381313378012,
-        "y": 2.318731560540044
+        "x": 8.092651569918525,
+        "y": 2.496336531134601
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.006542977273379,
-        "y": 1.6140319460338253
+        "x": 6.134813233813892,
+        "y": 1.7916369166283825
       },
       "isLocked": false,
       "linkedName": "2 Collect"
@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "Shoot",
-      "waypointRelativePos": 1.0,
+      "waypointRelativePos": 0.7,
       "command": {
         "type": "sequential",
         "data": {

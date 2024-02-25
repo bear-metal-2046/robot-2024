@@ -17,15 +17,15 @@
     {
       "anchor": {
         "x": 2.8158816677993714,
-        "y": 5.657758342543713
+        "y": 5.750205374284623
       },
       "prevControl": {
         "x": 2.797964237721823,
-        "y": 5.406914321458033
+        "y": 5.499361353198943
       },
       "nextControl": {
         "x": 2.8343710741475534,
-        "y": 5.916610031418261
+        "y": 6.0090570631591715
       },
       "isLocked": false,
       "linkedName": null
@@ -100,7 +100,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Weird 6 piece auto paths",
+  "folder": "6S-CBA-12",
   "previewStartingState": {
     "rotation": -26.565051177078058,
     "velocity": 0

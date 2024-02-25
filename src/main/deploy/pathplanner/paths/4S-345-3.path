@@ -1,0 +1,70 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.103851883379441,
+        "y": 2.6439851077900354
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.117765230305234,
+        "y": 5.006880118625112
+      },
+      "isLocked": false,
+      "linkedName": "4S-345-2-END"
+    },
+    {
+      "anchor": {
+        "x": 4.332012988350301,
+        "y": 5.121565558446433
+      },
+      "prevControl": {
+        "x": 5.686199671858803,
+        "y": 3.262498747159657
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "4S-345-3-END"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.9,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Shoot"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -6.34019174590991,
+    "rotateFast": true
+  },
+  "reversed": false,
+  "folder": "4S-345",
+  "previewStartingState": {
+    "rotation": -58.15862301050014,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

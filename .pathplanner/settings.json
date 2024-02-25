@@ -3,6 +3,8 @@
   "robotLength": 0.92,
   "holonomicMode": true,
   "pathFolders": [
+    "6S-CBA-12",
+    "4S-345",
     "6 piece auto paths",
     "4A-123",
     "Weird 6 piece auto paths"

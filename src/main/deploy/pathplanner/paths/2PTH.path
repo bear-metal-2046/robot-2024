@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.98411519899963,
-        "y": 0.8880248529727832
+        "x": 8.011404851638531,
+        "y": 0.8782468015386488
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.443112092378033,
-        "y": 1.229396846486001
+        "x": 6.470401745016934,
+        "y": 1.2196187950518667
       },
       "isLocked": false,
       "linkedName": "1 Collect"
     },
     {
       "anchor": {
-        "x": 5.82,
-        "y": 1.47
+        "x": 4.646332896269396,
+        "y": 1.9136535570368438
       },
       "prevControl": {
-        "x": 7.240846718289534,
-        "y": 1.1246856116986215
+        "x": 6.067179614558929,
+        "y": 1.5683391687354653
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,18 +33,25 @@
   "eventMarkers": [
     {
       "name": "Shoot",
-      "waypointRelativePos": 1.0,
+      "waypointRelativePos": 0.65,
       "command": {
         "type": "parallel",
         "data": {
-          "commands": []
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Shoot"
+              }
+            }
+          ]
         }
       }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

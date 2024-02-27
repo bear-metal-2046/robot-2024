@@ -18,7 +18,7 @@ public enum RobotID {
     BEARITONE {
         @Override
         public byte[] getMac() {
-            return new byte[]{0x00, (byte) 0x80, 0x2F, 0x32, (byte) 0xFD, 0x9};
+            return new byte[]{0x00, (byte) 0x80, 0x2F, 0x32, (byte) 0xFD, 0x29};
         }
     };
 

@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.151853226783379,
-        "y": 4.075047380863993
+        "x": 8.048383664334896,
+        "y": 4.178605834689147
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.931791094351422,
-        "y": 4.153982923350464
+        "x": 5.828321531902939,
+        "y": 4.257541377175618
       },
       "isLocked": false,
       "linkedName": "3 Collect"
     },
     {
       "anchor": {
-        "x": 4.027471131865342,
-        "y": 5.920165686485219
+        "x": 4.202587143913027,
+        "y": 5.2417466997096165
       },
       "prevControl": {
-        "x": 4.629354643324673,
-        "y": 3.1870225278912105
+        "x": 5.080833945451674,
+        "y": 3.7533494886809597
       },
       "nextControl": null,
       "isLocked": false,
@@ -50,8 +50,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

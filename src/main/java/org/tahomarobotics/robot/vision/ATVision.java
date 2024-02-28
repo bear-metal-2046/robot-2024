@@ -161,7 +161,7 @@ public class ATVision implements ToggledOutputs {
             // Multi-tag PnP provides very trustworthy data
             var stds = VecBuilder.fill(
                     0.07307,
-                    0.1354,
+                    0.0854,
                     Units.degreesToRadians(1.372694632)
             );
 

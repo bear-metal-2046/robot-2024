@@ -42,8 +42,10 @@ public class Autonomous extends SubsystemIF {
         Indexer indexer = Indexer.getInstance();
 
         NamedCommands.registerCommand("Shoot",
-                Commands.race(Commands.waitUntil(indexer::hasCollected), Commands.waitSeconds(1)).andThen(Commands.runOnce(shooter::enable))
+                Commands.race(Commands.waitUntil(indexer::hasCollected), Commands.waitSeconds(1)).andThen(Commands.runOnce(shooter::enableShootMode))
                         .andThen(new ShootCommand()));
+
+        NamedCommands.registerCommand("SpinUp", Commands.runOnce(shooter::enable));
 
         NamedCommands.registerCommand("CollectorDown", Commands.runOnce(collector::setDeployed)
                 .andThen(Commands.runOnce(() -> collector.setCollectionState(Collector.CollectionState.COLLECTING))));

@@ -12,39 +12,40 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "1PTH"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "4S-1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SpinUp"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "CollectorDown"
+                }
+              }
+            ]
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "2PTH"
+            "pathName": "4S-2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "3PTH"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "4PTH"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "5PTH"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "6PTH"
+            "pathName": "4S-3"
           }
         }
       ]

@@ -52,7 +52,7 @@ public class ShooterConstants {
 
     public static final double SHOT_SPEED = Units.inchesToMeters(Units.rotationsToRadians(SHOOTER_SPEED) * (1.75)) * 0.8; // meters/sec
 
-    static final double BIAS_AMT = Units.degreesToRotations(5) / 50;
+    static final double BIAS_AMT = Units.degreesToRotations(3) / 50;
 
     static final double STATOR_CURRENT_LIMIT = 80.0;
     static final double SUPPLY_CURRENT_LIMIT = 40.0;

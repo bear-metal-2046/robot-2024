@@ -4,8 +4,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.OutputsConfiguration;
@@ -154,7 +154,9 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
 
         setAngle(switch (RobotIdentity.getInstance().getRobotID()) {
             // y = 0.07068257 + 0.1999213*e^(-0.5485811*x)
-            case PLAYBEAR_CARTI, BEARITONE -> 0.07068257 + 0.1999213 * Math.pow(Math.E, -0.5485811 * distance);
+            case PLAYBEAR_CARTI -> 0.07068257 + 0.1999213 * Math.pow(Math.E, -0.5485811 * distance);
+            // y = 0.0000369x^4 - 0.00108x^3 + 0.0126x^2 - 0.0706x + 0.234
+            case BEARITONE -> 0.0000369 * Math.pow(distance, 4) - 0.00108 * Math.pow(distance, 3) + 0.0126 * Math.pow(distance, 2) - 0.0706 * distance + 0.234;
             default -> 0.04875446 + (0.201136 - 0.04875446)/(1 + Math.pow((distance/2.019404), 2.137465)) + 0.002;
         });
     }

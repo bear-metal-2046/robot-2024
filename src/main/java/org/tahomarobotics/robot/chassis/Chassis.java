@@ -293,7 +293,7 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
         speeds.omegaRadiansPerSecond =
                 shootModeController.calculate(
                         pose.getRotation().getRadians(),
-                        targetShootingAngle - Units.degreesToRadians(3)
+                        targetShootingAngle
                 ) - adjSpeed;
     }
 

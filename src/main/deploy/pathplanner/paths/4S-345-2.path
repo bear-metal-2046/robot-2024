@@ -3,49 +3,89 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.405970613743029,
-        "y": 5.056852636227795
+        "x": 4.295034175653936,
+        "y": 5.140054964794614
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.1640362740184935,
-        "y": 3.4575189871100465
+        "x": 5.94059134064214,
+        "y": 3.864285926770052
       },
       "isLocked": false,
       "linkedName": "4S-345-1-END"
     },
     {
       "anchor": {
-        "x": 8.103851883379441,
-        "y": 2.6439851077900354
+        "x": 8.066873070683078,
+        "y": 2.5607827792232163
       },
       "prevControl": {
-        "x": 7.262583894537157,
-        "y": 4.80724565052734
+        "x": 8.171965771018844,
+        "y": 2.4863808674810817
+      },
+      "nextControl": {
+        "x": 7.0222216120107905,
+        "y": 3.300359033150499
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.295034175653936,
+        "y": 5.140054964794614
+      },
+      "prevControl": {
+        "x": 5.949836043816232,
+        "y": 3.8827753331182335
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "4S-345-2-END"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.95,
+      "rotationDegrees": -33.025473058771745,
+      "rotateFast": true
+    }
+  ],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 1.85,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Shoot"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -54.211026540816576,
+    "rotation": -12.90740867126587,
     "rotateFast": true
   },
   "reversed": false,
   "folder": "4S-345",
   "previewStartingState": {
-    "rotation": -26.565051177077933,
+    "rotation": -12.09475707701204,
     "velocity": 0
   },
   "useDefaultConstraints": true

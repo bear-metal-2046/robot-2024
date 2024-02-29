@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.43,
-      "y": 1.57
+      "x": 1.42,
+      "y": 3.32
     },
     "rotation": 0
   },
@@ -12,9 +12,54 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "4S-345-1"
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "ZeroCollectorShooter"
+                      }
+                    },
+                    {
+                      "type": "parallel",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "CollectorDown"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "SpinUp"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Shoot"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "4S-345-1"
+                }
+              }
+            ]
           }
         },
         {
@@ -27,18 +72,6 @@
           "type": "path",
           "data": {
             "pathName": "4S-345-3"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "4S-345-4"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "4S-345-5"
           }
         }
       ]

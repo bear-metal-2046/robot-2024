@@ -3,55 +3,66 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.4291761916857166,
-        "y": 1.571599539595476
+        "x": 1.4199314885116257,
+        "y": 3.3188484394986815
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.968325450164413,
-        "y": 3.6239236442436855
+        "x": 5.459866775589407,
+        "y": 2.6070062950936714
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.094607180205351,
-        "y": 4.104648209296419
+        "x": 8.150075399249896,
+        "y": 4.030690583903691
       },
       "prevControl": {
-        "x": 3.805064907427112,
-        "y": 4.38198930451915
+        "x": 2.871349886843917,
+        "y": 4.095403506122327
       },
       "nextControl": {
-        "x": 8.288341436348679,
-        "y": 4.092122287563015
+        "x": 8.344199579201288,
+        "y": 4.028310777844742
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.405970613743029,
-        "y": 5.056852636227795
+        "x": 4.295034175653936,
+        "y": 5.140054964794614
       },
       "prevControl": {
-        "x": 4.48917294230985,
-        "y": 3.9752223648591443
+        "x": 4.757269334358488,
+        "y": 3.7441047855068685
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "4S-345-1-END"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.15,
+      "rotationDegrees": -44.48849672726378,
+      "rotateFast": true
+    },
+    {
+      "waypointRelativePos": 1.05,
+      "rotationDegrees": 0,
+      "rotateFast": true
+    }
+  ],
   "constraintZones": [
     {
       "name": "New Constraints Zone",
       "minWaypointRelativePos": 0.0,
-      "maxWaypointRelativePos": 0.2,
+      "maxWaypointRelativePos": 0.25,
       "constraints": {
-        "maxVelocity": 2.0,
+        "maxVelocity": 1.0,
         "maxAcceleration": 2.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0
@@ -94,5 +105,5 @@
     "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

@@ -303,7 +303,7 @@ public class Chassis extends SubsystemIF {
         speeds.omegaRadiansPerSecond =
                 shootModeController.calculate(
                         pose.getRotation().getRadians(),
-                        targetShootingAngle - Units.degreesToRadians(3)
+                        targetShootingAngle
                 ) - adjSpeed;
     }
 

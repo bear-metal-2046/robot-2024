@@ -15,4 +15,6 @@ public abstract class SubsystemIF extends SubsystemBase {
     public void onDisabledInit() {}
     public void onAutonomousInit() {}
     public void onTeleopInit() {}
+
+    public abstract double getEnergyUsed();
 }

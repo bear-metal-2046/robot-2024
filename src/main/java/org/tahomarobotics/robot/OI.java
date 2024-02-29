@@ -43,6 +43,11 @@ public class OI extends SubsystemIF {
         setDefaultCommands();
     }
 
+    @Override
+    public double getEnergyUsed() {
+        return 0;
+    }
+
     /**
      * Configure the button bindings for the controller(s).
      */

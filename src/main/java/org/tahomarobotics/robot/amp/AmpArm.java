@@ -7,10 +7,12 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import org.tahomarobotics.robot.OutputsConfiguration;
+import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
@@ -33,6 +35,10 @@ public class AmpArm extends SubsystemIF implements ToggledOutputs {
     private final StatusSignal<Double> wristVelocity;
     private final StatusSignal<Double> rollersVelocity;
 
+    private final StatusSignal<Double> armCurrent;
+    private final StatusSignal<Double> wristCurrent;
+    private final StatusSignal<Double> rollerCurrent;
+
     private final MotionMagicVoltage armControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVoltage wristControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage rollerVelocityControl = new MotionMagicVelocityVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
@@ -41,6 +47,8 @@ public class AmpArm extends SubsystemIF implements ToggledOutputs {
     private RollerState rollerState = RollerState.DISABLED;
 
     private double targetArmPosition, targetWristPosition;
+
+    private double energyUsed = 0;
 
     private AmpArm() {
         RobustConfigurator configurator = new RobustConfigurator(logger);
@@ -58,6 +66,10 @@ public class AmpArm extends SubsystemIF implements ToggledOutputs {
         armVelocity = armMotor.getVelocity();
         wristVelocity = wristMotor.getVelocity();
         rollersVelocity = rollersMotor.getVelocity();
+
+        armCurrent = armMotor.getSupplyCurrent();
+        wristCurrent = wristMotor.getSupplyCurrent();
+        rollerCurrent = rollersMotor.getSupplyCurrent();
 
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY,
                 armPosition, wristPosition, armVelocity, wristVelocity, rollersVelocity
@@ -186,6 +198,9 @@ public class AmpArm extends SubsystemIF implements ToggledOutputs {
     public void periodic() {
         BaseStatusSignal.refreshAll(armPosition, wristPosition, armVelocity, wristVelocity, rollersVelocity);
 
+        double voltage = RobotController.getBatteryVoltage();
+        energyUsed += (armCurrent.getValue() + wristCurrent.getValue() + rollerCurrent.getValue()) * voltage * Robot.defaultPeriodSecs;
+
         recordOutput("Amp Arm/Roller State", rollerState);
         recordOutput("Amp Arm/Arm State", armState);
 
@@ -194,6 +209,9 @@ public class AmpArm extends SubsystemIF implements ToggledOutputs {
         recordOutput("Amp Arm/Arm Velocity", getArmVelocity());
         recordOutput("Amp Arm/Wrist Velocity", getWristVelocity());
         recordOutput("Amp Arm/Rollers Velocity", getRollersVelocity());
+
+        recordOutput("Amp Arm/Energy", getEnergyUsed());
+
     }
 
     @Override
@@ -232,5 +250,10 @@ public class AmpArm extends SubsystemIF implements ToggledOutputs {
     @Override
     public boolean logOutputs() {
         return SmartDashboard.getBoolean("Outputs/AmpArm", OutputsConfiguration.AMP_ARM);
+    }
+
+    @Override
+    public double getEnergyUsed() {
+        return energyUsed / 1000d;
     }
 }

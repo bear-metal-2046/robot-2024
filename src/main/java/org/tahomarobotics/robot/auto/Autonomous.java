@@ -151,4 +151,9 @@ public class Autonomous extends SubsystemIF {
     private void onAutoChange(String autoName) {
         postAutoTrajectory(chassis.getField(), autoName);
     }
+
+    @Override
+    public double getEnergyUsed() {
+        return 0;
+    }
 }

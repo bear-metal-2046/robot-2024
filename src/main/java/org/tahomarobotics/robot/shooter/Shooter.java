@@ -4,11 +4,13 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.OutputsConfiguration;
+import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.identity.RobotIdentity;
@@ -29,6 +31,8 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
 
     private double biasAngle = 0.0;
     protected double distance = 0.0;
+    private double energyUsed = 0;
+
     // CONSTRUCTOR
 
     private Shooter() {
@@ -175,6 +179,8 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
     public void periodic() {
         io.refreshSignals();
         io.processInputs(inputs);
+        double voltage = RobotController.getBatteryVoltage();
+        energyUsed += io.getTotalCurrent() * voltage * Robot.defaultPeriodSecs;
 
         Logger.processInputs("Shooter", inputs);
 
@@ -187,6 +193,9 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
         recordOutput("Shooter/Velocity", getShooterVelocity());
         recordOutput("Shooter/Angle", getPivotPosition());
         recordOutput("Shooter/Angle (Degrees)", getPivotPosition() * 360);
+        recordOutput("Shooter/Energy", getEnergyUsed());
+
+
     }
 
     // onInit
@@ -199,5 +208,10 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
     @Override
     public boolean logOutputs() {
         return SmartDashboard.getBoolean("Outputs/Shooter", OutputsConfiguration.SHOOTER);
+    }
+
+    @Override
+    public double getEnergyUsed() {
+        return energyUsed / 1000d;
     }
 }

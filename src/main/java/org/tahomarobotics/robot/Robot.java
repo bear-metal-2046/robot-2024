@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.auto.Autonomous;
 import org.tahomarobotics.robot.chassis.Chassis;
+import org.tahomarobotics.robot.chassis.SwerveModule;
 import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.identity.RobotIdentity;
 import org.tahomarobotics.robot.indexer.Indexer;
@@ -116,6 +117,9 @@ public class Robot extends LoggedRobot {
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
+
+        double energyUsed = subsystems.stream().mapToDouble(SubsystemIF::getEnergyUsed).sum();
+        Logger.recordOutput("EnergyUsed",energyUsed);
     }
     
     

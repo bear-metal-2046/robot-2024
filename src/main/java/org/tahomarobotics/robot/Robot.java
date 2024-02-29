@@ -7,6 +7,7 @@ package org.tahomarobotics.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobotBase;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.littletonrobotics.junction.LogFileUtil;
@@ -87,6 +88,8 @@ public class Robot extends LoggedRobot {
                 if (RobotConfiguration.getMode() == RobotConfiguration.Mode.SIM || Path.of("/U").toFile().exists())
                     Logger.addDataReceiver(new WPILOGWriter()); // Write to a USB drive ("/U/logs" or "logs")
                 Logger.addDataReceiver(new NT4Publisher());
+                //noinspection resource
+                new PowerDistribution();
             }
             case REPLAY -> {
                 setUseTiming(false);

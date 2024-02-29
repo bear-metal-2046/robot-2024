@@ -129,8 +129,6 @@ class ShooterIO implements ToggledOutputs {
     // STATES
 
     void enableShooter() {
-        shootingMode = true;
-
         shooterMotor.setControl(motorVelocity);
         shooterMotorFollower.setControl(motorVelocity);
     }
@@ -159,8 +157,10 @@ class ShooterIO implements ToggledOutputs {
 
     void toggleShootMode() {
         if (shootingMode) {
+            disableShootMode();
             disableShooter();
         } else if (Indexer.getInstance().hasCollected()){
+            enableShootMode();
             enableShooter();
         }
     }

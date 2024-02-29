@@ -1,0 +1,50 @@
+{
+  "version": 1.0,
+  "startingPose": null,
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "SpinUp"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "CollectorDown"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "4A-1"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4A-2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4A-3"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

@@ -18,7 +18,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "6 Piece 1"
+                  "pathName": "6S-CBA-12-1"
                 }
               },
               {
@@ -45,7 +45,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "6 piece 2"
+            "pathName": "6S-CBA-12-2"
           }
         },
         {
@@ -57,13 +57,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "6 piece 3"
+            "pathName": "6S-CBA-12-3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "6 piece 4"
+            "pathName": "6S-CBA-12-4"
           }
         }
       ]

@@ -13,7 +13,6 @@ import static org.tahomarobotics.robot.climbers.ClimberConstants.*;
 public class ClimbSequence extends SequentialCommandGroup {
     public ClimbSequence() {
         super(
-                AmpArmCommands.ARM_TO_STOW.get(),
                 Commands.runOnce(() -> Shooter.getInstance().setAngle(ShooterConstants.MAX_PIVOT_ANGLE)),
 //                Commands.parallel(
 ////                        Commands.defer(() -> AutoBuilder.pathfindToPose(ChassisConstants.getClosestChainPose(), ChassisConstants.CLIMB_MOVEMENT_CONSTRAINTS), Set.of(Chassis.getInstance()))

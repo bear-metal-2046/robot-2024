@@ -17,7 +17,7 @@ import static org.tahomarobotics.robot.amp.AmpArmConstants.*;
 public class AmpArmCommands {
     private static final Logger logger = LoggerFactory.getLogger(AmpArmCommands.class);
 
-    private static final Supplier<Command> FEEDFORWARD;
+    public static final Supplier<Command> FEEDFORWARD;
     private static final Supplier<Command> FEEDBACK;
     private static final Supplier<Command> STOW_TO_AMP;
     private static final Supplier<Command> STOW_TO_SOURCE;

@@ -159,15 +159,15 @@ public final class ChassisConstants {
             );
 
     public static Pose2d[] BLUE_STAGE_CHAIN_POSES = new Pose2d[] {
-            new Pose2d(new Translation2d(4, 2.64), Rotation2d.fromDegrees(60.5)), // Source Side
-            new Pose2d(new Translation2d(4, 5.57), Rotation2d.fromDegrees(-58)),  // Amp Side
-            new Pose2d(new Translation2d(6.6, 4.11), Rotation2d.fromDegrees(180)) // Far Side
+            new Pose2d(new Translation2d(4.2347, 3.0079), Rotation2d.fromDegrees(-120)), // Source Side
+            new Pose2d(new Translation2d(4.2347, 5.2033), Rotation2d.fromDegrees(120)),  // Amp Side
+            new Pose2d(new Translation2d(6.1360, 4.1056), Rotation2d.fromDegrees(0)) // Far Side
     };
 
     public static Pose2d[] RED_STAGE_CHAIN_POSES = new Pose2d[] {
-            new Pose2d(new Translation2d(12.53, 2.72), Rotation2d.fromDegrees(120)), // Source Side
-            new Pose2d(new Translation2d(12.53, 5.57), Rotation2d.fromDegrees(-119.05)), // Amp Side
-            new Pose2d(new Translation2d(9.95, 4.11), Rotation2d.fromDegrees(0))  // Far Side
+            new Pose2d(new Translation2d(12.3063, 3.0079), Rotation2d.fromDegrees(-60)), // Source Side
+            new Pose2d(new Translation2d(12.3063, 5.2033), Rotation2d.fromDegrees(60)), // Amp Side
+            new Pose2d(new Translation2d(10.4050, 4.1056), Rotation2d.fromDegrees(180))  // Far Side
     };
 
     public static PathConstraints CLIMB_MOVEMENT_CONSTRAINTS = new PathConstraints(

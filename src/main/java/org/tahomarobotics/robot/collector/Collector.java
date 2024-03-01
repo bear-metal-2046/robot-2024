@@ -266,9 +266,13 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
 
     @Override
     public void periodic() {
-        BaseStatusSignal.refreshAll(deployPositionLeft, deployPositionRight, collectVelocity, deployVelocity);
+
+        BaseStatusSignal.refreshAll(deployPositionLeft, deployPositionRight, collectVelocity, deployVelocity,
+                deployCurrentLeft, deployCurrentRight, collectCurrent);
+
         double voltage = RobotController.getBatteryVoltage();
-        energyUsed += (deployCurrentLeft.getValue() + deployCurrentRight.getValue() + collectCurrent.getValue()) * voltage * Robot.defaultPeriodSecs;
+        double totalCurrent = deployCurrentLeft.getValue() + deployCurrentRight.getValue() + collectCurrent.getValue();
+        energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;
 
         recordOutput("Collector/Deploy State", deploymentState);
         recordOutput("Collector/Collection State", collectionState);
@@ -277,6 +281,8 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
         recordOutput("Collector/Deploy Left Position", deployPositionLeft.getValue());
         recordOutput("Collector/Deploy Velocity", deployVelocity.getValue());
         recordOutput("Collector/Collect Velocity", collectVelocity.getValue());
+
+        recordOutput("Collector/TotalCurrent", totalCurrent);
         recordOutput("Collector/Energy", getEnergyUsed());
 
         if (RobotState.isAutonomous()) {

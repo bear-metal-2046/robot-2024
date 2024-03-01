@@ -193,6 +193,8 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
         recordOutput("Shooter/Velocity", getShooterVelocity());
         recordOutput("Shooter/Angle", getPivotPosition());
         recordOutput("Shooter/Angle (Degrees)", getPivotPosition() * 360);
+
+        recordOutput("Shooter/TotalCurrent", io.getTotalCurrent());
         recordOutput("Shooter/Energy", getEnergyUsed());
 
 

@@ -55,7 +55,7 @@ public class Indexer extends SubsystemIF implements ToggledOutputs {
 
         position = motor.getPosition();
         velocity = motor.getVelocity();
-        current = motor.getStatorCurrent();
+        current = motor.getSupplyCurrent();
 
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY,
                 position, velocity,
@@ -243,11 +243,12 @@ public class Indexer extends SubsystemIF implements ToggledOutputs {
     @Override
     public void periodic() {
         BaseStatusSignal.refreshAll(
-            position, velocity
+            position, velocity, current
         );
 
         double voltage = RobotController.getBatteryVoltage();
-        energyUsed += current.getValue() * voltage * Robot.defaultPeriodSecs;
+        double totalCurrent = current.getValue();
+        energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;
 
         recordOutput("Indexer/Position", getPosition());
         recordOutput("Indexer/Velocity", getVelocity());
@@ -256,6 +257,8 @@ public class Indexer extends SubsystemIF implements ToggledOutputs {
         recordOutput("Indexer/BeamBreak One", getCollectorBeanBake());
         recordOutput("Indexer/BeamBreak Two", getShooterBeanBake());
         recordOutput("Indexer/Collected", hasCollected());
+
+        recordOutput("Indexer/Current", totalCurrent);
         recordOutput("Indexer/Energy", getEnergyUsed());
         
         stateMachine();

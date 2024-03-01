@@ -202,7 +202,8 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
         currentChassisSpeeds = kinematics.toChassisSpeeds(getSwerveModuleStates());
 
         double voltage = RobotController.getBatteryVoltage();
-        energyUsed += modules.stream().mapToDouble(SwerveModule::getTotalCurent).sum() * voltage * Robot.defaultPeriodSecs;
+        double totalCurrent = modules.stream().mapToDouble(SwerveModule::getTotalCurent).sum();
+        energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;
 
 
         recordOutput("Chassis/States", getSwerveModuleStates());
@@ -212,6 +213,7 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
         recordOutput("Chassis/Pose", pose);
         recordOutput("Chassis/isAtShootingAngle", isReadyToShoot());
         recordOutput("Chassis/target shooting angle", targetShootingAngle);
+
         recordOutput("Chassis/Energy", getEnergyUsed());
 
         fieldPose.setRobotPose(pose);

@@ -196,10 +196,12 @@ public class AmpArm extends SubsystemIF implements ToggledOutputs {
 
     @Override
     public void periodic() {
-        BaseStatusSignal.refreshAll(armPosition, wristPosition, armVelocity, wristVelocity, rollersVelocity);
+        BaseStatusSignal.refreshAll(armPosition, wristPosition, armVelocity, wristVelocity, rollersVelocity,
+                armCurrent, wristCurrent, rollerCurrent);
 
         double voltage = RobotController.getBatteryVoltage();
-        energyUsed += (armCurrent.getValue() + wristCurrent.getValue() + rollerCurrent.getValue()) * voltage * Robot.defaultPeriodSecs;
+        double totalCurrent = armCurrent.getValue() + wristCurrent.getValue() + rollerCurrent.getValue();
+        energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;
 
         recordOutput("Amp Arm/Roller State", rollerState);
         recordOutput("Amp Arm/Arm State", armState);
@@ -210,6 +212,7 @@ public class AmpArm extends SubsystemIF implements ToggledOutputs {
         recordOutput("Amp Arm/Wrist Velocity", getWristVelocity());
         recordOutput("Amp Arm/Rollers Velocity", getRollersVelocity());
 
+        recordOutput("Amp Arm/TotalCurrent", totalCurrent);
         recordOutput("Amp Arm/Energy", getEnergyUsed());
 
     }

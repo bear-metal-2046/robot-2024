@@ -199,7 +199,9 @@ public class SwerveModuleIO implements ToggledOutputs {
                 drivePosition,
                 driveVelocity,
                 steerPosition,
-                steerVelocity
+                steerVelocity,
+                driveCurrent,
+                steerCurrent
         );
     }
 

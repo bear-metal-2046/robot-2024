@@ -20,6 +20,7 @@ package org.tahomarobotics.robot.chassis;
 
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.*;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.PIDConstants;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -88,6 +89,8 @@ public final class ChassisConstants {
 
     public static final double TRANSLATION_LIMIT = 9.0;
     public static final double ROTATION_LIMIT = TRANSLATION_LIMIT / Math.hypot(HALF_TRACK_WIDTH, HALF_WHEELBASE);
+
+    public static final PathConstraints AUTO_PATHFINDING_CONSTRAINTS = new PathConstraints(0,0,0,0);
 
 
     public static final double MASS = 25.33313;

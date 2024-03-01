@@ -13,7 +13,7 @@ public class AmpArmConstants {
 
     // ARM
 
-    static final double ARM_GEAR_REDUCTION = (16.0 / 64.0) * (18.0 / 72.0) * (16.0 / 48.0);
+    static final double ARM_GEAR_REDUCTION;
 
     static final double ARM_MIN_POSE = -90d/360d;
     static final double ARM_MAX_POSE = 90d/360d;
@@ -24,9 +24,9 @@ public class AmpArmConstants {
         switch (RobotIdentity.getInstance().getRobotID()) {
             case PLAYBEAR_CARTI, BEARITONE -> {
                 ARM_STOW_POSE = Units.degreesToRotations(-90.000000);
-                ARM_AMP_POSE = Units.degreesToRotations(82.0703125);
-                ARM_TRAP_POSE = Units.degreesToRotations(76.46484375);
-                ARM_SOURCE_POSE = Units.degreesToRotations(68.203125);
+                ARM_AMP_POSE = Units.degreesToRotations(90);
+                ARM_TRAP_POSE = 0.1807 - Units.degreesToRotations(4);
+                ARM_SOURCE_POSE = Units.degreesToRotations(90);
             }
             default -> {
                 ARM_STOW_POSE = Units.degreesToRotations(-90.000000);
@@ -34,6 +34,12 @@ public class AmpArmConstants {
                 ARM_TRAP_POSE = Units.degreesToRotations(108);
                 ARM_SOURCE_POSE = Units.degreesToRotations(142.734375);
             }
+        }
+
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (RobotIdentity.getInstance().getRobotID()) {
+            case BEARITONE -> ARM_GEAR_REDUCTION = (14.0 / 64.0) * (18.0 / 72.0) * (16.0 / 48.0);
+            default -> ARM_GEAR_REDUCTION = (16.0 / 64.0) * (18.0 / 72.0) * (16.0 / 48.0);
         }
     }
 
@@ -78,7 +84,7 @@ public class AmpArmConstants {
             case PLAYBEAR_CARTI, BEARITONE -> {
                 WRIST_MOVING_POSE = Units.degreesToRotations(87.3632);
                 WRIST_AMP_POSE = Units.degreesToRotations(118.505859375);
-                WRIST_TRAP_POSE = Units.degreesToRotations(22.93945312);
+                WRIST_TRAP_POSE = 0.28 + Units.degreesToRotations(20);
                 WRIST_SOURCE_POSE = Units.degreesToRotations(53.7890625);
             }
             default -> {

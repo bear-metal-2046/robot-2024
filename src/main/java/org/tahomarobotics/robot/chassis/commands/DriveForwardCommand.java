@@ -1,6 +1,8 @@
 package org.tahomarobotics.robot.chassis.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import org.tahomarobotics.robot.chassis.Chassis;
@@ -8,7 +10,7 @@ import org.tahomarobotics.robot.chassis.Chassis;
 
 public class DriveForwardCommand extends Command {
     private final Chassis chassis = Chassis.getInstance();
-    private Pose2d initialPose;
+    private Pose2d targetPose;
     private final double distance_m;
     private final double speed;
 
@@ -20,17 +22,17 @@ public class DriveForwardCommand extends Command {
 
     @Override
     public void initialize() {
-        initialPose = chassis.getPose();
+        targetPose = Chassis.getInstance().getPose().plus(new Transform2d(distance_m, 0.0, new Rotation2d()));
     }
 
     @Override
     public void execute() {
-        chassis.drive(new ChassisSpeeds(0, speed, 0), false);
+        chassis.drive(new ChassisSpeeds(speed, 0, 0), false);
     }
 
     @Override
     public boolean isFinished() {
-        return initialPose.getTranslation().getDistance(chassis.getPose().getTranslation()) > distance_m;
+        return targetPose.getTranslation().getDistance(chassis.getPose().getTranslation()) < 0.03;
     }
 
     @Override

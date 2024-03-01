@@ -19,6 +19,7 @@ public class ShooterConstants {
     public static final double TIME_SHOT_OFFSET_POSITIVE = 0.8;  // The number of seconds forward in time the shooter
                                                                  // should calculate for when moving away from the speaker
     public static final double TIME_SHOT_OFFSET_NEGATIVE = 0.25; // The same as ^ but for moving towards the speaker
+    public static final double TRAP_VELOCITY = 2;
 
     static final double SHOOTER_SPEED_TOLERANCE = 2.5; // rps
     public static final double MAX_PIVOT_ANGLE;

@@ -23,7 +23,7 @@ public class ClimberConstants {
 
     public static final double TOP_POSITION = 0.56;
 
-    public static final double BOTTOM_POSITION = 0.02;
+    public static final double BOTTOM_POSITION = 0.0025;
 
     public static final int UNLADEN_SLOT = 0;
     public static final int LADEN_SLOT = 1;
@@ -52,6 +52,7 @@ public class ClimberConstants {
             .withSlot1(switch (RobotIdentity.getInstance().getRobotID()) {
                 case PLAYBEAR_CARTI, BEARITONE -> new Slot1Configs() // laden slot
                         .withKP(66.715)
+                        .withKI(50)
                         .withKD(26.732)
                         .withKS(0.076721)
                         .withKV(9.3706)

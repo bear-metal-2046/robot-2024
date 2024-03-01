@@ -5,6 +5,7 @@
 
 package org.tahomarobotics.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -84,6 +85,9 @@ public class OI extends SubsystemIF {
                         Set.of(ampArm))).onlyIf(ampArm::isAmp))
                 .onTrue(new ShootCommand())
                 .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));
+
+        SmartDashboard.putData("ihasdjl", Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.TRAP)));
+        SmartDashboard.putData("askld", Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.TRAP)));
 
         driveController.leftTrigger(0.01)
                 .whileTrue(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.PASSING))

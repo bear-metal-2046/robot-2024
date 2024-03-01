@@ -145,6 +145,7 @@ public class AmpArm extends SubsystemIF {
         switch (state) {
             case PASSING -> rollersMotor.setControl(rollerVelocityControl.withVelocity(ShooterConstants.TRANSFER_VELOCITY));
             case SCORE -> rollersMotor.setControl(rollerVelocityControl.withVelocity(-ShooterConstants.TRANSFER_VELOCITY * 4));
+            case TRAP -> rollersMotor.setControl(rollerVelocityControl.withVelocity(-ShooterConstants.TRAP_VELOCITY));
             default -> rollersMotor.stopMotor();
         }
     }
@@ -251,6 +252,7 @@ public class AmpArm extends SubsystemIF {
         DISABLED,
         PASSING,
         COLLECTED,
+        TRAP,
         SCORE
     }
 

@@ -74,7 +74,8 @@ class ShooterIO implements ToggledOutputs {
         pivotCurrent = pivotMotor.getSupplyCurrent();
 
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY,
-                shooterVelocity, pivotPosition, pivotVelocity, motorVoltage
+                shooterVelocity, pivotPosition, pivotVelocity, motorVoltage,
+                shooterMotorCurrent, shooterMotorFollowerCurrent, pivotCurrent
         );
         ParentDevice.optimizeBusUtilizationForAll(pivotMotor, shooterMotorFollower, shooterMotor);
     }

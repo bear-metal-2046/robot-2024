@@ -84,7 +84,8 @@ public class SwerveModuleIO implements ToggledOutputs {
 
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.ODOMETRY_UPDATE_FREQUENCY,
                 drivePosition, driveVelocity, steerPosition,
-                steerVelocity
+                steerVelocity,
+                driveCurrent, steerCurrent
         );
         ParentDevice.optimizeBusUtilizationForAll(driveMotor, steerMotor, steerAbsEncoder);
     }

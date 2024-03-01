@@ -57,7 +57,10 @@ public class Indexer extends SubsystemIF implements ToggledOutputs {
         velocity = motor.getVelocity();
         current = motor.getStatorCurrent();
 
-        BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY, position, velocity);
+        BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY,
+                position, velocity,
+                current
+        );
         motor.optimizeBusUtilization();
     }
 

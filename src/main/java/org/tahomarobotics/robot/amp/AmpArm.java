@@ -72,7 +72,7 @@ public class AmpArm extends SubsystemIF implements ToggledOutputs {
         rollerCurrent = rollersMotor.getSupplyCurrent();
 
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY,
-                armPosition, wristPosition, armVelocity, wristVelocity, rollersVelocity
+                armPosition, wristPosition, armVelocity, wristVelocity, rollersVelocity, armCurrent, wristCurrent, rollerCurrent
         );
 
         ParentDevice.optimizeBusUtilizationForAll(armMotor, wristMotor, rollersMotor);

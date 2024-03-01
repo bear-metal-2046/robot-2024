@@ -84,7 +84,8 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
                 deployPositionLeft,
                 deployPositionRight,
                 deployVelocity,
-                collectVelocity
+                collectVelocity,
+                deployCurrentLeft, deployCurrentRight, collectCurrent
         );
 
         ParentDevice.optimizeBusUtilizationForAll(deployLeft, deployRight, collectMotor);

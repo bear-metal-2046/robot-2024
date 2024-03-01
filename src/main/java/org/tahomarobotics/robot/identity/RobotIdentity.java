@@ -103,4 +103,9 @@ public class RobotIdentity extends SubsystemIF {
     public RobotID getRobotID() {
         return robotID;
     }
+
+    @Override
+    public double getEnergyUsed() {
+        return 0;
+    }
 }

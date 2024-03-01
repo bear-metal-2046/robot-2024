@@ -45,6 +45,10 @@ public class SwerveModuleIO implements ToggledOutputs {
     private final StatusSignal<Double> drivePosition;
     private final StatusSignal<Double> driveVelocity;
 
+    private final StatusSignal<Double> driveCurrent;
+
+    private final StatusSignal<Double> steerCurrent;
+
     private final VelocityVoltage driveMotorVelocity = new VelocityVoltage(0.0).withEnableFOC(RobotConfiguration.CANIVORE_PHOENIX_PRO);
     private final PositionDutyCycle steerMotorPosition = new PositionDutyCycle(0.0).withEnableFOC(RobotConfiguration.CANIVORE_PHOENIX_PRO);
 
@@ -75,10 +79,13 @@ public class SwerveModuleIO implements ToggledOutputs {
         driveVelocity = driveMotor.getVelocity();
         steerPosition = steerAbsEncoder.getAbsolutePosition();
         steerVelocity = steerAbsEncoder.getVelocity();
+        driveCurrent = driveMotor.getSupplyCurrent();
+        steerCurrent = steerMotor.getSupplyCurrent();
 
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.ODOMETRY_UPDATE_FREQUENCY,
                 drivePosition, driveVelocity, steerPosition,
-                steerVelocity
+                steerVelocity,
+                driveCurrent, steerCurrent
         );
         ParentDevice.optimizeBusUtilizationForAll(driveMotor, steerMotor, steerAbsEncoder);
     }
@@ -192,12 +199,18 @@ public class SwerveModuleIO implements ToggledOutputs {
                 drivePosition,
                 driveVelocity,
                 steerPosition,
-                steerVelocity
+                steerVelocity,
+                driveCurrent,
+                steerCurrent
         );
     }
 
     @Override
     public boolean logOutputs() {
         return SmartDashboard.getBoolean("Outputs/SwerveModules", OutputsConfiguration.SWERVE_MODULE);
+    }
+
+    public double getTotalCurrent() {
+        return driveCurrent.getValue() + steerCurrent.getValue();
     }
 }

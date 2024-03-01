@@ -121,4 +121,9 @@ public class SysIdTest extends SubsystemIF {
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return sysIdRoutine.dynamic(direction);
     }
+
+    @Override
+    public double getEnergyUsed() {
+        return 0;
+    }
 }

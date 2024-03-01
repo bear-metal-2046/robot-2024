@@ -33,6 +33,11 @@ class ShooterIO implements ToggledOutputs {
     private final StatusSignal<Double> pivotVelocity;
     private final StatusSignal<Double> motorVoltage;
 
+    private final StatusSignal<Double> shooterMotorCurrent;
+    private final StatusSignal<Double> shooterMotorFollowerCurrent;
+
+    private final StatusSignal<Double> pivotCurrent;
+
     private final MotionMagicVoltage pivotPositionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage motorVelocity = new MotionMagicVelocityVoltage(SHOOTER_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage idleVelocity = new MotionMagicVelocityVoltage(IDLE_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
@@ -64,8 +69,13 @@ class ShooterIO implements ToggledOutputs {
         pivotVelocity = pivotMotor.getVelocity();
         motorVoltage = shooterMotor.getMotorVoltage();
 
+        shooterMotorCurrent = shooterMotor.getSupplyCurrent();
+        shooterMotorFollowerCurrent = shooterMotorFollower.getSupplyCurrent();
+        pivotCurrent = pivotMotor.getSupplyCurrent();
+
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY,
-                shooterVelocity, pivotPosition, pivotVelocity, motorVoltage
+                shooterVelocity, pivotPosition, pivotVelocity, motorVoltage,
+                shooterMotorCurrent, shooterMotorFollowerCurrent, pivotCurrent
         );
         ParentDevice.optimizeBusUtilizationForAll(pivotMotor, shooterMotorFollower, shooterMotor);
     }
@@ -180,11 +190,16 @@ class ShooterIO implements ToggledOutputs {
     }
 
     void refreshSignals() {
-        BaseStatusSignal.refreshAll(pivotPosition, pivotVelocity, shooterVelocity);
+        BaseStatusSignal.refreshAll(pivotPosition, pivotVelocity, shooterVelocity,
+                shooterMotorCurrent, shooterMotorFollowerCurrent, pivotCurrent);
     }
 
     @Override
     public boolean logOutputs() {
         return SmartDashboard.getBoolean("Outputs/Shooter", OutputsConfiguration.SHOOTER);
+    }
+
+    public double getTotalCurrent() {
+        return shooterMotorCurrent.getValue() + shooterMotorFollowerCurrent.getValue() + pivotCurrent.getValue();
     }
 }

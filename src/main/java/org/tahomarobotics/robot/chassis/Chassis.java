@@ -12,10 +12,12 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.Robot;
@@ -68,6 +70,8 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
     private double targetShootingAngle;
 
     private ChassisSpeeds currentChassisSpeeds = new ChassisSpeeds();
+
+    private double energyUsed = 0;
 
     // CONSTRUCTOR
 
@@ -197,6 +201,11 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
 
         currentChassisSpeeds = kinematics.toChassisSpeeds(getSwerveModuleStates());
 
+        double voltage = RobotController.getBatteryVoltage();
+        double totalCurrent = modules.stream().mapToDouble(SwerveModule::getTotalCurent).sum();
+        energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;
+
+
         recordOutput("Chassis/States", getSwerveModuleStates());
         recordOutput("Chassis/DesiredState", getSwerveModuleDesiredStates());
         recordOutput("Chassis/CurrentChassisSpeeds", getCurrentChassisSpeeds());
@@ -204,6 +213,8 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
         recordOutput("Chassis/Pose", pose);
         recordOutput("Chassis/isAtShootingAngle", isReadyToShoot());
         recordOutput("Chassis/target shooting angle", targetShootingAngle);
+
+        recordOutput("Chassis/Energy", getEnergyUsed());
 
         fieldPose.setRobotPose(pose);
         SmartDashboard.putData(fieldPose);
@@ -218,6 +229,7 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
             SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, ChassisConstants.MAX_VELOCITY);
             setSwerveStates(swerveModuleStates);
         }
+
     }
 
     @Override
@@ -393,5 +405,10 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
     @Override
     public boolean logOutputs() {
         return SmartDashboard.getBoolean("Outputs/Chassis", OutputsConfiguration.CHASSIS);
+    }
+
+    @Override
+    public double getEnergyUsed() {
+        return energyUsed / 1000d;
     }
 }

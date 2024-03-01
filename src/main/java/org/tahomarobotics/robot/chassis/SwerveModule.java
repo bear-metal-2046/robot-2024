@@ -89,4 +89,8 @@ public class SwerveModule {
     public void stop() {
         io.stop();
     }
+
+    public double getTotalCurent() { return io.getTotalCurrent(); }
+
+
 }

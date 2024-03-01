@@ -6,8 +6,10 @@ import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.tahomarobotics.robot.OutputsConfiguration;
+import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.collector.Collector;
@@ -29,6 +31,8 @@ public class Indexer extends SubsystemIF implements ToggledOutputs {
     private final StatusSignal<Double> position;
     private final StatusSignal<Double> velocity;
 
+    private final StatusSignal<Double> current;
+
     private State state = State.DISABLED;
     private final MotionMagicVoltage transferPos = new MotionMagicVoltage(TRANSFER_DISTANCE)
             .withSlot(1).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
@@ -38,6 +42,7 @@ public class Indexer extends SubsystemIF implements ToggledOutputs {
             .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage reverseIntakeVelocity = new MotionMagicVelocityVoltage(-ShooterConstants.TRANSFER_VELOCITY)
             .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
+    private double energyUsed = 0;
 
     private Indexer() {
         RobustConfigurator configurator = new RobustConfigurator(logger);
@@ -50,8 +55,12 @@ public class Indexer extends SubsystemIF implements ToggledOutputs {
 
         position = motor.getPosition();
         velocity = motor.getVelocity();
+        current = motor.getSupplyCurrent();
 
-        BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY, position, velocity);
+        BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY,
+                position, velocity,
+                current
+        );
         motor.optimizeBusUtilization();
     }
 
@@ -234,8 +243,12 @@ public class Indexer extends SubsystemIF implements ToggledOutputs {
     @Override
     public void periodic() {
         BaseStatusSignal.refreshAll(
-            position, velocity
+            position, velocity, current
         );
+
+        double voltage = RobotController.getBatteryVoltage();
+        double totalCurrent = current.getValue();
+        energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;
 
         recordOutput("Indexer/Position", getPosition());
         recordOutput("Indexer/Velocity", getVelocity());
@@ -244,8 +257,12 @@ public class Indexer extends SubsystemIF implements ToggledOutputs {
         recordOutput("Indexer/BeamBreak One", getCollectorBeanBake());
         recordOutput("Indexer/BeamBreak Two", getShooterBeanBake());
         recordOutput("Indexer/Collected", hasCollected());
+
+        recordOutput("Indexer/Current", totalCurrent);
+        recordOutput("Indexer/Energy", getEnergyUsed());
         
         stateMachine();
+
     }
 
     // STATES
@@ -263,5 +280,10 @@ public class Indexer extends SubsystemIF implements ToggledOutputs {
     @Override
     public boolean logOutputs() {
         return SmartDashboard.getBoolean("Outputs/Indexer", OutputsConfiguration.INDEXER);
+    }
+
+    @Override
+    public double getEnergyUsed() {
+        return energyUsed / 1000d;
     }
 }

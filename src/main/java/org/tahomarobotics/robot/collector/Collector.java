@@ -8,10 +8,12 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import org.tahomarobotics.robot.OutputsConfiguration;
+import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.collector.commands.ZeroCollectorCommand;
@@ -42,6 +44,10 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
     private final StatusSignal<Double> deployVelocity;
     private final StatusSignal<Double> collectVelocity;
 
+    private final StatusSignal<Double> deployCurrentLeft;
+    private final StatusSignal<Double> deployCurrentRight;
+    private final StatusSignal<Double> collectCurrent;
+
     private final MotionMagicVelocityVoltage collectVelocityControl = new MotionMagicVelocityVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVoltage deployPositionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
 
@@ -51,6 +57,8 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
     private boolean isCollecting;
     private boolean isEjecting;
     private boolean isZeroed;
+
+    private double energyUsed = 0;
 
     private Collector() {
         RobustConfigurator configurator = new RobustConfigurator(logger);
@@ -68,11 +76,16 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
         deployVelocity = deployRight.getVelocity();
         collectVelocity = collectMotor.getVelocity();
 
+        deployCurrentLeft = deployLeft.getSupplyCurrent();
+        deployCurrentRight = deployRight.getSupplyCurrent();
+        collectCurrent = collectMotor.getSupplyCurrent();
+
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY,
                 deployPositionLeft,
                 deployPositionRight,
                 deployVelocity,
-                collectVelocity
+                collectVelocity,
+                deployCurrentLeft, deployCurrentRight, collectCurrent
         );
 
         ParentDevice.optimizeBusUtilizationForAll(deployLeft, deployRight, collectMotor);
@@ -253,7 +266,13 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
 
     @Override
     public void periodic() {
-        BaseStatusSignal.refreshAll(deployPositionLeft, deployPositionRight, collectVelocity, deployVelocity);
+
+        BaseStatusSignal.refreshAll(deployPositionLeft, deployPositionRight, collectVelocity, deployVelocity,
+                deployCurrentLeft, deployCurrentRight, collectCurrent);
+
+        double voltage = RobotController.getBatteryVoltage();
+        double totalCurrent = deployCurrentLeft.getValue() + deployCurrentRight.getValue() + collectCurrent.getValue();
+        energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;
 
         recordOutput("Collector/Deploy State", deploymentState);
         recordOutput("Collector/Collection State", collectionState);
@@ -263,11 +282,15 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
         recordOutput("Collector/Deploy Velocity", deployVelocity.getValue());
         recordOutput("Collector/Collect Velocity", collectVelocity.getValue());
 
+        recordOutput("Collector/TotalCurrent", totalCurrent);
+        recordOutput("Collector/Energy", getEnergyUsed());
+
         if (RobotState.isAutonomous()) {
             autoStateMachine();
         } else {
             teleopStateMachine();
         }
+
     }
 
     @Override
@@ -306,5 +329,10 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
     @Override
     public boolean logOutputs() {
         return SmartDashboard.getBoolean("Outputs/Collector", OutputsConfiguration.COLLECTOR);
+    }
+
+    @Override
+    public double getEnergyUsed() {
+        return energyUsed / 1000d;
     }
 }

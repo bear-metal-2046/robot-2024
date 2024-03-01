@@ -20,13 +20,19 @@ package org.tahomarobotics.robot.chassis;
 
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.*;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.PIDConstants;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.identity.RobotIdentity;
+
+import java.util.Arrays;
 
 /**
  * Constants for the chassis.
@@ -102,6 +108,8 @@ public final class ChassisConstants {
     public static final double kA_DRIVE = SWERVE_DRIVE_MOTOR.rOhms * WHEEL_RADIUS * MASS
             / (DRIVE_REDUCTION * SWERVE_DRIVE_MOTOR.KtNMPerAmp);
 
+    public static final double CLIMB_POSITION_EPSILON = 0.05;
+
     /// DEVICE CONFIGURATION
 
     public static final MagnetSensorConfigs encoderConfiguration = new MagnetSensorConfigs()
@@ -150,4 +158,48 @@ public final class ChassisConstants {
                           }}
             );
 
+    public static Pose2d[] BLUE_STAGE_CHAIN_POSES = new Pose2d[] {
+            new Pose2d(new Translation2d(4, 2.64), Rotation2d.fromDegrees(60.5)), // Source Side
+            new Pose2d(new Translation2d(4, 5.57), Rotation2d.fromDegrees(-58)),  // Amp Side
+            new Pose2d(new Translation2d(6.6, 4.11), Rotation2d.fromDegrees(180)) // Far Side
+    };
+
+    public static Pose2d[] RED_STAGE_CHAIN_POSES = new Pose2d[] {
+            new Pose2d(new Translation2d(12.53, 2.72), Rotation2d.fromDegrees(120)), // Source Side
+            new Pose2d(new Translation2d(12.53, 5.57), Rotation2d.fromDegrees(-119.05)), // Amp Side
+            new Pose2d(new Translation2d(9.95, 4.11), Rotation2d.fromDegrees(0))  // Far Side
+    };
+
+    public static PathConstraints CLIMB_MOVEMENT_CONSTRAINTS = new PathConstraints(
+            4.0,
+            4.0,
+            540,
+            720);
+
+    public static Pose2d getClosestChainPose() {
+        DriverStation.Alliance alliance = DriverStation.getAlliance().get();
+        Pose2d currentPos = Chassis.getInstance().getPose();
+        Translation2d currentTranslation = currentPos.getTranslation();
+        Double[] differences;
+        if (alliance.equals(DriverStation.Alliance.Blue)) {
+            differences = (Double[]) Arrays.stream(BLUE_STAGE_CHAIN_POSES).map(pos -> currentTranslation.getDistance(pos.getTranslation())).toArray();
+        } else {
+            differences = (Double[]) Arrays.stream(RED_STAGE_CHAIN_POSES).map(pos -> currentTranslation.getDistance(pos.getTranslation())).toArray();
+        }
+
+        double lowestDiff = Double.POSITIVE_INFINITY;
+        int closestChainIndex = 0;
+        int i = 0;
+        for (double diff : differences) {
+            if (diff < lowestDiff) {
+                lowestDiff = diff;
+                closestChainIndex = i;
+            }
+            i++;
+        }
+
+        return (alliance.equals(DriverStation.Alliance.Blue)) ?
+                BLUE_STAGE_CHAIN_POSES[closestChainIndex] :
+                RED_STAGE_CHAIN_POSES[closestChainIndex];
+    }
 }

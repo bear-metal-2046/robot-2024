@@ -9,18 +9,18 @@ public class VisionConstants {
     public enum Camera {
         COLLECTOR_LEFT("Collector Left", new Transform3d(
                 new Translation3d(
-                        Units.inchesToMeters(7.25), Units.inchesToMeters(3.25), 0.65
+                        Units.inchesToMeters(7.15), Units.inchesToMeters(3.28), 0.65
                 ),
                 new Rotation3d(
-                        0, Units.degreesToRadians(-20), 0
+                        0, Units.degreesToRadians(20), 0
                 )
         )),
         COLLECTOR_RIGHT("Collector Right", new Transform3d(
                 new Translation3d(
-                        Units.inchesToMeters(7.25), Units.inchesToMeters(-3.25), 0.65
+                        Units.inchesToMeters(7.15), Units.inchesToMeters(-3.28), 0.65
                 ),
                 new Rotation3d(
-                        0, Units.degreesToRadians(-20), 0
+                        0, Units.degreesToRadians(-15), 0
                 )
         )),
         SHOOTER_LEFT("Shooter Left", new Transform3d(

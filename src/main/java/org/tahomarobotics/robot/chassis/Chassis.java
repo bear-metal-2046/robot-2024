@@ -56,8 +56,8 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
 
     private final CalibrationData<Double[]> swerveCalibration;
 
-    private final ATVision collectorLeftVision;
-    private final ObjectDetectionCamera collectorRightVision;
+    private final ObjectDetectionCamera collectorLeftVision;
+    private final ATVision collectorRightVision;
     private final ATVision shooterLeftVision;
     private final ATVision shooterRightVision;
 
@@ -113,8 +113,8 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
         odometryThread.start();
 
 
-        collectorLeftVision = new ATVision(VisionConstants.Camera.COLLECTOR_LEFT, fieldPose, poseEstimator);
-        collectorRightVision = new ObjectDetectionCamera(VisionConstants.Camera.COLLECTOR_RIGHT);
+        collectorLeftVision = new ObjectDetectionCamera(VisionConstants.Camera.COLLECTOR_LEFT);
+        collectorRightVision = new ATVision(VisionConstants.Camera.COLLECTOR_RIGHT, fieldPose, poseEstimator);
         shooterLeftVision = new ATVision(VisionConstants.Camera.SHOOTER_LEFT, fieldPose, poseEstimator);
         shooterRightVision = new ATVision(VisionConstants.Camera.SHOOTER_RIGHT, fieldPose, poseEstimator);
     }

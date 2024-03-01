@@ -1,11 +1,14 @@
 package org.tahomarobotics.robot.auto;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.networktables.NetworkTableEvent;
@@ -19,6 +22,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.chassis.Chassis;
+import org.tahomarobotics.robot.chassis.ChassisConstants;
 import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.shooter.Shooter;
@@ -28,6 +32,7 @@ import org.tahomarobotics.robot.util.SubsystemIF;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 public class Autonomous extends SubsystemIF {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Autonomous.class);
@@ -147,6 +152,31 @@ public class Autonomous extends SubsystemIF {
                                                         state.getTargetHolonomicPose(), // This will be slightly inaccurate.
                                                         state.curvatureRadPerMeter))
                 ).toList());
+    }
+
+    public static Command skipToNextPath(PathPlannerAuto auto) {
+        List<PathPlannerPath> paths = PathPlannerAuto.getPathGroupFromAutoFile(auto.getName());
+        List<PathPlannerTrajectory> trajectories = getTrajectories(paths);
+        Pose2d currentPose = Chassis.getInstance().getPose();
+        Pair<Translation2d, Double> closestPose = Pair.of(currentPose.getTranslation(), Double.POSITIVE_INFINITY);
+        PathPlannerTrajectory closestTraj = paths.get(0).getTrajectory(new ChassisSpeeds(), new Rotation2d());
+        double distance;
+        for (PathPlannerTrajectory traj : trajectories) {
+            for (Translation2d pos : (Translation2d[]) traj.getStates().stream().map((state) -> state.positionMeters).toArray()) {
+                distance = pos.getDistance(currentPose.getTranslation());
+                if (distance <= closestPose.getSecond()) {
+                    closestPose = Pair.of(pos, distance);
+                    closestTraj = traj;
+                }
+            }
+        }
+        PathPlannerPath targetPath = paths.get(0);
+        for (PathPlannerPath path : paths) {
+            if (path.getPoint(0).position.equals(closestTraj.getState(0).positionMeters)) {
+                targetPath = path;
+            }
+        }
+        return AutoBuilder.pathfindThenFollowPath(targetPath, ChassisConstants.AUTO_PATHFINDING_CONSTRAINTS);
     }
 
     private void postAutoTrajectory(Field2d field, String autoName) {

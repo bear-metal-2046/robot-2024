@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.chassis.commands.TeleopDriveCommand;
-import org.tahomarobotics.robot.climbers.Climbers;
 import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.commands.ShootCommand;
@@ -53,13 +52,10 @@ public class OI extends SubsystemIF {
      * Configure the button bindings for the controller(s).
      */
     private void configureBindings() {
-        Climbers climbers = Climbers.getInstance();
         Chassis chassis = Chassis.getInstance();
         Collector collector = Collector.getInstance();
         Shooter shooter = Shooter.getInstance();
         AmpArm ampArm = AmpArm.getInstance();
-
-        climbers.registerSysIdCommands(driveController);
 
         // Robot Heading Zeroing
         driveController.a().onTrue(Commands.runOnce(chassis::orientToZeroHeading));

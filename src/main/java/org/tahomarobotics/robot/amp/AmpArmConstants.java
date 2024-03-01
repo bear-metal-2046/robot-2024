@@ -19,6 +19,7 @@ public class AmpArmConstants {
     static final double ARM_MAX_POSE = 90d/360d;
 
     public static final double ARM_STOW_POSE, ARM_AMP_POSE, ARM_TRAP_POSE, ARM_SOURCE_POSE;
+    public static final double ARM_CLIMB_POSE = Units.degreesToRotations(90);
 
     static {
         switch (RobotIdentity.getInstance().getRobotID()) {
@@ -27,19 +28,15 @@ public class AmpArmConstants {
                 ARM_AMP_POSE = Units.degreesToRotations(90);
                 ARM_TRAP_POSE = 0.1807 - Units.degreesToRotations(4);
                 ARM_SOURCE_POSE = Units.degreesToRotations(90);
+                ARM_GEAR_REDUCTION = (14.0 / 64.0) * (18.0 / 72.0) * (16.0 / 48.0);
             }
             default -> {
                 ARM_STOW_POSE = Units.degreesToRotations(-90.000000);
                 ARM_AMP_POSE = Units.degreesToRotations(157.412109375);
                 ARM_TRAP_POSE = Units.degreesToRotations(108);
                 ARM_SOURCE_POSE = Units.degreesToRotations(142.734375);
+                ARM_GEAR_REDUCTION = (16.0 / 64.0) * (18.0 / 72.0) * (16.0 / 48.0);
             }
-        }
-
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (RobotIdentity.getInstance().getRobotID()) {
-            case BEARITONE -> ARM_GEAR_REDUCTION = (14.0 / 64.0) * (18.0 / 72.0) * (16.0 / 48.0);
-            default -> ARM_GEAR_REDUCTION = (16.0 / 64.0) * (18.0 / 72.0) * (16.0 / 48.0);
         }
     }
 

@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.amp.AmpArm;
+import org.tahomarobotics.robot.climbers.Climbers;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
@@ -18,11 +19,12 @@ public class AmpArmCommands {
     private static final Logger logger = LoggerFactory.getLogger(AmpArmCommands.class);
 
     public static final Supplier<Command> FEEDFORWARD;
-    private static final Supplier<Command> FEEDBACK;
+    public static final Supplier<Command> FEEDBACK;
     private static final Supplier<Command> STOW_TO_AMP;
     private static final Supplier<Command> STOW_TO_SOURCE;
     public static final Supplier<Command> ARM_TO_STOW;
     public static final Supplier<Command> AMP_ARM_CLIMB;
+    public static final Supplier<Command> AMP_ARM_TRAP;
     public static Command AMP_ARM_CTRL;
 
     static {
@@ -52,6 +54,13 @@ public class AmpArmCommands {
 
         AMP_ARM_CLIMB = () -> Commands.sequence(
                 Commands.runOnce(() -> ampArm.setWristPosition(WRIST_MOVING_POSE)),
+                Commands.runOnce(() -> ampArm.setArmPosition(ARM_CLIMB_POSE)),
+                Commands.waitUntil(ampArm::isArmAtPosition),
+                Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.CLIMB))
+        );
+
+        AMP_ARM_TRAP = () -> Commands.sequence(
+                Commands.runOnce(() -> ampArm.setWristPosition(WRIST_TRAP_POSE)),
                 Commands.runOnce(() -> ampArm.setArmPosition(ARM_TRAP_POSE)),
                 Commands.waitUntil(ampArm::isArmAtPosition),
                 Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.TRAP))
@@ -98,18 +107,21 @@ public class AmpArmCommands {
                     indexer.transitionToCollected();
                     shooter.disable();
                 })
-        ).onlyIf(() -> !indexer.hasCollected());
+        ).onlyIf(() -> !indexer.hasCollected()).onlyIf(ampArm::isCollected);
     }
 
     static {
         AmpArm ampArm = AmpArm.getInstance();
         Indexer indexer = Indexer.getInstance();
         Shooter shooter = Shooter.getInstance();
+        Climbers climbers = Climbers.getInstance();
 
         AMP_ARM_CTRL = Commands.deferredProxy(() -> {
+            climbers.setReadyToClimb(false);
+
             if ((ampArm.isSource() || ampArm.isAmp()) && ampArm.isCollected()) {
                 return Commands.defer(() -> ARM_TO_STOW.get().andThen(FEEDBACK.get()), Set.of(ampArm, indexer, shooter));
-            } if (ampArm.isAmp() || ampArm.isSource()) {
+            } if (ampArm.isAmp() || ampArm.isSource() || ampArm.isTrap()) {
                 return Commands.defer(() -> ARM_TO_STOW.get().andThen(Commands.runOnce(shooter::disable)), Set.of(ampArm, shooter));
             } if (indexer.hasCollected()) {
                 return Commands.defer(() -> FEEDFORWARD.get().andThen(STOW_TO_AMP.get()), Set.of(ampArm, indexer, shooter));

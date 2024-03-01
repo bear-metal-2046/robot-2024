@@ -5,13 +5,14 @@
 
 package org.tahomarobotics.robot;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.chassis.commands.TeleopDriveCommand;
+import org.tahomarobotics.robot.climbers.Climbers;
+import org.tahomarobotics.robot.climbers.commands.*;
 import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.commands.ShootCommand;
@@ -57,6 +58,7 @@ public class OI extends SubsystemIF {
         Collector collector = Collector.getInstance();
         Shooter shooter = Shooter.getInstance();
         AmpArm ampArm = AmpArm.getInstance();
+        Climbers climbers = Climbers.getInstance();
 
         // Robot Heading Zeroing
         driveController.a().onTrue(Commands.runOnce(chassis::orientToZeroHeading));
@@ -77,6 +79,23 @@ public class OI extends SubsystemIF {
 
         driveController.y().onTrue(AMP_ARM_CTRL);
 
+        driveController.start().onTrue(Commands.deferredProxy(() ->
+                switch (climbers.getClimbState()) {
+                    case COCKED -> new PreClimbSequence();
+                    case READY -> new EngageCommand();
+                    default -> Commands.none();
+                })
+        );
+        driveController.x().onTrue(Commands.deferredProxy(ClimbSequence::new).onlyIf(() -> climbers.getClimbState() == Climbers.ClimbState.ENGAGED));
+        driveController.back().onTrue(Commands.deferredProxy(() ->
+                switch (climbers.getClimbState()) {
+                    case READY -> new PreClimbCancel();
+                    case ENGAGED -> new EngagedCancel();
+                    case CLIMBING -> new ClimbingCancel();
+                    default -> Commands.none();
+                })
+        );
+
         driveController.rightTrigger(0.5)
                 .whileTrue(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.SCORE))
                 .onlyIf(ampArm::isAmp))
@@ -85,9 +104,6 @@ public class OI extends SubsystemIF {
                         Set.of(ampArm))).onlyIf(ampArm::isAmp))
                 .onTrue(new ShootCommand())
                 .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));
-
-        SmartDashboard.putData("ihasdjl", Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.TRAP)));
-        SmartDashboard.putData("askld", Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.TRAP)));
 
         driveController.leftTrigger(0.01)
                 .whileTrue(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.PASSING))

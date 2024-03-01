@@ -33,6 +33,8 @@ public class Climbers extends SubsystemIF implements ToggledOutputs {
     private final Climber leftClimber;
     private final Climber rightClimber;
 
+    private ClimbState state = ClimbState.COCKED;
+
     private Climbers() {
         leftClimber = new Climber(RobotMap.LEFT_CLIMB_MOTOR, "Left Climber", true);
         rightClimber = new Climber(RobotMap.RIGHT_CLIMB_MOTOR, "Right Climber", false);
@@ -128,9 +130,25 @@ public class Climbers extends SubsystemIF implements ToggledOutputs {
         rightClimber.stop();
     }
 
+    public ClimbState getClimbState() {
+        return state;
+    }
+
+    public void setClimbState(ClimbState state) {
+        this.state = state;
+    }
+
     @Override
     public boolean logOutputs() {
         return SmartDashboard.getBoolean("Outputs/Climbers", OutputsConfiguration.CLIMBERS);
+    }
+
+    public enum ClimbState {
+        COCKED,
+        READY,
+        ENGAGED,
+        CLIMBING,
+        CLIMBED
     }
 }
 

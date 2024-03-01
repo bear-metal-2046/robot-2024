@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
+import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
@@ -18,11 +19,10 @@ import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
-import org.tahomarobotics.robot.util.ToggledOutputs;
 
 import static org.tahomarobotics.robot.amp.AmpArmConstants.*;
 
-public class AmpArm extends SubsystemIF implements ToggledOutputs {
+public class AmpArm extends SubsystemIF {
     private static final AmpArm INSTANCE = new AmpArm();
 
     private final TalonFX armMotor;
@@ -203,18 +203,17 @@ public class AmpArm extends SubsystemIF implements ToggledOutputs {
         double totalCurrent = armCurrent.getValue() + wristCurrent.getValue() + rollerCurrent.getValue();
         energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;
 
-        recordOutput("Amp Arm/Roller State", rollerState);
-        recordOutput("Amp Arm/Arm State", armState);
+        Logger.recordOutput("Amp Arm/Roller State", rollerState);
+        Logger.recordOutput("Amp Arm/Arm State", armState);
 
-        recordOutput("Amp Arm/Arm Position", getArmPosition());
-        recordOutput("Amp Arm/Wrist Position", getWristPosition());
-        recordOutput("Amp Arm/Arm Velocity", getArmVelocity());
-        recordOutput("Amp Arm/Wrist Velocity", getWristVelocity());
-        recordOutput("Amp Arm/Rollers Velocity", getRollersVelocity());
+        Logger.recordOutput("Amp Arm/Arm Position", getArmPosition());
+        Logger.recordOutput("Amp Arm/Wrist Position", getWristPosition());
+        Logger.recordOutput("Amp Arm/Arm Velocity", getArmVelocity());
+        Logger.recordOutput("Amp Arm/Wrist Velocity", getWristVelocity());
+        Logger.recordOutput("Amp Arm/Rollers Velocity", getRollersVelocity());
 
-        recordOutput("Amp Arm/TotalCurrent", totalCurrent);
-        recordOutput("Amp Arm/Energy", getEnergyUsed());
-
+        Logger.recordOutput("Amp Arm/TotalCurrent", totalCurrent);
+        Logger.recordOutput("Amp Arm/Energy", getEnergyUsed());
     }
 
     @Override
@@ -248,11 +247,6 @@ public class AmpArm extends SubsystemIF implements ToggledOutputs {
         PASSING,
         COLLECTED,
         SCORE;
-    }
-
-    @Override
-    public boolean logOutputs() {
-        return SmartDashboard.getBoolean("Outputs/AmpArm", OutputsConfiguration.AMP_ARM);
     }
 
     @Override

@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
+import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
@@ -22,12 +23,10 @@ import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
-import org.tahomarobotics.robot.util.SysIdTest;
-import org.tahomarobotics.robot.util.ToggledOutputs;
 
 import static org.tahomarobotics.robot.collector.CollectorConstants.*;
 
-public class Collector extends SubsystemIF implements ToggledOutputs {
+public class Collector extends SubsystemIF {
 
     private static final Collector INSTANCE = new Collector();
 
@@ -274,16 +273,16 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
         double totalCurrent = deployCurrentLeft.getValue() + deployCurrentRight.getValue() + collectCurrent.getValue();
         energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;
 
-        recordOutput("Collector/Deploy State", deploymentState);
-        recordOutput("Collector/Collection State", collectionState);
+        Logger.recordOutput("Collector/Deploy State", deploymentState);
+        Logger.recordOutput("Collector/Collection State", collectionState);
 
-        recordOutput("Collector/Deploy Right Position", deployPositionRight.getValue());
-        recordOutput("Collector/Deploy Left Position", deployPositionLeft.getValue());
-        recordOutput("Collector/Deploy Velocity", deployVelocity.getValue());
-        recordOutput("Collector/Collect Velocity", collectVelocity.getValue());
+        Logger.recordOutput("Collector/Deploy Right Position", deployPositionRight.getValue());
+        Logger.recordOutput("Collector/Deploy Left Position", deployPositionLeft.getValue());
+        Logger.recordOutput("Collector/Deploy Velocity", deployVelocity.getValue());
+        Logger.recordOutput("Collector/Collect Velocity", collectVelocity.getValue());
 
-        recordOutput("Collector/TotalCurrent", totalCurrent);
-        recordOutput("Collector/Energy", getEnergyUsed());
+        Logger.recordOutput("Collector/TotalCurrent", totalCurrent);
+        Logger.recordOutput("Collector/Energy", getEnergyUsed());
 
         if (RobotState.isAutonomous()) {
             autoStateMachine();
@@ -324,11 +323,6 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
         DEPLOYED,
         STOWED,
         EJECT
-    }
-
-    @Override
-    public boolean logOutputs() {
-        return SmartDashboard.getBoolean("Outputs/Collector", OutputsConfiguration.COLLECTOR);
     }
 
     @Override

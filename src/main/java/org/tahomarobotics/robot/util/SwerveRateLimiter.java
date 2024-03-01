@@ -21,7 +21,6 @@ package org.tahomarobotics.robot.util;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.Timer;
 
 public class SwerveRateLimiter {

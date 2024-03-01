@@ -11,22 +11,19 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.littletonrobotics.junction.AutoLog;
-import org.slf4j.Logger;
+import org.littletonrobotics.junction.Logger;
 import org.slf4j.LoggerFactory;
-import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.util.RobustConfigurator;
-import org.tahomarobotics.robot.util.ToggledOutputs;
 
 import java.util.List;
 
 import static org.tahomarobotics.robot.chassis.ChassisConstants.*;
 
-public class SwerveModuleIO implements ToggledOutputs {
-    private static final Logger logger = LoggerFactory.getLogger(SwerveModuleIO.class);
+public class SwerveModuleIO {
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(SwerveModuleIO.class);
 
     // MEMBER VARIABLES
 
@@ -164,13 +161,13 @@ public class SwerveModuleIO implements ToggledOutputs {
 
     
     public void periodic() {
-        recordOutput(name + "/State", getState());
-        recordOutput(name + "/DesiredState", desiredState);
-        recordOutput(name + "/Position", getPosition());
+        Logger.recordOutput(name + "/State", getState());
+        Logger.recordOutput(name + "/DesiredState", desiredState);
+        Logger.recordOutput(name + "/Position", getPosition());
 
-        recordOutput(name + "/DriveVelocity", driveVelocity.getValueAsDouble());
-        recordOutput(name + "/DriveVelocityMPS", driveVelocity.getValueAsDouble() * DRIVE_POSITION_COEFFICIENT);
-        recordOutput(name + "/SteerVelocity", steerVelocity.getValueAsDouble());
+        Logger.recordOutput(name + "/DriveVelocity", driveVelocity.getValueAsDouble());
+        Logger.recordOutput(name + "/DriveVelocityMPS", driveVelocity.getValueAsDouble() * DRIVE_POSITION_COEFFICIENT);
+        Logger.recordOutput(name + "/SteerVelocity", steerVelocity.getValueAsDouble());
     }
 
     
@@ -203,11 +200,6 @@ public class SwerveModuleIO implements ToggledOutputs {
                 driveCurrent,
                 steerCurrent
         );
-    }
-
-    @Override
-    public boolean logOutputs() {
-        return SmartDashboard.getBoolean("Outputs/SwerveModules", OutputsConfiguration.SWERVE_MODULE);
     }
 
     public double getTotalCurrent() {

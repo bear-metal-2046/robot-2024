@@ -151,10 +151,12 @@ public class Autonomous extends SubsystemIF {
             }
         }
         PathPlannerPath targetPath = paths.get(0);
+        int i = 0;
         for (PathPlannerPath path : paths) {
             if (path.getPoint(0).position.equals(closestTraj.getState(0).positionMeters)) {
-                targetPath = path;
+                targetPath = paths.get(i + 1);
             }
+            i++;
         }
         return AutoBuilder.pathfindThenFollowPath(targetPath, ChassisConstants.AUTO_PATHFINDING_CONSTRAINTS);
     }

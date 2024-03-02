@@ -39,7 +39,6 @@ import java.util.List;
 public class Robot extends LoggedRobot {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Robot.class);
 
-    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final List<SubsystemIF> subsystems = new ArrayList<>();
 
     private Command autoCommand;

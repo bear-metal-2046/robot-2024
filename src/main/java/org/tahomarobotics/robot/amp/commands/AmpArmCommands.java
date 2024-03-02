@@ -2,8 +2,6 @@ package org.tahomarobotics.robot.amp.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.shooter.Shooter;
@@ -15,8 +13,6 @@ import java.util.function.Supplier;
 import static org.tahomarobotics.robot.amp.AmpArmConstants.*;
 
 public class AmpArmCommands {
-    private static final Logger logger = LoggerFactory.getLogger(AmpArmCommands.class);
-
     public static final Supplier<Command> FEEDFORWARD;
     public static final Supplier<Command> FEEDBACK;
     private static final Supplier<Command> STOW_TO_AMP;
@@ -34,7 +30,7 @@ public class AmpArmCommands {
                 Commands.runOnce(() -> ampArm.setArmPosition(ARM_AMP_POSE)),
                 Commands.waitUntil(ampArm::isArmAtPosition),
                 Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.AMP))
-        ).onlyIf(ampArm::isStowed);
+        ).onlyIf(ampArm::isArmAtStow);
 
         ARM_TO_STOW = () -> Commands.sequence(
                 Commands.runOnce(() -> ampArm.setWristPosition(WRIST_MOVING_POSE)),
@@ -49,13 +45,11 @@ public class AmpArmCommands {
                 Commands.runOnce(() -> ampArm.setArmPosition(ARM_SOURCE_POSE)),
                 Commands.waitUntil(ampArm::isArmAtPosition),
                 Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.SOURCE))
-        ).onlyIf(ampArm::isStowed);
+        ).onlyIf(ampArm::isArmAtStow);
 
         AMP_ARM_CLIMB = () -> Commands.sequence(
-                Commands.runOnce(() -> ampArm.setWristPosition(WRIST_MOVING_POSE)),
-                Commands.runOnce(() -> ampArm.setArmPosition(ARM_CLIMB_POSE)),
-                Commands.waitUntil(ampArm::isArmAtPosition),
-                Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.CLIMB))
+                Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.CLIMB)),
+                Commands.waitUntil(ampArm::isArmAtPosition)
         );
 
         AMP_ARM_TRAP = () -> Commands.sequence(
@@ -87,7 +81,7 @@ public class AmpArmCommands {
                     indexer.transitionToDisabled();
                     shooter.stop();
                 })
-        ).onlyIf(ampArm::isStowed).onlyIf(indexer::hasCollected);
+        ).onlyIf(ampArm::isArmAtStow).onlyIf(indexer::hasCollected);
 
         FEEDBACK = () -> Commands.sequence(
                 Commands.runOnce(() -> shooter.setAngle(ShooterConstants.MIN_PIVOT_ANGLE)),
@@ -106,7 +100,7 @@ public class AmpArmCommands {
                     indexer.transitionToCollected();
                     shooter.disable();
                 })
-        ).onlyIf(() -> !indexer.hasCollected()).onlyIf(ampArm::isCollected);
+        ).onlyIf(() -> !indexer.hasCollected()).onlyIf(ampArm::hasRollerCollected);
     }
 
     static {
@@ -115,9 +109,9 @@ public class AmpArmCommands {
         Shooter shooter = Shooter.getInstance();
 
         AMP_ARM_CTRL = Commands.deferredProxy(() -> {
-            if ((ampArm.isSource() || ampArm.isAmp()) && ampArm.isCollected()) {
+            if ((ampArm.isArmAtSource() || ampArm.isArmAtAmp()) && ampArm.hasRollerCollected()) {
                 return Commands.defer(() -> ARM_TO_STOW.get().andThen(FEEDBACK.get()), Set.of(ampArm, indexer, shooter));
-            } if (ampArm.isAmp() || ampArm.isSource() || ampArm.isTrap()) {
+            } if (ampArm.isArmAtAmp() || ampArm.isArmAtSource() || ampArm.isArmAtTrap()) {
                 return Commands.defer(() -> ARM_TO_STOW.get().andThen(Commands.runOnce(shooter::disable)), Set.of(ampArm, shooter));
             } if (indexer.hasCollected()) {
                 return Commands.defer(() -> FEEDFORWARD.get().andThen(STOW_TO_AMP.get()), Set.of(ampArm, indexer, shooter));

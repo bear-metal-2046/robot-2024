@@ -24,7 +24,7 @@ public class AmpArmConstants {
     static {
         switch (RobotIdentity.getInstance().getRobotID()) {
             case PLAYBEAR_CARTI, BEARITONE -> {
-                ARM_STOW_POSE = Units.degreesToRotations(-90.000000);
+                ARM_STOW_POSE = -0.25;
                 ARM_AMP_POSE = 0.201416015625;
                 ARM_TRAP_POSE = 0.1962890625 - Units.degreesToRotations(5);
                 ARM_SOURCE_POSE = Units.degreesToRotations(90);
@@ -95,12 +95,8 @@ public class AmpArmConstants {
 
     static {
         switch (RobotIdentity.getInstance().getRobotID()) {
-            case BEARITONE, PLAYBEAR_CARTI -> {
-                WRIST_GEAR_REDUCTION = (12d / 60d) * (24d / 18d);
-            }
-            default -> {
-                WRIST_GEAR_REDUCTION = 12d / 72d;
-            }
+            case BEARITONE, PLAYBEAR_CARTI -> WRIST_GEAR_REDUCTION = (12d / 60d) * (24d / 18d);
+            default -> WRIST_GEAR_REDUCTION = 12d / 72d;
         }
     }
 
@@ -125,17 +121,12 @@ public class AmpArmConstants {
 
     static final double ROLLER_GEAR_REDUCTION;
 
-    static final double VELOCITY_TOLERANCE = 0.75;
     public static final double NOTE_INTAKE_POSITION = 1;
 
     static {
         switch (RobotIdentity.getInstance().getRobotID()) {
-            case BEARITONE, PLAYBEAR_CARTI -> {
-                ROLLER_GEAR_REDUCTION = 12d / 60d;
-            }
-            default -> {
-                ROLLER_GEAR_REDUCTION = 12d / 72d;
-            }
+            case BEARITONE, PLAYBEAR_CARTI -> ROLLER_GEAR_REDUCTION = 12d / 60d;
+            default -> ROLLER_GEAR_REDUCTION = 12d / 72d;
         }
     }
 

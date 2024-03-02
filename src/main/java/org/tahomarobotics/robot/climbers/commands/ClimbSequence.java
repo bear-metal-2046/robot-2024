@@ -6,8 +6,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.climbers.Climbers;
 
-import static org.tahomarobotics.robot.amp.AmpArmConstants.ARM_TRAP_POSE;
-import static org.tahomarobotics.robot.amp.AmpArmConstants.WRIST_TRAP_POSE;
+import static org.tahomarobotics.robot.amp.AmpArmConstants.*;
 import static org.tahomarobotics.robot.climbers.ClimberConstants.BOTTOM_POSITION;
 import static org.tahomarobotics.robot.climbers.ClimberConstants.LADEN_SLOT;
 
@@ -19,8 +18,8 @@ public class ClimbSequence extends SequentialCommandGroup {
         addCommands(
                 Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.CLIMBING)),
                 new ClimbCommand(BOTTOM_POSITION, LADEN_SLOT),
-                Commands.runOnce(ampArm::intakeNote),
-                Commands.waitUntil(ampArm::isRollersAtPosition),
+                Commands.runOnce(() -> ampArm.setRollerPosition(NOTE_INTAKE_POSITION)),
+                Commands.waitUntil(ampArm::isRollerAtPosition),
                 Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)),
                 Commands.runOnce(() -> ampArm.setArmPosition(ARM_TRAP_POSE)),
                 Commands.waitUntil(ampArm::isArmAtPosition),

@@ -98,18 +98,18 @@ public class OI extends SubsystemIF {
 
         driveController.rightTrigger(0.5)
                 .whileTrue(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.SCORE))
-                .onlyIf(ampArm::isAmp))
+                .onlyIf(ampArm::isArmAtAmp))
                 .onFalse(Commands.waitSeconds(0.25).andThen(
                         Commands.defer(() -> ARM_TO_STOW.get().andThen(Commands.runOnce(shooter::disable)),
-                        Set.of(ampArm))).onlyIf(ampArm::isAmp))
+                        Set.of(ampArm))).onlyIf(ampArm::isArmAtAmp))
                 .onTrue(new ShootCommand())
                 .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));
 
         driveController.leftTrigger(0.01)
                 .whileTrue(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.PASSING))
-                .onlyIf(ampArm::isSource))
+                .onlyIf(ampArm::isArmAtSource))
                 .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED))
-                .onlyIf(ampArm::isSource))
+                .onlyIf(ampArm::isArmAtSource))
                 .onFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.COLLECTED)));
 
         driveController.leftTrigger(0.5)

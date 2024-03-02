@@ -25,28 +25,20 @@ public class AmpArm extends SubsystemIF {
 
     private final TalonFX armMotor;
     private final TalonFX wristMotor;
-    private final TalonFX rollersMotor;
+    private final TalonFX rollerMotor;
 
-    private final StatusSignal<Double> armPosition;
-    private final StatusSignal<Double> wristPosition;
-    private final StatusSignal<Double> armVelocity;
-    private final StatusSignal<Double> wristVelocity;
-    private final StatusSignal<Double> rollersVelocity;
-    private final StatusSignal<Double> rollersPosition;
+    private final StatusSignal<Double> armPosition, wristPosition, rollerPosition, armVelocity, wristVelocity, rollerVelocity;
+    private final StatusSignal<Double> armCurrent, wristCurrent, rollerCurrent;
 
-    private final StatusSignal<Double> armCurrent;
-    private final StatusSignal<Double> wristCurrent;
-    private final StatusSignal<Double> rollerCurrent;
-
-    private final MotionMagicVoltage armControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
-    private final MotionMagicVoltage wristControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
-    private final MotionMagicVelocityVoltage rollerVelocityControl = new MotionMagicVelocityVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
-    private final MotionMagicVoltage rollerNoteIntakeControl = new MotionMagicVoltage(NOTE_INTAKE_POSITION).withSlot(1).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
+    private final MotionMagicVoltage positionalControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
+    private final MotionMagicVelocityVoltage velocityControl = new MotionMagicVelocityVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
+    private final MotionMagicVoltage rollerPositionalControl = new MotionMagicVoltage(0.0).withSlot(1)
+            .withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
 
     private ArmState armState = ArmState.STOW;
     private RollerState rollerState = RollerState.DISABLED;
 
-    private double targetArmPosition, targetWristPosition;
+    private double targetArmPosition, targetWristPosition, targetRollerPosition;
 
     private double energyUsed = 0;
 
@@ -55,29 +47,29 @@ public class AmpArm extends SubsystemIF {
 
         armMotor = new TalonFX(RobotMap.ARM_MOTOR);
         wristMotor = new TalonFX(RobotMap.WRIST_MOTOR);
-        rollersMotor = new TalonFX(RobotMap.ROLLERS_MOTOR);
+        rollerMotor = new TalonFX(RobotMap.ROLLERS_MOTOR);
 
         configurator.configureTalonFX(armMotor, armMotorConfiguration, "arm motor");
         configurator.configureTalonFX(wristMotor, wristMotorConfiguration, "wrist motor");
-        configurator.configureTalonFX(rollersMotor, rollerMotorConfiguration, "roller motor");
+        configurator.configureTalonFX(rollerMotor, rollerMotorConfiguration, "roller motor");
 
         armPosition = armMotor.getPosition();
         wristPosition = wristMotor.getPosition();
         armVelocity = armMotor.getVelocity();
         wristVelocity = wristMotor.getVelocity();
-        rollersVelocity = rollersMotor.getVelocity();
-        rollersPosition = rollersMotor.getPosition();
+        rollerVelocity = rollerMotor.getVelocity();
+        rollerPosition = rollerMotor.getPosition();
 
         armCurrent = armMotor.getSupplyCurrent();
         wristCurrent = wristMotor.getSupplyCurrent();
-        rollerCurrent = rollersMotor.getSupplyCurrent();
+        rollerCurrent = rollerMotor.getSupplyCurrent();
 
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY,
-                armPosition, wristPosition, armVelocity, wristVelocity, rollersVelocity, armCurrent, wristCurrent, rollerCurrent
-                , rollersPosition
+                armPosition, wristPosition, armVelocity, wristVelocity, rollerVelocity,
+                armCurrent, wristCurrent, rollerCurrent, rollerPosition
         );
 
-        ParentDevice.optimizeBusUtilizationForAll(armMotor, wristMotor, rollersMotor);
+        ParentDevice.optimizeBusUtilizationForAll(armMotor, wristMotor, rollerMotor);
     }
 
     // GETTERS
@@ -87,31 +79,34 @@ public class AmpArm extends SubsystemIF {
     }
 
     public double getArmPosition() {
-        return BaseStatusSignal.getLatencyCompensatedValue(armPosition.refresh(), armVelocity.refresh());
+        return BaseStatusSignal.getLatencyCompensatedValue(armPosition, armVelocity);
     }
 
     private double getWristPosition() {
-        return BaseStatusSignal.getLatencyCompensatedValue(wristPosition.refresh(), wristVelocity.refresh());
+        return BaseStatusSignal.getLatencyCompensatedValue(wristPosition, wristVelocity);
+    }
+
+    public double getRollerPosition() {
+        return BaseStatusSignal.getLatencyCompensatedValue(rollerPosition, rollerVelocity);
     }
 
     public double getArmVelocity() {
-        return armVelocity.refresh().getValue();
+        return armVelocity.getValue();
     }
 
     public double getWristVelocity() {
-        return wristVelocity.refresh().getValue();
+        return wristVelocity.getValue();
     }
 
-    public double getRollersVelocity() {
-        return rollersVelocity.refresh().getValue();
+    public double getRollerVelocity() {
+        return rollerVelocity.refresh().getValue();
     }
 
-    public double getRollersPosition() {
-        return rollersPosition.refresh().getValue();
+    public double getArmCurrent() {
+        return armCurrent.getValueAsDouble();
     }
 
-
-    // STATE CONTROLLERY
+    // STATE CONTROL
 
     public void setArmState(ArmState state) {
         armState = state;
@@ -142,54 +137,53 @@ public class AmpArm extends SubsystemIF {
 
     public void setArmPosition(double position) {
         targetArmPosition = MathUtil.clamp(position, ARM_MIN_POSE, ARM_MAX_POSE);
-        armMotor.setControl(armControl.withPosition(targetArmPosition));
+        armMotor.setControl(positionalControl.withPosition(targetArmPosition));
+    }
+
+    public void setWristPosition(double position) {
+        targetWristPosition = position;
+        wristMotor.setControl(positionalControl.withPosition(targetWristPosition));
     }
 
     public void setRollerState(RollerState state) {
         rollerState = state;
 
         switch (state) {
-            case PASSING -> rollersMotor.setControl(rollerVelocityControl.withVelocity(ShooterConstants.TRANSFER_VELOCITY));
-            case SCORE -> rollersMotor.setControl(rollerVelocityControl.withVelocity(-ShooterConstants.TRANSFER_VELOCITY * 4));
-            case TRAP -> rollersMotor.setControl(rollerVelocityControl.withVelocity(-ShooterConstants.TRAP_VELOCITY));
-            default -> rollersMotor.stopMotor();
+            case PASSING -> rollerMotor.setControl(velocityControl.withVelocity(ShooterConstants.TRANSFER_VELOCITY));
+            case SCORE -> rollerMotor.setControl(velocityControl.withVelocity(-ShooterConstants.TRANSFER_VELOCITY * 4));
+            case TRAP -> rollerMotor.setControl(velocityControl.withVelocity(-ShooterConstants.TRAP_VELOCITY));
+            default -> rollerMotor.stopMotor();
         }
     }
 
-    public void setWristPosition(double position) {
-        targetWristPosition = position;
-        wristMotor.setControl(wristControl.withPosition(targetWristPosition));
+    public void setRollerPosition(double position) {
+        targetRollerPosition = position;
+        rollerMotor.setControl(rollerPositionalControl.withPosition(targetRollerPosition));
     }
 
-    // STATE CHECKERY
+    // STATE CHECKING
 
-    public boolean isStowed() {
+    public boolean isArmAtStow() {
         return armState == ArmState.STOW;
     }
 
-    public boolean isAmp() {
+    public boolean isArmAtAmp() {
         return armState == ArmState.AMP;
     }
 
-    public boolean isTrap() {
+    public boolean isArmAtTrap() {
         return armState == ArmState.TRAP;
     }
 
-    public boolean isSource() {
+    public boolean isArmAtSource() {
         return armState == ArmState.SOURCE;
     }
 
-    public boolean isPassing() {
-        return rollerState == RollerState.PASSING;
-    }
-
-    public boolean isCollected() {
+    public boolean hasRollerCollected() {
         return rollerState == RollerState.COLLECTED;
     }
 
-    public boolean isScoring() {
-        return rollerState == RollerState.SCORE;
-    }
+    // AT POSITION/VELOCITY
 
     public boolean isArmAtPosition() {
         return Math.abs(getArmPosition() - targetArmPosition) < POSITION_TOLERANCE;
@@ -199,19 +193,15 @@ public class AmpArm extends SubsystemIF {
         return Math.abs(getWristPosition() - targetWristPosition) < POSITION_TOLERANCE;
     }
 
-    public boolean isRollersAtPosition() {
-        return Math.abs(getRollersPosition() - NOTE_INTAKE_POSITION) < POSITION_TOLERANCE;
-    }
-
-    public boolean isRollersAtVelocity() {
-        return Math.abs(Math.abs(getRollersVelocity()) - ShooterConstants.TRANSFER_VELOCITY) < VELOCITY_TOLERANCE;
+    public boolean isRollerAtPosition() {
+        return Math.abs(getRollerPosition() - targetRollerPosition) < POSITION_TOLERANCE;
     }
 
     // PERIODIC
 
     @Override
     public void periodic() {
-        BaseStatusSignal.refreshAll(armPosition, wristPosition, armVelocity, wristVelocity, rollersVelocity,
+        BaseStatusSignal.refreshAll(armPosition, wristPosition, armVelocity, wristVelocity, rollerVelocity,
                 armCurrent, wristCurrent, rollerCurrent);
 
         double voltage = RobotController.getBatteryVoltage();
@@ -223,37 +213,30 @@ public class AmpArm extends SubsystemIF {
 
         SafeAKitLogger.recordOutput("Amp Arm/Arm Position", getArmPosition());
         SafeAKitLogger.recordOutput("Amp Arm/Wrist Position", getWristPosition());
-        SafeAKitLogger.recordOutput("Amp Arm/Rollers Position", getRollersPosition());
+        SafeAKitLogger.recordOutput("Amp Arm/Roller Position", getRollerPosition());
         SafeAKitLogger.recordOutput("Amp Arm/Arm Velocity", getArmVelocity());
         SafeAKitLogger.recordOutput("Amp Arm/Wrist Velocity", getWristVelocity());
-        SafeAKitLogger.recordOutput("Amp Arm/Rollers Velocity", getRollersVelocity());
+        SafeAKitLogger.recordOutput("Amp Arm/Roller Velocity", getRollerVelocity());
 
-        SafeAKitLogger.recordOutput("Amp Arm/TotalCurrent", totalCurrent);
-        SafeAKitLogger.recordOutput("Amp Arm/Current", armCurrent.getValueAsDouble());
-        SafeAKitLogger.recordOutput("Amp Arm/Energy", getEnergyUsed());
+        SafeAKitLogger.recordOutput("Amp Arm/Total Current", totalCurrent);
+        SafeAKitLogger.recordOutput("Amp Arm/Arm Current", getArmCurrent());
+        SafeAKitLogger.recordOutput("Amp Arm/Wrist Current", wristCurrent.getValueAsDouble());
+        SafeAKitLogger.recordOutput("Amp Arm/Roller Current", rollerCurrent.getValueAsDouble());
+        SafeAKitLogger.recordOutput("Amp Arm/Energy Used", getEnergyUsed());
     }
 
     @Override
     public SubsystemIF initialize() {
         Commands.waitUntil(RobotState::isEnabled)
                 .andThen(Commands.runOnce(() -> {
-                    armMotor.setPosition(-0.25);
-                    wristMotor.setPosition(0.0);
+                    armMotor.setPosition(ARM_STOW_POSE);
+                    wristMotor.setPosition(WRIST_STOW_POSE);
                     setArmPosition(ARM_STOW_POSE);
                     setWristPosition(WRIST_STOW_POSE);
                 }))
                 .ignoringDisable(true).schedule();
 
         return this;
-    }
-
-    public double getArmCurrent() {
-        return armCurrent.getValueAsDouble();
-    }
-
-    public void intakeNote() {
-        rollersMotor.setPosition(0.0);
-        rollersMotor.setControl(rollerNoteIntakeControl);
     }
 
     //STATES

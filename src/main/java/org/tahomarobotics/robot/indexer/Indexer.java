@@ -8,7 +8,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
@@ -71,7 +70,6 @@ public class Indexer extends SubsystemIF {
     @Override
     public SubsystemIF initialize() {
         SmartDashboard.putData("Reset Indexer", runOnce(() -> setState(State.DISABLED)));
-        SmartDashboard.putBoolean("Outputs/Indexer", OutputsConfiguration.INDEXER);
 
         return this;
     }

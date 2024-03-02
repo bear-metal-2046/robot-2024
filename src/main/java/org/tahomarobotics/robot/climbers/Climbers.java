@@ -8,18 +8,17 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.climbers.commands.ClimbCommand;
 import org.tahomarobotics.robot.climbers.commands.ClimbSequence;
 import org.tahomarobotics.robot.climbers.commands.ClimbZeroCommand;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
+import org.tahomarobotics.robot.util.SafeAKitLogger;
 import org.tahomarobotics.robot.util.SubsystemIF;
 import org.tahomarobotics.robot.util.SysIdTest;
-import org.tahomarobotics.robot.util.ToggledOutputs;
 
-public class Climbers extends SubsystemIF implements ToggledOutputs {
+public class Climbers extends SubsystemIF {
     private final Logger logger = LoggerFactory.getLogger("Climbers");
 
     private final static Climbers INSTANCE = new Climbers();
@@ -86,8 +85,6 @@ public class Climbers extends SubsystemIF implements ToggledOutputs {
 
     @Override
     public SubsystemIF initialize() {
-        SmartDashboard.putBoolean("Outputs/Climbers", OutputsConfiguration.CLIMBERS);
-
         Commands.waitUntil(RobotState::isEnabled)
                 .andThen(new ClimbZeroCommand())
                 .ignoringDisable(true).schedule();
@@ -112,12 +109,12 @@ public class Climbers extends SubsystemIF implements ToggledOutputs {
     public void periodic() {
 //        SmartDashboard.putNumber("Climb Left Position", getLeftPos());
 //        SmartDashboard.putNumber("Climb Right Position", getRightPos());
-        recordOutput("Climbers/Left Pos", getLeftPos());
-        recordOutput("Climbers/Right Pos", getRightPos());
-        recordOutput("Climbers/Left Voltage", leftClimber.voltage.refresh().getValueAsDouble());
-        recordOutput("Climbers/Right Voltage", rightClimber.voltage.refresh().getValueAsDouble());
-        recordOutput("Climbers/Left Current", leftClimber.current.refresh().getValueAsDouble());
-        recordOutput("Climbers/Right Current", rightClimber.current.refresh().getValueAsDouble());
+        SafeAKitLogger.recordOutput("Climbers/Left Pos", getLeftPos());
+        SafeAKitLogger.recordOutput("Climbers/Right Pos", getRightPos());
+        SafeAKitLogger.recordOutput("Climbers/Left Voltage", leftClimber.voltage.refresh().getValueAsDouble());
+        SafeAKitLogger.recordOutput("Climbers/Right Voltage", rightClimber.voltage.refresh().getValueAsDouble());
+        SafeAKitLogger.recordOutput("Climbers/Left Current", leftClimber.current.refresh().getValueAsDouble());
+        SafeAKitLogger.recordOutput("Climbers/Right Current", rightClimber.current.refresh().getValueAsDouble());
     }
 
     public void runLeftWithVoltage(double targetVoltage) {
@@ -142,11 +139,6 @@ public class Climbers extends SubsystemIF implements ToggledOutputs {
 
     public void setClimbState(ClimbState state) {
         this.state = state;
-    }
-
-    @Override
-    public boolean logOutputs() {
-        return SmartDashboard.getBoolean("Outputs/Climbers", OutputsConfiguration.CLIMBERS);
     }
 
     public enum ClimbState {

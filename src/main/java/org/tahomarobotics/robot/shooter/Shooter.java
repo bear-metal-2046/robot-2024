@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import org.littletonrobotics.junction.Logger;
-import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.chassis.Chassis;
@@ -48,7 +47,6 @@ public class Shooter extends SubsystemIF {
 
     @Override
     public SubsystemIF initialize() {
-        SmartDashboard.putBoolean("Outputs/Shooter", OutputsConfiguration.SHOOTER);
         SmartDashboard.putBoolean("Debug/NoIdleVelocity", true);
         NetworkTableInstance.getDefault().addListener(SmartDashboard.getEntry("Debug/NoIdleVelocity"), EnumSet.of(NetworkTableEvent.Kind.kValueAll), e -> disable());
 

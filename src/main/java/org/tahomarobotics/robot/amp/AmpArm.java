@@ -9,9 +9,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
-import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
@@ -34,6 +32,7 @@ public class AmpArm extends SubsystemIF {
     private final StatusSignal<Double> armVelocity;
     private final StatusSignal<Double> wristVelocity;
     private final StatusSignal<Double> rollersVelocity;
+    private final StatusSignal<Double> rollersPosition;
 
     private final StatusSignal<Double> armCurrent;
     private final StatusSignal<Double> wristCurrent;
@@ -42,6 +41,7 @@ public class AmpArm extends SubsystemIF {
     private final MotionMagicVoltage armControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVoltage wristControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage rollerVelocityControl = new MotionMagicVelocityVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
+    private final MotionMagicVoltage rollerNoteIntakeControl = new MotionMagicVoltage(NOTE_INTAKE_POSITION).withSlot(1).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
 
     private ArmState armState = ArmState.STOW;
     private RollerState rollerState = RollerState.DISABLED;
@@ -66,6 +66,7 @@ public class AmpArm extends SubsystemIF {
         armVelocity = armMotor.getVelocity();
         wristVelocity = wristMotor.getVelocity();
         rollersVelocity = rollersMotor.getVelocity();
+        rollersPosition = rollersMotor.getPosition();
 
         armCurrent = armMotor.getSupplyCurrent();
         wristCurrent = wristMotor.getSupplyCurrent();
@@ -73,6 +74,7 @@ public class AmpArm extends SubsystemIF {
 
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY,
                 armPosition, wristPosition, armVelocity, wristVelocity, rollersVelocity, armCurrent, wristCurrent, rollerCurrent
+                , rollersPosition
         );
 
         ParentDevice.optimizeBusUtilizationForAll(armMotor, wristMotor, rollersMotor);
@@ -102,6 +104,10 @@ public class AmpArm extends SubsystemIF {
 
     public double getRollersVelocity() {
         return rollersVelocity.refresh().getValue();
+    }
+
+    public double getRollersPosition() {
+        return rollersPosition.refresh().getValue();
     }
 
 
@@ -193,6 +199,10 @@ public class AmpArm extends SubsystemIF {
         return Math.abs(getWristPosition() - targetWristPosition) < POSITION_TOLERANCE;
     }
 
+    public boolean isRollersAtPosition() {
+        return Math.abs(getRollersPosition() - NOTE_INTAKE_POSITION) < POSITION_TOLERANCE;
+    }
+
     public boolean isRollersAtVelocity() {
         return Math.abs(Math.abs(getRollersVelocity()) - ShooterConstants.TRANSFER_VELOCITY) < VELOCITY_TOLERANCE;
     }
@@ -213,18 +223,18 @@ public class AmpArm extends SubsystemIF {
 
         SafeAKitLogger.recordOutput("Amp Arm/Arm Position", getArmPosition());
         SafeAKitLogger.recordOutput("Amp Arm/Wrist Position", getWristPosition());
+        SafeAKitLogger.recordOutput("Amp Arm/Rollers Position", getRollersPosition());
         SafeAKitLogger.recordOutput("Amp Arm/Arm Velocity", getArmVelocity());
         SafeAKitLogger.recordOutput("Amp Arm/Wrist Velocity", getWristVelocity());
         SafeAKitLogger.recordOutput("Amp Arm/Rollers Velocity", getRollersVelocity());
 
         SafeAKitLogger.recordOutput("Amp Arm/TotalCurrent", totalCurrent);
+        SafeAKitLogger.recordOutput("Amp Arm/Current", armCurrent.getValueAsDouble());
         SafeAKitLogger.recordOutput("Amp Arm/Energy", getEnergyUsed());
     }
 
     @Override
     public SubsystemIF initialize() {
-        SmartDashboard.putBoolean("Outputs/AmpArm", OutputsConfiguration.AMP_ARM);
-
         Commands.waitUntil(RobotState::isEnabled)
                 .andThen(Commands.runOnce(() -> {
                     armMotor.setPosition(-0.25);
@@ -237,6 +247,14 @@ public class AmpArm extends SubsystemIF {
         return this;
     }
 
+    public double getArmCurrent() {
+        return armCurrent.getValueAsDouble();
+    }
+
+    public void intakeNote() {
+        rollersMotor.setPosition(0.0);
+        rollersMotor.setControl(rollerNoteIntakeControl);
+    }
 
     //STATES
 

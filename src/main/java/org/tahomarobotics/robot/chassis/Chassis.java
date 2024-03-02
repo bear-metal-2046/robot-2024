@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.slf4j.LoggerFactory;
-import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
@@ -133,9 +132,6 @@ public class Chassis extends SubsystemIF {
     @Override
     public SubsystemIF initialize() {
         SmartDashboard.putData("Align Swerves", new AlignSwerveCommand());
-        SmartDashboard.putBoolean("Outputs/Chassis", OutputsConfiguration.CHASSIS);
-        SmartDashboard.putBoolean("Outputs/SwerveModules", OutputsConfiguration.SWERVE_MODULE);
-
         gyroIO.zero();
 
         var gyro = getYaw();

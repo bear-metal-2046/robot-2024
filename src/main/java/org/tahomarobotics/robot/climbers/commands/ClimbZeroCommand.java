@@ -27,7 +27,6 @@ public class ClimbZeroCommand extends Command {
 
     @Override
     public void execute() {
-        logger.info(climbers.getLeftVel() + "   " + climbers.getRightVel());
         if (left || Math.abs(climbers.getLeftVel()) < ClimberConstants.VELOCITY_EPSILON && timer.hasElapsed(0.5)) {
             climbers.stopLeft();
             left = true;

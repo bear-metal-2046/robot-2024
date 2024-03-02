@@ -85,7 +85,7 @@ public class Robot extends LoggedRobot {
         });
 
         if (!SmartDashboard.containsKey("Debug/NTPublishing")) {
-            SmartDashboard.putBoolean("Debug/NTPublishing", false);
+            SmartDashboard.putBoolean("Debug/NTPublishing", true);
         }
 
         // Depending on the current platform, publish logs to different receivers.

@@ -13,12 +13,10 @@ import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
-import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.util.SafeAKitLogger;
 
 import java.util.ArrayList;
@@ -38,8 +36,6 @@ public class ATVision {
         this.cameraSettings = cameraSettings;
         this.fieldPose = fieldPose;
         this.poseEstimator = poseEstimator;
-
-        SmartDashboard.putBoolean("Outputs/ATVision", OutputsConfiguration.AT_VISION);
 
         // normally this would the default client connecting to robot
         // connect to server running on camera (for debugging0

@@ -9,7 +9,7 @@ import org.tahomarobotics.robot.collector.CollectorConstants;
 import org.tahomarobotics.robot.identity.RobotIdentity;
 
 public class AmpArmConstants {
-    static final double POSITION_TOLERANCE = 0.1;
+    static final double POSITION_TOLERANCE = 0.01;
 
     // ARM
 
@@ -26,7 +26,7 @@ public class AmpArmConstants {
             case PLAYBEAR_CARTI, BEARITONE -> {
                 ARM_STOW_POSE = Units.degreesToRotations(-90.000000);
                 ARM_AMP_POSE = Units.degreesToRotations(90);
-                ARM_TRAP_POSE = 0.1807 - Units.degreesToRotations(4);
+                ARM_TRAP_POSE = 0.1962890625 - Units.degreesToRotations(5);
                 ARM_SOURCE_POSE = Units.degreesToRotations(90);
                 ARM_GEAR_REDUCTION = (14.0 / 64.0) * (18.0 / 72.0) * (16.0 / 48.0);
             }
@@ -79,9 +79,9 @@ public class AmpArmConstants {
     static {
         switch (RobotIdentity.getInstance().getRobotID()) {
             case PLAYBEAR_CARTI, BEARITONE -> {
-                WRIST_MOVING_POSE = Units.degreesToRotations(87.3632);
+                WRIST_MOVING_POSE = 1 - 0.65771484375;
                 WRIST_AMP_POSE = Units.degreesToRotations(118.505859375);
-                WRIST_TRAP_POSE = 0.28 + Units.degreesToRotations(20);
+                WRIST_TRAP_POSE = 1 - 0.576904296875 + Units.degreesToRotations(15);
                 WRIST_SOURCE_POSE = Units.degreesToRotations(53.7890625);
             }
             default -> {
@@ -96,7 +96,7 @@ public class AmpArmConstants {
     static {
         switch (RobotIdentity.getInstance().getRobotID()) {
             case BEARITONE, PLAYBEAR_CARTI -> {
-                WRIST_GEAR_REDUCTION = 12d / 60d;
+                WRIST_GEAR_REDUCTION = (12d / 60d) * (24d / 18d);
             }
             default -> {
                 WRIST_GEAR_REDUCTION = 12d / 72d;
@@ -126,6 +126,7 @@ public class AmpArmConstants {
     static final double ROLLER_GEAR_REDUCTION;
 
     static final double VELOCITY_TOLERANCE = 0.75;
+    public static final double NOTE_INTAKE_POSITION = 1;
 
     static {
         switch (RobotIdentity.getInstance().getRobotID()) {
@@ -154,7 +155,7 @@ public class AmpArmConstants {
             .withSlot1(switch (RobotIdentity.getInstance().getRobotID()) {
                 case BEARITONE, PLAYBEAR_CARTI -> new Slot1Configs()
                         .withKP(55.146)
-                        .withKD(4.4491)
+                        .withKD(1)
                         .withKS(0.066923)
                         .withKV(0.57611)
                         .withKA(0.21145);

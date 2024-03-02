@@ -38,6 +38,7 @@ import java.util.List;
 
 import static org.tahomarobotics.robot.shooter.ShooterConstants.SPEAKER_TARGET_POSITION;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class Chassis extends SubsystemIF {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Chassis.class);
     private static final Chassis INSTANCE = new Chassis();
@@ -57,9 +58,7 @@ public class Chassis extends SubsystemIF {
     private final CalibrationData<Double[]> swerveCalibration;
 
     private final ObjectDetectionCamera collectorLeftVision;
-    private final ATVision collectorRightVision;
-    private final ATVision shooterLeftVision;
-    private final ATVision shooterRightVision;
+    private final ATVision collectorRightVision, shooterLeftVision, shooterRightVision;
 
     private final Thread odometryThread;
 

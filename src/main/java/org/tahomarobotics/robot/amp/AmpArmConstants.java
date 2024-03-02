@@ -25,7 +25,7 @@ public class AmpArmConstants {
         switch (RobotIdentity.getInstance().getRobotID()) {
             case PLAYBEAR_CARTI, BEARITONE -> {
                 ARM_STOW_POSE = Units.degreesToRotations(-90.000000);
-                ARM_AMP_POSE = Units.degreesToRotations(90);
+                ARM_AMP_POSE = 0.201416015625;
                 ARM_TRAP_POSE = 0.1962890625 - Units.degreesToRotations(5);
                 ARM_SOURCE_POSE = Units.degreesToRotations(90);
                 ARM_GEAR_REDUCTION = (14.0 / 64.0) * (18.0 / 72.0) * (16.0 / 48.0);
@@ -80,7 +80,7 @@ public class AmpArmConstants {
         switch (RobotIdentity.getInstance().getRobotID()) {
             case PLAYBEAR_CARTI, BEARITONE -> {
                 WRIST_MOVING_POSE = 1 - 0.65771484375;
-                WRIST_AMP_POSE = Units.degreesToRotations(118.505859375);
+                WRIST_AMP_POSE = 0.4326171875;
                 WRIST_TRAP_POSE = 1 - 0.576904296875 + Units.degreesToRotations(15);
                 WRIST_SOURCE_POSE = Units.degreesToRotations(53.7890625);
             }

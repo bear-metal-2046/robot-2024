@@ -8,7 +8,6 @@ import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
 
 import static org.tahomarobotics.robot.climbers.ClimberConstants.TOP_POSITION;
-import static org.tahomarobotics.robot.climbers.ClimberConstants.UNLADEN_SLOT;
 
 /**
  * Passes through the note, puts the shooter up, then raises the hooks.
@@ -23,7 +22,7 @@ public class PreClimbSequence extends SequentialCommandGroup {
                 AmpArmCommands.FEEDFORWARD.get(),
                 Commands.runOnce(() -> Shooter.getInstance().setAngle(ShooterConstants.MAX_PIVOT_ANGLE)),
                 Commands.waitUntil(() -> Shooter.getInstance().isAtAngle()),
-                new ClimbCommand(TOP_POSITION, UNLADEN_SLOT)
+                new UnladenClimbCommand(TOP_POSITION)
             );
     }
 }

@@ -91,7 +91,10 @@ public class OI extends SubsystemIF {
                 switch (climbers.getClimbState()) {
                     case READY -> new PreClimbCancel();
                     case ENGAGED -> new EngagedCancel();
-                    case CLIMBING -> new ClimbingCancel();
+                    // Descend with break mode in the case that it doesn't work.
+                    // TODO: At this point, we can't be sure of anything about the state of the robot so designating
+                    //  the canceling to a separate command that does a full reset might be ideal.
+                    case CLIMBING, CLIMBED -> Commands.runOnce(climbers::stop);
                     default -> Commands.none();
                 })
         );

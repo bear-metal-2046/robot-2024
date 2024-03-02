@@ -12,7 +12,7 @@ public class PreClimbCancel extends SequentialCommandGroup {
 
         addCommands(
                 // Lower Hooks
-                new ClimbCommand(ClimberConstants.BOTTOM_POSITION, ClimberConstants.UNLADEN_SLOT),
+                new UnladenClimbCommand(ClimberConstants.BOTTOM_POSITION),
                 AmpArmCommands.ARM_TO_STOW.get(),
                 // Put arm down and feedback if the indexer is empty and the
                 // amp arm has collected.

@@ -23,6 +23,4 @@ public enum RobotID {
     };
 
     public abstract byte[] getMac();
-
-    public boolean isNotAlpha() { return this != ALPHA; }
 }

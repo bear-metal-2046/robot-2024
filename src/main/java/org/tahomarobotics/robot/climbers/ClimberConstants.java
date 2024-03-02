@@ -25,9 +25,6 @@ public class ClimberConstants {
 
     public static final double BOTTOM_POSITION = 0.0025;
 
-    public static final int UNLADEN_SLOT = 0;
-    public static final int LADEN_SLOT = 1;
-
     public static final TalonFXConfiguration CLIMB_CONFIGURATION = new TalonFXConfiguration()
             .withSlot0(switch (RobotIdentity.robotID) {
                 case PLAYBEAR_CARTI, BEARITONE -> new Slot0Configs() {{

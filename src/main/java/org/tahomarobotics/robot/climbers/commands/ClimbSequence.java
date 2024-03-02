@@ -8,7 +8,6 @@ import org.tahomarobotics.robot.climbers.Climbers;
 
 import static org.tahomarobotics.robot.amp.AmpArmConstants.*;
 import static org.tahomarobotics.robot.climbers.ClimberConstants.BOTTOM_POSITION;
-import static org.tahomarobotics.robot.climbers.ClimberConstants.LADEN_SLOT;
 
 public class ClimbSequence extends SequentialCommandGroup {
     public ClimbSequence() {
@@ -17,7 +16,7 @@ public class ClimbSequence extends SequentialCommandGroup {
 
         addCommands(
                 Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.CLIMBING)),
-                new ClimbCommand(BOTTOM_POSITION, LADEN_SLOT),
+                new LadenClimbCommand(BOTTOM_POSITION),
                 Commands.runOnce(() -> ampArm.setRollerPosition(NOTE_INTAKE_POSITION)),
                 Commands.waitUntil(ampArm::isRollerAtPosition),
                 Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)),

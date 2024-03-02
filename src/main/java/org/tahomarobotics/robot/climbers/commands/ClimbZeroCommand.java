@@ -27,17 +27,17 @@ public class ClimbZeroCommand extends Command {
 
     @Override
     public void execute() {
-        if (left || Math.abs(climbers.getLeftVel()) < ClimberConstants.VELOCITY_EPSILON && timer.hasElapsed(0.5)) {
+        if (left || Math.abs(climbers.getLeftVelocity()) < ClimberConstants.VELOCITY_EPSILON && timer.hasElapsed(0.5)) {
             climbers.stopLeft();
             left = true;
         } else {
-            climbers.runLeftWithVoltage(ClimberConstants.ZERO_VOLTAGE);
+            climbers.setVoltageLeft(ClimberConstants.ZERO_VOLTAGE);
         }
-        if (right || Math.abs(climbers.getRightVel()) < ClimberConstants.VELOCITY_EPSILON && timer.hasElapsed(0.5)) {
+        if (right || Math.abs(climbers.getRightVelocity()) < ClimberConstants.VELOCITY_EPSILON && timer.hasElapsed(0.5)) {
             climbers.stopRight();
             right = true;
         } else {
-            climbers.runRightWithVoltage(ClimberConstants.ZERO_VOLTAGE);
+            climbers.setVoltageRight(ClimberConstants.ZERO_VOLTAGE);
         }
     }
 
@@ -48,7 +48,7 @@ public class ClimbZeroCommand extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        climbers.zeroToCurrentPosition();
+        climbers.zero();
         logger.info("ZEROED CLIMBERS");
     }
 }

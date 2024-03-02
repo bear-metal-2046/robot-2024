@@ -16,7 +16,7 @@ public class IndexerConstants {
     static final InvertedValue INVERSION;
 
     static {
-        switch (RobotIdentity.getInstance().getRobotID()) {
+        switch (RobotIdentity.robotID) {
             case PLAYBEAR_CARTI, BEARITONE -> {
                 INDEXER_GEAR_REDUCTION = 18d / 30d;
                 INVERSION = InvertedValue.CounterClockwise_Positive;
@@ -29,7 +29,7 @@ public class IndexerConstants {
     }
 
     static final TalonFXConfiguration indexMotorConfiguration = new TalonFXConfiguration()
-            .withSlot0(switch (RobotIdentity.getInstance().getRobotID()) {
+            .withSlot0(switch (RobotIdentity.robotID) {
                 case BEARITONE, PLAYBEAR_CARTI -> new Slot0Configs()
                         .withKP(0.12161)
                         .withKS(0.17898)
@@ -41,7 +41,7 @@ public class IndexerConstants {
                         .withKV(0.11194)
                         .withKA(0.0022556);
             })
-            .withSlot1(switch (RobotIdentity.getInstance().getRobotID()) {
+            .withSlot1(switch (RobotIdentity.robotID) {
                 case BEARITONE, PLAYBEAR_CARTI -> new Slot1Configs()
                         .withKP(19.812)
                         .withKD(0.36216)

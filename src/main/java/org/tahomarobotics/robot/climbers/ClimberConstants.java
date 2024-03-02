@@ -8,7 +8,7 @@ import org.tahomarobotics.robot.identity.RobotIdentity;
 
 public class ClimberConstants {
     public static final double ZERO_VOLTAGE = -0.75;
-    public static final double POSITION_COEFFICIENT = switch (RobotIdentity.getInstance().getRobotID()) {
+    public static final double POSITION_COEFFICIENT = switch (RobotIdentity.robotID) {
         case PLAYBEAR_CARTI -> (9.0 / 50.0) * (18.0 / 50.0) * (2 * Math.PI * 0.0281);
         case BEARITONE -> (10.0 / 48.0) * (18.0 / 50.0)  * (2 * Math.PI * 0.0281);
         default -> (12.0 / 60.0) * (18.0 / 74.0) * (2 * Math.PI * 0.0254) * 1.25;
@@ -29,7 +29,7 @@ public class ClimberConstants {
     public static final int LADEN_SLOT = 1;
 
     public static final TalonFXConfiguration CLIMB_CONFIGURATION = new TalonFXConfiguration()
-            .withSlot0(switch (RobotIdentity.getInstance().getRobotID()) {
+            .withSlot0(switch (RobotIdentity.robotID) {
                 case PLAYBEAR_CARTI, BEARITONE -> new Slot0Configs() {{
                     GravityType = GravityTypeValue.Elevator_Static;
                 }}
@@ -49,7 +49,7 @@ public class ClimberConstants {
                         .withKA(8.5074)
                         .withKG(0.054765);
             })
-            .withSlot1(switch (RobotIdentity.getInstance().getRobotID()) {
+            .withSlot1(switch (RobotIdentity.robotID) {
                 case PLAYBEAR_CARTI, BEARITONE -> new Slot1Configs() // laden slot
                         .withKP(66.715)
                         .withKI(50)

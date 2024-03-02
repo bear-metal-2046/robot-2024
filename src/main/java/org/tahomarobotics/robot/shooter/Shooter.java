@@ -65,10 +65,6 @@ public class Shooter extends SubsystemIF {
         io.disableShooter();
     }
 
-    public void idle() {
-        io.idle();
-    }
-
     public void enable() {
         io.enableShooter();
     }
@@ -154,7 +150,7 @@ public class Shooter extends SubsystemIF {
                 (radialVelocity > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE))
                 + distance;
 
-        setAngle(switch (RobotIdentity.getInstance().getRobotID()) {
+        setAngle(switch (RobotIdentity.robotID) {
             // y = 0.07068257 + 0.1999213*e^(-0.5485811*x)
             case PLAYBEAR_CARTI -> 0.07068257 + 0.1999213 * Math.pow(Math.E, -0.5485811 * distance);
             // y = 0.0000369x^4 - 0.00108x^3 + 0.0126x^2 - 0.0706x + 0.234

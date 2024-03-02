@@ -1,6 +1,7 @@
 package org.tahomarobotics.robot.identity;
 
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.util.SafeAKitLogger;
 import org.tahomarobotics.robot.util.SubsystemIF;
@@ -13,40 +14,35 @@ import java.util.Enumeration;
 import java.util.List;
 
 public class RobotIdentity extends SubsystemIF {
+    private static final Logger logger = LoggerFactory.getLogger(RobotIdentity.class);
 
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(RobotIdentity.class);
+    public final static RobotID robotID;
 
-    private static RobotID robotID;
-
-    private static final RobotIdentity INSTANCE = new RobotIdentity();
-
-    public static RobotIdentity getInstance() {
-        return INSTANCE;
-    }
-
-    private RobotIdentity() {
+    static {
+        RobotID tmp = null;
         for (byte[] address : getRobotAddress()) {
             for (RobotID identity : RobotID.values()) {
                 if (Arrays.equals(identity.getMac(), address)) {
-                    robotID = identity;
+                    tmp = identity;
                     break;
                 }
             }
-            if (robotID != null) break;
+            if (tmp != null) break;
         }
 
-        if (robotID == null) {
-            robotID = RobotID.PLAYBEAR_CARTI;
+        if (tmp == null) {
+            tmp = RobotID.BEARITONE;
             logger.error("Could not get a valid ID for robot, assigning default");
         }
-        logger.info("Set robot identity to " + robotID);
+        robotID = tmp;
+
+        logger.info("Set robot identity to " + tmp);
 
         SafeAKitLogger.recordOutput("Identity/RobotID", robotID);
         SafeAKitLogger.recordOutput("Identity/MAC", macToString(robotID.getMac()));
     }
 
-    private List<byte[]> getRobotAddress() {
-
+    private static List<byte[]> getRobotAddress() {
         List<byte[]> addresses = new ArrayList<>();
 
         try {
@@ -72,8 +68,7 @@ public class RobotIdentity extends SubsystemIF {
         return addresses;
     }
 
-    private String macToString(byte[] address) {
-
+    private static String macToString(byte[] address) {
         StringBuilder stringBuilder = new StringBuilder();
 
         for (int i = 0; i < address.length; i++) {
@@ -85,8 +80,7 @@ public class RobotIdentity extends SubsystemIF {
         return stringBuilder.toString();
     }
 
-    private String macToArray(byte[] address) {
-
+    private static String macToArray(byte[] address) {
         StringBuilder stringBuilder = new StringBuilder("[");
 
         for (int i = 0; i < address.length; i++) {
@@ -98,10 +92,6 @@ public class RobotIdentity extends SubsystemIF {
         stringBuilder.append("]");
 
         return stringBuilder.toString();
-    }
-
-    public RobotID getRobotID() {
-        return robotID;
     }
 
     @Override

@@ -33,7 +33,7 @@ public class ShooterConstants {
     static final InvertedValue PIVOT_INVERSION;
 
     static {
-        switch (RobotIdentity.getInstance().getRobotID()) {
+        switch (RobotIdentity.robotID) {
             case PLAYBEAR_CARTI, BEARITONE -> {
                 SHOOTER_SPEED = 100.0;
                 IDLE_SPEED = 62.5;
@@ -74,7 +74,7 @@ public class ShooterConstants {
                     .withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT)
                     .withStatorCurrentLimitEnable(true)
                     .withSupplyCurrentLimitEnable(true))
-            .withSlot0(switch (RobotIdentity.getInstance().getRobotID()) {
+            .withSlot0(switch (RobotIdentity.robotID) {
                 case BEARITONE, PLAYBEAR_CARTI -> new Slot0Configs()
                         .withKP(.076223)
                         .withKS(.10456)

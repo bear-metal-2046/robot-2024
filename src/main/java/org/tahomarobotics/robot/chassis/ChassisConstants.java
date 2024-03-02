@@ -58,7 +58,7 @@ public final class ChassisConstants {
     public static final double STEER_REDUCTION = (14.0 / 50.0) * (10.0 / 60.0);
 
     static {
-        switch (RobotIdentity.getInstance().getRobotID()) {
+        switch (RobotIdentity.robotID) {
             case PLAYBEAR_CARTI, BEARITONE -> {
                 DRIVE_REDUCTION = (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
                 WHEEL_RADIUS  = 0.04898;

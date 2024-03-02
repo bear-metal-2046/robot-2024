@@ -55,6 +55,9 @@ public class Robot extends LoggedRobot {
 
         initializeAKit();
 
+        //noinspection unused
+        var robotID = RobotIdentity.robotID;
+
         // Initialize all the subsystems as well as auto-register them with the CommandScheduler.
         subsystems.add(OI.getInstance().initialize());
         subsystems.add(Chassis.getInstance().initialize());
@@ -63,7 +66,6 @@ public class Robot extends LoggedRobot {
         subsystems.add(AmpArm.getInstance().initialize());
         subsystems.add(Indexer.getInstance().initialize());
         subsystems.add(Climbers.getInstance().initialize());
-        subsystems.add(RobotIdentity.getInstance().initialize());
         subsystems.add(Autonomous.getInstance().initialize());
 
         logger.info("Robot Initialized.");

@@ -15,14 +15,14 @@ import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.identity.RobotIdentity;
 import org.tahomarobotics.robot.shooter.commands.ZeroShooterCommand;
+import org.tahomarobotics.robot.util.SafeAKitLogger;
 import org.tahomarobotics.robot.util.SubsystemIF;
-import org.tahomarobotics.robot.util.ToggledOutputs;
 
 import java.util.EnumSet;
 
 import static org.tahomarobotics.robot.shooter.ShooterConstants.*;
 
-public class Shooter extends SubsystemIF implements ToggledOutputs {
+public class Shooter extends SubsystemIF {
 
     private static final Shooter INSTANCE = new Shooter();
 
@@ -150,8 +150,8 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
         Translation2d target = SPEAKER_TARGET_POSITION.get();
         distance = Chassis.getInstance().getPose().getTranslation().getDistance(target) + SHOOTER_PIVOT_OFFSET.getX();
 
-        recordOutput("Shooter/Radial Velocity", radialVelocity);
-        recordOutput("Shooter/Target Angle Before Compensation", 0.07068257 + 0.1999213 * Math.pow(Math.E, -0.5485811 * distance));
+        SafeAKitLogger.recordOutput("Shooter/Radial Velocity", radialVelocity);
+        SafeAKitLogger.recordOutput("Shooter/Target Angle Before Compensation", 0.07068257 + 0.1999213 * Math.pow(Math.E, -0.5485811 * distance));
         distance = (radialVelocity *
                 (radialVelocity > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE))
                 + distance;
@@ -184,18 +184,18 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
 
         Logger.processInputs("Shooter", inputs);
 
-        recordOutput("Shooter/Bias", biasAngle);
-        recordOutput("Shooter/Distance To Speaker", distance);
-        recordOutput("Shooter/Is at Angle", isAtAngle());
-        recordOutput("Shooter/Is Spinning At velocity", isSpinningAtVelocity());
-        recordOutput("Shooter/Is In Shooting Mode", inShootingMode());
-        recordOutput("Shooter/Distance", distance);
-        recordOutput("Shooter/Velocity", getShooterVelocity());
-        recordOutput("Shooter/Angle", getPivotPosition());
-        recordOutput("Shooter/Angle (Degrees)", getPivotPosition() * 360);
+        SafeAKitLogger.recordOutput("Shooter/Bias", biasAngle);
+        SafeAKitLogger.recordOutput("Shooter/Distance To Speaker", distance);
+        SafeAKitLogger.recordOutput("Shooter/Is at Angle", isAtAngle());
+        SafeAKitLogger.recordOutput("Shooter/Is Spinning At velocity", isSpinningAtVelocity());
+        SafeAKitLogger.recordOutput("Shooter/Is In Shooting Mode", inShootingMode());
+        SafeAKitLogger.recordOutput("Shooter/Distance", distance);
+        SafeAKitLogger.recordOutput("Shooter/Velocity", getShooterVelocity());
+        SafeAKitLogger.recordOutput("Shooter/Angle", getPivotPosition());
+        SafeAKitLogger.recordOutput("Shooter/Angle (Degrees)", getPivotPosition() * 360);
 
-        recordOutput("Shooter/TotalCurrent", io.getTotalCurrent());
-        recordOutput("Shooter/Energy", getEnergyUsed());
+        SafeAKitLogger.recordOutput("Shooter/TotalCurrent", io.getTotalCurrent());
+        SafeAKitLogger.recordOutput("Shooter/Energy", getEnergyUsed());
 
 
     }
@@ -205,11 +205,6 @@ public class Shooter extends SubsystemIF implements ToggledOutputs {
     @Override
     public void onDisabledInit() {
         stop();
-    }
-
-    @Override
-    public boolean logOutputs() {
-        return SmartDashboard.getBoolean("Outputs/Shooter", OutputsConfiguration.SHOOTER);
     }
 
     @Override

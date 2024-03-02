@@ -21,13 +21,12 @@ import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.util.RobustConfigurator;
+import org.tahomarobotics.robot.util.SafeAKitLogger;
 import org.tahomarobotics.robot.util.SubsystemIF;
-import org.tahomarobotics.robot.util.SysIdTest;
-import org.tahomarobotics.robot.util.ToggledOutputs;
 
 import static org.tahomarobotics.robot.collector.CollectorConstants.*;
 
-public class Collector extends SubsystemIF implements ToggledOutputs {
+public class Collector extends SubsystemIF {
 
     private static final Collector INSTANCE = new Collector();
 
@@ -274,16 +273,16 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
         double totalCurrent = deployCurrentLeft.getValue() + deployCurrentRight.getValue() + collectCurrent.getValue();
         energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;
 
-        recordOutput("Collector/Deploy State", deploymentState);
-        recordOutput("Collector/Collection State", collectionState);
+        SafeAKitLogger.recordOutput("Collector/Deploy State", deploymentState);
+        SafeAKitLogger.recordOutput("Collector/Collection State", collectionState);
 
-        recordOutput("Collector/Deploy Right Position", deployPositionRight.getValue());
-        recordOutput("Collector/Deploy Left Position", deployPositionLeft.getValue());
-        recordOutput("Collector/Deploy Velocity", deployVelocity.getValue());
-        recordOutput("Collector/Collect Velocity", collectVelocity.getValue());
+        SafeAKitLogger.recordOutput("Collector/Deploy Right Position", deployPositionRight.getValue());
+        SafeAKitLogger.recordOutput("Collector/Deploy Left Position", deployPositionLeft.getValue());
+        SafeAKitLogger.recordOutput("Collector/Deploy Velocity", deployVelocity.getValue());
+        SafeAKitLogger.recordOutput("Collector/Collect Velocity", collectVelocity.getValue());
 
-        recordOutput("Collector/TotalCurrent", totalCurrent);
-        recordOutput("Collector/Energy", getEnergyUsed());
+        SafeAKitLogger.recordOutput("Collector/TotalCurrent", totalCurrent);
+        SafeAKitLogger.recordOutput("Collector/Energy", getEnergyUsed());
 
         if (RobotState.isAutonomous()) {
             autoStateMachine();
@@ -324,11 +323,6 @@ public class Collector extends SubsystemIF implements ToggledOutputs {
         DEPLOYED,
         STOWED,
         EJECT
-    }
-
-    @Override
-    public boolean logOutputs() {
-        return SmartDashboard.getBoolean("Outputs/Collector", OutputsConfiguration.COLLECTOR);
     }
 
     @Override

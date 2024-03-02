@@ -8,9 +8,11 @@ package org.tahomarobotics.robot;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobotBase;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
@@ -20,14 +22,13 @@ import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.auto.Autonomous;
 import org.tahomarobotics.robot.chassis.Chassis;
-import org.tahomarobotics.robot.chassis.SwerveModule;
 import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.identity.RobotIdentity;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.shooter.Shooter;
-import org.tahomarobotics.robot.shuffleboard.OutputsConfigurationTab;
 import org.tahomarobotics.robot.util.BuildConstants;
 import org.tahomarobotics.robot.util.FauxWatchdog;
+import org.tahomarobotics.robot.util.SafeAKitLogger;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
 import java.nio.file.Path;
@@ -63,8 +64,6 @@ public class Robot extends LoggedRobot {
         subsystems.add(RobotIdentity.getInstance().initialize());
         subsystems.add(Autonomous.getInstance().initialize());
 
-        OutputsConfigurationTab.create();
-
         logger.info("Robot Initialized.");
     }
 
@@ -83,12 +82,22 @@ public class Robot extends LoggedRobot {
             default -> "Unknown";
         });
 
+        if (!SmartDashboard.containsKey("Debug/NTPublishing")) {
+            SmartDashboard.putBoolean("Debug/NTPublishing", false);
+        }
+
         // Depending on the current platform, publish logs to different receivers.
         switch (RobotConfiguration.getMode()) {
             case REAL, SIM -> {
                 if (RobotConfiguration.getMode() == RobotConfiguration.Mode.SIM || Path.of("/U").toFile().exists())
                     Logger.addDataReceiver(new WPILOGWriter()); // Write to a USB drive ("/U/logs" or "logs")
-                Logger.addDataReceiver(new NT4Publisher());
+                Logger.addDataReceiver(new NT4Publisher() {
+                    @Override
+                    public void putTable(LogTable table) {
+                        if (SmartDashboard.getBoolean("Debug/NTPublishing", false))
+                            super.putTable(table);
+                    }
+                });
                 //noinspection resource
                 new PowerDistribution();
             }
@@ -119,7 +128,7 @@ public class Robot extends LoggedRobot {
         CommandScheduler.getInstance().run();
 
         double energyUsed = subsystems.stream().mapToDouble(SubsystemIF::getEnergyUsed).sum();
-        Logger.recordOutput("EnergyUsed",energyUsed);
+        SafeAKitLogger.recordOutput("EnergyUsed",energyUsed);
     }
     
     

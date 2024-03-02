@@ -9,16 +9,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.OutputsConfiguration;
-import org.tahomarobotics.robot.util.ToggledOutputs;
+import org.tahomarobotics.robot.util.SafeAKitLogger;
 
 import java.util.EnumSet;
 
-public class ObjectDetectionCamera implements ToggledOutputs {
-    private static final Logger logger = LoggerFactory.getLogger(ObjectDetectionCamera.class);
-
+public class ObjectDetectionCamera {
     private final PhotonCamera camera;
     private final VisionConstants.Camera cameraSettings;
     private Translation3d notePosition = new Translation3d();
@@ -58,15 +54,10 @@ public class ObjectDetectionCamera implements ToggledOutputs {
         double yOffset = (Math.tan(Units.degreesToRadians(-target.getYaw())) * xOffset) + cameraSettings.offset.getY();
 
         notePosition = new Translation3d(xOffset, yOffset, 0);
-        recordOutput("Object Detection/Note Position", notePosition);
+        SafeAKitLogger.recordOutput("Object Detection/Note Position", notePosition);
     }
 
     public Translation3d getNotePosition() {
         return notePosition;
-    }
-
-    @Override
-    public boolean logOutputs() {
-        return SmartDashboard.getBoolean("Outputs/ObjectDetection", OutputsConfiguration.OBJECT_DETECTION);
     }
 }

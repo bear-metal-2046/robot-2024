@@ -10,18 +10,17 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.littletonrobotics.junction.AutoLog;
 import org.slf4j.LoggerFactory;
-import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.util.RobustConfigurator;
-import org.tahomarobotics.robot.util.ToggledOutputs;
+import org.tahomarobotics.robot.util.SafeAKitLogger;
 
 import static org.tahomarobotics.robot.shooter.ShooterConstants.*;
 
 
-class ShooterIO implements ToggledOutputs {
+class ShooterIO {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(ShooterIO.class);
 
     private final TalonFX shooterMotor;
@@ -115,7 +114,7 @@ class ShooterIO implements ToggledOutputs {
     void setShooterAngle(double angle) {
         this.angle = angle;
 
-        recordOutput("Shooter/Target Angle", angle);
+        SafeAKitLogger.recordOutput("Shooter/Target Angle", angle);
 
         pivotMotor.setControl(pivotPositionControl.withPosition(angle));
     }
@@ -192,11 +191,6 @@ class ShooterIO implements ToggledOutputs {
     void refreshSignals() {
         BaseStatusSignal.refreshAll(pivotPosition, pivotVelocity, shooterVelocity,
                 shooterMotorCurrent, shooterMotorFollowerCurrent, pivotCurrent);
-    }
-
-    @Override
-    public boolean logOutputs() {
-        return SmartDashboard.getBoolean("Outputs/Shooter", OutputsConfiguration.SHOOTER);
     }
 
     public double getTotalCurrent() {

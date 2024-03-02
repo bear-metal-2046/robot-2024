@@ -16,12 +16,12 @@ import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.collector.CollectorConstants;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.util.RobustConfigurator;
+import org.tahomarobotics.robot.util.SafeAKitLogger;
 import org.tahomarobotics.robot.util.SubsystemIF;
-import org.tahomarobotics.robot.util.ToggledOutputs;
 
 import static org.tahomarobotics.robot.indexer.IndexerConstants.*;
 
-public class Indexer extends SubsystemIF implements ToggledOutputs {
+public class Indexer extends SubsystemIF {
     private static final Indexer INSTANCE = new Indexer();
 
     private final TalonFX motor;
@@ -250,17 +250,17 @@ public class Indexer extends SubsystemIF implements ToggledOutputs {
         double totalCurrent = current.getValue();
         energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;
 
-        recordOutput("Indexer/Position", getPosition());
-        recordOutput("Indexer/Velocity", getVelocity());
+        SafeAKitLogger.recordOutput("Indexer/Position", getPosition());
+        SafeAKitLogger.recordOutput("Indexer/Velocity", getVelocity());
 
-        recordOutput("Indexer/State", state);
-        recordOutput("Indexer/BeamBreak One", getCollectorBeanBake());
-        recordOutput("Indexer/BeamBreak Two", getShooterBeanBake());
-        recordOutput("Indexer/Collected", hasCollected());
+        SafeAKitLogger.recordOutput("Indexer/State", state);
+        SafeAKitLogger.recordOutput("Indexer/BeamBreak One", getCollectorBeanBake());
+        SafeAKitLogger.recordOutput("Indexer/BeamBreak Two", getShooterBeanBake());
+        SafeAKitLogger.recordOutput("Indexer/Collected", hasCollected());
 
-        recordOutput("Indexer/Current", totalCurrent);
-        recordOutput("Indexer/Energy", getEnergyUsed());
-        
+        SafeAKitLogger.recordOutput("Indexer/Current", totalCurrent);
+        SafeAKitLogger.recordOutput("Indexer/Energy", getEnergyUsed());
+
         stateMachine();
 
     }
@@ -275,11 +275,6 @@ public class Indexer extends SubsystemIF implements ToggledOutputs {
         EJECTING,
         TRANSFERRING,
         REVERSE_INDEXING
-    }
-
-    @Override
-    public boolean logOutputs() {
-        return SmartDashboard.getBoolean("Outputs/Indexer", OutputsConfiguration.INDEXER);
     }
 
     @Override

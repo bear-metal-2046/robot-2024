@@ -5,7 +5,9 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -17,7 +19,6 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.Robot;
@@ -27,8 +28,8 @@ import org.tahomarobotics.robot.chassis.commands.AlignSwerveCommand;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.util.CalibrationData;
+import org.tahomarobotics.robot.util.SafeAKitLogger;
 import org.tahomarobotics.robot.util.SubsystemIF;
-import org.tahomarobotics.robot.util.ToggledOutputs;
 import org.tahomarobotics.robot.vision.ATVision;
 import org.tahomarobotics.robot.vision.ObjectDetectionCamera;
 import org.tahomarobotics.robot.vision.VisionConstants;
@@ -38,7 +39,7 @@ import java.util.List;
 
 import static org.tahomarobotics.robot.shooter.ShooterConstants.SPEAKER_TARGET_POSITION;
 
-public class Chassis extends SubsystemIF implements ToggledOutputs {
+public class Chassis extends SubsystemIF {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Chassis.class);
     private static final Chassis INSTANCE = new Chassis();
 
@@ -205,16 +206,15 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
         double totalCurrent = modules.stream().mapToDouble(SwerveModule::getTotalCurent).sum();
         energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;
 
+        SafeAKitLogger.recordOutput("Chassis/States", getSwerveModuleStates());
+        SafeAKitLogger.recordOutput("Chassis/DesiredState", getSwerveModuleDesiredStates());
+        SafeAKitLogger.recordOutput("Chassis/CurrentChassisSpeeds", getCurrentChassisSpeeds());
+        SafeAKitLogger.recordOutput("Chassis/Gyro/Yaw", getYaw());
+        SafeAKitLogger.recordOutput("Chassis/Pose", pose);
+        SafeAKitLogger.recordOutput("Chassis/isAtShootingAngle", isReadyToShoot());
+        SafeAKitLogger.recordOutput("Chassis/target shooting angle", targetShootingAngle);
 
-        recordOutput("Chassis/States", getSwerveModuleStates());
-        recordOutput("Chassis/DesiredState", getSwerveModuleDesiredStates());
-        recordOutput("Chassis/CurrentChassisSpeeds", getCurrentChassisSpeeds());
-        recordOutput("Chassis/Gyro/Yaw", getYaw());
-        recordOutput("Chassis/Pose", pose);
-        recordOutput("Chassis/isAtShootingAngle", isReadyToShoot());
-        recordOutput("Chassis/target shooting angle", targetShootingAngle);
-
-        recordOutput("Chassis/Energy", getEnergyUsed());
+        SafeAKitLogger.recordOutput("Chassis/Energy", getEnergyUsed());
 
         fieldPose.setRobotPose(pose);
         SmartDashboard.putData(fieldPose);
@@ -400,11 +400,6 @@ public class Chassis extends SubsystemIF implements ToggledOutputs {
         synchronized (poseEstimator) {
             poseEstimator.update(yaw, modulePositions);
         }
-    }
-
-    @Override
-    public boolean logOutputs() {
-        return SmartDashboard.getBoolean("Outputs/Chassis", OutputsConfiguration.CHASSIS);
     }
 
     @Override

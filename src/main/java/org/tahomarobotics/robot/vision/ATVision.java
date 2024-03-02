@@ -18,18 +18,15 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.OutputsConfiguration;
-import org.tahomarobotics.robot.util.ToggledOutputs;
+import org.tahomarobotics.robot.util.SafeAKitLogger;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 
-public class ATVision implements ToggledOutputs {
-    private static final Logger logger = LoggerFactory.getLogger(ATVision.class);
+public class ATVision {
     private final PhotonCamera camera;
     private final AprilTagFieldLayout fieldLayout;
     private final VisionConstants.Camera cameraSettings;
@@ -77,7 +74,7 @@ public class ATVision implements ToggledOutputs {
                 cameraSettings.offset.inverse()
         );
 
-        org.littletonrobotics.junction.Logger.recordOutput("ATCamera/Photon Pose 2D Single", newRobotPose.toPose2d());
+        SafeAKitLogger.recordOutput("ATCamera/Photon Pose 2D Single", newRobotPose.toPose2d());
 
 
         addVisionMeasurement(new ATCameraResult(
@@ -107,12 +104,12 @@ public class ATVision implements ToggledOutputs {
         }
 
         var multiRes = result.getMultiTagResult().estimatedPose;
-        recordOutput("ATCamera/Reprojection Error", multiRes.bestReprojErr);
+        SafeAKitLogger.recordOutput("ATCamera/Reprojection Error", multiRes.bestReprojErr);
         if (multiRes.isPresent && multiRes.ambiguity < 0.2) {
             Pose3d pose = new Pose3d(multiRes.best.getTranslation(), multiRes.best.getRotation()).plus(cameraSettings.offset.inverse());
 
-            recordOutput("ATCamera/Photon Pose 3D", pose);
-            recordOutput("ATCamera/Photon Pose 2D Multi", pose.toPose2d());
+            SafeAKitLogger.recordOutput("ATCamera/Photon Pose 3D", pose);
+            SafeAKitLogger.recordOutput("ATCamera/Photon Pose 2D Multi", pose.toPose2d());
 
             double distances = 0;
             for (PhotonTrackedTarget target : validTargets) {
@@ -195,11 +192,6 @@ public class ATVision implements ToggledOutputs {
 
     public String getName() {
         return cameraSettings.cameraName;
-    }
-
-    @Override
-    public boolean logOutputs() {
-        return SmartDashboard.getBoolean("Outputs/ATVision", OutputsConfiguration.AT_VISION);
     }
 
     public record ATCameraResult(VisionConstants.Camera camera, double timestamp, Pose2d poseMeters,

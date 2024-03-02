@@ -23,7 +23,6 @@ import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.auto.Autonomous;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.climbers.Climbers;
-import org.tahomarobotics.robot.chassis.SwerveModule;
 import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.identity.RobotIdentity;
 import org.tahomarobotics.robot.indexer.Indexer;

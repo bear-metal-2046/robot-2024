@@ -32,7 +32,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.identity.RobotIdentity;
 
-import java.util.Arrays;
+import java.util.stream.IntStream;
 
 /**
  * Constants for the chassis.
@@ -177,29 +177,12 @@ public final class ChassisConstants {
             720);
 
     public static Pose2d getClosestChainPose() {
-        DriverStation.Alliance alliance = DriverStation.getAlliance().get();
+        Pose2d[] poses = DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? BLUE_STAGE_CHAIN_POSES : RED_STAGE_CHAIN_POSES;
         Pose2d currentPos = Chassis.getInstance().getPose();
         Translation2d currentTranslation = currentPos.getTranslation();
-        Double[] differences;
-        if (alliance.equals(DriverStation.Alliance.Blue)) {
-            differences = (Double[]) Arrays.stream(BLUE_STAGE_CHAIN_POSES).map(pos -> currentTranslation.getDistance(pos.getTranslation())).toArray();
-        } else {
-            differences = (Double[]) Arrays.stream(RED_STAGE_CHAIN_POSES).map(pos -> currentTranslation.getDistance(pos.getTranslation())).toArray();
-        }
 
-        double lowestDiff = Double.POSITIVE_INFINITY;
-        int closestChainIndex = 0;
-        int i = 0;
-        for (double diff : differences) {
-            if (diff < lowestDiff) {
-                lowestDiff = diff;
-                closestChainIndex = i;
-            }
-            i++;
-        }
+        int minIndex = IntStream.range(0, 3).reduce((i, j) -> currentTranslation.getDistance(poses[j].getTranslation()) < currentTranslation.getDistance(poses[i].getTranslation()) ? j : i).getAsInt();
 
-        return (alliance.equals(DriverStation.Alliance.Blue)) ?
-                BLUE_STAGE_CHAIN_POSES[closestChainIndex] :
-                RED_STAGE_CHAIN_POSES[closestChainIndex];
+        return poses[minIndex];
     }
 }

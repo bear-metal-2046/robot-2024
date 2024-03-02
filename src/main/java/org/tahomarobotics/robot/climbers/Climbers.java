@@ -103,6 +103,12 @@ public class Climbers extends SubsystemIF implements ToggledOutputs {
     }
 
     @Override
+    public double getEnergyUsed() {
+        // TODO
+        return 0;
+    }
+
+    @Override
     public void periodic() {
 //        SmartDashboard.putNumber("Climb Left Position", getLeftPos());
 //        SmartDashboard.putNumber("Climb Right Position", getRightPos());
@@ -148,7 +154,8 @@ public class Climbers extends SubsystemIF implements ToggledOutputs {
         READY,
         ENGAGED,
         CLIMBING,
-        CLIMBED
+        CLIMBED,
+        BROKEN
     }
 }
 

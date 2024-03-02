@@ -1,6 +1,5 @@
 package org.tahomarobotics.robot.climbers.commands;
 
-import com.ctre.phoenix6.configs.Slot0Configs;
 import edu.wpi.first.wpilibj2.command.Command;
 import org.tahomarobotics.robot.climbers.ClimberConstants;
 import org.tahomarobotics.robot.climbers.Climbers;
@@ -26,7 +25,7 @@ public class ClimbCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return climbers.getLeftPos() - ClimberConstants.TOP_POSITION < ClimberConstants.POSITION_EPSILON
-                && climbers.getRightPos() - ClimberConstants.TOP_POSITION < ClimberConstants.POSITION_EPSILON;
+        return climbers.getLeftPos() - pos < ClimberConstants.POSITION_EPSILON
+                && climbers.getRightPos() - pos < ClimberConstants.POSITION_EPSILON;
     }
 }

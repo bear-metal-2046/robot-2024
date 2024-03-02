@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.amp.AmpArm;
-import org.tahomarobotics.robot.climbers.Climbers;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
@@ -101,7 +100,7 @@ public class AmpArmCommands {
                 Commands.waitSeconds(0.1),
                 Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.SCORE)),
                 Commands.waitUntil(indexer::getCollectorBeanBake).withTimeout(2.0),
-                Commands.waitSeconds(0.2),
+                Commands.waitSeconds(0.05),
                 Commands.runOnce(() -> {
                     ampArm.setRollerState(AmpArm.RollerState.DISABLED);
                     indexer.transitionToCollected();
@@ -114,11 +113,8 @@ public class AmpArmCommands {
         AmpArm ampArm = AmpArm.getInstance();
         Indexer indexer = Indexer.getInstance();
         Shooter shooter = Shooter.getInstance();
-        Climbers climbers = Climbers.getInstance();
 
         AMP_ARM_CTRL = Commands.deferredProxy(() -> {
-            climbers.setReadyToClimb(false);
-
             if ((ampArm.isSource() || ampArm.isAmp()) && ampArm.isCollected()) {
                 return Commands.defer(() -> ARM_TO_STOW.get().andThen(FEEDBACK.get()), Set.of(ampArm, indexer, shooter));
             } if (ampArm.isAmp() || ampArm.isSource() || ampArm.isTrap()) {

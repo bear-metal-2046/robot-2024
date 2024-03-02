@@ -18,11 +18,12 @@ public class PreClimbSequence extends SequentialCommandGroup {
         Climbers climbers = Climbers.getInstance();
 
         addCommands(
+                Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.READY)),
                 AmpArmCommands.ARM_TO_STOW.get(),
                 AmpArmCommands.FEEDFORWARD.get(),
                 Commands.runOnce(() -> Shooter.getInstance().setAngle(ShooterConstants.MAX_PIVOT_ANGLE)),
-                new ClimbCommand(TOP_POSITION, UNLADEN_SLOT),
-                Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.READY))
+                Commands.waitUntil(() -> Shooter.getInstance().isAtAngle()),
+                new ClimbCommand(TOP_POSITION, UNLADEN_SLOT)
             );
     }
 }

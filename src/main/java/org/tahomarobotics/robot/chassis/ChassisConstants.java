@@ -108,8 +108,6 @@ public final class ChassisConstants {
     public static final double kA_DRIVE = SWERVE_DRIVE_MOTOR.rOhms * WHEEL_RADIUS * MASS
             / (DRIVE_REDUCTION * SWERVE_DRIVE_MOTOR.KtNMPerAmp);
 
-    public static final double CLIMB_POSITION_EPSILON = 0.05;
-
     /// DEVICE CONFIGURATION
 
     public static final MagnetSensorConfigs encoderConfiguration = new MagnetSensorConfigs()
@@ -177,7 +175,8 @@ public final class ChassisConstants {
             720);
 
     public static Pose2d getClosestChainPose() {
-        Pose2d[] poses = DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? BLUE_STAGE_CHAIN_POSES : RED_STAGE_CHAIN_POSES;
+        Pose2d[] poses = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red) == DriverStation.Alliance.Blue ?
+                BLUE_STAGE_CHAIN_POSES : RED_STAGE_CHAIN_POSES;
         Pose2d currentPos = Chassis.getInstance().getPose();
         Translation2d currentTranslation = currentPos.getTranslation();
 

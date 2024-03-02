@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
-import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
@@ -22,6 +21,7 @@ import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.util.RobustConfigurator;
+import org.tahomarobotics.robot.util.SafeAKitLogger;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
 import static org.tahomarobotics.robot.collector.CollectorConstants.*;
@@ -273,16 +273,16 @@ public class Collector extends SubsystemIF {
         double totalCurrent = deployCurrentLeft.getValue() + deployCurrentRight.getValue() + collectCurrent.getValue();
         energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;
 
-        Logger.recordOutput("Collector/Deploy State", deploymentState);
-        Logger.recordOutput("Collector/Collection State", collectionState);
+        SafeAKitLogger.recordOutput("Collector/Deploy State", deploymentState);
+        SafeAKitLogger.recordOutput("Collector/Collection State", collectionState);
 
-        Logger.recordOutput("Collector/Deploy Right Position", deployPositionRight.getValue());
-        Logger.recordOutput("Collector/Deploy Left Position", deployPositionLeft.getValue());
-        Logger.recordOutput("Collector/Deploy Velocity", deployVelocity.getValue());
-        Logger.recordOutput("Collector/Collect Velocity", collectVelocity.getValue());
+        SafeAKitLogger.recordOutput("Collector/Deploy Right Position", deployPositionRight.getValue());
+        SafeAKitLogger.recordOutput("Collector/Deploy Left Position", deployPositionLeft.getValue());
+        SafeAKitLogger.recordOutput("Collector/Deploy Velocity", deployVelocity.getValue());
+        SafeAKitLogger.recordOutput("Collector/Collect Velocity", collectVelocity.getValue());
 
-        Logger.recordOutput("Collector/TotalCurrent", totalCurrent);
-        Logger.recordOutput("Collector/Energy", getEnergyUsed());
+        SafeAKitLogger.recordOutput("Collector/TotalCurrent", totalCurrent);
+        SafeAKitLogger.recordOutput("Collector/Energy", getEnergyUsed());
 
         if (RobotState.isAutonomous()) {
             autoStateMachine();

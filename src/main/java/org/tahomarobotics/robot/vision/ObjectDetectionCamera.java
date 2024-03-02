@@ -6,11 +6,11 @@ import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.tahomarobotics.robot.OutputsConfiguration;
+import org.tahomarobotics.robot.util.SafeAKitLogger;
 
 import java.util.EnumSet;
 
@@ -54,7 +54,7 @@ public class ObjectDetectionCamera {
         double yOffset = (Math.tan(Units.degreesToRadians(-target.getYaw())) * xOffset) + cameraSettings.offset.getY();
 
         notePosition = new Translation3d(xOffset, yOffset, 0);
-        Logger.recordOutput("Object Detection/Note Position", notePosition);
+        SafeAKitLogger.recordOutput("Object Detection/Note Position", notePosition);
     }
 
     public Translation3d getNotePosition() {

@@ -1,8 +1,8 @@
 package org.tahomarobotics.robot.identity;
 
 
-import org.littletonrobotics.junction.Logger;
 import org.slf4j.LoggerFactory;
+import org.tahomarobotics.robot.util.SafeAKitLogger;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
 import java.net.NetworkInterface;
@@ -41,8 +41,8 @@ public class RobotIdentity extends SubsystemIF {
         }
         logger.info("Set robot identity to " + robotID);
 
-        Logger.recordOutput("Identity/RobotID", robotID);
-        Logger.recordOutput("Identity/MAC", macToString(robotID.getMac()));
+        SafeAKitLogger.recordOutput("Identity/RobotID", robotID);
+        SafeAKitLogger.recordOutput("Identity/MAC", macToString(robotID.getMac()));
     }
 
     private List<byte[]> getRobotAddress() {

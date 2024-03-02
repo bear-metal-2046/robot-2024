@@ -12,11 +12,11 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import org.littletonrobotics.junction.AutoLog;
-import org.littletonrobotics.junction.Logger;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.util.RobustConfigurator;
+import org.tahomarobotics.robot.util.SafeAKitLogger;
 
 import java.util.List;
 
@@ -161,13 +161,13 @@ public class SwerveModuleIO {
 
     
     public void periodic() {
-        Logger.recordOutput(name + "/State", getState());
-        Logger.recordOutput(name + "/DesiredState", desiredState);
-        Logger.recordOutput(name + "/Position", getPosition());
+        SafeAKitLogger.recordOutput(name + "/State", getState());
+        SafeAKitLogger.recordOutput(name + "/DesiredState", desiredState);
+        SafeAKitLogger.recordOutput(name + "/Position", getPosition());
 
-        Logger.recordOutput(name + "/DriveVelocity", driveVelocity.getValueAsDouble());
-        Logger.recordOutput(name + "/DriveVelocityMPS", driveVelocity.getValueAsDouble() * DRIVE_POSITION_COEFFICIENT);
-        Logger.recordOutput(name + "/SteerVelocity", steerVelocity.getValueAsDouble());
+        SafeAKitLogger.recordOutput(name + "/DriveVelocity", driveVelocity.getValueAsDouble());
+        SafeAKitLogger.recordOutput(name + "/DriveVelocityMPS", driveVelocity.getValueAsDouble() * DRIVE_POSITION_COEFFICIENT);
+        SafeAKitLogger.recordOutput(name + "/SteerVelocity", steerVelocity.getValueAsDouble());
     }
 
     

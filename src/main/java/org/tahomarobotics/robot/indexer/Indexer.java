@@ -8,7 +8,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
@@ -17,6 +16,7 @@ import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.collector.CollectorConstants;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.util.RobustConfigurator;
+import org.tahomarobotics.robot.util.SafeAKitLogger;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
 import static org.tahomarobotics.robot.indexer.IndexerConstants.*;
@@ -250,16 +250,16 @@ public class Indexer extends SubsystemIF {
         double totalCurrent = current.getValue();
         energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;
 
-        Logger.recordOutput("Indexer/Position", getPosition());
-        Logger.recordOutput("Indexer/Velocity", getVelocity());
+        SafeAKitLogger.recordOutput("Indexer/Position", getPosition());
+        SafeAKitLogger.recordOutput("Indexer/Velocity", getVelocity());
 
-        Logger.recordOutput("Indexer/State", state);
-        Logger.recordOutput("Indexer/BeamBreak One", getCollectorBeanBake());
-        Logger.recordOutput("Indexer/BeamBreak Two", getShooterBeanBake());
-        Logger.recordOutput("Indexer/Collected", hasCollected());
+        SafeAKitLogger.recordOutput("Indexer/State", state);
+        SafeAKitLogger.recordOutput("Indexer/BeamBreak One", getCollectorBeanBake());
+        SafeAKitLogger.recordOutput("Indexer/BeamBreak Two", getShooterBeanBake());
+        SafeAKitLogger.recordOutput("Indexer/Collected", hasCollected());
 
-        Logger.recordOutput("Indexer/Current", totalCurrent);
-        Logger.recordOutput("Indexer/Energy", getEnergyUsed());
+        SafeAKitLogger.recordOutput("Indexer/Current", totalCurrent);
+        SafeAKitLogger.recordOutput("Indexer/Energy", getEnergyUsed());
 
         stateMachine();
 

@@ -15,6 +15,7 @@ import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.identity.RobotIdentity;
 import org.tahomarobotics.robot.shooter.commands.ZeroShooterCommand;
+import org.tahomarobotics.robot.util.SafeAKitLogger;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
 import java.util.EnumSet;
@@ -149,8 +150,8 @@ public class Shooter extends SubsystemIF {
         Translation2d target = SPEAKER_TARGET_POSITION.get();
         distance = Chassis.getInstance().getPose().getTranslation().getDistance(target) + SHOOTER_PIVOT_OFFSET.getX();
 
-        Logger.recordOutput("Shooter/Radial Velocity", radialVelocity);
-        Logger.recordOutput("Shooter/Target Angle Before Compensation", 0.07068257 + 0.1999213 * Math.pow(Math.E, -0.5485811 * distance));
+        SafeAKitLogger.recordOutput("Shooter/Radial Velocity", radialVelocity);
+        SafeAKitLogger.recordOutput("Shooter/Target Angle Before Compensation", 0.07068257 + 0.1999213 * Math.pow(Math.E, -0.5485811 * distance));
         distance = (radialVelocity *
                 (radialVelocity > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE))
                 + distance;
@@ -183,18 +184,18 @@ public class Shooter extends SubsystemIF {
 
         Logger.processInputs("Shooter", inputs);
 
-        Logger.recordOutput("Shooter/Bias", biasAngle);
-        Logger.recordOutput("Shooter/Distance To Speaker", distance);
-        Logger.recordOutput("Shooter/Is at Angle", isAtAngle());
-        Logger.recordOutput("Shooter/Is Spinning At velocity", isSpinningAtVelocity());
-        Logger.recordOutput("Shooter/Is In Shooting Mode", inShootingMode());
-        Logger.recordOutput("Shooter/Distance", distance);
-        Logger.recordOutput("Shooter/Velocity", getShooterVelocity());
-        Logger.recordOutput("Shooter/Angle", getPivotPosition());
-        Logger.recordOutput("Shooter/Angle (Degrees)", getPivotPosition() * 360);
+        SafeAKitLogger.recordOutput("Shooter/Bias", biasAngle);
+        SafeAKitLogger.recordOutput("Shooter/Distance To Speaker", distance);
+        SafeAKitLogger.recordOutput("Shooter/Is at Angle", isAtAngle());
+        SafeAKitLogger.recordOutput("Shooter/Is Spinning At velocity", isSpinningAtVelocity());
+        SafeAKitLogger.recordOutput("Shooter/Is In Shooting Mode", inShootingMode());
+        SafeAKitLogger.recordOutput("Shooter/Distance", distance);
+        SafeAKitLogger.recordOutput("Shooter/Velocity", getShooterVelocity());
+        SafeAKitLogger.recordOutput("Shooter/Angle", getPivotPosition());
+        SafeAKitLogger.recordOutput("Shooter/Angle (Degrees)", getPivotPosition() * 360);
 
-        Logger.recordOutput("Shooter/TotalCurrent", io.getTotalCurrent());
-        Logger.recordOutput("Shooter/Energy", getEnergyUsed());
+        SafeAKitLogger.recordOutput("Shooter/TotalCurrent", io.getTotalCurrent());
+        SafeAKitLogger.recordOutput("Shooter/Energy", getEnergyUsed());
 
 
     }

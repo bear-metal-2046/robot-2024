@@ -9,13 +9,13 @@ import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.littletonrobotics.junction.AutoLog;
-import org.littletonrobotics.junction.Logger;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.util.RobustConfigurator;
+import org.tahomarobotics.robot.util.SafeAKitLogger;
 
 import static org.tahomarobotics.robot.shooter.ShooterConstants.*;
 
@@ -114,7 +114,7 @@ class ShooterIO {
     void setShooterAngle(double angle) {
         this.angle = angle;
 
-        Logger.recordOutput("Shooter/Target Angle", angle);
+        SafeAKitLogger.recordOutput("Shooter/Target Angle", angle);
 
         pivotMotor.setControl(pivotPositionControl.withPosition(angle));
     }

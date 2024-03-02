@@ -14,12 +14,12 @@ import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.tahomarobotics.robot.OutputsConfiguration;
+import org.tahomarobotics.robot.util.SafeAKitLogger;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -74,7 +74,7 @@ public class ATVision {
                 cameraSettings.offset.inverse()
         );
 
-        org.littletonrobotics.junction.Logger.recordOutput("ATCamera/Photon Pose 2D Single", newRobotPose.toPose2d());
+        SafeAKitLogger.recordOutput("ATCamera/Photon Pose 2D Single", newRobotPose.toPose2d());
 
 
         addVisionMeasurement(new ATCameraResult(
@@ -104,12 +104,12 @@ public class ATVision {
         }
 
         var multiRes = result.getMultiTagResult().estimatedPose;
-        Logger.recordOutput("ATCamera/Reprojection Error", multiRes.bestReprojErr);
+        SafeAKitLogger.recordOutput("ATCamera/Reprojection Error", multiRes.bestReprojErr);
         if (multiRes.isPresent && multiRes.ambiguity < 0.2) {
             Pose3d pose = new Pose3d(multiRes.best.getTranslation(), multiRes.best.getRotation()).plus(cameraSettings.offset.inverse());
 
-            Logger.recordOutput("ATCamera/Photon Pose 3D", pose);
-            Logger.recordOutput("ATCamera/Photon Pose 2D Multi", pose.toPose2d());
+            SafeAKitLogger.recordOutput("ATCamera/Photon Pose 3D", pose);
+            SafeAKitLogger.recordOutput("ATCamera/Photon Pose 2D Multi", pose.toPose2d());
 
             double distances = 0;
             for (PhotonTrackedTarget target : validTargets) {

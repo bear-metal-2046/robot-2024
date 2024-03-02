@@ -19,8 +19,6 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.littletonrobotics.junction.Logger;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.Robot;
@@ -30,6 +28,7 @@ import org.tahomarobotics.robot.chassis.commands.AlignSwerveCommand;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.util.CalibrationData;
+import org.tahomarobotics.robot.util.SafeAKitLogger;
 import org.tahomarobotics.robot.util.SubsystemIF;
 import org.tahomarobotics.robot.vision.ATVision;
 import org.tahomarobotics.robot.vision.ObjectDetectionCamera;
@@ -207,15 +206,15 @@ public class Chassis extends SubsystemIF {
         double totalCurrent = modules.stream().mapToDouble(SwerveModule::getTotalCurent).sum();
         energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;
 
-        Logger.recordOutput("Chassis/States", getSwerveModuleStates());
-        Logger.recordOutput("Chassis/DesiredState", getSwerveModuleDesiredStates());
-        Logger.recordOutput("Chassis/CurrentChassisSpeeds", getCurrentChassisSpeeds());
-        Logger.recordOutput("Chassis/Gyro/Yaw", getYaw());
-        Logger.recordOutput("Chassis/Pose", pose);
-        Logger.recordOutput("Chassis/isAtShootingAngle", isReadyToShoot());
-        Logger.recordOutput("Chassis/target shooting angle", targetShootingAngle);
+        SafeAKitLogger.recordOutput("Chassis/States", getSwerveModuleStates());
+        SafeAKitLogger.recordOutput("Chassis/DesiredState", getSwerveModuleDesiredStates());
+        SafeAKitLogger.recordOutput("Chassis/CurrentChassisSpeeds", getCurrentChassisSpeeds());
+        SafeAKitLogger.recordOutput("Chassis/Gyro/Yaw", getYaw());
+        SafeAKitLogger.recordOutput("Chassis/Pose", pose);
+        SafeAKitLogger.recordOutput("Chassis/isAtShootingAngle", isReadyToShoot());
+        SafeAKitLogger.recordOutput("Chassis/target shooting angle", targetShootingAngle);
 
-        Logger.recordOutput("Chassis/Energy", getEnergyUsed());
+        SafeAKitLogger.recordOutput("Chassis/Energy", getEnergyUsed());
 
         fieldPose.setRobotPose(pose);
         SmartDashboard.putData(fieldPose);

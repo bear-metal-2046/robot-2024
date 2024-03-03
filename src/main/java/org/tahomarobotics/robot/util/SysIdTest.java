@@ -126,4 +126,9 @@ public class SysIdTest extends SubsystemIF {
     public double getEnergyUsed() {
         return 0;
     }
+
+    @Override
+    public double getTotalCurrent() {
+        return 0;
+    }
 }

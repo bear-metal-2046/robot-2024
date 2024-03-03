@@ -17,4 +17,6 @@ public abstract class SubsystemIF extends SubsystemBase {
     public void onTeleopInit() {}
     
     public abstract double getEnergyUsed();
+
+    public abstract double getTotalCurrent();
 }

@@ -43,6 +43,8 @@ public class Indexer extends SubsystemIF {
             .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private double energyUsed = 0;
 
+    private double totalCurrent = 0;
+
     private Indexer() {
         RobustConfigurator configurator = new RobustConfigurator(logger);
 
@@ -245,7 +247,7 @@ public class Indexer extends SubsystemIF {
         );
 
         double voltage = RobotController.getBatteryVoltage();
-        double totalCurrent = current.getValue();
+        totalCurrent = current.getValue();
         energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;
 
         SafeAKitLogger.recordOutput("Indexer/Position", getPosition());
@@ -278,5 +280,10 @@ public class Indexer extends SubsystemIF {
     @Override
     public double getEnergyUsed() {
         return energyUsed / 1000d;
+    }
+
+    @Override
+    public double getTotalCurrent() {
+        return totalCurrent;
     }
 }

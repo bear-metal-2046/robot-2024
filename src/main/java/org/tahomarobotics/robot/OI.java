@@ -50,6 +50,11 @@ public class OI extends SubsystemIF {
         return 0;
     }
 
+    @Override
+    public double getTotalCurrent() {
+        return 0;
+    }
+
     /**
      * Configure the button bindings for the controller(s).
      */

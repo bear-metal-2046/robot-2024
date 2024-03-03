@@ -42,6 +42,8 @@ public class AmpArm extends SubsystemIF {
 
     private double energyUsed = 0;
 
+    private double totalCurrent = 0;
+
     private AmpArm() {
         RobustConfigurator configurator = new RobustConfigurator(logger);
 
@@ -205,7 +207,7 @@ public class AmpArm extends SubsystemIF {
                 armCurrent, wristCurrent, rollerCurrent);
 
         double voltage = RobotController.getBatteryVoltage();
-        double totalCurrent = armCurrent.getValue() + wristCurrent.getValue() + rollerCurrent.getValue();
+        totalCurrent = armCurrent.getValue() + wristCurrent.getValue() + rollerCurrent.getValue();
         energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;
 
         SafeAKitLogger.recordOutput("Amp Arm/Roller State", rollerState);
@@ -260,5 +262,10 @@ public class AmpArm extends SubsystemIF {
     @Override
     public double getEnergyUsed() {
         return energyUsed / 1000d;
+    }
+
+    @Override
+    public double getTotalCurrent() {
+        return totalCurrent;
     }
 }

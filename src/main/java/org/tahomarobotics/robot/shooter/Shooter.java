@@ -32,6 +32,8 @@ public class Shooter extends SubsystemIF {
     protected double distance = 0.0;
     private double energyUsed = 0;
 
+    private double totalCurrent = 0;
+
     // CONSTRUCTOR
 
     private Shooter() {
@@ -174,7 +176,8 @@ public class Shooter extends SubsystemIF {
         io.refreshSignals();
         io.processInputs(inputs);
         double voltage = RobotController.getBatteryVoltage();
-        energyUsed += io.getTotalCurrent() * voltage * Robot.defaultPeriodSecs;
+        totalCurrent = io.getTotalCurrent();
+        energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;
 
         Logger.processInputs("Shooter", inputs);
 
@@ -188,7 +191,7 @@ public class Shooter extends SubsystemIF {
         SafeAKitLogger.recordOutput("Shooter/Angle", getPivotPosition());
         SafeAKitLogger.recordOutput("Shooter/Angle (Degrees)", getPivotPosition() * 360);
 
-        SafeAKitLogger.recordOutput("Shooter/TotalCurrent", io.getTotalCurrent());
+        SafeAKitLogger.recordOutput("Shooter/TotalCurrent", totalCurrent);
         SafeAKitLogger.recordOutput("Shooter/Energy", getEnergyUsed());
 
 
@@ -204,5 +207,10 @@ public class Shooter extends SubsystemIF {
     @Override
     public double getEnergyUsed() {
         return energyUsed / 1000d;
+    }
+
+    @Override
+    public double getTotalCurrent() {
+        return totalCurrent;
     }
 }

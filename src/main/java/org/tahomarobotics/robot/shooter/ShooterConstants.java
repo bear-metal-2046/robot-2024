@@ -92,7 +92,7 @@ public class ShooterConstants {
             .withFeedback(new FeedbackConfigs()
                     .withSensorToMechanismRatio(1 / SHOOTER_GEAR_REDUCTION))
             .withMotionMagic(new MotionMagicConfigs()
-                    .withMotionMagicAcceleration(160)
+                    .withMotionMagicAcceleration(80)
                     .withMotionMagicJerk(1000))
             .withAudio(new AudioConfigs().withBeepOnBoot(true).withBeepOnConfig(true));
 

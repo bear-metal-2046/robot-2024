@@ -72,6 +72,8 @@ public class Chassis extends SubsystemIF {
 
     private double energyUsed = 0;
 
+    private double totalCurrent = 0;
+
     // CONSTRUCTOR
 
     private Chassis() {
@@ -198,7 +200,7 @@ public class Chassis extends SubsystemIF {
         currentChassisSpeeds = kinematics.toChassisSpeeds(getSwerveModuleStates());
 
         double voltage = RobotController.getBatteryVoltage();
-        double totalCurrent = modules.stream().mapToDouble(SwerveModule::getTotalCurent).sum();
+        totalCurrent = modules.stream().mapToDouble(SwerveModule::getTotalCurent).sum();
         energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;
 
         SafeAKitLogger.recordOutput("Chassis/States", getSwerveModuleStates());
@@ -210,6 +212,7 @@ public class Chassis extends SubsystemIF {
         SafeAKitLogger.recordOutput("Chassis/target shooting angle", targetShootingAngle);
 
         SafeAKitLogger.recordOutput("Chassis/Energy", getEnergyUsed());
+        SafeAKitLogger.recordOutput("Chassis/TotalCurrent", totalCurrent);
 
         fieldPose.setRobotPose(pose);
         SmartDashboard.putData(fieldPose);
@@ -400,5 +403,10 @@ public class Chassis extends SubsystemIF {
     @Override
     public double getEnergyUsed() {
         return energyUsed / 1000d;
+    }
+
+    @Override
+    public double getTotalCurrent() {
+        return totalCurrent;
     }
 }

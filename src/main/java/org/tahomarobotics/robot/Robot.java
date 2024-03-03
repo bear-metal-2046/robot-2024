@@ -132,6 +132,9 @@ public class Robot extends LoggedRobot {
 
         double energyUsed = subsystems.stream().mapToDouble(SubsystemIF::getEnergyUsed).sum();
         SafeAKitLogger.recordOutput("EnergyUsed",energyUsed);
+
+        double totalCurrent = subsystems.stream().mapToDouble(SubsystemIF::getTotalCurrent).sum();
+        SafeAKitLogger.recordOutput("TotalCurrent",totalCurrent);
     }
     
     

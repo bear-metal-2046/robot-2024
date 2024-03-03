@@ -57,6 +57,8 @@ public class Collector extends SubsystemIF {
 
     private double energyUsed = 0;
 
+    private double totalCurrent = 0;
+
     private Collector() {
         RobustConfigurator configurator = new RobustConfigurator(logger);
 
@@ -268,7 +270,7 @@ public class Collector extends SubsystemIF {
                 deployCurrentLeft, deployCurrentRight, collectCurrent);
 
         double voltage = RobotController.getBatteryVoltage();
-        double totalCurrent = deployCurrentLeft.getValue() + deployCurrentRight.getValue() + collectCurrent.getValue();
+        totalCurrent = deployCurrentLeft.getValue() + deployCurrentRight.getValue() + collectCurrent.getValue();
         energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;
 
         SafeAKitLogger.recordOutput("Collector/Deploy State", deploymentState);
@@ -324,5 +326,10 @@ public class Collector extends SubsystemIF {
     @Override
     public double getEnergyUsed() {
         return energyUsed / 1000d;
+    }
+
+    @Override
+    public double getTotalCurrent() {
+        return totalCurrent;
     }
 }

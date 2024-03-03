@@ -23,6 +23,8 @@ public class Climbers extends SubsystemIF {
 
     private double energyUsed = 0;
 
+    private double totalCurrent = 0;
+
     private Climbers() {
         leftClimber = new Climber(RobotMap.LEFT_CLIMB_MOTOR, "Left Climber", true);
         rightClimber = new Climber(RobotMap.RIGHT_CLIMB_MOTOR, "Right Climber", false);
@@ -90,6 +92,11 @@ public class Climbers extends SubsystemIF {
     }
 
     @Override
+    public double getTotalCurrent() {
+        return totalCurrent;
+    }
+
+    @Override
     public SubsystemIF initialize() {
         Commands.waitUntil(RobotState::isEnabled)
                 .andThen(new ClimbZeroCommand())
@@ -101,13 +108,15 @@ public class Climbers extends SubsystemIF {
     @Override
     public void periodic() {
         double voltage = RobotController.getBatteryVoltage();
-        double totalCurrent = leftClimber.getCurrent() + rightClimber.getCurrent();
+        totalCurrent = Math.abs(leftClimber.getCurrent()) + Math.abs(rightClimber.getCurrent());
         energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;
 
         SafeAKitLogger.recordOutput("Climbers/Left Position", getLeftPosition());
         SafeAKitLogger.recordOutput("Climbers/Right Position", getRightPosition());
         SafeAKitLogger.recordOutput("Climbers/Left Current", leftClimber.getCurrent());
         SafeAKitLogger.recordOutput("Climbers/Right Current", rightClimber.getCurrent());
+        SafeAKitLogger.recordOutput("Climbers/Total Current", totalCurrent);
+        SafeAKitLogger.recordOutput("Climbers/Energy", energyUsed);
     }
 
 

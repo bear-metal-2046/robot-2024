@@ -23,6 +23,8 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 
+import java.util.function.Consumer;
+
 public class SwerveRateLimiter {
 
     private final double accelerationLimit;
@@ -31,10 +33,12 @@ public class SwerveRateLimiter {
     private final ChassisSpeeds output = new ChassisSpeeds();
     private double previousTime = 0;
 
+    private final Consumer<ChassisSpeeds> currentSpeedInput;
 
-    public SwerveRateLimiter(double accelerationLimit, double angularAccelerationLimit) {
+    public SwerveRateLimiter(double accelerationLimit, double angularAccelerationLimit, Consumer<ChassisSpeeds> currentSpeedInput) {
         this.accelerationLimit = accelerationLimit;
         angularRateLimiter = new SlewRateLimiter(angularAccelerationLimit);
+        this.currentSpeedInput = currentSpeedInput;
     }
 
     protected double getAccelerationLimit(ChassisSpeeds input) {
@@ -63,7 +67,20 @@ public class SwerveRateLimiter {
         double mag = Math.sqrt(dx * dx + dy * dy);
 
         // limit delta speed
-        mag = Math.min(mag, getAccelerationLimit(input) * elapsedTime);
+        double maxDeltaSpeed = getAccelerationLimit(input) * elapsedTime;
+        if (mag > maxDeltaSpeed) {
+            mag = maxDeltaSpeed;
+
+            // if reversing direction and not rotating then apply brake mode
+            currentSpeedInput.accept(output);
+            double currentDirection = Math.atan2(output.vyMetersPerSecond, output.vxMetersPerSecond);
+
+            if (Math.cos(dir-currentDirection) < 0 && Math.abs(input.omegaRadiansPerSecond) < 0.1) {
+
+                // may need to feather this deceleration
+                return new ChassisSpeeds();
+            }
+        }
 
         // add delta velocity to output
         output.vxMetersPerSecond += mag * Math.cos(dir);

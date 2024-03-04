@@ -57,7 +57,7 @@ public class AmpArmConstants {
             case PLAYBEAR_CARTI, BEARITONE -> {
                 WRIST_MOVING_POSE = 1 - 0.65771484375;
                 WRIST_AMP_POSE = 0.4326171875;
-                WRIST_TRAP_POSE = 1 - 0.576904296875 + Units.degreesToRotations(15);
+                WRIST_TRAP_POSE = 1 - 0.576904296875 - Units.degreesToRotations(4);
                 WRIST_SOURCE_POSE = Units.degreesToRotations(53.7890625);
             }
             default -> {
@@ -81,6 +81,7 @@ public class AmpArmConstants {
     static final double ROLLER_GEAR_REDUCTION;
 
     public static final double NOTE_INTAKE_POSITION = 1;
+    public static final double TRAP_VELOCITY = 3;
 
     static {
         switch (RobotIdentity.robotID) {

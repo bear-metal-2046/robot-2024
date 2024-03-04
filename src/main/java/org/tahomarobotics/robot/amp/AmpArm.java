@@ -153,7 +153,7 @@ public class AmpArm extends SubsystemIF {
         switch (state) {
             case PASSING -> rollerMotor.setControl(velocityControl.withVelocity(ShooterConstants.TRANSFER_VELOCITY));
             case SCORE -> rollerMotor.setControl(velocityControl.withVelocity(-ShooterConstants.TRANSFER_VELOCITY * 4));
-            case TRAP -> rollerMotor.setControl(velocityControl.withVelocity(-ShooterConstants.TRAP_VELOCITY));
+            case TRAP -> rollerMotor.setControl(velocityControl.withVelocity(-AmpArmConstants.TRAP_VELOCITY));
             default -> rollerMotor.stopMotor();
         }
     }
@@ -161,6 +161,11 @@ public class AmpArm extends SubsystemIF {
     public void setRollerPosition(double position) {
         targetRollerPosition = position;
         rollerMotor.setControl(rollerPositionalControl.withPosition(targetRollerPosition));
+    }
+
+    public void shiftNote() {
+        rollerMotor.setPosition(0);
+        setRollerPosition(NOTE_INTAKE_POSITION);
     }
 
     // STATE CHECKING
@@ -203,7 +208,7 @@ public class AmpArm extends SubsystemIF {
 
     @Override
     public void periodic() {
-        BaseStatusSignal.refreshAll(armPosition, wristPosition, armVelocity, wristVelocity, rollerVelocity,
+        BaseStatusSignal.refreshAll(armPosition, wristPosition, rollerPosition, armVelocity, wristVelocity, rollerVelocity,
                 armCurrent, wristCurrent, rollerCurrent);
 
         double voltage = RobotController.getBatteryVoltage();
@@ -216,6 +221,9 @@ public class AmpArm extends SubsystemIF {
         SafeAKitLogger.recordOutput("Amp Arm/Arm Position", getArmPosition());
         SafeAKitLogger.recordOutput("Amp Arm/Wrist Position", getWristPosition());
         SafeAKitLogger.recordOutput("Amp Arm/Roller Position", getRollerPosition());
+        SafeAKitLogger.recordOutput("Amp Arm/Target Arm Position", targetArmPosition);
+        SafeAKitLogger.recordOutput("Amp Arm/Target Wrist Position", targetWristPosition);
+        SafeAKitLogger.recordOutput("Amp Arm/Target Roller Position", targetRollerPosition);
         SafeAKitLogger.recordOutput("Amp Arm/Arm Velocity", getArmVelocity());
         SafeAKitLogger.recordOutput("Amp Arm/Wrist Velocity", getWristVelocity());
         SafeAKitLogger.recordOutput("Amp Arm/Roller Velocity", getRollerVelocity());

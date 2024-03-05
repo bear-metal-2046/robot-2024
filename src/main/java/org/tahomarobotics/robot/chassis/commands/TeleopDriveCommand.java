@@ -51,7 +51,8 @@ public class TeleopDriveCommand extends Command {
 
         rateLimiter = new SwerveRateLimiter(
                 ChassisConstants.TRANSLATION_LIMIT,
-                ChassisConstants.ROTATION_LIMIT);
+                ChassisConstants.ROTATION_LIMIT,
+                currentSpeed -> chassis.getCurrentChassisSpeeds());
 
         maxVelocity = ChassisConstants.MAX_VELOCITY;
         maxRotationalVelocity = ChassisConstants.MAX_ANGULAR_VELOCITY;

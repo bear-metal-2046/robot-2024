@@ -40,6 +40,12 @@
                             "data": {
                               "name": "SpinUp"
                             }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Shoot"
+                            }
                           }
                         ]
                       }

@@ -172,6 +172,10 @@ public class Shooter extends SubsystemIF {
         io.zero();
     }
 
+    public boolean isZeroed() {
+        return io.isZeroed();
+    }
+
     // PERIODIC
 
     @Override

@@ -15,6 +15,7 @@ import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Autonomous extends SubsystemIF {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Autonomous.class);
@@ -95,6 +97,8 @@ public class Autonomous extends SubsystemIF {
                         this.onAutoChange(AutoConstants.DEFAULT_AUTO_NAME);
                 }
         );
+
+        SmartDashboard.putData("Skip To Next Path", Commands.deferredProxy(() -> skipToNextPath(PathPlannerAuto.getPathGroupFromAutoFile(autoChooser.get().getName()))));
     }
 
     public static Autonomous getInstance() {
@@ -139,6 +143,14 @@ public class Autonomous extends SubsystemIF {
         return autoTrajectories;
     }
 
+    private static PathPlannerTrajectory getTrajectory(PathPlannerPath path) {
+        if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red)) {
+            path = path.flipPath();
+        }
+
+        return path.getTrajectory(new ChassisSpeeds(), new Rotation2d());
+    }
+
     private static Trajectory convertToTrajectory(List<PathPlannerPath> selectedAutoPaths) {
         return new Trajectory(
                 getTrajectories(selectedAutoPaths).stream().flatMap(
@@ -154,29 +166,30 @@ public class Autonomous extends SubsystemIF {
                 ).toList());
     }
 
-    public static Command skipToNextPath(PathPlannerAuto auto) {
-        List<PathPlannerPath> paths = PathPlannerAuto.getPathGroupFromAutoFile(auto.getName());
-        List<PathPlannerTrajectory> trajectories = getTrajectories(paths);
+    public static Command skipToNextPath(List<PathPlannerPath> paths) {
+        System.out.println("skipped path");
+        List<PathPlannerTrajectory> trajectories = paths.stream().map(Autonomous::getTrajectory).toList();
         Pose2d currentPose = Chassis.getInstance().getPose();
         Pair<Translation2d, Double> closestPose = Pair.of(currentPose.getTranslation(), Double.POSITIVE_INFINITY);
         PathPlannerTrajectory closestTraj = paths.get(0).getTrajectory(new ChassisSpeeds(), new Rotation2d());
         double distance;
+        int closestIndex = 0;
+        int i = 0;
         for (PathPlannerTrajectory traj : trajectories) {
-            for (Translation2d pos : (Translation2d[]) traj.getStates().stream().map((state) -> state.positionMeters).toArray()) {
+            for (Translation2d pos : traj.getStates().stream().map((state) -> state.positionMeters).toList()) {
                 distance = pos.getDistance(currentPose.getTranslation());
                 if (distance <= closestPose.getSecond()) {
                     closestPose = Pair.of(pos, distance);
                     closestTraj = traj;
+                    closestIndex = i;
                 }
             }
-        }
-        PathPlannerPath targetPath = paths.get(0);
-        int i = 0;
-        for (PathPlannerPath path : paths) {
-            if (path.getPoint(0).position.equals(closestTraj.getState(0).positionMeters)) {
-                targetPath = paths.get(i + 1);
-            }
             i++;
+        }
+        System.out.println(closestIndex);
+        PathPlannerPath targetPath = paths.get(0);
+        if (closestIndex < paths.spliterator().getExactSizeIfKnown() - 1) {
+            targetPath = paths.get(closestIndex + 1);
         }
         return AutoBuilder.pathfindThenFollowPath(targetPath, ChassisConstants.AUTO_PATHFINDING_CONSTRAINTS);
     }

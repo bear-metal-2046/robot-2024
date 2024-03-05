@@ -75,7 +75,7 @@ public class SwerveRateLimiter {
             currentSpeedInput.accept(output);
             double currentDirection = Math.atan2(output.vyMetersPerSecond, output.vxMetersPerSecond);
 
-            if (Math.cos(dir-currentDirection) < 0 && Math.abs(input.omegaRadiansPerSecond) < 0.1) {
+            if (Math.cos(dir-currentDirection) < -0.5 && Math.abs(input.omegaRadiansPerSecond) < 0.1) {
 
                 // may need to feather this deceleration
                 return new ChassisSpeeds();

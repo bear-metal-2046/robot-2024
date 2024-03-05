@@ -27,11 +27,15 @@ import java.util.function.Consumer;
 
 public class SwerveRateLimiter {
 
+    private static final int TREASHOLD = 3;
     private final double accelerationLimit;
     private final SlewRateLimiter angularRateLimiter;
 
     private final ChassisSpeeds output = new ChassisSpeeds();
     private double previousTime = 0;
+
+    private int count = 0;
+
 
     private final Consumer<ChassisSpeeds> currentSpeedInput;
 
@@ -75,11 +79,19 @@ public class SwerveRateLimiter {
             currentSpeedInput.accept(output);
             double currentDirection = Math.atan2(output.vyMetersPerSecond, output.vxMetersPerSecond);
 
-            if (Math.cos(dir-currentDirection) < -0.5 && Math.abs(input.omegaRadiansPerSecond) < 0.1) {
+            if (Math.cos(dir-currentDirection) < -0.8 && Math.abs(input.omegaRadiansPerSecond) < 0.1 ) {
 
-                // may need to feather this deceleration
-                return new ChassisSpeeds();
+                if (++count >= TREASHOLD) {
+                    // may need to feather this deceleration
+                    output.vxMetersPerSecond = output.vyMetersPerSecond = output.omegaRadiansPerSecond = 0;
+                    return output;
+                }
+            } else {
+                count = 0;
             }
+
+        } else {
+            count = 0;
         }
 
         // add delta velocity to output
@@ -89,6 +101,7 @@ public class SwerveRateLimiter {
         output.omegaRadiansPerSecond = angularRateLimiter.calculate(input.omegaRadiansPerSecond);
 
         return output;
+
     }
 
 }

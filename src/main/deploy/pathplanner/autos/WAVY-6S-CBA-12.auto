@@ -18,7 +18,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "6S-CBA-12-1"
+                  "pathName": "6S-C"
                 }
               },
               {
@@ -39,7 +39,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "6S-CBA-12-2-WAVY"
+            "pathName": "WAVY-6S-CBA"
           }
         },
         {
@@ -49,7 +49,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "6S-CBA-12-3"
+                  "pathName": "6S-1"
                 }
               },
               {
@@ -64,7 +64,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "6S-CBA-12-4"
+            "pathName": "6S-2"
           }
         }
       ]

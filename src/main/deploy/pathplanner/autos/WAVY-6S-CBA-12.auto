@@ -16,21 +16,41 @@
           "data": {
             "commands": [
               {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "ZeroCollectorShooter"
+                      }
+                    },
+                    {
+                      "type": "parallel",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "CollectorDown"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "SpinUp"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
                 "type": "path",
                 "data": {
-                  "pathName": "6S-C"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "CollectorDown"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot"
+                  "pathName": "6S-CBA-12-1"
                 }
               }
             ]
@@ -43,28 +63,15 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "6S-1"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot"
-                }
-              }
-            ]
+            "pathName": "6S-CBA-12-3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "6S-2"
+            "pathName": "6S-CBA-12-4"
           }
         }
       ]

@@ -10,21 +10,41 @@
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "SpinUp"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "CollectorDown"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "ZeroCollectorShooter"
+                      }
+                    },
+                    {
+                      "type": "parallel",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "CollectorDown"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "SpinUp"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
                 }
               },
               {
                 "type": "path",
                 "data": {
-                  "pathName": "4A-1"
+                  "pathName": "4A-123-1"
                 }
               }
             ]
@@ -33,13 +53,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "4A-2"
+            "pathName": "4A-123-2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "4A-3"
+            "pathName": "4A-123-3"
           }
         }
       ]

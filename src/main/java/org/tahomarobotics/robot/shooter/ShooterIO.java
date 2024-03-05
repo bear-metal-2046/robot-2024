@@ -194,6 +194,6 @@ class ShooterIO {
     }
 
     public double getTotalCurrent() {
-        return shooterMotorCurrent.getValue() + shooterMotorFollowerCurrent.getValue() + pivotCurrent.getValue();
+        return Math.abs(shooterMotorCurrent.getValue()) + Math.abs(shooterMotorFollowerCurrent.getValue()) + Math.abs(pivotCurrent.getValue());
     }
 }

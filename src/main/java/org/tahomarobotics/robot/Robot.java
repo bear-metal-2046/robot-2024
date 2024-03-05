@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.auto.Autonomous;
 import org.tahomarobotics.robot.chassis.Chassis;
+import org.tahomarobotics.robot.climbers.Climbers;
 import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.identity.RobotIdentity;
 import org.tahomarobotics.robot.indexer.Indexer;
@@ -38,7 +39,6 @@ import java.util.List;
 public class Robot extends LoggedRobot {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Robot.class);
 
-    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final List<SubsystemIF> subsystems = new ArrayList<>();
 
     private Command autoCommand;
@@ -54,6 +54,9 @@ public class Robot extends LoggedRobot {
 
         initializeAKit();
 
+        //noinspection unused
+        var robotID = RobotIdentity.robotID;
+
         // Initialize all the subsystems as well as auto-register them with the CommandScheduler.
         subsystems.add(OI.getInstance().initialize());
         subsystems.add(Chassis.getInstance().initialize());
@@ -61,7 +64,7 @@ public class Robot extends LoggedRobot {
         subsystems.add(Shooter.getInstance().initialize());
         subsystems.add(AmpArm.getInstance().initialize());
         subsystems.add(Indexer.getInstance().initialize());
-        subsystems.add(RobotIdentity.getInstance().initialize());
+        subsystems.add(Climbers.getInstance().initialize());
         subsystems.add(Autonomous.getInstance().initialize());
 
         logger.info("Robot Initialized.");
@@ -83,7 +86,7 @@ public class Robot extends LoggedRobot {
         });
 
         if (!SmartDashboard.containsKey("Debug/NTPublishing")) {
-            SmartDashboard.putBoolean("Debug/NTPublishing", false);
+            SmartDashboard.putBoolean("Debug/NTPublishing", true);
         }
 
         // Depending on the current platform, publish logs to different receivers.
@@ -129,6 +132,9 @@ public class Robot extends LoggedRobot {
 
         double energyUsed = subsystems.stream().mapToDouble(SubsystemIF::getEnergyUsed).sum();
         SafeAKitLogger.recordOutput("EnergyUsed",energyUsed);
+
+        double totalCurrent = subsystems.stream().mapToDouble(SubsystemIF::getTotalCurrent).sum();
+        SafeAKitLogger.recordOutput("TotalCurrent",totalCurrent);
     }
     
     

@@ -203,6 +203,6 @@ public class SwerveModuleIO {
     }
 
     public double getTotalCurrent() {
-        return driveCurrent.getValue() + steerCurrent.getValue();
+        return Math.abs(driveCurrent.getValue()) + Math.abs(steerCurrent.getValue());
     }
 }

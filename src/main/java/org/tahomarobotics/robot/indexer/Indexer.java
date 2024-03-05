@@ -8,7 +8,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
@@ -44,6 +43,8 @@ public class Indexer extends SubsystemIF {
             .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private double energyUsed = 0;
 
+    private double totalCurrent = 0;
+
     private Indexer() {
         RobustConfigurator configurator = new RobustConfigurator(logger);
 
@@ -71,7 +72,6 @@ public class Indexer extends SubsystemIF {
     @Override
     public SubsystemIF initialize() {
         SmartDashboard.putData("Reset Indexer", runOnce(() -> setState(State.DISABLED)));
-        SmartDashboard.putBoolean("Outputs/Indexer", OutputsConfiguration.INDEXER);
 
         return this;
     }
@@ -247,7 +247,7 @@ public class Indexer extends SubsystemIF {
         );
 
         double voltage = RobotController.getBatteryVoltage();
-        double totalCurrent = current.getValue();
+        totalCurrent = current.getValue();
         energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;
 
         SafeAKitLogger.recordOutput("Indexer/Position", getPosition());
@@ -280,5 +280,10 @@ public class Indexer extends SubsystemIF {
     @Override
     public double getEnergyUsed() {
         return energyUsed / 1000d;
+    }
+
+    @Override
+    public double getTotalCurrent() {
+        return totalCurrent;
     }
 }

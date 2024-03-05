@@ -5,11 +5,9 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
-import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.util.SafeAKitLogger;
 
 import java.util.EnumSet;
@@ -21,8 +19,6 @@ public class ObjectDetectionCamera {
 
     public ObjectDetectionCamera(VisionConstants.Camera cameraSettings) {
         this.cameraSettings = cameraSettings;
-
-        SmartDashboard.putBoolean("Outputs/ObjectDetection", OutputsConfiguration.OBJECT_DETECTION);
 
         // normally this would the default client connecting to robot
         // connect to server running on camera (for debugging0

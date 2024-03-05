@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import org.littletonrobotics.junction.Logger;
-import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.chassis.Chassis;
@@ -33,6 +32,8 @@ public class Shooter extends SubsystemIF {
     protected double distance = 0.0;
     private double energyUsed = 0;
 
+    private double totalCurrent = 0;
+
     // CONSTRUCTOR
 
     private Shooter() {
@@ -48,7 +49,6 @@ public class Shooter extends SubsystemIF {
 
     @Override
     public SubsystemIF initialize() {
-        SmartDashboard.putBoolean("Outputs/Shooter", OutputsConfiguration.SHOOTER);
         SmartDashboard.putBoolean("Debug/NoIdleVelocity", true);
         NetworkTableInstance.getDefault().addListener(SmartDashboard.getEntry("Debug/NoIdleVelocity"), EnumSet.of(NetworkTableEvent.Kind.kValueAll), e -> disable());
 
@@ -65,10 +65,6 @@ public class Shooter extends SubsystemIF {
 
     public void disable() {
         io.disableShooter();
-    }
-
-    public void idle() {
-        io.idle();
     }
 
     public void enable() {
@@ -156,7 +152,7 @@ public class Shooter extends SubsystemIF {
                 (radialVelocity > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE))
                 + distance;
 
-        setAngle(switch (RobotIdentity.getInstance().getRobotID()) {
+        setAngle(switch (RobotIdentity.robotID) {
             // y = 0.07068257 + 0.1999213*e^(-0.5485811*x)
             case PLAYBEAR_CARTI -> 0.07068257 + 0.1999213 * Math.pow(Math.E, -0.5485811 * distance);
             // y = 0.0000369x^4 - 0.00108x^3 + 0.0126x^2 - 0.0706x + 0.234
@@ -180,7 +176,8 @@ public class Shooter extends SubsystemIF {
         io.refreshSignals();
         io.processInputs(inputs);
         double voltage = RobotController.getBatteryVoltage();
-        energyUsed += io.getTotalCurrent() * voltage * Robot.defaultPeriodSecs;
+        totalCurrent = io.getTotalCurrent();
+        energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;
 
         Logger.processInputs("Shooter", inputs);
 
@@ -194,7 +191,7 @@ public class Shooter extends SubsystemIF {
         SafeAKitLogger.recordOutput("Shooter/Angle", getPivotPosition());
         SafeAKitLogger.recordOutput("Shooter/Angle (Degrees)", getPivotPosition() * 360);
 
-        SafeAKitLogger.recordOutput("Shooter/TotalCurrent", io.getTotalCurrent());
+        SafeAKitLogger.recordOutput("Shooter/TotalCurrent", totalCurrent);
         SafeAKitLogger.recordOutput("Shooter/Energy", getEnergyUsed());
 
 
@@ -210,5 +207,10 @@ public class Shooter extends SubsystemIF {
     @Override
     public double getEnergyUsed() {
         return energyUsed / 1000d;
+    }
+
+    @Override
+    public double getTotalCurrent() {
+        return totalCurrent;
     }
 }

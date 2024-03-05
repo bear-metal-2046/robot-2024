@@ -10,9 +10,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
-import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
@@ -58,6 +56,8 @@ public class Collector extends SubsystemIF {
     private boolean isZeroed;
 
     private double energyUsed = 0;
+
+    private double totalCurrent = 0;
 
     private Collector() {
         RobustConfigurator configurator = new RobustConfigurator(logger);
@@ -270,7 +270,7 @@ public class Collector extends SubsystemIF {
                 deployCurrentLeft, deployCurrentRight, collectCurrent);
 
         double voltage = RobotController.getBatteryVoltage();
-        double totalCurrent = deployCurrentLeft.getValue() + deployCurrentRight.getValue() + collectCurrent.getValue();
+        totalCurrent = deployCurrentLeft.getValue() + deployCurrentRight.getValue() + collectCurrent.getValue();
         energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;
 
         SafeAKitLogger.recordOutput("Collector/Deploy State", deploymentState);
@@ -294,8 +294,6 @@ public class Collector extends SubsystemIF {
 
     @Override
     public SubsystemIF initialize() {
-        SmartDashboard.putBoolean("Outputs/Collector", OutputsConfiguration.COLLECTOR);
-
         Commands.waitUntil(RobotState::isEnabled)
                 .andThen(Commands.waitSeconds(0.25))
                 .andThen(new ZeroCollectorCommand())
@@ -328,5 +326,10 @@ public class Collector extends SubsystemIF {
     @Override
     public double getEnergyUsed() {
         return energyUsed / 1000d;
+    }
+
+    @Override
+    public double getTotalCurrent() {
+        return totalCurrent;
     }
 }

@@ -85,8 +85,8 @@ public class SysIdTest extends SubsystemIF {
 
         sysIdRoutine = new SysIdRoutine(
                 new SysIdRoutine.Config(
-                        Volts.of(0.1).per(Second),  //Quasistatic Ramp Rate
-                        Volts.of(1), // Dynamic voltage
+                        Volts.of(0.25).per(Second),  //Quasistatic Ramp Rate
+                        Volts.of(2.5), // Dynamic voltage
                         null,     // Default timeout is acceptable
                         null),
                 new SysIdRoutine.Mechanism(
@@ -103,13 +103,13 @@ public class SysIdTest extends SubsystemIF {
                                     .angularVelocity(
                                             velocity.mut_replace(motor.getVelocity().getValue(), RotationsPerSecond));
 
-                            log.motor("motor2")
-                                    .voltage(
-                                            voltage.mut_replace(
-                                                    motorOther.getMotorVoltage().getValue(), Volts))
-                                    .angularPosition(position.mut_replace(motorOther.getPosition().getValue(), Rotations))
-                                    .angularVelocity(
-                                            velocity.mut_replace(motorOther.getVelocity().getValue(), RotationsPerSecond));
+//                            log.motor("motor2")
+//                                    .voltage(
+//                                            voltage.mut_replace(
+//                                                    motorOther.getMotorVoltage().getValue(), Volts))
+//                                    .angularPosition(position.mut_replace(motorOther.getPosition().getValue(), Rotations))
+//                                    .angularVelocity(
+//                                            velocity.mut_replace(motorOther.getVelocity().getValue(), RotationsPerSecond));
                         },
                         subsystem));
     }
@@ -124,6 +124,11 @@ public class SysIdTest extends SubsystemIF {
 
     @Override
     public double getEnergyUsed() {
+        return 0;
+    }
+
+    @Override
+    public double getTotalCurrent() {
         return 0;
     }
 }

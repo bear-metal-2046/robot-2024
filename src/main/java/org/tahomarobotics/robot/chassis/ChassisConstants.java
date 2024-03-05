@@ -20,13 +20,19 @@ package org.tahomarobotics.robot.chassis;
 
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.*;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.PIDConstants;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.identity.RobotIdentity;
+
+import java.util.stream.IntStream;
 
 /**
  * Constants for the chassis.
@@ -52,7 +58,7 @@ public final class ChassisConstants {
     public static final double STEER_REDUCTION = (14.0 / 50.0) * (10.0 / 60.0);
 
     static {
-        switch (RobotIdentity.getInstance().getRobotID()) {
+        switch (RobotIdentity.robotID) {
             case PLAYBEAR_CARTI, BEARITONE -> {
                 DRIVE_REDUCTION = (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
                 WHEEL_RADIUS  = 0.04898;
@@ -68,8 +74,8 @@ public final class ChassisConstants {
     public static final double DRIVE_POSITION_COEFFICIENT = WHEEL_CIRCUMFERENCE * DRIVE_REDUCTION; // r/s -> m/s
 
     //Placeholder PID values
-    public static final PIDConstants AUTO_TRANSLATION_PID = new PIDConstants(1.5,0,0.5);
-    public static final PIDConstants AUTO_ROTATION_PID = new PIDConstants(1.5, 0, 0);
+    public static final PIDConstants AUTO_TRANSLATION_PID = new PIDConstants(2.5,0,0.5);
+    public static final PIDConstants AUTO_ROTATION_PID = new PIDConstants(5, 0, 0);
 
     private static final double SHOOT_ROTATION_TARGET_TOLERANCE = Units.degreesToRadians(5.0);
 
@@ -86,7 +92,7 @@ public final class ChassisConstants {
     public static final double MAX_VELOCITY = SWERVE_DRIVE_MOTOR.freeSpeedRadPerSec * DRIVE_REDUCTION * WHEEL_RADIUS; // m/s
     public static final double MAX_ANGULAR_VELOCITY = MAX_VELOCITY / Math.hypot(HALF_TRACK_WIDTH, HALF_WHEELBASE); // r/s
 
-    public static final double TRANSLATION_LIMIT = 9.0;
+    public static final double TRANSLATION_LIMIT = 5.0;
     public static final double ROTATION_LIMIT = TRANSLATION_LIMIT / Math.hypot(HALF_TRACK_WIDTH, HALF_WHEELBASE);
 
 
@@ -150,4 +156,32 @@ public final class ChassisConstants {
                           }}
             );
 
+    public static Pose2d[] BLUE_STAGE_CHAIN_POSES = new Pose2d[] {
+            new Pose2d(new Translation2d(4.2347, 3.0079), Rotation2d.fromDegrees(-120)), // Source Side
+            new Pose2d(new Translation2d(4.2347, 5.2033), Rotation2d.fromDegrees(120)),  // Amp Side
+            new Pose2d(new Translation2d(6.1360, 4.1056), Rotation2d.fromDegrees(0)) // Far Side
+    };
+
+    public static Pose2d[] RED_STAGE_CHAIN_POSES = new Pose2d[] {
+            new Pose2d(new Translation2d(12.3063, 3.0079), Rotation2d.fromDegrees(-60)), // Source Side
+            new Pose2d(new Translation2d(12.3063, 5.2033), Rotation2d.fromDegrees(60)), // Amp Side
+            new Pose2d(new Translation2d(10.4050, 4.1056), Rotation2d.fromDegrees(180))  // Far Side
+    };
+
+    public static PathConstraints CLIMB_MOVEMENT_CONSTRAINTS = new PathConstraints(
+            4.0,
+            4.0,
+            540,
+            720);
+
+    public static Pose2d getClosestChainPose() {
+        Pose2d[] poses = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red) == DriverStation.Alliance.Blue ?
+                BLUE_STAGE_CHAIN_POSES : RED_STAGE_CHAIN_POSES;
+        Pose2d currentPos = Chassis.getInstance().getPose();
+        Translation2d currentTranslation = currentPos.getTranslation();
+
+        int minIndex = IntStream.range(0, 3).reduce((i, j) -> currentTranslation.getDistance(poses[j].getTranslation()) < currentTranslation.getDistance(poses[i].getTranslation()) ? j : i).getAsInt();
+
+        return poses[minIndex];
+    }
 }

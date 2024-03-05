@@ -5,14 +5,19 @@
 
 package org.tahomarobotics.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.chassis.commands.TeleopDriveCommand;
+import org.tahomarobotics.robot.climbers.ClimberConstants;
+import org.tahomarobotics.robot.climbers.Climbers;
+import org.tahomarobotics.robot.climbers.commands.*;
 import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.shooter.Shooter;
+import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.shooter.commands.ShootCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
@@ -48,6 +53,11 @@ public class OI extends SubsystemIF {
         return 0;
     }
 
+    @Override
+    public double getTotalCurrent() {
+        return 0;
+    }
+
     /**
      * Configure the button bindings for the controller(s).
      */
@@ -56,6 +66,7 @@ public class OI extends SubsystemIF {
         Collector collector = Collector.getInstance();
         Shooter shooter = Shooter.getInstance();
         AmpArm ampArm = AmpArm.getInstance();
+        Climbers climbers = Climbers.getInstance();
 
         // Robot Heading Zeroing
         driveController.a().onTrue(Commands.runOnce(chassis::orientToZeroHeading));
@@ -76,20 +87,51 @@ public class OI extends SubsystemIF {
 
         driveController.y().onTrue(AMP_ARM_CTRL);
 
+        driveController.start().onTrue(Commands.deferredProxy(() ->
+                switch (climbers.getClimbState()) {
+                    case COCKED -> new PreClimbSequence();
+                    case READY -> new EngageCommand();
+                    default -> Commands.none();
+                })
+        );
+        driveController.x().onTrue(Commands.deferredProxy(ClimbSequence::new).onlyIf(() -> climbers.getClimbState() == Climbers.ClimbState.ENGAGED));
+        driveController.back().onTrue(Commands.deferredProxy(() ->
+                switch (climbers.getClimbState()) {
+                    case READY -> new PreClimbCancel();
+                    case ENGAGED -> new EngagedCancel();
+                    // Descend with break mode in the case that it doesn't work.
+                    // TODO: At this point, we can't be sure of anything about the state of the robot so designating
+                    //  the canceling to a separate command that does a full reset might be ideal.
+                    case CLIMBING, CLIMBED -> Commands.runOnce(() -> {
+                        ampArm.setRollerState(AmpArm.RollerState.DISABLED);
+                        climbers.stop();
+                        climbers.setClimbState(Climbers.ClimbState.ENGAGED);
+                    });
+                    default -> Commands.none();
+                })
+        );
+
+        SmartDashboard.putData("Climbers UP", new UnladenClimbCommand(ClimberConstants.TOP_POSITION));
+        SmartDashboard.putData("Climbers DOWN", Commands.sequence(
+                Commands.runOnce(() -> shooter.setAngle(ShooterConstants.MAX_PIVOT_ANGLE)),
+                Commands.waitUntil(shooter::isAtAngle),
+                new UnladenClimbCommand(ClimberConstants.BOTTOM_POSITION)
+        ));
+
         driveController.rightTrigger(0.5)
                 .whileTrue(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.SCORE))
-                .onlyIf(ampArm::isAmp))
+                .onlyIf(ampArm::isArmAtAmp))
                 .onFalse(Commands.waitSeconds(0.25).andThen(
                         Commands.defer(() -> ARM_TO_STOW.get().andThen(Commands.runOnce(shooter::disable)),
-                        Set.of(ampArm))).onlyIf(ampArm::isAmp))
+                        Set.of(ampArm))).onlyIf(ampArm::isArmAtAmp))
                 .onTrue(new ShootCommand())
                 .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));
 
         driveController.leftTrigger(0.01)
                 .whileTrue(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.PASSING))
-                .onlyIf(ampArm::isSource))
+                .onlyIf(ampArm::isArmAtSource))
                 .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED))
-                .onlyIf(ampArm::isSource))
+                .onlyIf(ampArm::isArmAtSource))
                 .onFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.COLLECTED)));
 
         driveController.leftTrigger(0.5)

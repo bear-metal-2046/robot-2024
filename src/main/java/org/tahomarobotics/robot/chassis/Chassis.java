@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.slf4j.LoggerFactory;
-import org.tahomarobotics.robot.OutputsConfiguration;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
@@ -39,6 +38,7 @@ import java.util.List;
 
 import static org.tahomarobotics.robot.shooter.ShooterConstants.SPEAKER_TARGET_POSITION;
 
+@SuppressWarnings({"FieldCanBeLocal", "unused"})
 public class Chassis extends SubsystemIF {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Chassis.class);
     private static final Chassis INSTANCE = new Chassis();
@@ -58,9 +58,7 @@ public class Chassis extends SubsystemIF {
     private final CalibrationData<Double[]> swerveCalibration;
 
     private final ObjectDetectionCamera collectorLeftVision;
-    private final ATVision collectorRightVision;
-    private final ATVision shooterLeftVision;
-    private final ATVision shooterRightVision;
+    private final ATVision collectorRightVision, shooterLeftVision, shooterRightVision;
 
     private final Thread odometryThread;
 
@@ -73,6 +71,8 @@ public class Chassis extends SubsystemIF {
     private ChassisSpeeds currentChassisSpeeds = new ChassisSpeeds();
 
     private double energyUsed = 0;
+
+    private double totalCurrent = 0;
 
     // CONSTRUCTOR
 
@@ -133,9 +133,6 @@ public class Chassis extends SubsystemIF {
     @Override
     public SubsystemIF initialize() {
         SmartDashboard.putData("Align Swerves", new AlignSwerveCommand());
-        SmartDashboard.putBoolean("Outputs/Chassis", OutputsConfiguration.CHASSIS);
-        SmartDashboard.putBoolean("Outputs/SwerveModules", OutputsConfiguration.SWERVE_MODULE);
-
         gyroIO.zero();
 
         var gyro = getYaw();
@@ -203,7 +200,7 @@ public class Chassis extends SubsystemIF {
         currentChassisSpeeds = kinematics.toChassisSpeeds(getSwerveModuleStates());
 
         double voltage = RobotController.getBatteryVoltage();
-        double totalCurrent = modules.stream().mapToDouble(SwerveModule::getTotalCurent).sum();
+        totalCurrent = modules.stream().mapToDouble(SwerveModule::getTotalCurent).sum();
         energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;
 
         SafeAKitLogger.recordOutput("Chassis/States", getSwerveModuleStates());
@@ -215,6 +212,7 @@ public class Chassis extends SubsystemIF {
         SafeAKitLogger.recordOutput("Chassis/target shooting angle", targetShootingAngle);
 
         SafeAKitLogger.recordOutput("Chassis/Energy", getEnergyUsed());
+        SafeAKitLogger.recordOutput("Chassis/TotalCurrent", totalCurrent);
 
         fieldPose.setRobotPose(pose);
         SmartDashboard.putData(fieldPose);
@@ -405,5 +403,10 @@ public class Chassis extends SubsystemIF {
     @Override
     public double getEnergyUsed() {
         return energyUsed / 1000d;
+    }
+
+    @Override
+    public double getTotalCurrent() {
+        return totalCurrent;
     }
 }

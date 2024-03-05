@@ -19,9 +19,11 @@ import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.collector.Collector;
+import org.tahomarobotics.robot.collector.commands.ZeroCollectorCommand;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.commands.ShootCommand;
+import org.tahomarobotics.robot.shooter.commands.ZeroShooterCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
 import java.util.ArrayList;
@@ -40,6 +42,8 @@ public class Autonomous extends SubsystemIF {
         Collector collector = Collector.getInstance();
         AmpArm ampArm = AmpArm.getInstance();
         Indexer indexer = Indexer.getInstance();
+
+        NamedCommands.registerCommand("ZeroCollectorShooter", new ZeroCollectorCommand().alongWith(new ZeroShooterCommand()).onlyIf(() -> !collector.isZeroed()));
 
         NamedCommands.registerCommand("Shoot",
                 Commands.race(Commands.waitUntil(indexer::hasCollected), Commands.waitSeconds(1)).andThen(Commands.runOnce(shooter::enableShootMode))

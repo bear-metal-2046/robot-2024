@@ -3,59 +3,59 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.285599268191427,
-        "y": 6.800320484130904
+        "x": 4.295034175653936,
+        "y": 5.140054964794614
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.859900497294308,
-        "y": 6.54880068448024
+        "x": 5.94059134064214,
+        "y": 3.864285926770052
       },
       "isLocked": false,
-      "linkedName": "4A-1"
+      "linkedName": "4S-345-1-END"
     },
     {
       "anchor": {
-        "x": 7.930572381063118,
-        "y": 5.847835624003877
+        "x": 8.066873070683078,
+        "y": 2.5607827792232163
       },
       "prevControl": {
-        "x": 7.676325371193893,
-        "y": 5.940502414026581
+        "x": 8.171965771018844,
+        "y": 2.4863808674810817
       },
       "nextControl": {
-        "x": 8.170727769595707,
-        "y": 5.760304883825583
+        "x": 7.0222216120107905,
+        "y": 3.300359033150499
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.160310380435214,
-        "y": 6.391451145023872
+        "x": 4.295034175653936,
+        "y": 5.140054964794614
       },
       "prevControl": {
-        "x": 5.883963583937514,
-        "y": 6.373370536036716
+        "x": 5.949836043816232,
+        "y": 3.8827753331182335
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "4A-2"
+      "linkedName": "4S-345-2-END"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1,
-      "rotationDegrees": -22.6177847057154,
-      "rotateFast": false
+      "waypointRelativePos": 0.95,
+      "rotationDegrees": -33.025473058771745,
+      "rotateFast": true
     }
   ],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Shoot",
-      "waypointRelativePos": 1.8,
+      "name": "New Event Marker",
+      "waypointRelativePos": 1.85,
       "command": {
         "type": "parallel",
         "data": {
@@ -79,13 +79,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.4196148304882295,
-    "rotateFast": false
+    "rotation": -12.90740867126587,
+    "rotateFast": true
   },
   "reversed": false,
-  "folder": "4A-123",
+  "folder": "4S-345",
   "previewStartingState": {
-    "rotation": -25.941104997334726,
+    "rotation": -12.09475707701204,
     "velocity": 0
   },
   "useDefaultConstraints": true

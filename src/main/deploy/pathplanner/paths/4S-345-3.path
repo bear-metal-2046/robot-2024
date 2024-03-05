@@ -3,59 +3,59 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.285599268191427,
-        "y": 6.800320484130904
+        "x": 4.295034175653936,
+        "y": 5.140054964794614
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.859900497294308,
-        "y": 6.54880068448024
+        "x": 6.402826499346692,
+        "y": 3.6146789410695943
       },
       "isLocked": false,
-      "linkedName": "4A-1"
+      "linkedName": "4S-345-2-END"
     },
     {
       "anchor": {
-        "x": 7.930572381063118,
-        "y": 5.847835624003877
+        "x": 8.150075399249896,
+        "y": 1.0076726459759238
       },
       "prevControl": {
-        "x": 7.676325371193893,
-        "y": 5.940502414026581
+        "x": 7.530680286585798,
+        "y": 3.244890814105954
       },
       "nextControl": {
-        "x": 8.170727769595707,
-        "y": 5.760304883825583
+        "x": 8.187075776827855,
+        "y": 0.8740294911421023
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.160310380435214,
-        "y": 6.391451145023872
+        "x": 3.6663943598157465,
+        "y": 5.537577201280529
       },
       "prevControl": {
-        "x": 5.883963583937514,
-        "y": 6.373370536036716
+        "x": 7.854244897679017,
+        "y": 3.1801778918873156
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "4A-2"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1,
-      "rotationDegrees": -22.6177847057154,
-      "rotateFast": false
+      "waypointRelativePos": 1.05,
+      "rotationDegrees": -67.1267609311437,
+      "rotateFast": true
     }
   ],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Shoot",
-      "waypointRelativePos": 1.8,
+      "name": "New Event Marker",
+      "waypointRelativePos": 1.85,
       "command": {
         "type": "parallel",
         "data": {
@@ -79,13 +79,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.4196148304882295,
-    "rotateFast": false
+    "rotation": -8.1301023541559,
+    "rotateFast": true
   },
   "reversed": false,
-  "folder": "4A-123",
+  "folder": "4S-345",
   "previewStartingState": {
-    "rotation": -25.941104997334726,
+    "rotation": -7.815293546766795,
     "velocity": 0
   },
   "useDefaultConstraints": true

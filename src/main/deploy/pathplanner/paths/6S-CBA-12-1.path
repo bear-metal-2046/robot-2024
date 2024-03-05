@@ -32,7 +32,7 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "New Event Marker",
+      "name": "Shoot",
       "waypointRelativePos": 0,
       "command": {
         "type": "parallel",

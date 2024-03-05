@@ -16,14 +16,14 @@ public class ShooterConstants {
     public static final double IDLE_SPEED; // rps
     public static final double TRANSFER_VELOCITY = 10; // rps
 
-    public static final double TIME_SHOT_OFFSET_POSITIVE = 0.8;  // The number of seconds forward in time the shooter
+    public static final double TIME_SHOT_OFFSET_POSITIVE = 0.4;  // The number of seconds forward in time the shooter
                                                                  // should calculate for when moving away from the speaker
-    public static final double TIME_SHOT_OFFSET_NEGATIVE = 0.4; // The same as ^ but for moving towards the speaker
+    public static final double TIME_SHOT_OFFSET_NEGATIVE = 0.5  ; // The same as ^ but for moving towards the speaker
 
     static final double SHOOTER_SPEED_TOLERANCE = 2.5; // rps
     public static final double MAX_PIVOT_ANGLE;
     public static final double MIN_PIVOT_ANGLE = 0.01;
-    static final double PIVOT_ANGLE_TOLERANCE = Units.degreesToRotations(2.5);
+    static final double PIVOT_ANGLE_TOLERANCE = Units.degreesToRotations(2.5 );
     public static final double SHOOTER_COLLECT_PIVOT_ANGLE = MIN_PIVOT_ANGLE;
 
     static final double PIVOT_GEAR_REDUCTION = (14.0 / 56.0) * (10.0 / 90.0);

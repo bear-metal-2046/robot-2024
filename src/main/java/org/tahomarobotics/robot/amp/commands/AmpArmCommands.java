@@ -54,7 +54,8 @@ public class AmpArmCommands {
 
         AMP_ARM_TRAP = () -> Commands.sequence(
                 Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.TRAP)),
-                Commands.waitUntil(ampArm::isArmAtPosition)
+                Commands.waitUntil(ampArm::isArmAtPosition),
+                Commands.waitUntil(ampArm::isWristAtPosition)
         );
     }
 

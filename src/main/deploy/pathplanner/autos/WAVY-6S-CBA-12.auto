@@ -18,7 +18,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "6 Piece 1"
+                  "pathName": "6S-C"
                 }
               },
               {
@@ -39,19 +39,32 @@
         {
           "type": "path",
           "data": {
-            "pathName": "6 piece wavyyy"
+            "pathName": "WAVY-6S-CBA"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "6S-1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
+                }
+              }
+            ]
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "6 piece 3"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "6 piece 4"
+            "pathName": "6S-2"
           }
         }
       ]

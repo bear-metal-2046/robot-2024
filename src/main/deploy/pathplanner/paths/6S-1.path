@@ -3,45 +3,61 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.409114728139366,
-        "y": 4.38198930451915
-      },
-      "prevControl": null,
-      "nextControl": {
-        "x": 2.658721713839824,
-        "y": 5.2047678870132525
-      },
-      "isLocked": false,
-      "linkedName": "1st col"
-    },
-    {
-      "anchor": {
         "x": 2.732679339232552,
         "y": 6.813346239305091
       },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.684883766163928,
+        "y": 6.924282677394183
+      },
+      "isLocked": false,
+      "linkedName": "3rd col"
+    },
+    {
+      "anchor": {
+        "x": 7.974426038942167,
+        "y": 7.3033155075319165
+      },
       "prevControl": {
-        "x": 2.501561759880276,
-        "y": 6.397334596470995
+        "x": 7.780717259008308,
+        "y": 7.290401588869658
+      },
+      "nextControl": {
+        "x": 8.11309658655353,
+        "y": 7.312560210706009
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.395153853370769,
+        "y": 6.896548567871911
+      },
+      "prevControl": {
+        "x": 5.7279631676380465,
+        "y": 6.970506193264639
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "3rd col"
+      "linkedName": "Long Shoot 1"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.3,
-      "rotationDegrees": 54.377283655034404,
-      "rotateFast": true
+      "waypointRelativePos": 1.05,
+      "rotationDegrees": 0,
+      "rotateFast": false
     }
   ],
   "constraintZones": [
     {
       "name": "New Constraints Zone",
-      "minWaypointRelativePos": 0.35,
-      "maxWaypointRelativePos": 0.6,
+      "minWaypointRelativePos": 0,
+      "maxWaypointRelativePos": 0.25,
       "constraints": {
-        "maxVelocity": 0.75,
+        "maxVelocity": 1.5,
         "maxAcceleration": 3.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0
@@ -51,7 +67,7 @@
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.3,
+      "waypointRelativePos": 1.7,
       "command": {
         "type": "parallel",
         "data": {
@@ -68,21 +84,21 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 1.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 64.44003482817617,
-    "rotateFast": true
+    "rotation": 10.62,
+    "rotateFast": false
   },
   "reversed": false,
-  "folder": "6 piece auto paths",
+  "folder": "6S-CBA-12",
   "previewStartingState": {
-    "rotation": -25.0,
-    "velocity": 0
+    "rotation": 32.074000875294054,
+    "velocity": 0.0
   },
   "useDefaultConstraints": false
 }

@@ -46,8 +46,10 @@ public class Autonomous extends SubsystemIF {
         NamedCommands.registerCommand("ZeroCollectorShooter", new ZeroCollectorCommand().alongWith(new ZeroShooterCommand()).onlyIf(() -> !collector.isZeroed()));
 
         NamedCommands.registerCommand("Shoot",
-                Commands.race(Commands.waitUntil(indexer::hasCollected), Commands.waitSeconds(1)).andThen(Commands.runOnce(shooter::enableShootMode))
-                        .andThen(new ShootCommand()));
+                Commands.waitUntil(this::everythingIsZeroed)
+                        .andThen(Commands.race(Commands.waitUntil(indexer::hasCollected), Commands.waitSeconds(1))
+                        .andThen(Commands.runOnce(shooter::enableShootMode))
+                        .andThen(new ShootCommand())));
 
         NamedCommands.registerCommand("SpinUp", Commands.runOnce(shooter::enable));
 
@@ -88,6 +90,11 @@ public class Autonomous extends SubsystemIF {
     public Command getSelectedAuto() {
         return autoChooser.get();
     }
+
+    boolean everythingIsZeroed() {
+        return Collector.getInstance().isZeroed() && Shooter.getInstance().isZeroed();
+    }
+
 
     // PATH VISUALIZATION
 

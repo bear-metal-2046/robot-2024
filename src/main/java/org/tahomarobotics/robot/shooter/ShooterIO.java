@@ -46,12 +46,13 @@ class ShooterIO {
     protected double angle = 0.0;
 
     private boolean shootingMode = false;
+    private boolean isZeroed = false;
 
     @AutoLog
     static class ShooterIOInputs {
+
         double angle = 0.0;
     }
-
     ShooterIO() {
         RobustConfigurator configurator = new RobustConfigurator(logger);
 
@@ -79,8 +80,8 @@ class ShooterIO {
         ParentDevice.optimizeBusUtilizationForAll(pivotMotor, shooterMotorFollower, shooterMotor);
     }
 
-    // GETTERS
 
+    // GETTERS
     double getShooterVelocity() {
         return shooterVelocity.getValue();
     }
@@ -109,8 +110,8 @@ class ShooterIO {
         return pivotVelocity.getValue();
     }
 
-    // SETTERS
 
+    // SETTERS
     void setShooterAngle(double angle) {
         this.angle = angle;
 
@@ -119,7 +120,14 @@ class ShooterIO {
         pivotMotor.setControl(pivotPositionControl.withPosition(angle));
     }
 
-    void zero() { pivotMotor.setPosition(0.0); }
+    void zero() {
+        pivotMotor.setPosition(0.0);
+        isZeroed = true;
+    }
+
+    public boolean isZeroed() {
+        return isZeroed;
+    }
 
     void transferToAmp() {
         shooterMotor.setControl(transferVelocity);
@@ -192,6 +200,7 @@ class ShooterIO {
         BaseStatusSignal.refreshAll(pivotPosition, pivotVelocity, shooterVelocity,
                 shooterMotorCurrent, shooterMotorFollowerCurrent, pivotCurrent);
     }
+
 
     public double getTotalCurrent() {
         return Math.abs(shooterMotorCurrent.getValue()) + Math.abs(shooterMotorFollowerCurrent.getValue()) + Math.abs(pivotCurrent.getValue());

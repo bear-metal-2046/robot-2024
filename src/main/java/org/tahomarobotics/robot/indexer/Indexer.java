@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.tahomarobotics.robot.OI;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
@@ -169,6 +170,8 @@ public class Indexer extends SubsystemIF {
     public void transitionToIndexing() {
         zero();
         motor.setControl(collectVel);
+
+        OI.getInstance().rumbleDrive();
 
         setState(State.INDEXING);
     }

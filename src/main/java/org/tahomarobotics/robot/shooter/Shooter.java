@@ -2,6 +2,7 @@ package org.tahomarobotics.robot.shooter;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -191,7 +192,7 @@ public class Shooter extends SubsystemIF {
 
         Logger.processInputs("Shooter", inputs);
 
-        SafeAKitLogger.recordOutput("Shooter/Bias", biasAngle);
+        SafeAKitLogger.recordOutput("Shooter/Bias Degrees", Units.rotationsToDegrees(biasAngle));
         SafeAKitLogger.recordOutput("Shooter/Distance To Speaker", distance);
         SafeAKitLogger.recordOutput("Shooter/Is at Angle", isAtAngle());
         SafeAKitLogger.recordOutput("Shooter/Is Spinning At velocity", isSpinningAtVelocity());

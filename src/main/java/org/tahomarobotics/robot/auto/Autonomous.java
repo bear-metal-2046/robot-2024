@@ -43,7 +43,10 @@ public class Autonomous extends SubsystemIF {
         AmpArm ampArm = AmpArm.getInstance();
         Indexer indexer = Indexer.getInstance();
 
-        NamedCommands.registerCommand("ZeroCollectorShooter", new ZeroCollectorCommand().alongWith(new ZeroShooterCommand()).onlyIf(() -> !collector.isZeroed()));
+        NamedCommands.registerCommand("ZeroCollectorShooter", Commands.runOnce(() -> {
+            shooter.zero();
+            collector.zeroCollector();
+        }).onlyIf((() -> !everythingIsZeroed())));
 
         NamedCommands.registerCommand("Shoot",
                 Commands.waitUntil(this::everythingIsZeroed)

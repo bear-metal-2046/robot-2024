@@ -182,6 +182,10 @@ class ShooterIO {
         }
     }
 
+    public void lowerAccel() {
+        shooterMotor.getConfigurator().apply(shooterMotorConfiguration.MotionMagic.withMotionMagicAcceleration(16));
+    }
+
     void enableShootMode() {
         shootingMode = true;
     }

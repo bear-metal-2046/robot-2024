@@ -294,13 +294,8 @@ public class Collector extends SubsystemIF {
 
     @Override
     public SubsystemIF initialize() {
-        Commands.waitUntil(RobotState::isEnabled)
-                .andThen(Commands.waitSeconds(0.25))
-                .andThen(new ZeroCollectorCommand())
-                .ignoringDisable(true).schedule();
 
         Commands.waitUntil(() -> RobotState.isEnabled() && RobotState.isTeleop())
-                .andThen(Commands.print("ZEROING COLLECTOR"))
                 .andThen(Commands.waitSeconds(0.25))
                 .andThen(new ZeroCollectorCommand().onlyIf(() -> !isZeroed()))
                 .ignoringDisable(true)

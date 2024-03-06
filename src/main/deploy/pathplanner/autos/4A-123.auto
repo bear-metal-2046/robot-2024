@@ -6,6 +6,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "ZeroCollectorShooter"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -13,12 +19,6 @@
                 "type": "sequential",
                 "data": {
                   "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "ZeroCollectorShooter"
-                      }
-                    },
                     {
                       "type": "parallel",
                       "data": {

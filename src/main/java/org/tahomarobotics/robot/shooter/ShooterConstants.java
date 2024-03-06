@@ -20,10 +20,10 @@ public class ShooterConstants {
                                                                  // should calculate for when moving away from the speaker
     public static final double TIME_SHOT_OFFSET_NEGATIVE = 0.5  ; // The same as ^ but for moving towards the speaker
 
-    static final double SHOOTER_SPEED_TOLERANCE = 2.5; // rps
+    static final double SHOOTER_SPEED_TOLERANCE = 5; // rps
     public static final double MAX_PIVOT_ANGLE;
     public static final double MIN_PIVOT_ANGLE = 0.01;
-    static final double PIVOT_ANGLE_TOLERANCE = Units.degreesToRotations(2.5 );
+    static final double PIVOT_ANGLE_TOLERANCE = Units.degreesToRotations(2.5);
     public static final double SHOOTER_COLLECT_PIVOT_ANGLE = MIN_PIVOT_ANGLE;
 
     static final double PIVOT_GEAR_REDUCTION = (14.0 / 56.0) * (10.0 / 90.0);
@@ -35,7 +35,7 @@ public class ShooterConstants {
         switch (RobotIdentity.robotID) {
             case PLAYBEAR_CARTI, BEARITONE -> {
                 SHOOTER_SPEED = 100.0;
-                IDLE_SPEED = 62.5;
+                IDLE_SPEED = 100.0;
                 MAX_PIVOT_ANGLE = Units.degreesToRotations(51.50390625);
                 SHOOTER_GEAR_REDUCTION = (30.0 / 18.0);
                 PIVOT_INVERSION = InvertedValue.Clockwise_Positive;
@@ -52,7 +52,7 @@ public class ShooterConstants {
 
     public static final double SHOT_SPEED = Units.inchesToMeters(Units.rotationsToRadians(SHOOTER_SPEED) * (1.75)) * 0.8; // meters/sec
 
-    static final double BIAS_AMT = Units.degreesToRotations(3) / 50;
+    static final double BIAS_AMT = Units.degreesToRotations(.5);
 
     static final double STATOR_CURRENT_LIMIT = 80.0;
     static final double SUPPLY_CURRENT_LIMIT = 40.0;

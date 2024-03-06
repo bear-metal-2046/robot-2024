@@ -81,8 +81,8 @@ public class OI extends SubsystemIF {
         driveController.rightBumper().onTrue(Commands.runOnce(shooter::toggleShootMode));
 
 
-        driveController.povUp().whileTrue(Commands.run(shooter::biasUp));
-        driveController.povDown().whileTrue(Commands.run(shooter::biasDown));
+        driveController.povUp().onTrue(Commands.runOnce(shooter::biasUp));
+        driveController.povDown().onTrue(Commands.runOnce(shooter::biasDown));
         driveController.povDownLeft().onTrue(Commands.runOnce(shooter::resetBias));
 
         driveController.y().onTrue(AMP_ARM_CTRL);

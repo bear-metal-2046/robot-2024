@@ -75,11 +75,11 @@ public final class ChassisConstants {
 
     //Placeholder PID values
     public static final PIDConstants AUTO_TRANSLATION_PID = new PIDConstants(2.5,0,0.5);
-    public static final PIDConstants AUTO_ROTATION_PID = new PIDConstants(5, 0, 0);
+    public static final PIDConstants AUTO_ROTATION_PID = new PIDConstants(5, 0, 0.5);
 
     private static final double SHOOT_ROTATION_TARGET_TOLERANCE = Units.degreesToRadians(5.0);
 
-    public static final PIDController SHOOT_MODE_CONTROLLER = new PIDController(15, 0, 0.5) {{
+    public static final PIDController SHOOT_MODE_CONTROLLER = new PIDController(12.5, 0, 0.5) {{
         setTolerance(SHOOT_ROTATION_TARGET_TOLERANCE);
     }};
 
@@ -92,7 +92,7 @@ public final class ChassisConstants {
     public static final double MAX_VELOCITY = SWERVE_DRIVE_MOTOR.freeSpeedRadPerSec * DRIVE_REDUCTION * WHEEL_RADIUS; // m/s
     public static final double MAX_ANGULAR_VELOCITY = MAX_VELOCITY / Math.hypot(HALF_TRACK_WIDTH, HALF_WHEELBASE); // r/s
 
-    public static final double TRANSLATION_LIMIT = 5.0;
+    public static final double TRANSLATION_LIMIT = 4.5;
     public static final double ROTATION_LIMIT = TRANSLATION_LIMIT / Math.hypot(HALF_TRACK_WIDTH, HALF_WHEELBASE);
 
 

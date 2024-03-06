@@ -7,6 +7,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
@@ -72,6 +73,9 @@ public class Indexer extends SubsystemIF {
     @Override
     public SubsystemIF initialize() {
         SmartDashboard.putData("Reset Indexer", runOnce(() -> setState(State.DISABLED)));
+
+        if (RobotState.isAutonomous())
+            Indexer.getInstance().setState(Indexer.State.COLLECTED);
 
         return this;
     }

@@ -8,6 +8,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -41,6 +42,9 @@ public class SwerveModuleIO {
     private final StatusSignal<Double> steerVelocity;
     private final StatusSignal<Double> drivePosition;
     private final StatusSignal<Double> driveVelocity;
+    private final StatusSignal<Double> driveAcceleration;
+
+//    private final LinearFilter driveAccelerationAverage = LinearFilter.movingAverage(10);
 
     private final StatusSignal<Double> driveCurrent;
 
@@ -74,13 +78,14 @@ public class SwerveModuleIO {
 
         drivePosition = driveMotor.getPosition();
         driveVelocity = driveMotor.getVelocity();
+        driveAcceleration = driveMotor.getAcceleration();
         steerPosition = steerAbsEncoder.getAbsolutePosition();
         steerVelocity = steerAbsEncoder.getVelocity();
         driveCurrent = driveMotor.getSupplyCurrent();
         steerCurrent = steerMotor.getSupplyCurrent();
 
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.ODOMETRY_UPDATE_FREQUENCY,
-                drivePosition, driveVelocity, steerPosition,
+                drivePosition, driveVelocity, steerPosition, driveAcceleration,
                 steerVelocity,
                 driveCurrent, steerCurrent
         );
@@ -161,11 +166,15 @@ public class SwerveModuleIO {
 
     
     public void periodic() {
+//        driveAccelerationAverage.calculate(driveAcceleration.getValue());
+
         SafeAKitLogger.recordOutput(name + "/State", getState());
         SafeAKitLogger.recordOutput(name + "/DesiredState", desiredState);
         SafeAKitLogger.recordOutput(name + "/Position", getPosition());
 
         SafeAKitLogger.recordOutput(name + "/DriveVelocity", driveVelocity.getValueAsDouble());
+        SafeAKitLogger.recordOutput(name + "/DriveAcceleration", driveAcceleration.getValueAsDouble());
+//        SafeAKitLogger.recordOutput(name + "/DriveAccelerationAverage", driveAccelerationAverage.lastValue());
         SafeAKitLogger.recordOutput(name + "/DriveVelocityMPS", driveVelocity.getValueAsDouble() * DRIVE_POSITION_COEFFICIENT);
         SafeAKitLogger.recordOutput(name + "/SteerVelocity", steerVelocity.getValueAsDouble());
     }
@@ -194,6 +203,7 @@ public class SwerveModuleIO {
     List<BaseStatusSignal> getStatusSignals() {
         return List.of(
                 drivePosition,
+                driveAcceleration,
                 driveVelocity,
                 steerPosition,
                 steerVelocity,

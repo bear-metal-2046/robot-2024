@@ -7,6 +7,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import org.littletonrobotics.junction.Logger;
@@ -50,10 +51,10 @@ public class Shooter extends SubsystemIF {
 
     @Override
     public SubsystemIF initialize() {
-        SmartDashboard.putBoolean("Debug/NoIdleVelocity", true);
+        SmartDashboard.putBoolean("Debug/NoIdleVelocity", false);
         NetworkTableInstance.getDefault().addListener(SmartDashboard.getEntry("Debug/NoIdleVelocity"), EnumSet.of(NetworkTableEvent.Kind.kValueAll), e -> disable());
 
-        Commands.waitUntil(RobotState::isEnabled)
+        Commands.waitUntil(() -> RobotState.isEnabled() && RobotState.isTeleop())
                 .andThen(new ZeroShooterCommand().andThen(Commands.runOnce(this::disable)))
                 .ignoringDisable(true).schedule();
 
@@ -151,9 +152,11 @@ public class Shooter extends SubsystemIF {
 
         SafeAKitLogger.recordOutput("Shooter/Radial Velocity", radialVelocity);
         SafeAKitLogger.recordOutput("Shooter/Target Angle Before Compensation", 0.07068257 + 0.1999213 * Math.pow(Math.E, -0.5485811 * distance));
-        distance = (radialVelocity *
-                (radialVelocity > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE))
-                + distance;
+        distance += (radialVelocity * (radialVelocity > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE));
+
+        if (RobotState.isAutonomous()) {
+            distance += 1.0 / 2d * 4.0 * TIME_SHOT_OFFSET_POSITIVE * TIME_SHOT_OFFSET_POSITIVE;
+        }
 
         setAngle(switch (RobotIdentity.robotID) {
             // y = 0.07068257 + 0.1999213*e^(-0.5485811*x)
@@ -209,6 +212,11 @@ public class Shooter extends SubsystemIF {
     @Override
     public void onDisabledInit() {
         stop();
+    }
+
+    @Override
+    public void onTeleopInit() {
+        io.lowerAccel();
     }
 
     @Override

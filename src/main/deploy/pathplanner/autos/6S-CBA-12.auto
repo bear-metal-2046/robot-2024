@@ -12,39 +12,25 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "ZeroCollectorShooter"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "sequential",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "ZeroCollectorShooter"
-                      }
-                    },
-                    {
-                      "type": "parallel",
-                      "data": {
-                        "commands": [
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "CollectorDown"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "SpinUp"
-                            }
-                          }
-                        ]
-                      }
-                    }
-                  ]
+                  "name": "CollectorDown"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SpinUp"
                 }
               },
               {

@@ -99,6 +99,8 @@ public class Robot extends LoggedRobot {
                     public void putTable(LogTable table) {
                         if (SmartDashboard.getBoolean("Debug/NTPublishing", false))
                             super.putTable(table);
+                        else
+                            super.putTable(new LogTable(table.getTimestamp()));
                     }
                 });
                 //noinspection resource

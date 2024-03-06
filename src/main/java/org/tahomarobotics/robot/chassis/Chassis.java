@@ -285,7 +285,7 @@ public class Chassis extends SubsystemIF {
     }
 
     public void autoDrive(ChassisSpeeds velocity) {
-        desiredSpeeds = ChassisSpeeds.discretize(velocity, Robot.defaultPeriodSecs);
+        drive(velocity, false);
     }
 
     // SETTERS

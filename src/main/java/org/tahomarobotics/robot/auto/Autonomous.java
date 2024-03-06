@@ -3,8 +3,13 @@ package org.tahomarobotics.robot.auto;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.commands.PathfindHolonomic;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
+import com.pathplanner.lib.pathfinding.Pathfinder;
+import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -99,6 +104,7 @@ public class Autonomous extends SubsystemIF {
         );
 
         SmartDashboard.putData("Skip To Next Path", Commands.deferredProxy(() -> skipToNextPath(PathPlannerAuto.getPathGroupFromAutoFile(autoChooser.get().getName()))));
+        Pathfinding.setPathfinder(new LocalADStarAK());
     }
 
     public static Autonomous getInstance() {
@@ -167,11 +173,9 @@ public class Autonomous extends SubsystemIF {
     }
 
     public static Command skipToNextPath(List<PathPlannerPath> paths) {
-        System.out.println("skipped path");
         List<PathPlannerTrajectory> trajectories = paths.stream().map(Autonomous::getTrajectory).toList();
         Pose2d currentPose = Chassis.getInstance().getPose();
         Pair<Translation2d, Double> closestPose = Pair.of(currentPose.getTranslation(), Double.POSITIVE_INFINITY);
-        PathPlannerTrajectory closestTraj = paths.get(0).getTrajectory(new ChassisSpeeds(), new Rotation2d());
         double distance;
         int closestIndex = 0;
         int i = 0;
@@ -180,18 +184,28 @@ public class Autonomous extends SubsystemIF {
                 distance = pos.getDistance(currentPose.getTranslation());
                 if (distance <= closestPose.getSecond()) {
                     closestPose = Pair.of(pos, distance);
-                    closestTraj = traj;
                     closestIndex = i;
                 }
             }
             i++;
         }
-        System.out.println(closestIndex);
-        PathPlannerPath targetPath = paths.get(0);
-        if (closestIndex < paths.spliterator().getExactSizeIfKnown() - 1) {
-            targetPath = paths.get(closestIndex + 1);
+
+        Command autoCommand = new InstantCommand();
+        boolean commandExists = false;
+        for (int j = 0; j < paths.spliterator().getExactSizeIfKnown(); j++) {
+            if (j > closestIndex) {
+                System.out.println("path " + j + " added");
+                if (commandExists) {
+                    autoCommand = autoCommand.andThen(AutoBuilder.followPath(paths.get(j))); // This is the same as it is built in CommandUtil
+                } else {
+                    System.out.println(paths.get(j).getPreviewStartingHolonomicPose());
+                    autoCommand = AutoBuilder.pathfindThenFollowPath(paths.get(j), ChassisConstants.AUTO_PATHFINDING_CONSTRAINTS);
+                    commandExists = true;
+                }
+            }
         }
-        return AutoBuilder.pathfindThenFollowPath(targetPath, ChassisConstants.AUTO_PATHFINDING_CONSTRAINTS);
+        System.out.println("skipped path " + closestIndex);
+        return autoCommand;
     }
 
     private void postAutoTrajectory(Field2d field, String autoName) {

@@ -3,6 +3,7 @@ package org.tahomarobotics.robot.climbers.commands;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.amp.commands.AmpArmCommands;
 import org.tahomarobotics.robot.chassis.ChassisConstants;
 import org.tahomarobotics.robot.chassis.commands.HitSomething;
@@ -14,11 +15,15 @@ import org.tahomarobotics.robot.climbers.Climbers;
 public class EngageCommand extends SequentialCommandGroup {
     public EngageCommand() {
         Climbers climbers = Climbers.getInstance();
+        AmpArm ampArm = AmpArm.getInstance();
 
         addCommands(
                 Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.ENGAGED)),
                 AutoBuilder.pathfindToPose(ChassisConstants.getClosestChainPose(), ChassisConstants.CLIMB_MOVEMENT_CONSTRAINTS),
                 AmpArmCommands.AMP_ARM_CLIMB.get(),
+                Commands.runOnce(ampArm::shiftNote),
+                Commands.waitUntil(ampArm::isRollerAtPosition),
+                Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)),
                 new HitSomething(-.25)
         );
     }

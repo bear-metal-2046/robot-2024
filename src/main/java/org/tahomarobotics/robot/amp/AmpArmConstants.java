@@ -28,7 +28,7 @@ public class AmpArmConstants {
             case PLAYBEAR_CARTI, BEARITONE -> {
                 ARM_STOW_POSE = Units.degreesToRotations(-90.00);
                 ARM_AMP_POSE = Units.degreesToRotations(72.51);
-                ARM_TRAP_POSE = Units.degreesToRotations(65.66);
+                ARM_TRAP_POSE = Units.degreesToRotations(62.66);
                 // TODO: Need to get this pose, once again.
                 ARM_SOURCE_POSE = Units.degreesToRotations(90.00);
 
@@ -57,7 +57,7 @@ public class AmpArmConstants {
             case PLAYBEAR_CARTI, BEARITONE -> {
                 WRIST_MOVING_POSE = 1 - 0.65771484375;
                 WRIST_AMP_POSE = 0.4326171875;
-                WRIST_TRAP_POSE = 1 - 0.576904296875 - Units.degreesToRotations(4);
+                WRIST_TRAP_POSE = 1 - 0.576904296875 + Units.degreesToRotations(13);
                 WRIST_SOURCE_POSE = Units.degreesToRotations(53.7890625);
             }
             default -> {

@@ -5,6 +5,8 @@
 
 package org.tahomarobotics.robot;
 
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -22,6 +24,8 @@ import org.tahomarobotics.robot.shooter.commands.ShootCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
 import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import static org.tahomarobotics.robot.amp.commands.AmpArmCommands.AMP_ARM_CTRL;
 import static org.tahomarobotics.robot.amp.commands.AmpArmCommands.ARM_TO_STOW;
@@ -39,6 +43,15 @@ public class OI extends SubsystemIF {
 
     private final CommandXboxController driveController = new CommandXboxController(0);
     private final CommandXboxController manipController = new CommandXboxController(1);
+
+    private static final Executor rumbleExec = Executors.newFixedThreadPool(2,
+            r -> {
+                Thread t = new Thread(r, "RumbleThread");
+                t.setDaemon(true);
+                return t;
+            }
+    );
+    private static final long RUMBLE_TIMEOUT_MS = 300;
 
     public OI() {
         // Disable OI periodic unless its being used.
@@ -178,5 +191,27 @@ public class OI extends SubsystemIF {
         value = deadband(value, DEAD_ZONE);
         value *= Math.pow(Math.abs(value), power - 1);
         return value;
+    }
+
+
+    // RUMBLE
+
+    public void rumbleDrive() {
+        rumble(driveController.getHID());
+    }
+
+    private void rumble(XboxController controller) {
+        rumbleExec.execute(() -> {
+            controller.setRumble(GenericHID.RumbleType.kLeftRumble, 1.0);
+            controller.setRumble(GenericHID.RumbleType.kRightRumble, 1.0);
+            try {
+                Thread.sleep(RUMBLE_TIMEOUT_MS);
+            } catch (InterruptedException e) {
+                // ignore and disable
+                Thread.currentThread().interrupt();
+            }
+            controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
+            controller.setRumble(GenericHID.RumbleType.kRightRumble, 0);
+        });
     }
 }

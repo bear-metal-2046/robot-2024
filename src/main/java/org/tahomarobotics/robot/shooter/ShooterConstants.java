@@ -57,9 +57,6 @@ public class ShooterConstants {
     static final double STATOR_CURRENT_LIMIT = 80.0;
     static final double SUPPLY_CURRENT_LIMIT = 40.0;
 
-    public static final double SHOOTER_ACCELERATION = 80.0;
-    static final double SHOOTER_JERK = 100.0;
-
     public static final Translation2d SHOOTER_PIVOT_OFFSET = new Translation2d(0.1238, 0.1899);
 
     private static final Translation2d RED_SPEAKER_TARGET_POSITION = new Translation2d(16.53, 5.55);
@@ -94,8 +91,8 @@ public class ShooterConstants {
             .withFeedback(new FeedbackConfigs()
                     .withSensorToMechanismRatio(1 / SHOOTER_GEAR_REDUCTION))
             .withMotionMagic(new MotionMagicConfigs()
-                    .withMotionMagicAcceleration(SHOOTER_ACCELERATION)
-                    .withMotionMagicJerk(SHOOTER_JERK))
+                    .withMotionMagicAcceleration(80.0)
+                    .withMotionMagicJerk(100.0))
             .withAudio(new AudioConfigs().withBeepOnBoot(true).withBeepOnConfig(true));
 
     static final TalonFXConfiguration pivotMotorConfiguration = new TalonFXConfiguration()

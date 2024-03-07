@@ -91,8 +91,8 @@ public class ShooterConstants {
             .withFeedback(new FeedbackConfigs()
                     .withSensorToMechanismRatio(1 / SHOOTER_GEAR_REDUCTION))
             .withMotionMagic(new MotionMagicConfigs()
-                    .withMotionMagicAcceleration(80)
-                    .withMotionMagicJerk(1000))
+                    .withMotionMagicAcceleration(80.0)
+                    .withMotionMagicJerk(100.0))
             .withAudio(new AudioConfigs().withBeepOnBoot(true).withBeepOnConfig(true));
 
     static final TalonFXConfiguration pivotMotorConfiguration = new TalonFXConfiguration()

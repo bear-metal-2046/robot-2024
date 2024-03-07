@@ -23,26 +23,18 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 
-import java.util.function.Consumer;
-
 public class SwerveRateLimiter {
 
-    private static final int TREASHOLD = 3;
     private final double accelerationLimit;
     private final SlewRateLimiter angularRateLimiter;
 
     private final ChassisSpeeds output = new ChassisSpeeds();
     private double previousTime = 0;
 
-    private int count = 0;
 
-
-    private final Consumer<ChassisSpeeds> currentSpeedInput;
-
-    public SwerveRateLimiter(double accelerationLimit, double angularAccelerationLimit, Consumer<ChassisSpeeds> currentSpeedInput) {
+    public SwerveRateLimiter(double accelerationLimit, double angularAccelerationLimit) {
         this.accelerationLimit = accelerationLimit;
         angularRateLimiter = new SlewRateLimiter(angularAccelerationLimit);
-        this.currentSpeedInput = currentSpeedInput;
     }
 
     protected double getAccelerationLimit(ChassisSpeeds input) {
@@ -71,28 +63,7 @@ public class SwerveRateLimiter {
         double mag = Math.sqrt(dx * dx + dy * dy);
 
         // limit delta speed
-        double maxDeltaSpeed = getAccelerationLimit(input) * elapsedTime;
-        if (mag > maxDeltaSpeed) {
-            mag = maxDeltaSpeed;
-
-            // if reversing direction and not rotating then apply brake mode
-            currentSpeedInput.accept(output);
-            double currentDirection = Math.atan2(output.vyMetersPerSecond, output.vxMetersPerSecond);
-
-            if (Math.cos(dir-currentDirection) < -0.8 && Math.abs(input.omegaRadiansPerSecond) < 0.1 ) {
-
-                if (++count >= TREASHOLD) {
-                    // may need to feather this deceleration
-                    output.vxMetersPerSecond = output.vyMetersPerSecond = output.omegaRadiansPerSecond = 0;
-                    return output;
-                }
-            } else {
-                count = 0;
-            }
-
-        } else {
-            count = 0;
-        }
+        mag = Math.min(mag, getAccelerationLimit(input) * elapsedTime);
 
         // add delta velocity to output
         output.vxMetersPerSecond += mag * Math.cos(dir);
@@ -101,7 +72,6 @@ public class SwerveRateLimiter {
         output.omegaRadiansPerSecond = angularRateLimiter.calculate(input.omegaRadiansPerSecond);
 
         return output;
-
     }
 
 }

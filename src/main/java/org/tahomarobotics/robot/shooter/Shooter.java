@@ -3,13 +3,9 @@ package org.tahomarobotics.robot.shooter;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTableEvent;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.Robot;
@@ -19,8 +15,6 @@ import org.tahomarobotics.robot.identity.RobotIdentity;
 import org.tahomarobotics.robot.shooter.commands.ZeroShooterCommand;
 import org.tahomarobotics.robot.util.SafeAKitLogger;
 import org.tahomarobotics.robot.util.SubsystemIF;
-
-import java.util.EnumSet;
 
 import static org.tahomarobotics.robot.shooter.ShooterConstants.*;
 
@@ -52,11 +46,9 @@ public class Shooter extends SubsystemIF {
 
     @Override
     public SubsystemIF initialize() {
-        SmartDashboard.putBoolean("Debug/NoIdleVelocity", false);
-        NetworkTableInstance.getDefault().addListener(SmartDashboard.getEntry("Debug/NoIdleVelocity"), EnumSet.of(NetworkTableEvent.Kind.kValueAll), e -> disable());
 
         Commands.waitUntil(() -> RobotState.isEnabled() && RobotState.isTeleop())
-                .andThen(new ZeroShooterCommand().andThen(Commands.runOnce(this::disable)))
+                .andThen(new ZeroShooterCommand().andThen(Commands.runOnce(this::idle)))
                 .ignoringDisable(true).schedule();
 
         io.zero();
@@ -66,12 +58,8 @@ public class Shooter extends SubsystemIF {
 
     // SETTERS
 
-    public void disable() {
-        io.disableShooter();
-    }
-
     public void enable() {
-        io.enableShooter();
+        io.enable();
     }
 
     public void disableShootMode() {
@@ -82,12 +70,20 @@ public class Shooter extends SubsystemIF {
         io.enableShootMode();
     }
 
+    public void idle() {
+        io.idle();
+    }
+
     public void stop() {
         io.stop();
     }
 
     public void toggleShootMode() {
         io.toggleShootMode();
+    }
+
+    public void toggleIdle() {
+        io.toggleIdle();
     }
 
     public void setAngle(double angle) {
@@ -213,11 +209,6 @@ public class Shooter extends SubsystemIF {
     @Override
     public void onDisabledInit() {
         stop();
-    }
-
-    @Override
-    public void onTeleopInit() {
-        io.lowerAccel();
     }
 
     @Override

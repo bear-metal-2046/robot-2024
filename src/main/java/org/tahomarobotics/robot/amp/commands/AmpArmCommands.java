@@ -65,6 +65,7 @@ public class AmpArmCommands {
         Shooter shooter = Shooter.getInstance();
 
         FEEDFORWARD = () -> Commands.sequence(
+                Commands.runOnce(shooter::stop),
                 Commands.runOnce(() -> shooter.setAngle(ShooterConstants.MIN_PIVOT_ANGLE)),
                 Commands.waitUntil(shooter::isAtAngle),
                 Commands.runOnce(() -> {
@@ -97,7 +98,7 @@ public class AmpArmCommands {
                 Commands.runOnce(() -> {
                     ampArm.setRollerState(AmpArm.RollerState.DISABLED);
                     indexer.transitionToCollected();
-                    shooter.disable();
+                    shooter.stop();
                 })
         ).onlyIf(() -> !indexer.hasCollected()).onlyIf(ampArm::hasRollerCollected);
     }
@@ -111,7 +112,7 @@ public class AmpArmCommands {
             if ((ampArm.isArmAtSource() || ampArm.isArmAtAmp()) && ampArm.hasRollerCollected()) {
                 return Commands.defer(() -> ARM_TO_STOW.get().andThen(FEEDBACK.get()), Set.of(ampArm, indexer, shooter));
             } if (ampArm.isArmAtAmp() || ampArm.isArmAtSource() || ampArm.isArmAtTrap()) {
-                return Commands.defer(() -> ARM_TO_STOW.get().andThen(Commands.runOnce(shooter::disable)), Set.of(ampArm, shooter));
+                return Commands.defer(ARM_TO_STOW, Set.of(ampArm, shooter));
             } if (indexer.hasCollected()) {
                 return Commands.defer(() -> FEEDFORWARD.get().andThen(STOW_TO_AMP.get()), Set.of(ampArm, indexer, shooter));
             } else {

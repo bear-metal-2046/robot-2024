@@ -24,7 +24,7 @@ public class EngageCommand extends SequentialCommandGroup {
                 Commands.runOnce(ampArm::shiftNote),
                 Commands.waitUntil(ampArm::isRollerAtPosition),
                 Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)),
-                new HitSomething(-.25)
+                new HitSomething(-0.5)
         );
     }
 }

@@ -212,11 +212,6 @@ public class Shooter extends SubsystemIF {
     }
 
     @Override
-    public void onTeleopInit() {
-        io.lowerAccel();
-    }
-
-    @Override
     public double getEnergyUsed() {
         return energyUsed / 1000d;
     }

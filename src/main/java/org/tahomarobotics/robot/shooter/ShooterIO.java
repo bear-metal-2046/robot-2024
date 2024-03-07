@@ -190,10 +190,6 @@ class ShooterIO {
         shootingMode = false;
     }
 
-    public void lowerAccel() {
-        shooterMotor.getConfigurator().apply(shooterMotorConfiguration.MotionMagic.withMotionMagicAcceleration(16));
-    }
-
     // INPUTS
 
     void processInputs(ShooterIOInputs inputs) {

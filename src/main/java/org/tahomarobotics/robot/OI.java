@@ -98,6 +98,8 @@ public class OI extends SubsystemIF {
         manipController.povDown().onTrue(Commands.runOnce(shooter::biasDown));
         manipController.start().onTrue(Commands.runOnce(shooter::resetBias));
 
+        manipController.b().onTrue(Commands.runOnce(shooter::toggleIdle));
+
         driveController.y().onTrue(AMP_ARM_CTRL);
 
         driveController.start().onTrue(Commands.deferredProxy(() ->
@@ -135,8 +137,7 @@ public class OI extends SubsystemIF {
                 .whileTrue(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.SCORE))
                 .onlyIf(ampArm::isArmAtAmp))
                 .onFalse(Commands.waitSeconds(0.25).andThen(
-                        Commands.defer(() -> ARM_TO_STOW.get().andThen(Commands.runOnce(shooter::disable)),
-                        Set.of(ampArm))).onlyIf(ampArm::isArmAtAmp))
+                        Commands.defer(ARM_TO_STOW, Set.of(ampArm))).onlyIf(ampArm::isArmAtAmp))
                 .onTrue(new ShootCommand())
                 .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));
 

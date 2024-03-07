@@ -46,12 +46,14 @@ class ShooterIO {
     protected double angle = 0.0;
 
     private boolean shootingMode = false;
+    private boolean idleMode = true;
     private boolean isZeroed = false;
 
     @AutoLog
     static class ShooterIOInputs {
 
         double angle = 0.0;
+
     }
     ShooterIO() {
         RobustConfigurator configurator = new RobustConfigurator(logger);
@@ -80,12 +82,11 @@ class ShooterIO {
         ParentDevice.optimizeBusUtilizationForAll(pivotMotor, shooterMotorFollower, shooterMotor);
     }
 
-
     // GETTERS
+
     double getShooterVelocity() {
         return shooterVelocity.getValue();
     }
-
     double getPivotPosition() {
         return BaseStatusSignal.getLatencyCompensatedValue(pivotPosition, pivotVelocity);
     }
@@ -112,6 +113,7 @@ class ShooterIO {
 
 
     // SETTERS
+
     void setShooterAngle(double angle) {
         this.angle = angle;
 
@@ -143,31 +145,21 @@ class ShooterIO {
         pivotMotor.setControl(new VoltageOut(voltage));
     }
 
-    // STATES
 
-    void enableShooter() {
+    // STATES
+    void enable() {
         shooterMotor.setControl(motorVelocity);
         shooterMotorFollower.setControl(motorVelocity);
     }
 
-    void disableShooter() {
-        if (SmartDashboard.getBoolean("Debug/NoIdleVelocity", false)) {
-            stop();
-        } else {
-            idle();
-        }
-    }
-
     void idle() {
-        shootingMode = false;
-
+        idleMode = true;
         shooterMotor.setControl(idleVelocity);
         shooterMotorFollower.setControl(idleVelocity);
     }
 
     void stop() {
-        shootingMode = false;
-
+        idleMode = false;
         shooterMotor.stopMotor();
         shooterMotorFollower.stopMotor();
     }
@@ -175,15 +167,19 @@ class ShooterIO {
     void toggleShootMode() {
         if (shootingMode) {
             disableShootMode();
-            disableShooter();
+            idle();
         } else if (Indexer.getInstance().hasCollected()){
             enableShootMode();
-            enableShooter();
+            enable();
         }
     }
 
-    public void lowerAccel() {
-        shooterMotor.getConfigurator().apply(shooterMotorConfiguration.MotionMagic.withMotionMagicAcceleration(16));
+    public void toggleIdle() {
+        if (idleMode) {
+            stop();
+        } else {
+            idle();
+        }
     }
 
     void enableShootMode() {
@@ -192,6 +188,10 @@ class ShooterIO {
 
     void disableShootMode() {
         shootingMode = false;
+    }
+
+    public void lowerAccel() {
+        shooterMotor.getConfigurator().apply(shooterMotorConfiguration.MotionMagic.withMotionMagicAcceleration(16));
     }
 
     // INPUTS

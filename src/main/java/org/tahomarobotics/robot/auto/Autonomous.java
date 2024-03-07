@@ -19,11 +19,9 @@ import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.collector.Collector;
-import org.tahomarobotics.robot.collector.commands.ZeroCollectorCommand;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.commands.ShootCommand;
-import org.tahomarobotics.robot.shooter.commands.ZeroShooterCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
 import java.util.ArrayList;

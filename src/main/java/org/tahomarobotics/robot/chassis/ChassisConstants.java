@@ -61,7 +61,7 @@ public final class ChassisConstants {
         switch (RobotIdentity.robotID) {
             case PLAYBEAR_CARTI, BEARITONE -> {
                 DRIVE_REDUCTION = (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
-                WHEEL_RADIUS  = 0.04898;
+                WHEEL_RADIUS  = 0.05024;
             }
             default -> {
                 DRIVE_REDUCTION = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0);

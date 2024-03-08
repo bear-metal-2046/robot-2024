@@ -6,6 +6,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.Robot;
@@ -200,6 +201,8 @@ public class Shooter extends SubsystemIF {
 
         SafeAKitLogger.recordOutput("Shooter/TotalCurrent", totalCurrent);
         SafeAKitLogger.recordOutput("Shooter/Energy", getEnergyUsed());
+        SmartDashboard.putBoolean("Shooter/IdleMode", io.isIdling());
+        SmartDashboard.putNumber("Shooter/Bias", biasAngle);
 
 
     }

@@ -85,13 +85,11 @@ public class AmpArmCommands {
 
         FEEDBACK = () -> Commands.sequence(
                 Commands.runOnce(() -> shooter.setAngle(ShooterConstants.MIN_PIVOT_ANGLE)),
-                Commands.waitUntil(shooter::isAtAngle),
-                Commands.waitUntil(ampArm::isWristAtPosition),
                 Commands.runOnce(() -> {
                     shooter.reverseIntake();
                     indexer.transitionToReverseIntaking();
                 }),
-                Commands.waitSeconds(0.1),
+                Commands.waitSeconds(0.5),
                 Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.REVERSE_INTAKE)),
                 Commands.waitUntil(indexer::getCollectorBeanBake).withTimeout(2.0),
                 Commands.waitSeconds(0.05),
@@ -99,8 +97,9 @@ public class AmpArmCommands {
                     ampArm.setRollerState(AmpArm.RollerState.DISABLED);
                     indexer.transitionToCollected();
                     shooter.stop();
+                    ampArm.setArmState(AmpArm.ArmState.STOW);
                 })
-        ).onlyIf(() -> !indexer.hasCollected()).onlyIf(ampArm::isRollerCollected);
+        ).onlyIf(() -> !indexer.hasCollected()).onlyIf(ampArm::isRollerCollected).onlyIf(ampArm::isArmAtStow);
     }
 
     static {

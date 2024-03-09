@@ -27,8 +27,7 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import static org.tahomarobotics.robot.amp.commands.AmpArmCommands.AMP_ARM_CTRL;
-import static org.tahomarobotics.robot.amp.commands.AmpArmCommands.ARM_TO_STOW;
+import static org.tahomarobotics.robot.amp.commands.AmpArmCommands.*;
 
 public class OI extends SubsystemIF {
     private final static OI INSTANCE = new OI();
@@ -156,6 +155,8 @@ public class OI extends SubsystemIF {
         driveController.povLeft()
                 .onTrue(Commands.runOnce(() -> collector.setIsEjecting(true)))
                 .onFalse(Commands.runOnce(() -> collector.setIsEjecting(false)));
+
+        manipController.y().onTrue(Commands.deferredProxy(FEEDBACK));
     }
 
     private void setDefaultCommands() {

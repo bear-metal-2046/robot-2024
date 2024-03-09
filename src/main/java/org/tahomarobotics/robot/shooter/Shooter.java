@@ -125,7 +125,7 @@ public class Shooter extends SubsystemIF {
         return io.isReadyToShoot();
     }
 
-    public boolean isSpinningAtVelocity() {
+    public boolean isAtVelocity() {
         return io.isSpinningAtVelocity();
     }
 
@@ -199,7 +199,7 @@ public class Shooter extends SubsystemIF {
         SafeAKitLogger.recordOutput("Shooter/Bias Degrees", Units.rotationsToDegrees(biasAngle));
         SafeAKitLogger.recordOutput("Shooter/Distance To Speaker", distance);
         SafeAKitLogger.recordOutput("Shooter/Is at Angle", isAtAngle());
-        SafeAKitLogger.recordOutput("Shooter/Is Spinning At velocity", isSpinningAtVelocity());
+        SafeAKitLogger.recordOutput("Shooter/Is Spinning At velocity", isAtVelocity());
         SafeAKitLogger.recordOutput("Shooter/Is In Shooting Mode", inShootingMode());
         SafeAKitLogger.recordOutput("Shooter/Distance", distance);
         SafeAKitLogger.recordOutput("Shooter/Velocity", getShooterVelocity());

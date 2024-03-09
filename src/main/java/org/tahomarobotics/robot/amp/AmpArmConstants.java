@@ -80,6 +80,7 @@ public class AmpArmConstants {
     static final double ROLLER_GEAR_REDUCTION;
 
     public static final double NOTE_INTAKE_POSITION = 1;
+    public static final double SOURCE_INTAKE_POSITION = 1;
     public static final double TRAP_VELOCITY = 3;
     public static final double REVERSE_INTAKE_VELOCITY = 10;
 

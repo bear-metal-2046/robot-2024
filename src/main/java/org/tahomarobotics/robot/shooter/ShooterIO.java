@@ -48,6 +48,8 @@ class ShooterIO {
     private boolean idleMode = true;
     private boolean isZeroed = false;
 
+    private double targetShooterSpeed = 0.0;
+
     @AutoLog
     static class ShooterIOInputs {
 
@@ -91,7 +93,7 @@ class ShooterIO {
     }
 
     boolean isSpinningAtVelocity() {
-        return Math.abs(SHOOTER_SPEED - getShooterVelocity()) < SHOOTER_SPEED_TOLERANCE;
+        return Math.abs(targetShooterSpeed - getShooterVelocity()) < SHOOTER_SPEED_TOLERANCE;
     }
 
     boolean isAtAngle() {
@@ -134,11 +136,15 @@ class ShooterIO {
     }
 
     void transferToAmp() {
+        targetShooterSpeed = transferVelocity.Velocity;
+
         shooterMotor.setControl(transferVelocity);
         shooterMotorFollower.setControl(transferVelocity);
     }
 
     void reverseIntake() {
+        targetShooterSpeed = reverseIntakeVelocity.Velocity;
+
         shooterMotor.setControl(reverseIntakeVelocity);
         shooterMotorFollower.setControl(reverseIntakeVelocity);
     }
@@ -150,17 +156,23 @@ class ShooterIO {
 
     // STATES
     void enable() {
+        targetShooterSpeed = motorVelocity.Velocity;
+
         shooterMotor.setControl(motorVelocity);
         shooterMotorFollower.setControl(motorVelocity);
     }
 
     void idle() {
+        targetShooterSpeed = idleVelocity.Velocity;
+
         idleMode = true;
         shooterMotor.setControl(idleVelocity);
         shooterMotorFollower.setControl(idleVelocity);
     }
 
     void stop() {
+        targetShooterSpeed = 0.0;
+
         idleMode = false;
         shooterMotor.stopMotor();
         shooterMotorFollower.stopMotor();

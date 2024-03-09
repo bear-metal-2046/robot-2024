@@ -222,7 +222,7 @@ public class Chassis extends SubsystemIF {
         SafeAKitLogger.recordOutput("Chassis/DesiredState", getSwerveModuleDesiredStates());
         SafeAKitLogger.recordOutput("Chassis/CurrentChassisSpeeds", getCurrentChassisSpeeds());
         SafeAKitLogger.recordOutput("Chassis/CurrentChassisAccel", getCurrentChassisAcceleration());
-        SafeAKitLogger.recordOutput("Chassis/CurrentChassisRawAccel", getSwerveModuleRawAccelerationStates());
+        SafeAKitLogger.recordOutput("Chassis/CurrentChassisRawAccel", currentChassisRawAccel);
         SafeAKitLogger.recordOutput("Chassis/Gyro/Yaw", getYaw());
         SafeAKitLogger.recordOutput("Chassis/Pose", pose);
         SafeAKitLogger.recordOutput("Chassis/IsAtShootingAngle?", isReadyToShoot());

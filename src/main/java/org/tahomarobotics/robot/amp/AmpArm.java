@@ -187,7 +187,7 @@ public class AmpArm extends SubsystemIF {
         return armState == ArmState.SOURCE;
     }
 
-    public boolean hasRollerCollected() {
+    public boolean isRollerCollected() {
         return rollerState == RollerState.COLLECTED;
     }
 

@@ -146,7 +146,8 @@ public class OI extends SubsystemIF {
                 .onlyIf(ampArm::isArmAtSource))
                 .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED))
                 .onlyIf(ampArm::isArmAtSource))
-                .onFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.COLLECTED)));
+                .onFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.COLLECTED))
+                .onlyIf(ampArm::isArmAtSource));
 
         driveController.leftTrigger(0.5)
                 .onTrue(Commands.runOnce(() -> collector.setIsCollecting(true)))

@@ -46,7 +46,7 @@ public class SwerveModuleIO {
 
     private double lastAccel = 0.0;
 
-    private final LinearFilter driveAccelerationAverage = LinearFilter.movingAverage(5);
+    private final LinearFilter driveAccelerationAverage = LinearFilter.movingAverage(10);
 
     private final StatusSignal<Double> driveCurrent;
 

@@ -5,7 +5,8 @@
   "pathFolders": [
     "4A-123",
     "4S-345",
-    "6S-CBA-12"
+    "6S-CBA-12",
+    "6A-12-CBA"
   ],
   "autoFolders": [],
   "defaultMaxVel": 4.0,

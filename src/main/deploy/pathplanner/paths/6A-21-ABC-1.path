@@ -8,50 +8,50 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.969897507362582,
-        "y": 5.935099437766444
+        "x": 4.5760731521463045,
+        "y": 5.790485866686019
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.08536247703126,
-        "y": 5.851897109199625
+        "x": 8.035705214267571,
+        "y": 5.849123698247397
       },
       "prevControl": {
-        "x": 5.996059559686686,
-        "y": 6.6931650980419075
+        "x": 4.854602852062848,
+        "y": 6.831307376900469
       },
       "nextControl": {
-        "x": 8.310951771752705,
-        "y": 5.761062481679042
+        "x": 8.232302948496747,
+        "y": 5.7884230153287115
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.206429841431112,
-        "y": 6.743350629558403
+        "x": 5.2,
+        "y": 6.74
       },
       "prevControl": {
-        "x": 5.681739651767591,
-        "y": 6.683920394867817
+        "x": 6.029716962441035,
+        "y": 6.712349061208187
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "4A-1"
+      "linkedName": "6A-1-END"
     }
   ],
   "rotationTargets": [
     {
       "waypointRelativePos": 1.0,
-      "rotationDegrees": -13.570220025616273,
+      "rotationDegrees": -14.470294100065939,
       "rotateFast": false
     },
     {
-      "waypointRelativePos": 0.15,
+      "waypointRelativePos": 0.2,
       "rotationDegrees": -4.689333898661849,
       "rotateFast": true
     }
@@ -72,7 +72,7 @@
   "eventMarkers": [
     {
       "name": "Shoot",
-      "waypointRelativePos": 1.6,
+      "waypointRelativePos": 1.8,
       "command": {
         "type": "parallel",
         "data": {
@@ -89,7 +89,7 @@
     },
     {
       "name": "SHoot_0",
-      "waypointRelativePos": 0.15,
+      "waypointRelativePos": 0.2,
       "command": {
         "type": "parallel",
         "data": {
@@ -113,11 +113,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 20.105221442018635,
+    "rotation": 20.81808012146444,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "4A-123",
+  "folder": "6A-12-CBA",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

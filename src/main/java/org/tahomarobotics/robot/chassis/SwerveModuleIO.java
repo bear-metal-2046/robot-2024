@@ -44,7 +44,9 @@ public class SwerveModuleIO {
     private final StatusSignal<Double> driveVelocity;
     private final StatusSignal<Double> driveAcceleration;
 
-//    private final LinearFilter driveAccelerationAverage = LinearFilter.movingAverage(10);
+    private double lastAccel = 0.0;
+
+    private final LinearFilter driveAccelerationAverage = LinearFilter.movingAverage(5);
 
     private final StatusSignal<Double> driveCurrent;
 
@@ -144,6 +146,14 @@ public class SwerveModuleIO {
         return new SwerveModuleState(getDriveVelocity(), Rotation2d.fromRotations(getSteerAngle()));
     }
 
+
+    SwerveModuleState getAccelerationState() {
+        return new SwerveModuleState(lastAccel, Rotation2d.fromRotations(getSteerAngle()));
+    }
+
+    SwerveModuleState getRawAccelerationState() {
+        return new SwerveModuleState(driveAcceleration.getValue(), Rotation2d.fromRotations(getSteerAngle()));
+    }
     
     SwerveModuleState getDesiredState() {
         return desiredState;
@@ -166,15 +176,14 @@ public class SwerveModuleIO {
 
     
     public void periodic() {
-//        driveAccelerationAverage.calculate(driveAcceleration.getValue());
-
         SafeAKitLogger.recordOutput(name + "/State", getState());
         SafeAKitLogger.recordOutput(name + "/DesiredState", desiredState);
         SafeAKitLogger.recordOutput(name + "/Position", getPosition());
 
         SafeAKitLogger.recordOutput(name + "/DriveVelocity", driveVelocity.getValueAsDouble());
         SafeAKitLogger.recordOutput(name + "/DriveAcceleration", driveAcceleration.getValueAsDouble());
-//        SafeAKitLogger.recordOutput(name + "/DriveAccelerationAverage", driveAccelerationAverage.lastValue());
+        lastAccel = driveAccelerationAverage.calculate(driveAcceleration.getValue());
+        SafeAKitLogger.recordOutput(name + "/DriveAccelerationAverage", lastAccel);
         SafeAKitLogger.recordOutput(name + "/DriveVelocityMPS", driveVelocity.getValueAsDouble() * DRIVE_POSITION_COEFFICIENT);
         SafeAKitLogger.recordOutput(name + "/SteerVelocity", steerVelocity.getValueAsDouble());
     }

@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.402826499346692,
-        "y": 3.6146789410695943
+        "x": 5.088820570097195,
+        "y": 4.374620875096243
       },
       "isLocked": false,
       "linkedName": "4S-345-2-END"
@@ -32,12 +32,28 @@
     },
     {
       "anchor": {
+        "x": 6.35739102410822,
+        "y": 3.545943442594893
+      },
+      "prevControl": {
+        "x": 7.481241217632251,
+        "y": 2.386286483541018
+      },
+      "nextControl": {
+        "x": 5.331652125096243,
+        "y": 4.604363202867031
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
         "x": 3.6663943598157465,
         "y": 5.537577201280529
       },
       "prevControl": {
-        "x": 7.854244897679017,
-        "y": 3.1801778918873156
+        "x": 5.570933192037283,
+        "y": 4.349206406542696
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,7 +62,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.05,
+      "waypointRelativePos": 1.1,
       "rotationDegrees": -67.1267609311437,
       "rotateFast": true
     }
@@ -55,7 +71,7 @@
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 1.85,
+      "waypointRelativePos": 2.7,
       "command": {
         "type": "parallel",
         "data": {

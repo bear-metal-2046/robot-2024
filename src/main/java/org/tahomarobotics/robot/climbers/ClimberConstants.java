@@ -4,6 +4,7 @@ import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.util.Units;
 import org.tahomarobotics.robot.identity.RobotIdentity;
 
 public class ClimberConstants {
@@ -24,6 +25,7 @@ public class ClimberConstants {
     public static final double TOP_POSITION = 0.575;
 
     public static final double BOTTOM_POSITION = 0.0025;
+    public static final double ALMOST_BOTTOM_POSITION = 0.0025 + Units.inchesToMeters(1);
 
     public static final TalonFXConfiguration CLIMB_CONFIGURATION = new TalonFXConfiguration()
             .withSlot0(switch (RobotIdentity.robotID) {

@@ -83,8 +83,8 @@ public final class ChassisConstants {
         setTolerance(SHOOT_ROTATION_TARGET_TOLERANCE);
     }};
 
-    public static final double DRIVE_SUPPLY_CURRENT_LIMIT = 40.0; // Amps
-    public static final double DRIVE_STATOR_CURRENT_LIMIT = 80.0;
+    public static final double DRIVE_SUPPLY_CURRENT_LIMIT = 60.0; // Amps
+    public static final double DRIVE_STATOR_CURRENT_LIMIT = 120.0;
     public static final double STEER_SUPPLY_CURRENT_LIMIT = 40.0;
     public static final double STEER_STATOR_CURRENT_LIMIT = 80.0;
 
@@ -92,7 +92,7 @@ public final class ChassisConstants {
     public static final double MAX_VELOCITY = SWERVE_DRIVE_MOTOR.freeSpeedRadPerSec * DRIVE_REDUCTION * WHEEL_RADIUS; // m/s
     public static final double MAX_ANGULAR_VELOCITY = MAX_VELOCITY / Math.hypot(HALF_TRACK_WIDTH, HALF_WHEELBASE); // r/s
 
-    public static final double TRANSLATION_LIMIT = 6.5;
+    public static final double TRANSLATION_LIMIT = 6.0;
     public static final double ROTATION_LIMIT = TRANSLATION_LIMIT / Math.hypot(HALF_TRACK_WIDTH, HALF_WHEELBASE);
 
 

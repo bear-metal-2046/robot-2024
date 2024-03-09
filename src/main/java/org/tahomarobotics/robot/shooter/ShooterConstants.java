@@ -15,6 +15,7 @@ public class ShooterConstants {
     public static final double SHOOTER_SPEED; // rps
     public static final double IDLE_SPEED; // rps
     public static final double TRANSFER_VELOCITY = 10; // rps
+    public static final double REVERSE_INTAKE_VELOCITY = 40; // rps
 
     public static final double TIME_SHOT_OFFSET_POSITIVE = 0.4;  // The number of seconds forward in time the shooter
                                                                  // should calculate for when moving away from the speaker
@@ -55,7 +56,7 @@ public class ShooterConstants {
     static final double BIAS_AMT = Units.degreesToRotations(.5);
 
     static final double STATOR_CURRENT_LIMIT = 80.0;
-    static final double SUPPLY_CURRENT_LIMIT = 40.0;
+    static final double SUPPLY_CURRENT_LIMIT = 60.0;
 
     public static final Translation2d SHOOTER_PIVOT_OFFSET = new Translation2d(0.1238, 0.1899);
 
@@ -91,8 +92,8 @@ public class ShooterConstants {
             .withFeedback(new FeedbackConfigs()
                     .withSensorToMechanismRatio(1 / SHOOTER_GEAR_REDUCTION))
             .withMotionMagic(new MotionMagicConfigs()
-                    .withMotionMagicAcceleration(80.0)
-                    .withMotionMagicJerk(100.0))
+                    .withMotionMagicAcceleration(120.0)
+                    .withMotionMagicJerk(500.0))
             .withAudio(new AudioConfigs().withBeepOnBoot(true).withBeepOnConfig(true));
 
     static final TalonFXConfiguration pivotMotorConfiguration = new TalonFXConfiguration()

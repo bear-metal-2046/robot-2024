@@ -154,6 +154,7 @@ public class AmpArm extends SubsystemIF {
             case PASSING -> rollerMotor.setControl(velocityControl.withVelocity(ShooterConstants.TRANSFER_VELOCITY));
             case SCORE -> rollerMotor.setControl(velocityControl.withVelocity(-ShooterConstants.TRANSFER_VELOCITY * 4));
             case TRAP -> rollerMotor.setControl(velocityControl.withVelocity(-AmpArmConstants.TRAP_VELOCITY));
+            case REVERSE_INTAKE ->  rollerMotor.setControl(velocityControl.withVelocity(-AmpArmConstants.REVERSE_INTAKE_VELOCITY));
             default -> rollerMotor.stopMotor();
         }
     }
@@ -264,7 +265,8 @@ public class AmpArm extends SubsystemIF {
         PASSING,
         COLLECTED,
         TRAP,
-        SCORE
+        SCORE,
+        REVERSE_INTAKE
     }
 
     @Override

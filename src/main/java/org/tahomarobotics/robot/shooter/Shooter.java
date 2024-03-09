@@ -152,10 +152,6 @@ public class Shooter extends SubsystemIF {
         SafeAKitLogger.recordOutput("Shooter/Target Angle Before Compensation", 0.07068257 + 0.1999213 * Math.pow(Math.E, -0.5485811 * distance));
         distance += (radialVelocity * (radialVelocity > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE));
 
-        if (RobotState.isAutonomous()) {
-            distance += 1.0 / 2d * 4.0 * TIME_SHOT_OFFSET_POSITIVE * TIME_SHOT_OFFSET_POSITIVE;
-        }
-
         setAngle(switch (RobotIdentity.robotID) {
             // y = 0.07068257 + 0.1999213*e^(-0.5485811*x)
             case PLAYBEAR_CARTI -> 0.07068257 + 0.1999213 * Math.pow(Math.E, -0.5485811 * distance);

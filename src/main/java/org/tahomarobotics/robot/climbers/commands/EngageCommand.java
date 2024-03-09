@@ -23,7 +23,7 @@ public class EngageCommand extends SequentialCommandGroup {
                 AmpArmCommands.AMP_ARM_CLIMB.get(),
                 Commands.runOnce(ampArm::shiftNote),
                 Commands.waitUntil(ampArm::isRollerAtPosition),
-                Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)),
+                Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.COLLECTED)),
                 new HitSomething(-0.5)
         );
     }

@@ -54,7 +54,7 @@ public class AmpArmCommands {
 
         AMP_ARM_TRAP = () -> Commands.sequence(
                 Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.TRAP)),
-                Commands.waitUntil(ampArm::isArmAtPosition),
+//                Commands.waitUntil(ampArm::isArmAtPosition),
                 Commands.waitUntil(ampArm::isWristAtPosition)
         );
     }
@@ -92,7 +92,7 @@ public class AmpArmCommands {
                     indexer.transitionToReverseIntaking();
                 }),
                 Commands.waitSeconds(0.1),
-                Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.SCORE)),
+                Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.REVERSE_INTAKE)),
                 Commands.waitUntil(indexer::getCollectorBeanBake).withTimeout(2.0),
                 Commands.waitSeconds(0.05),
                 Commands.runOnce(() -> {

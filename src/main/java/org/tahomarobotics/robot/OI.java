@@ -167,6 +167,10 @@ public class OI extends SubsystemIF {
         ));
     }
 
+    public boolean isManipXPressed() {
+        return manipController.x().getAsBoolean();
+    }
+
     private static double deadband(double value, double deadZone) {
         if (Math.abs(value) > deadZone) {
             if (value > 0.0) {

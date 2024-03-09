@@ -117,6 +117,7 @@ public class Climbers extends SubsystemIF {
         SafeAKitLogger.recordOutput("Climbers/Right Current", rightClimber.getCurrent());
         SafeAKitLogger.recordOutput("Climbers/Total Current", totalCurrent);
         SafeAKitLogger.recordOutput("Climbers/Energy", energyUsed);
+        SafeAKitLogger.recordOutput("Climbers/Climb State", getClimbState());
     }
 
 

@@ -81,6 +81,7 @@ public class AmpArmConstants {
 
     public static final double NOTE_INTAKE_POSITION = 1;
     public static final double TRAP_VELOCITY = 3;
+    public static final double REVERSE_INTAKE_VELOCITY = 10;
 
     static {
         switch (RobotIdentity.robotID) {

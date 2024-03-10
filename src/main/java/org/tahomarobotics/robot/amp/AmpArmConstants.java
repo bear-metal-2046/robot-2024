@@ -52,6 +52,9 @@ public class AmpArmConstants {
     public static final double WRIST_MOVING_POSE, WRIST_AMP_POSE, WRIST_TRAP_POSE, WRIST_SOURCE_POSE;
     public static final double WRIST_STOW_POSE = 0;
 
+    // The angle at which the wrist exits moving pose and transitions to the following state.
+    public static final double WRIST_MOVING_POSE_THRESHOLD = Units.degreesToRotations(5);
+
     static {
         switch (RobotIdentity.robotID) {
             case PLAYBEAR_CARTI, BEARITONE -> {

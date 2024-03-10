@@ -28,23 +28,25 @@ public class AmpArmCommands {
         ARM_TO_AMP = () -> Commands.sequence(
                 Commands.runOnce(() -> ampArm.setWristPosition(WRIST_MOVING_POSE)),
                 Commands.runOnce(() -> ampArm.setArmPosition(ARM_AMP_POSE)),
-                Commands.waitUntil(ampArm::isArmAtPosition),
-                Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.AMP))
+                Commands.waitUntil(ampArm::isArmAtPosition).alongWith(
+                        Commands.waitUntil(() -> ampArm.getArmPosition() > WRIST_MOVING_POSE_THRESHOLD)
+                                .andThen(Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.AMP))))
         );
 
         ARM_TO_STOW = () -> Commands.sequence(
                 Commands.runOnce(() -> ampArm.setWristPosition(WRIST_MOVING_POSE)),
                 Commands.runOnce(() -> ampArm.setArmPosition(ARM_STOW_POSE)),
                 Commands.waitUntil(ampArm::isArmAtPosition).alongWith(
-                        Commands.waitUntil(() -> ampArm.getArmPosition() < 0.0)
+                        Commands.waitUntil(() -> ampArm.getArmPosition() < -WRIST_MOVING_POSE_THRESHOLD)
                                 .andThen(Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.STOW))))
         );
 
         ARM_TO_SOURCE = () -> Commands.sequence(
                 Commands.runOnce(() -> ampArm.setWristPosition(WRIST_MOVING_POSE)),
                 Commands.runOnce(() -> ampArm.setArmPosition(ARM_SOURCE_POSE)),
-                Commands.waitUntil(ampArm::isArmAtPosition),
-                Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.SOURCE))
+                Commands.waitUntil(ampArm::isArmAtPosition).alongWith(
+                        Commands.waitUntil(() -> ampArm.getArmPosition() > WRIST_MOVING_POSE_THRESHOLD)
+                                .andThen(Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.SOURCE))))
         );
 
         ARM_TO_CLIMB = () -> Commands.sequence(
@@ -54,7 +56,6 @@ public class AmpArmCommands {
 
         ARM_TO_TRAP = () -> Commands.sequence(
                 Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.TRAP)),
-//                Commands.waitUntil(ampArm::isArmAtPosition),
                 Commands.waitUntil(ampArm::isWristAtPosition)
         );
     }

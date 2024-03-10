@@ -29,8 +29,11 @@ public class NapCorrectingKinematics extends SwerveDriveKinematics {
         this.gyroSupplier = gyroSupplier;
         this.poseSupplier = poseSupplier;
 
-        sourceSideFieldCompensation = new Compensation(1.0, 1.0, 0.976, 1.0);
-        ampSideFieldCompensation = new Compensation(1.0, 1.0, 0.976, 1.0);
+//        this is for feild house carpet
+//        sourceSideFieldCompensation = new Compensation(1.0, 1.0, 0.976, 1.0);
+//        ampSideFieldCompensation = new Compensation(1.0, 1.0, 0.976, 1.0);
+        sourceSideFieldCompensation = new Compensation(1.0, 0.987654321, 1.0, 1.0);
+        ampSideFieldCompensation = new Compensation(1.0, 0.987654321,1.0, 1.0);
     }
 
 

@@ -7,7 +7,6 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.littletonrobotics.junction.AutoLog;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.RobotConfiguration;
@@ -41,13 +40,15 @@ class ShooterIO {
     private final MotionMagicVelocityVoltage motorVelocity = new MotionMagicVelocityVoltage(SHOOTER_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage idleVelocity = new MotionMagicVelocityVoltage(IDLE_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage transferVelocity = new MotionMagicVelocityVoltage(TRANSFER_VELOCITY).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
-    private final MotionMagicVelocityVoltage reverseIntakeVelocity = new MotionMagicVelocityVoltage(-TRANSFER_VELOCITY).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
+    private final MotionMagicVelocityVoltage reverseIntakeVelocity = new MotionMagicVelocityVoltage(-REVERSE_INTAKE_VELOCITY).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
 
     protected double angle = 0.0;
 
     private boolean shootingMode = false;
     private boolean idleMode = true;
     private boolean isZeroed = false;
+
+    private double targetShooterSpeed = 0.0;
 
     @AutoLog
     static class ShooterIOInputs {
@@ -92,7 +93,7 @@ class ShooterIO {
     }
 
     boolean isSpinningAtVelocity() {
-        return Math.abs(SHOOTER_SPEED - getShooterVelocity()) < SHOOTER_SPEED_TOLERANCE;
+        return Math.abs(targetShooterSpeed - getShooterVelocity()) < SHOOTER_SPEED_TOLERANCE;
     }
 
     boolean isAtAngle() {
@@ -111,6 +112,9 @@ class ShooterIO {
         return pivotVelocity.getValue();
     }
 
+    boolean isIdling() {
+        return idleMode;
+    }
 
     // SETTERS
 
@@ -132,11 +136,15 @@ class ShooterIO {
     }
 
     void transferToAmp() {
+        targetShooterSpeed = transferVelocity.Velocity;
+
         shooterMotor.setControl(transferVelocity);
         shooterMotorFollower.setControl(transferVelocity);
     }
 
     void reverseIntake() {
+        targetShooterSpeed = reverseIntakeVelocity.Velocity;
+
         shooterMotor.setControl(reverseIntakeVelocity);
         shooterMotorFollower.setControl(reverseIntakeVelocity);
     }
@@ -148,17 +156,23 @@ class ShooterIO {
 
     // STATES
     void enable() {
+        targetShooterSpeed = motorVelocity.Velocity;
+
         shooterMotor.setControl(motorVelocity);
         shooterMotorFollower.setControl(motorVelocity);
     }
 
     void idle() {
+        targetShooterSpeed = idleVelocity.Velocity;
+
         idleMode = true;
         shooterMotor.setControl(idleVelocity);
         shooterMotorFollower.setControl(idleVelocity);
     }
 
     void stop() {
+        targetShooterSpeed = 0.0;
+
         idleMode = false;
         shooterMotor.stopMotor();
         shooterMotorFollower.stopMotor();

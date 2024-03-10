@@ -7,12 +7,12 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
@@ -36,7 +36,7 @@ import org.tahomarobotics.robot.vision.VisionConstants;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.tahomarobotics.robot.shooter.ShooterConstants.SPEAKER_TARGET_POSITION;
+import static org.tahomarobotics.robot.shooter.ShooterConstants.*;
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
 public class Chassis extends SubsystemIF {
@@ -69,6 +69,7 @@ public class Chassis extends SubsystemIF {
     private double targetShootingAngle;
 
     private ChassisSpeeds currentChassisSpeeds = new ChassisSpeeds();
+    private ChassisSpeeds currentChassisAccel = new ChassisSpeeds();
 
     private double energyUsed = 0;
 
@@ -182,12 +183,24 @@ public class Chassis extends SubsystemIF {
         return modules.stream().map(SwerveModule::getState).toArray(SwerveModuleState[]::new);
     }
 
+    private SwerveModuleState[] getSwerveModuleAccelerationStates() {
+        return modules.stream().map(SwerveModule::getAccelerationState).toArray(SwerveModuleState[]::new);
+    }
+
+    private SwerveModuleState[] getSwerveModuleRawAccelerationStates() {
+        return modules.stream().map(SwerveModule::getRawAccelerationState).toArray(SwerveModuleState[]::new);
+    }
+
     private SwerveModuleState[] getSwerveModuleDesiredStates() {
         return modules.stream().map(SwerveModule::getDesiredState).toArray(SwerveModuleState[]::new);
     }
 
     public ChassisSpeeds getCurrentChassisSpeeds() {
         return currentChassisSpeeds;
+    }
+
+    private ChassisSpeeds getCurrentChassisAcceleration() {
+        return currentChassisAccel;
     }
 
     // PERIODIC
@@ -198,6 +211,8 @@ public class Chassis extends SubsystemIF {
         Pose2d pose = getPose();
 
         currentChassisSpeeds = kinematics.toChassisSpeeds(getSwerveModuleStates());
+        currentChassisAccel = kinematics.toChassisSpeeds(getSwerveModuleAccelerationStates());
+        var currentChassisRawAccel = kinematics.toChassisSpeeds(getSwerveModuleRawAccelerationStates());
 
         double voltage = RobotController.getBatteryVoltage();
         totalCurrent = modules.stream().mapToDouble(SwerveModule::getTotalCurent).sum();
@@ -206,10 +221,12 @@ public class Chassis extends SubsystemIF {
         SafeAKitLogger.recordOutput("Chassis/States", getSwerveModuleStates());
         SafeAKitLogger.recordOutput("Chassis/DesiredState", getSwerveModuleDesiredStates());
         SafeAKitLogger.recordOutput("Chassis/CurrentChassisSpeeds", getCurrentChassisSpeeds());
+        SafeAKitLogger.recordOutput("Chassis/CurrentChassisAccel", getCurrentChassisAcceleration());
+        SafeAKitLogger.recordOutput("Chassis/CurrentChassisRawAccel", currentChassisRawAccel);
         SafeAKitLogger.recordOutput("Chassis/Gyro/Yaw", getYaw());
         SafeAKitLogger.recordOutput("Chassis/Pose", pose);
-        SafeAKitLogger.recordOutput("Chassis/isAtShootingAngle", isReadyToShoot());
-        SafeAKitLogger.recordOutput("Chassis/target shooting angle", targetShootingAngle);
+        SafeAKitLogger.recordOutput("Chassis/IsAtShootingAngle?", isReadyToShoot());
+        SafeAKitLogger.recordOutput("Chassis/TargetShootingAngle", targetShootingAngle);
 
         SafeAKitLogger.recordOutput("Chassis/Energy", getEnergyUsed());
         SafeAKitLogger.recordOutput("Chassis/TotalCurrent", totalCurrent);
@@ -277,14 +294,29 @@ public class Chassis extends SubsystemIF {
         // X component is towards/from goal, Y component is tangential to goal
         var curSpeeds = getCurrentChassisSpeeds();
         var speedsTranslation = new Translation2d(curSpeeds.vxMetersPerSecond, curSpeeds.vyMetersPerSecond);
-
         var speedsToGoal = speedsTranslation.rotateBy(robotToGoal.getAngle().unaryMinus());
+
+        var curAccel = getCurrentChassisAcceleration();
+        var accelTranslation = new Translation2d(curAccel.vxMetersPerSecond, curAccel.vyMetersPerSecond);
+        var accelToGoal = accelTranslation.rotateBy(robotToGoal.getAngle().unaryMinus());
 
         double tangentialComponent = speedsToGoal.getY();
         double radialComponent = speedsToGoal.getX();
 
+        SafeAKitLogger.recordOutput("Chassis/RadialVelocity", radialComponent);
+        SafeAKitLogger.recordOutput("Chassis/TangentialVelocity", tangentialComponent);
+
+        double timeShotOffset = (radialComponent > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE);
+        var positionChangeVelocityOnly = speedsTranslation.times(timeShotOffset);
+
+        var velocityChange = accelTranslation.times(timeShotOffset);
+        var positionChange = speedsTranslation.plus(velocityChange).times(timeShotOffset);
+
+        SafeAKitLogger.recordOutput("Chassis/TOF Velocity-Only Pose", pose.plus(new Transform2d(positionChangeVelocityOnly, pose.getRotation())));
+        SafeAKitLogger.recordOutput("Chassis/TOF Fully-Integrated Pose", pose.plus(new Transform2d(positionChange, pose.getRotation())));
+
         // Shooter angle speed compensation
-        Shooter.getInstance().angleToSpeaker(radialComponent);
+        Shooter.getInstance().angleToSpeaker(radialComponent, accelToGoal.getX());
 
         // Calculate position and velocity adjustment
         double adj = Math.atan2(-tangentialComponent, ShooterConstants.SHOT_SPEED + radialComponent);

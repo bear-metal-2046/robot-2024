@@ -27,8 +27,7 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import static org.tahomarobotics.robot.amp.commands.AmpArmCommands.AMP_ARM_CTRL;
-import static org.tahomarobotics.robot.amp.commands.AmpArmCommands.ARM_TO_STOW;
+import static org.tahomarobotics.robot.amp.commands.AmpArmCommands.*;
 
 public class OI extends SubsystemIF {
     private final static OI INSTANCE = new OI();
@@ -146,7 +145,8 @@ public class OI extends SubsystemIF {
                 .onlyIf(ampArm::isArmAtSource))
                 .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED))
                 .onlyIf(ampArm::isArmAtSource))
-                .onFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.COLLECTED)));
+                .onFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.COLLECTED))
+                .onlyIf(ampArm::isArmAtSource));
 
         driveController.leftTrigger(0.5)
                 .onTrue(Commands.runOnce(() -> collector.setIsCollecting(true)))
@@ -155,6 +155,8 @@ public class OI extends SubsystemIF {
         driveController.povLeft()
                 .onTrue(Commands.runOnce(() -> collector.setIsEjecting(true)))
                 .onFalse(Commands.runOnce(() -> collector.setIsEjecting(false)));
+
+        manipController.y().onTrue(Commands.deferredProxy(FEEDBACK));
     }
 
     private void setDefaultCommands() {
@@ -165,6 +167,10 @@ public class OI extends SubsystemIF {
                     inputs.rot = -desensitizePowerBased(driveController.getRightX(), ROTATIONAL_SENSITIVITY);
                 }
         ));
+    }
+
+    public boolean isManipXPressed() {
+        return manipController.x().getAsBoolean();
     }
 
     private static double deadband(double value, double deadZone) {

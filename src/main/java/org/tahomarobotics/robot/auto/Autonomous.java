@@ -74,8 +74,6 @@ public class Autonomous extends SubsystemIF {
 
         autoChooser = PathPlannerHelper.getAutoChooser(chassis, this::onAutoChange);
 
-        // TODO: Test this with DriverStation;
-        //  as the simulation interface does allow for changing it when not disconnected.
         var inst = NetworkTableInstance.getDefault();
         inst.addListener(
                 inst.getBooleanTopic("/FMSInfo/IsRedAlliance").getEntry(true),

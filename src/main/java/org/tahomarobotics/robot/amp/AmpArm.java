@@ -108,6 +108,10 @@ public class AmpArm extends SubsystemIF {
         return armCurrent.getValueAsDouble();
     }
 
+    public double getRollerCurrent() {
+        return rollerCurrent.getValue();
+    }
+
     // STATE CONTROL
 
     public void setArmState(ArmState state) {
@@ -154,6 +158,7 @@ public class AmpArm extends SubsystemIF {
             case PASSING -> rollerMotor.setControl(velocityControl.withVelocity(ShooterConstants.TRANSFER_VELOCITY));
             case SCORE -> rollerMotor.setControl(velocityControl.withVelocity(-ShooterConstants.TRANSFER_VELOCITY * 4));
             case TRAP -> rollerMotor.setControl(velocityControl.withVelocity(-AmpArmConstants.TRAP_VELOCITY));
+            case REVERSE_INTAKE ->  rollerMotor.setControl(velocityControl.withVelocity(-AmpArmConstants.REVERSE_INTAKE_VELOCITY));
             default -> rollerMotor.stopMotor();
         }
     }
@@ -166,6 +171,11 @@ public class AmpArm extends SubsystemIF {
     public void shiftNote() {
         rollerMotor.setPosition(0);
         setRollerPosition(NOTE_INTAKE_POSITION);
+    }
+
+    public void sourceIntake() {
+        rollerMotor.setPosition(0.0);
+        setRollerPosition(SOURCE_INTAKE_POSITION);
     }
 
     // STATE CHECKING
@@ -186,7 +196,7 @@ public class AmpArm extends SubsystemIF {
         return armState == ArmState.SOURCE;
     }
 
-    public boolean hasRollerCollected() {
+    public boolean isRollerCollected() {
         return rollerState == RollerState.COLLECTED;
     }
 
@@ -264,7 +274,8 @@ public class AmpArm extends SubsystemIF {
         PASSING,
         COLLECTED,
         TRAP,
-        SCORE
+        SCORE,
+        REVERSE_INTAKE
     }
 
     @Override

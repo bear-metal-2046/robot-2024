@@ -6,6 +6,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.Robot;
@@ -124,7 +125,7 @@ public class Shooter extends SubsystemIF {
         return io.isReadyToShoot();
     }
 
-    public boolean isSpinningAtVelocity() {
+    public boolean isAtVelocity() {
         return io.isSpinningAtVelocity();
     }
 
@@ -140,28 +141,35 @@ public class Shooter extends SubsystemIF {
         return io.getPivotVelocity();
     }
 
-    public void angleToSpeaker(double radialVelocity) {
+    public void angleToSpeaker(double radialVelocity, double radialAcceleration) {
         if (DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Blue)
             radialVelocity *= -1;
 
         Translation2d target = SPEAKER_TARGET_POSITION.get();
         distance = Chassis.getInstance().getPose().getTranslation().getDistance(target) + SHOOTER_PIVOT_OFFSET.getX();
 
-        SafeAKitLogger.recordOutput("Shooter/Radial Velocity", radialVelocity);
-        SafeAKitLogger.recordOutput("Shooter/Target Angle Before Compensation", 0.07068257 + 0.1999213 * Math.pow(Math.E, -0.5485811 * distance));
-        distance += (radialVelocity * (radialVelocity > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE));
+        SafeAKitLogger.recordOutput("Shooter/Target Angle Before Compensation", angleCalc(distance));
 
-        if (RobotState.isAutonomous()) {
-            distance += 1.0 / 2d * 4.0 * TIME_SHOT_OFFSET_POSITIVE * TIME_SHOT_OFFSET_POSITIVE;
-        }
+        double timeShotOffset = (radialVelocity > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE);
+        double velocityChange = radialAcceleration * timeShotOffset;
 
-        setAngle(switch (RobotIdentity.robotID) {
+        double targetAngleVelocityOnly = angleCalc(distance + radialVelocity * timeShotOffset);
+        double targetAngle = angleCalc(distance + (radialVelocity + velocityChange) * timeShotOffset);
+
+        SafeAKitLogger.recordOutput("Shooter/Target Angle Velocity-Only", targetAngleVelocityOnly);
+        SafeAKitLogger.recordOutput("Shooter/Target Angle Fully-Integrated", targetAngle);
+
+        setAngle(targetAngleVelocityOnly);
+    }
+
+    private double angleCalc(double distance) {
+        return switch (RobotIdentity.robotID) {
             // y = 0.07068257 + 0.1999213*e^(-0.5485811*x)
             case PLAYBEAR_CARTI -> 0.07068257 + 0.1999213 * Math.pow(Math.E, -0.5485811 * distance);
             // y = 0.0000369x^4 - 0.00108x^3 + 0.0126x^2 - 0.0706x + 0.234
             case BEARITONE -> 0.0000369 * Math.pow(distance, 4) - 0.00108 * Math.pow(distance, 3) + 0.0126 * Math.pow(distance, 2) - 0.0706 * distance + 0.234;
             default -> 0.04875446 + (0.201136 - 0.04875446)/(1 + Math.pow((distance/2.019404), 2.137465)) + 0.002;
-        });
+        };
     }
 
     public void setPivotVoltage(double voltage) {
@@ -191,7 +199,7 @@ public class Shooter extends SubsystemIF {
         SafeAKitLogger.recordOutput("Shooter/Bias Degrees", Units.rotationsToDegrees(biasAngle));
         SafeAKitLogger.recordOutput("Shooter/Distance To Speaker", distance);
         SafeAKitLogger.recordOutput("Shooter/Is at Angle", isAtAngle());
-        SafeAKitLogger.recordOutput("Shooter/Is Spinning At velocity", isSpinningAtVelocity());
+        SafeAKitLogger.recordOutput("Shooter/Is Spinning At velocity", isAtVelocity());
         SafeAKitLogger.recordOutput("Shooter/Is In Shooting Mode", inShootingMode());
         SafeAKitLogger.recordOutput("Shooter/Distance", distance);
         SafeAKitLogger.recordOutput("Shooter/Velocity", getShooterVelocity());
@@ -200,6 +208,8 @@ public class Shooter extends SubsystemIF {
 
         SafeAKitLogger.recordOutput("Shooter/TotalCurrent", totalCurrent);
         SafeAKitLogger.recordOutput("Shooter/Energy", getEnergyUsed());
+        SmartDashboard.putBoolean("Shooter/IdleMode", io.isIdling());
+        SmartDashboard.putNumber("Shooter/Bias", biasAngle);
 
 
     }

@@ -109,7 +109,6 @@ public class AmpArmCommands {
 
         AMP_ARM_CTRL = Commands.deferredProxy(() -> {
             if ((ampArm.isArmAtSource() || ampArm.isArmAtAmp()) && ampArm.isRollerCollected()) {
-                // TODO: But pass back back in once the shooter is fixed.
                 return Commands.defer(ARM_TO_STOW, Set.of(ampArm, indexer, shooter));
             } if (ampArm.isArmAtAmp() || ampArm.isArmAtSource() || ampArm.isArmAtTrap()) {
                 return Commands.defer(ARM_TO_STOW, Set.of(ampArm, shooter));

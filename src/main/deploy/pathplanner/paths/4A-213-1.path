@@ -8,36 +8,36 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.40079796529222,
-        "y": 5.529610244095976
+        "x": 4.969897507362582,
+        "y": 5.935099437766444
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.165324871172686,
-        "y": 7.402237188793511
+        "x": 8.08536247703126,
+        "y": 5.851897109199625
       },
       "prevControl": {
-        "x": 8.36828848691912,
-        "y": 7.402019677675194
+        "x": 5.996059559686686,
+        "y": 6.6931650980419075
       },
       "nextControl": {
-        "x": 7.922865264323926,
-        "y": 7.4024970267947126
+        "x": 8.310951771752705,
+        "y": 5.761062481679042
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.285599268191427,
-        "y": 6.800320484130904
+        "x": 5.206429841431112,
+        "y": 6.743350629558403
       },
       "prevControl": {
-        "x": 6.524861208110295,
-        "y": 6.904076534631991
+        "x": 5.681739651767591,
+        "y": 6.683920394867817
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,8 +46,8 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.8,
-      "rotationDegrees": 19.33404538412144,
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": -13.570220025616273,
       "rotateFast": false
     },
     {
@@ -72,7 +72,7 @@
   "eventMarkers": [
     {
       "name": "Shoot",
-      "waypointRelativePos": 1.8,
+      "waypointRelativePos": 1.6,
       "command": {
         "type": "parallel",
         "data": {
@@ -117,7 +117,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "4A-123",
+  "folder": "4A-213",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

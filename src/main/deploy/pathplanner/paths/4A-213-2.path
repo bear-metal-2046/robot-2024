@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.285599268191427,
-        "y": 6.800320484130904
+        "x": 5.206429841431112,
+        "y": 6.743350629558403
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.859900497294308,
-        "y": 6.54880068448024
+        "x": 5.780731070533993,
+        "y": 6.491830829907739
       },
       "isLocked": false,
       "linkedName": "4A-1"
     },
     {
       "anchor": {
-        "x": 7.930572381063118,
-        "y": 5.847835624003877
+        "x": 8.159320102423989,
+        "y": 7.405007242446917
       },
       "prevControl": {
-        "x": 7.676325371193893,
-        "y": 5.940502414026581
+        "x": 7.8727343040271665,
+        "y": 7.3033155075319165
       },
       "nextControl": {
-        "x": 8.170727769595707,
-        "y": 5.760304883825583
+        "x": 8.400213632632498,
+        "y": 7.490485591875744
       },
       "isLocked": false,
       "linkedName": null
@@ -46,9 +46,9 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1,
-      "rotationDegrees": -22.6177847057154,
-      "rotateFast": false
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 33.40782458970901,
+      "rotateFast": true
     }
   ],
   "constraintZones": [],
@@ -83,7 +83,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "4A-123",
+  "folder": "4A-213",
   "previewStartingState": {
     "rotation": -25.941104997334726,
     "velocity": 0

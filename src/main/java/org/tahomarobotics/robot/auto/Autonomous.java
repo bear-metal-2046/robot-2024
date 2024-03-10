@@ -78,13 +78,7 @@ public class Autonomous extends SubsystemIF {
         inst.addListener(
                 inst.getBooleanTopic("/FMSInfo/IsRedAlliance").getEntry(true),
                 EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-                e -> {
-                    var command = autoChooser.get();
-                    if (command != null)
-                        this.onAutoChange(command.getName());
-                    else
-                        this.onAutoChange(AutoConstants.DEFAULT_AUTO_NAME);
-                }
+                e -> this.onAutoChange(autoChooser.get().getName())
         );
     }
 

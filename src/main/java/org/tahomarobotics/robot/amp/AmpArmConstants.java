@@ -29,7 +29,7 @@ public class AmpArmConstants {
                 (16.0 / 64.0) * (18.0 / 72.0) * (16.0 / 48.0);
 
         switch (RobotIdentity.robotID) {
-            case BEARITONE -> {
+            case PLAYBEAR_CARTI, BEARITONE -> {
                 ARM_STOW_POSE = Units.degreesToRotations(-90.00);
                 ARM_AMP_POSE = Units.degreesToRotations(72.51);
                 ARM_TRAP_POSE = Units.degreesToRotations(62.66);

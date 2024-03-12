@@ -43,16 +43,16 @@ public class EngageCommand extends SequentialCommandGroup {
 
         if (climbers.isTrapping())
             addCommands(
-                    new DriveForwardCommand(-0.5, 1.765132)
-            );
-        else
-            addCommands(
                     AmpArmCommands.ARM_TO_CLIMB.get(),
                     Commands.runOnce(ampArm::shiftNote),
                     Commands.runOnce(() -> logger.info("Shifted Note Back")),
                     Commands.waitUntil(ampArm::isRollerAtPosition),
                     Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.COLLECTED)),
                     new HitSomething(-0.5)
+            );
+        else
+            addCommands(
+                    new DriveForwardCommand(-0.5, 1.765132)
             );
 
         addCommands(

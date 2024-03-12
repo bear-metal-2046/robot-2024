@@ -153,8 +153,16 @@ public class OI extends SubsystemIF {
                 .onFalse(Commands.runOnce(() -> collector.setIsCollecting(false)));
 
         driveController.povLeft()
-                .onTrue(Commands.runOnce(() -> collector.setIsEjecting(true)))
-                .onFalse(Commands.runOnce(() -> collector.setIsEjecting(false)));
+                .onTrue(Commands.runOnce(() -> {
+                    collector.setIsEjecting(true);
+                    shooter.enable();
+                    ampArm.setRollerState(AmpArm.RollerState.PASSING);
+                }))
+                .onFalse(Commands.runOnce(() -> {
+                    collector.setIsEjecting(false);
+                    shooter.stop();
+                    ampArm.setRollerState(AmpArm.RollerState.DISABLED);
+                }));
 
         manipController.y().onTrue(Commands.deferredProxy(FEEDBACK));
     }

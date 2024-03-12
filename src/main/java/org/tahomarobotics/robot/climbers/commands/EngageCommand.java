@@ -11,6 +11,7 @@ import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.amp.commands.AmpArmCommands;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.chassis.ChassisConstants;
+import org.tahomarobotics.robot.chassis.commands.DriveForwardCommand;
 import org.tahomarobotics.robot.chassis.commands.HitSomething;
 import org.tahomarobotics.robot.climbers.ClimberConstants;
 import org.tahomarobotics.robot.climbers.Climbers;
@@ -36,14 +37,25 @@ public class EngageCommand extends SequentialCommandGroup {
 
         addCommands(
                 Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.ENGAGING)),
-                AutoBuilder.pathfindToPose(target, ChassisConstants.CLIMB_MOVEMENT_CONSTRAINTS),
                 Commands.runOnce(() -> logger.info("Pathfinding To Pre-climb Pose")),
-                AmpArmCommands.ARM_TO_CLIMB.get(),
-                Commands.runOnce(ampArm::shiftNote),
-                Commands.runOnce(() -> logger.info("Shifted Note Back")),
-                Commands.waitUntil(ampArm::isRollerAtPosition),
-                Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.COLLECTED)),
-                new HitSomething(-0.5),
+                AutoBuilder.pathfindToPose(target, ChassisConstants.CLIMB_MOVEMENT_CONSTRAINTS)
+        );
+
+        if (climbers.isTrapping())
+            addCommands(
+                    new DriveForwardCommand(-0.5, 1.765132)
+            );
+        else
+            addCommands(
+                    AmpArmCommands.ARM_TO_CLIMB.get(),
+                    Commands.runOnce(ampArm::shiftNote),
+                    Commands.runOnce(() -> logger.info("Shifted Note Back")),
+                    Commands.waitUntil(ampArm::isRollerAtPosition),
+                    Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.COLLECTED)),
+                    new HitSomething(-0.5)
+            );
+
+        addCommands(
                 Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.ENGAGED))
         );
     }

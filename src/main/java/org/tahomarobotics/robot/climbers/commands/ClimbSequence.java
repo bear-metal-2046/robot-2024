@@ -20,22 +20,26 @@ public class ClimbSequence extends SequentialCommandGroup {
         Climbers climbers = Climbers.getInstance();
         AmpArm ampArm = AmpArm.getInstance();
 
-        if (ampArm.isRollerCollected())
+        addCommands(
+                Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.CLIMBING))
+        );
+
+        if (climbers.isTrapping())
             addCommands(
-                    Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.CLIMBING)),
                     new LadenClimbCommand(BOTTOM_POSITION),
                     AmpArmCommands.ARM_TO_TRAP.get(),
                     Commands.waitSeconds(0.25),
                     Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.TRAP)),
                     Commands.waitUntil(OI.getInstance()::isManipXPressed).raceWith(Commands.waitSeconds(5)),
-                    new LadenClimbCommand(ALMOST_BOTTOM_POSITION),
-                    Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.CLIMBED))
+                    new LadenClimbCommand(ALMOST_BOTTOM_POSITION)
             );
         else
             addCommands(
-                    Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.CLIMBING)),
-                    new LadenClimbCommand(ALMOST_BOTTOM_POSITION),
-                    Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.CLIMBED))
+                    new LadenClimbCommand(ALMOST_BOTTOM_POSITION)
             );
+
+        addCommands(
+                Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.CLIMBED))
+        );
     }
 }

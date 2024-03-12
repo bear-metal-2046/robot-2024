@@ -25,6 +25,8 @@ public class Climbers extends SubsystemIF {
 
     private double totalCurrent = 0;
 
+    private boolean trapping = false;
+
     private Climbers() {
         leftClimber = new Climber(RobotMap.LEFT_CLIMB_MOTOR, "Left Climber", true);
         rightClimber = new Climber(RobotMap.RIGHT_CLIMB_MOTOR, "Right Climber", false);
@@ -94,6 +96,14 @@ public class Climbers extends SubsystemIF {
     @Override
     public double getTotalCurrent() {
         return totalCurrent;
+    }
+
+    public boolean isTrapping() {
+        return trapping;
+    }
+
+    public void setTrapping(boolean trapping) {
+        this.trapping = trapping;
     }
 
     @Override

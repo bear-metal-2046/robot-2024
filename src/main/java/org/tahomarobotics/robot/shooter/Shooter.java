@@ -47,9 +47,8 @@ public class Shooter extends SubsystemIF {
 
     @Override
     public SubsystemIF initialize() {
-
         Commands.waitUntil(() -> RobotState.isEnabled() && RobotState.isTeleop())
-                .andThen(new ZeroShooterCommand().andThen(Commands.runOnce(this::idle)))
+                .andThen(new ZeroShooterCommand())
                 .ignoringDisable(true).schedule();
 
         io.zero();

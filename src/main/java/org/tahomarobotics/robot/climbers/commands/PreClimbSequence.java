@@ -20,18 +20,17 @@ public class PreClimbSequence extends SequentialCommandGroup {
 
     public PreClimbSequence() {
         Climbers climbers = Climbers.getInstance();
-        Indexer indexer = Indexer.getInstance();
+
+        climbers.setTrapping(Indexer.getInstance().isCollected());
 
         addCommands(
                 Commands.runOnce(() -> logger.info("Pre-Climb Sequence Started")),
-                Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.PRE_CLIMBING)),
+                Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.READY)),
                 AmpArmCommands.ARM_TO_STOW.get()
         );
 
-        if (indexer.isCollected())
-            addCommands(
-                    AmpArmCommands.FEEDFORWARD.get()
-            );
+        if (climbers.isTrapping())
+            addCommands(AmpArmCommands.FEEDFORWARD.get());
 
         addCommands(
                 Commands.runOnce(() -> Shooter.getInstance().setAngle(ShooterConstants.MAX_PIVOT_ANGLE)),

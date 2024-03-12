@@ -11,6 +11,8 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Commands;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
@@ -26,6 +28,8 @@ import org.tahomarobotics.robot.util.SubsystemIF;
 import static org.tahomarobotics.robot.collector.CollectorConstants.*;
 
 public class Collector extends SubsystemIF {
+    private static final Logger logger = LoggerFactory.getLogger(Collector.class);
+
 
     private static final Collector INSTANCE = new Collector();
 
@@ -131,16 +135,19 @@ public class Collector extends SubsystemIF {
     }
 
     public void setDeployEject() {
+        logger.info("Collector Ejecting");
         deploymentState = DeploymentState.EJECT;
         setDeployPosition(EJECT_POSITION);
     }
 
     public void setDeployed() {
+        logger.info("Collector Deployed");
         deploymentState = DeploymentState.DEPLOYED;
         setDeployPosition(COLLECT_POSITION);
     }
 
     public void setStowed() {
+        logger.info("Collector Stowed");
         deploymentState = DeploymentState.STOWED;
         setDeployPosition(STOW_POSITION);
     }
@@ -172,6 +179,7 @@ public class Collector extends SubsystemIF {
     // STATE CONTROL
 
     public void setCollectionState(CollectionState state) {
+        logger.info("Set Collection State To: " + state.name());
         collectionState = state;
     }
 

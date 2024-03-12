@@ -48,7 +48,7 @@ public class Autonomous extends SubsystemIF {
 
         NamedCommands.registerCommand("Shoot",
                 Commands.waitUntil(this::everythingIsZeroed)
-                        .andThen(Commands.race(Commands.waitUntil(indexer::hasCollected), Commands.waitSeconds(1))
+                        .andThen(Commands.race(Commands.waitUntil(indexer::isCollected), Commands.waitSeconds(1))
                         .andThen(Commands.runOnce(shooter::enableShootMode))
                         .andThen(new ShootCommand())));
 

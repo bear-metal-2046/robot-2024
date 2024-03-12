@@ -92,7 +92,7 @@ public class AmpArmCommands {
                     indexer.transitionToDisabled();
                     shooter.stop();
                 })
-        ).onlyIf(ampArm::isArmAtStow).onlyIf(indexer::hasCollected);
+        ).onlyIf(ampArm::isArmAtStow).onlyIf(indexer::isCollected);
 
         FEEDBACK = () -> Commands.sequence(
                 Commands.runOnce(() -> logger.info("Feeding Back")),
@@ -111,7 +111,7 @@ public class AmpArmCommands {
                     shooter.stop();
                     ampArm.setArmState(AmpArm.ArmState.STOW);
                 })
-        ).onlyIf(() -> !indexer.hasCollected()).onlyIf(ampArm::isRollerCollected).onlyIf(ampArm::isArmAtStow);
+        ).onlyIf(() -> !indexer.isCollected()).onlyIf(ampArm::isRollerCollected).onlyIf(ampArm::isArmAtStow);
     }
 
     static {
@@ -124,7 +124,7 @@ public class AmpArmCommands {
                 return Commands.defer(ARM_TO_STOW, Set.of(ampArm, indexer, shooter));
             } if (ampArm.isArmAtAmp() || ampArm.isArmAtSource() || ampArm.isArmAtTrap()) {
                 return Commands.defer(ARM_TO_STOW, Set.of(ampArm, shooter));
-            } if (indexer.hasCollected()) {
+            } if (indexer.isCollected()) {
                 return Commands.defer(() -> FEEDFORWARD.get().andThen(ARM_TO_AMP.get()), Set.of(ampArm, indexer, shooter));
             } else if (ampArm.isRollerCollected()) {
                 return Commands.defer(ARM_TO_AMP, Set.of(ampArm));

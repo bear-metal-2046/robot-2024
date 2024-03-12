@@ -166,6 +166,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void autonomousExit() {
         if (autoCommand != null) autoCommand.cancel();
+        Shooter.getInstance().idle();
     }
 
     @Override

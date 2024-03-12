@@ -182,7 +182,7 @@ class ShooterIO {
         if (shootingMode) {
             disableShootMode();
             idle();
-        } else if (Indexer.getInstance().hasCollected()){
+        } else if (Indexer.getInstance().isCollected()){
             enableShootMode();
             enable();
         }

@@ -233,14 +233,14 @@ public class Collector extends SubsystemIF {
 
                 if (isInEject()) toggleDeploy();
 
-                if (isCollecting && !isStowed() && !Indexer.getInstance().hasCollected()) setCollectionState(Collector.CollectionState.COLLECTING);
+                if (isCollecting && !isStowed() && !Indexer.getInstance().isCollected()) setCollectionState(Collector.CollectionState.COLLECTING);
 
                 if (isEjecting) setCollectionState(Collector.CollectionState.EJECTING);
             }
             case COLLECTING -> {
                 collect();
 
-                if (Indexer.getInstance().hasCollected()) toggleDeploy();
+                if (Indexer.getInstance().isCollected()) toggleDeploy();
 
                 if ((!isCollecting && !Indexer.getInstance().isIndexing()) || isStowed()) setCollectionState(Collector.CollectionState.DISABLED);
             }

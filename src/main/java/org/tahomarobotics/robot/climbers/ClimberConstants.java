@@ -8,6 +8,8 @@ import edu.wpi.first.math.util.Units;
 import org.tahomarobotics.robot.identity.RobotIdentity;
 
 public class ClimberConstants {
+    public static final double CLOSENESS_THRESHOLD = 1;
+
     public static final double ZERO_VOLTAGE = -0.75;
     public static final double POSITION_COEFFICIENT = switch (RobotIdentity.robotID) {
         case PLAYBEAR_CARTI -> (9.0 / 50.0) * (18.0 / 50.0) * (2 * Math.PI * 0.0281);
@@ -22,7 +24,7 @@ public class ClimberConstants {
     public static final double CLIMB_MAX_ACCEL = 2;
     public static final double CLIMB_MAX_JERK = 10;
 
-    public static final double TOP_POSITION = 0.575;
+    public static final double TOP_POSITION = 0.56;
 
     public static final double BOTTOM_POSITION = 0.0025;
     public static final double ALMOST_BOTTOM_POSITION = 0.0025 + Units.inchesToMeters(1);

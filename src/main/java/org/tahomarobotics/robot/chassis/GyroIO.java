@@ -7,13 +7,14 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
-
 import java.util.List;
 
 public class GyroIO {
     protected final Pigeon2 pigeon2 = new Pigeon2(RobotMap.PIGEON, RobotConfiguration.CANBUS_NAME);
     private final StatusSignal<Double> yaw = pigeon2.getYaw();
     private final StatusSignal<Double> yawVelocity = pigeon2.getAngularVelocityZWorld();
+
+    private final Chassis chassis = Chassis.getInstance();
 
     GyroIO() {
         pigeon2.getConfigurator().apply(new Pigeon2Configuration());

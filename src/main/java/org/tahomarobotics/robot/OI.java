@@ -20,6 +20,7 @@ import org.tahomarobotics.robot.climbers.commands.*;
 import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
+import org.tahomarobotics.robot.shooter.commands.RedunShootCommand;
 import org.tahomarobotics.robot.shooter.commands.ShootCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
@@ -97,6 +98,16 @@ public class OI extends SubsystemIF {
         manipController.povDown().onTrue(Commands.runOnce(shooter::biasDown));
         manipController.start().onTrue(Commands.runOnce(shooter::resetBias));
 
+        manipController.rightBumper().onTrue(Commands.runOnce(shooter::toggleRedundantShootMode));
+        manipController.povLeft().onTrue(Commands.runOnce(() -> {
+            shooter.enableRedundantShootMode();
+            shooter.setAngle(ShooterConstants.CLOSE_REDUNDANT_ANGLE);
+        } ));
+        manipController.povRight().onTrue(Commands.runOnce(() -> {
+            shooter.enableRedundantShootMode();
+            shooter.setAngle(ShooterConstants.FAR_REDUNDANT_ANGLE);
+        } ));
+
         manipController.b().onTrue(Commands.runOnce(shooter::toggleIdle));
 
         driveController.y().onTrue(AMP_ARM_CTRL);
@@ -137,7 +148,8 @@ public class OI extends SubsystemIF {
                 .onlyIf(ampArm::isArmAtAmp))
                 .onFalse(Commands.waitSeconds(0.25).andThen(
                         Commands.defer(ARM_TO_STOW, Set.of(ampArm))).onlyIf(ampArm::isArmAtAmp))
-                .onTrue(new ShootCommand())
+                .onTrue(new ShootCommand().onlyIf(() -> !shooter.inRedundantShootingMode()))
+                .onFalse(new RedunShootCommand())
                 .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));
 
         driveController.leftTrigger(0.01)

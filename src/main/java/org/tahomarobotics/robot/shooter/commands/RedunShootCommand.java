@@ -9,23 +9,21 @@ import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
 
-public class ShootCommand extends SequentialCommandGroup {
+public class RedunShootCommand extends SequentialCommandGroup {
     private static final Logger logger = LoggerFactory.getLogger(ShootCommand.class);
 
     private final Indexer indexer = Indexer.getInstance();
 
-    public ShootCommand() {
+    public RedunShootCommand() {
         Shooter shooter = Shooter.getInstance();
 
         addCommands(
                 Commands.sequence(
-                        Commands.waitUntil(shooter::isReadyToShoot),
                         Commands.runOnce(indexer::transitionToTransferring),
                         Commands.waitSeconds(0.1),
-                        Commands.either(Commands.runOnce(shooter::toggleShootMode), Commands.runOnce(shooter::disableShootMode), () -> !RobotState.isAutonomous()),
                         Commands.runOnce(() -> shooter.setAngle(ShooterConstants.SHOOTER_COLLECT_PIVOT_ANGLE)),
                         Commands.runOnce(shooter::disableRedunShootMode)
-                ).onlyIf(() -> shooter.inShootingMode() || shooter.inRedundantShootingMode())
+                ).onlyIf(shooter::inRedundantShootingMode)
         );
     }
 }

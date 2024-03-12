@@ -45,6 +45,7 @@ class ShooterIO {
     protected double angle = 0.0;
 
     private boolean shootingMode = false;
+    private boolean redundantShootingMode = false;
     private boolean idleMode = true;
     private boolean isZeroed = false;
 
@@ -103,6 +104,8 @@ class ShooterIO {
     boolean isReadyToShoot() {
         return isAtAngle() && isSpinningAtVelocity() && Chassis.getInstance().isReadyToShoot();
     }
+
+    boolean inRedundantShootingMode(){return redundantShootingMode;}
 
     boolean inShootingMode() {
         return shootingMode;
@@ -188,6 +191,16 @@ class ShooterIO {
         }
     }
 
+    void toggleRedundantShootMode(){
+        if (redundantShootingMode){
+            disableRedundantShootMode();
+            idle();
+        } else if (Indexer.getInstance().hasCollected()) {
+            enableRedundantShootMode();
+            enable();
+        }
+    }
+
     public void toggleIdle() {
         if (idleMode) {
             stop();
@@ -202,6 +215,14 @@ class ShooterIO {
 
     void disableShootMode() {
         shootingMode = false;
+    }
+
+    void enableRedundantShootMode(){
+        redundantShootingMode = true;
+    }
+
+    void disableRedundantShootMode(){
+        redundantShootingMode = false;
     }
 
     // INPUTS

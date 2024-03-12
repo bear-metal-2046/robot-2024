@@ -71,6 +71,9 @@ public class Shooter extends SubsystemIF {
         io.enableShootMode();
     }
 
+    public void enableRedundantShootMode(){io.enableRedundantShootMode();}
+    public void disableRedunShootMode(){io.disableRedundantShootMode();}
+
     public void idle() {
         io.idle();
     }
@@ -81,6 +84,10 @@ public class Shooter extends SubsystemIF {
 
     public void toggleShootMode() {
         io.toggleShootMode();
+    }
+
+    public void toggleRedundantShootMode(){
+        io.toggleRedundantShootMode();
     }
 
     public void toggleIdle() {
@@ -131,6 +138,10 @@ public class Shooter extends SubsystemIF {
 
     public boolean inShootingMode() {
         return io.inShootingMode();
+    }
+
+    public boolean inRedundantShootingMode() {
+        return io.inRedundantShootingMode();
     }
 
     public boolean isAtAngle() {

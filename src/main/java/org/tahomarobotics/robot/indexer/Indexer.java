@@ -91,7 +91,7 @@ public class Indexer extends SubsystemIF {
         return velocity.getValue();
     }
 
-    public boolean hasCollected() {
+    public boolean isCollected() {
         return state == State.COLLECTED;
     }
 
@@ -206,7 +206,7 @@ public class Indexer extends SubsystemIF {
             case DISABLED -> {
                 disable();
 
-                if (Collector.getInstance().isCollecting() && !hasCollected()) transitionToCollecting();
+                if (Collector.getInstance().isCollecting() && !isCollected()) transitionToCollecting();
                 if (Collector.getInstance().isEjecting()) transitionToEjecting();
             }
             case COLLECTING -> {
@@ -263,7 +263,7 @@ public class Indexer extends SubsystemIF {
         SafeAKitLogger.recordOutput("Indexer/State", state);
         SafeAKitLogger.recordOutput("Indexer/BeamBreak One", getCollectorBeanBake());
         SafeAKitLogger.recordOutput("Indexer/BeamBreak Two", getShooterBeanBake());
-        SafeAKitLogger.recordOutput("Indexer/Collected", hasCollected());
+        SafeAKitLogger.recordOutput("Indexer/Collected", isCollected());
 
         SafeAKitLogger.recordOutput("Indexer/Current", totalCurrent);
         SafeAKitLogger.recordOutput("Indexer/Energy", getEnergyUsed());

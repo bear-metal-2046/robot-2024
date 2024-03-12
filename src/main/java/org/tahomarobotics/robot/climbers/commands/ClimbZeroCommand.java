@@ -22,6 +22,7 @@ public class ClimbZeroCommand extends Command {
 
     @Override
     public void initialize() {
+        logger.info("Zeroing Climbers");
         timer.restart();
     }
 

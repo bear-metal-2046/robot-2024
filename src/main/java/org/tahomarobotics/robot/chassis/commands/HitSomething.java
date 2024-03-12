@@ -3,11 +3,14 @@ package org.tahomarobotics.robot.chassis.commands;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.chassis.Chassis;
 
 
 public class HitSomething extends Command {
+    private static final Logger logger = LoggerFactory.getLogger(HitSomething.class);
     private final Chassis chassis = Chassis.getInstance();
     private final Timer timer = new Timer();
     private final double speed;
@@ -19,6 +22,7 @@ public class HitSomething extends Command {
 
     @Override
     public void initialize() {
+        logger.info("Hit something initialized");
         timer.restart();
     }
 
@@ -34,6 +38,7 @@ public class HitSomething extends Command {
 
     @Override
     public void end(boolean interrupted) {
+        logger.info("Hit Something Has Hit Something");
         chassis.drive(new ChassisSpeeds());
     }
 }

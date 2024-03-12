@@ -2,6 +2,8 @@ package org.tahomarobotics.robot.amp.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.shooter.Shooter;
@@ -13,6 +15,8 @@ import java.util.function.Supplier;
 import static org.tahomarobotics.robot.amp.AmpArmConstants.*;
 
 public class AmpArmCommands {
+    private static final Logger logger = LoggerFactory.getLogger(AmpArmCommands.class);
+
     public static final Supplier<Command> FEEDFORWARD;
     public static final Supplier<Command> FEEDBACK;
     private static final Supplier<Command> ARM_TO_AMP;
@@ -26,6 +30,7 @@ public class AmpArmCommands {
         AmpArm ampArm = AmpArm.getInstance();
 
         ARM_TO_AMP = () -> Commands.sequence(
+                Commands.runOnce(() -> logger.info("Arm To Amp")),
                 Commands.runOnce(() -> ampArm.setWristPosition(WRIST_MOVING_POSE)),
                 Commands.runOnce(() -> ampArm.setArmPosition(ARM_AMP_POSE)),
                 Commands.waitUntil(ampArm::isArmAtPosition).alongWith(
@@ -34,6 +39,7 @@ public class AmpArmCommands {
         );
 
         ARM_TO_STOW = () -> Commands.sequence(
+                Commands.runOnce(() -> logger.info("Arm To Stow")),
                 Commands.runOnce(() -> ampArm.setWristPosition(WRIST_MOVING_POSE)),
                 Commands.runOnce(() -> ampArm.setArmPosition(ARM_STOW_POSE)),
                 Commands.waitUntil(ampArm::isArmAtPosition).alongWith(
@@ -42,6 +48,7 @@ public class AmpArmCommands {
         );
 
         ARM_TO_SOURCE = () -> Commands.sequence(
+                Commands.runOnce(() -> logger.info("Arm To Source")),
                 Commands.runOnce(() -> ampArm.setWristPosition(WRIST_MOVING_POSE)),
                 Commands.runOnce(() -> ampArm.setArmPosition(ARM_SOURCE_POSE)),
                 Commands.waitUntil(ampArm::isArmAtPosition).alongWith(
@@ -50,11 +57,13 @@ public class AmpArmCommands {
         );
 
         ARM_TO_CLIMB = () -> Commands.sequence(
+                Commands.runOnce(() -> logger.info("Arm To Climb")),
                 Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.CLIMB)),
                 Commands.waitUntil(ampArm::isArmAtPosition)
         );
 
         ARM_TO_TRAP = () -> Commands.sequence(
+                Commands.runOnce(() -> logger.info("Arm To Trap")),
                 Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.TRAP)),
                 Commands.waitUntil(ampArm::isWristAtPosition)
         );
@@ -66,6 +75,7 @@ public class AmpArmCommands {
         Shooter shooter = Shooter.getInstance();
 
         FEEDFORWARD = () -> Commands.sequence(
+                Commands.runOnce(() -> logger.info("Feeding Forward")),
                 Commands.runOnce(shooter::stop),
                 Commands.runOnce(() -> shooter.setAngle(ShooterConstants.MIN_PIVOT_ANGLE)),
                 Commands.waitUntil(shooter::isAtAngle),
@@ -85,6 +95,7 @@ public class AmpArmCommands {
         ).onlyIf(ampArm::isArmAtStow).onlyIf(indexer::hasCollected);
 
         FEEDBACK = () -> Commands.sequence(
+                Commands.runOnce(() -> logger.info("Feeding Back")),
                 Commands.runOnce(() -> shooter.setAngle(ShooterConstants.MIN_PIVOT_ANGLE)),
                 Commands.runOnce(() -> {
                     shooter.reverseIntake();

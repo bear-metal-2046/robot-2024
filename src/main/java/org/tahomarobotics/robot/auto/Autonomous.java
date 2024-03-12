@@ -52,7 +52,7 @@ public class Autonomous extends SubsystemIF {
                         .andThen(Commands.runOnce(shooter::enableShootMode))
                         .andThen(new ShootCommand())));
 
-        NamedCommands.registerCommand("SpinUp", Commands.runOnce(shooter::enable));
+        NamedCommands.registerCommand("SpinUp", Commands.runOnce(shooter::enable).andThen(Commands.runOnce(() -> logger.info("Shooter Spun Up"))));
 
         NamedCommands.registerCommand("CollectorDown", Commands.runOnce(collector::setDeployed)
                 .andThen(Commands.runOnce(() -> collector.setCollectionState(Collector.CollectionState.COLLECTING))));

@@ -24,6 +24,7 @@ public class ZeroCollectorCommand extends Command {
 
     @Override
     public void initialize() {
+        logger.info("Zeroing Collector");
         timer.restart();
     }
 

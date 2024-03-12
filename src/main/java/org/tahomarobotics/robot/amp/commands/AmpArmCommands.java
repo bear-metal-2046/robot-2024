@@ -15,22 +15,22 @@ import static org.tahomarobotics.robot.amp.AmpArmConstants.*;
 public class AmpArmCommands {
     public static final Supplier<Command> FEEDFORWARD;
     public static final Supplier<Command> FEEDBACK;
-    private static final Supplier<Command> STOW_TO_AMP;
-    private static final Supplier<Command> STOW_TO_SOURCE;
+    private static final Supplier<Command> ARM_TO_AMP;
+    private static final Supplier<Command> ARM_TO_SOURCE;
     public static final Supplier<Command> ARM_TO_STOW;
-    public static final Supplier<Command> AMP_ARM_CLIMB;
-    public static final Supplier<Command> AMP_ARM_TRAP;
+    public static final Supplier<Command> ARM_TO_CLIMB;
+    public static final Supplier<Command> ARM_TO_TRAP;
     public static Command AMP_ARM_CTRL;
 
     static {
         AmpArm ampArm = AmpArm.getInstance();
 
-        STOW_TO_AMP = () -> Commands.sequence(
+        ARM_TO_AMP = () -> Commands.sequence(
                 Commands.runOnce(() -> ampArm.setWristPosition(WRIST_MOVING_POSE)),
                 Commands.runOnce(() -> ampArm.setArmPosition(ARM_AMP_POSE)),
                 Commands.waitUntil(ampArm::isArmAtPosition),
                 Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.AMP))
-        ).onlyIf(ampArm::isArmAtStow);
+        );
 
         ARM_TO_STOW = () -> Commands.sequence(
                 Commands.runOnce(() -> ampArm.setWristPosition(WRIST_MOVING_POSE)),
@@ -40,19 +40,19 @@ public class AmpArmCommands {
                                 .andThen(Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.STOW))))
         );
 
-        STOW_TO_SOURCE = () -> Commands.sequence(
+        ARM_TO_SOURCE = () -> Commands.sequence(
                 Commands.runOnce(() -> ampArm.setWristPosition(WRIST_MOVING_POSE)),
                 Commands.runOnce(() -> ampArm.setArmPosition(ARM_SOURCE_POSE)),
                 Commands.waitUntil(ampArm::isArmAtPosition),
                 Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.SOURCE))
-        ).onlyIf(ampArm::isArmAtStow);
+        );
 
-        AMP_ARM_CLIMB = () -> Commands.sequence(
+        ARM_TO_CLIMB = () -> Commands.sequence(
                 Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.CLIMB)),
                 Commands.waitUntil(ampArm::isArmAtPosition)
         );
 
-        AMP_ARM_TRAP = () -> Commands.sequence(
+        ARM_TO_TRAP = () -> Commands.sequence(
                 Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.TRAP)),
 //                Commands.waitUntil(ampArm::isArmAtPosition),
                 Commands.waitUntil(ampArm::isWristAtPosition)
@@ -113,11 +113,11 @@ public class AmpArmCommands {
             } if (ampArm.isArmAtAmp() || ampArm.isArmAtSource() || ampArm.isArmAtTrap()) {
                 return Commands.defer(ARM_TO_STOW, Set.of(ampArm, shooter));
             } if (indexer.hasCollected()) {
-                return Commands.defer(() -> FEEDFORWARD.get().andThen(STOW_TO_AMP.get()), Set.of(ampArm, indexer, shooter));
+                return Commands.defer(() -> FEEDFORWARD.get().andThen(ARM_TO_AMP.get()), Set.of(ampArm, indexer, shooter));
             } else if (ampArm.isRollerCollected()) {
-                return Commands.defer(STOW_TO_AMP, Set.of(ampArm));
+                return Commands.defer(ARM_TO_AMP, Set.of(ampArm));
             } else {
-                return Commands.defer(() -> STOW_TO_SOURCE.get().andThen(Commands.runOnce(shooter::stop)), Set.of(ampArm));
+                return Commands.defer(() -> ARM_TO_SOURCE.get().andThen(Commands.runOnce(shooter::stop)), Set.of(ampArm));
             }
         });
     }

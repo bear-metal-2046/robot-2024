@@ -20,7 +20,7 @@ public class EngageCommand extends SequentialCommandGroup {
         addCommands(
                 Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.ENGAGED)),
                 AutoBuilder.pathfindToPose(ChassisConstants.getClosestChainPose(), ChassisConstants.CLIMB_MOVEMENT_CONSTRAINTS),
-                AmpArmCommands.AMP_ARM_CLIMB.get(),
+                AmpArmCommands.ARM_TO_CLIMB.get(),
                 Commands.runOnce(ampArm::shiftNote),
                 Commands.waitUntil(ampArm::isRollerAtPosition),
                 Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.COLLECTED)),

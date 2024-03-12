@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 import static org.tahomarobotics.robot.amp.AmpArmConstants.*;
 
 public class AmpArmCommands {
-    private static final Logger logger = LoggerFactory.getLogger(AmpArm.class);
+    private static final Logger logger = LoggerFactory.getLogger(AmpArmCommands.class);
 
     public static final Supplier<Command> FEEDFORWARD;
     public static final Supplier<Command> FEEDBACK;

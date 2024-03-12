@@ -128,6 +128,7 @@ public class Climbers extends SubsystemIF {
     }
 
     public void setClimbState(ClimbState state) {
+        logger.info("Set Climb State To: " + state.name());
         this.state = state;
     }
 
@@ -135,11 +136,12 @@ public class Climbers extends SubsystemIF {
 
     public enum ClimbState {
         COCKED,
+        PRE_CLIMBING,
         READY,
+        ENGAGING,
         ENGAGED,
         CLIMBING,
-        CLIMBED,
-        BROKEN
+        CLIMBED
     }
 }
 

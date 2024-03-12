@@ -22,12 +22,13 @@ public class PreClimbSequence extends SequentialCommandGroup {
 
         addCommands(
                 Commands.runOnce(() -> logger.info("Pre-Climb Sequence Started")),
-                Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.READY)),
+                Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.PRE_CLIMBING)),
                 AmpArmCommands.ARM_TO_STOW.get(),
                 AmpArmCommands.FEEDFORWARD.get(),
                 Commands.runOnce(() -> Shooter.getInstance().setAngle(ShooterConstants.MAX_PIVOT_ANGLE)),
                 Commands.waitUntil(() -> Shooter.getInstance().isAtAngle()),
-                new UnladenClimbCommand(TOP_POSITION)
-            );
+                new UnladenClimbCommand(TOP_POSITION),
+                Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.READY))
+        );
     }
 }

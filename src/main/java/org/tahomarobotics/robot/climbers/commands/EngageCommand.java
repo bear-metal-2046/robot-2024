@@ -22,8 +22,7 @@ public class EngageCommand extends SequentialCommandGroup {
         AmpArm ampArm = AmpArm.getInstance();
 
         addCommands(
-                Commands.runOnce(() -> logger.info("Engage Command Started")),
-                Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.ENGAGED)),
+                Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.ENGAGING)),
                 AutoBuilder.pathfindToPose(ChassisConstants.getClosestChainPose(), ChassisConstants.CLIMB_MOVEMENT_CONSTRAINTS),
                 Commands.runOnce(() -> logger.info("Pathfinding To Pre-climb Pose")),
                 AmpArmCommands.ARM_TO_CLIMB.get(),
@@ -31,7 +30,8 @@ public class EngageCommand extends SequentialCommandGroup {
                 Commands.runOnce(() -> logger.info("Shifted Note Back")),
                 Commands.waitUntil(ampArm::isRollerAtPosition),
                 Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.COLLECTED)),
-                new HitSomething(-0.5)
+                new HitSomething(-0.5),
+                Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.ENGAGED))
         );
     }
 }

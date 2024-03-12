@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.OI;
 import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.amp.commands.AmpArmCommands;
-import org.tahomarobotics.robot.chassis.commands.KnownMovementCommand;
 import org.tahomarobotics.robot.climbers.Climbers;
 
 import static org.tahomarobotics.robot.climbers.ClimberConstants.ALMOST_BOTTOM_POSITION;
@@ -22,16 +21,13 @@ public class ClimbSequence extends SequentialCommandGroup {
         AmpArm ampArm = AmpArm.getInstance();
 
         addCommands(
-                Commands.runOnce(() -> logger.info("Climb Sequence Started")),
                 Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.CLIMBING)),
                 new LadenClimbCommand(BOTTOM_POSITION),
                 AmpArmCommands.ARM_TO_TRAP.get(),
                 Commands.waitSeconds(0.25),
                 Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.TRAP)),
-                Commands.runOnce(() -> logger.info("Scoring Trap")),
                 Commands.waitUntil(OI.getInstance()::isManipXPressed).raceWith(Commands.waitSeconds(5)),
                 new LadenClimbCommand(ALMOST_BOTTOM_POSITION),
-                Commands.runOnce(() -> logger.info("Climb Dropped Off Bottom")),
                 Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.CLIMBED))
         );
     }

@@ -38,7 +38,7 @@ public class HitSomething extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        logger.info("Robot has hit something");
+        logger.info("Hit Something Has Hit Something");
         chassis.drive(new ChassisSpeeds());
     }
 }

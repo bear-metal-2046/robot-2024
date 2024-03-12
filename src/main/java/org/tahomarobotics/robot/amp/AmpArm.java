@@ -115,6 +115,7 @@ public class AmpArm extends SubsystemIF {
     // STATE CONTROL
 
     public void setArmState(ArmState state) {
+        logger.info("Arm State Set To: " + state.name());
         armState = state;
 
         switch (state) {
@@ -152,6 +153,7 @@ public class AmpArm extends SubsystemIF {
     }
 
     public void setRollerState(RollerState state) {
+        logger.info("Set Roller State To: " + state.name());
         rollerState = state;
 
         switch (state) {

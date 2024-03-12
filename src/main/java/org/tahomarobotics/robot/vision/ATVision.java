@@ -13,6 +13,7 @@ import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
@@ -51,7 +52,9 @@ public class ATVision {
         inst.addListener(
                 latencySub,
                 EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-                e -> processVisionUpdate(camera.getLatestResult())
+                e -> {
+                    new InstantCommand(() -> processVisionUpdate(camera.getLatestResult())).schedule();
+                }
         );
     }
 

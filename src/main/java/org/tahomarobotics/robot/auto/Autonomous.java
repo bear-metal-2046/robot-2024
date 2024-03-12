@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.amp.AmpArm;
@@ -165,7 +166,8 @@ public class Autonomous extends SubsystemIF {
     }
 
     private void onAutoChange(String autoName) {
-        postAutoTrajectory(chassis.getField(), autoName);
+        new InstantCommand(() ->
+            postAutoTrajectory(chassis.getField(), autoName)).schedule();
     }
 
     @Override

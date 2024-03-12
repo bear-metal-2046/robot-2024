@@ -46,7 +46,7 @@ public class SwerveModuleIO {
 
     private double lastAccel = 0.0;
 
-    private final LinearFilter driveAccelerationAverage = LinearFilter.movingAverage(10);
+    private final LinearFilter driveAccelerationAverage = LinearFilter.movingAverage(3);
 
     private final StatusSignal<Double> driveCurrent;
 
@@ -148,11 +148,11 @@ public class SwerveModuleIO {
 
 
     SwerveModuleState getAccelerationState() {
-        return new SwerveModuleState(lastAccel, Rotation2d.fromRotations(getSteerAngle()));
+        return new SwerveModuleState(lastAccel, new Rotation2d());
     }
 
     SwerveModuleState getRawAccelerationState() {
-        return new SwerveModuleState(driveAcceleration.getValue(), Rotation2d.fromRotations(getSteerAngle()));
+        return new SwerveModuleState(driveAcceleration.getValue(), new Rotation2d());
     }
     
     SwerveModuleState getDesiredState() {

@@ -5,6 +5,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -13,10 +14,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.RobotState;
-import edu.wpi.first.wpilibj.Threads;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.slf4j.LoggerFactory;
@@ -33,6 +31,7 @@ import org.tahomarobotics.robot.vision.ATVision;
 import org.tahomarobotics.robot.vision.ObjectDetectionCamera;
 import org.tahomarobotics.robot.vision.VisionConstants;
 
+import javax.sound.sampled.Line;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -273,9 +272,14 @@ public class Chassis extends SubsystemIF {
         desiredSpeeds = ChassisSpeeds.discretize(velocity, Robot.defaultPeriodSecs);
     }
 
+    double lastVel = 0.0;
+    LinearFilter lastAccelAverage = LinearFilter.movingAverage(3);
+    double timestamp = Timer.getFPGATimestamp();
     // SETTERS
 
     private void aimToSpeaker(ChassisSpeeds speeds) {
+        double now = Timer.getFPGATimestamp();
+        if (now - timestamp > 10.0) timestamp = now - 0.02;
 
         //
         // Based off of 2022 Cheesy Poof shooting utils
@@ -314,6 +318,11 @@ public class Chassis extends SubsystemIF {
 
         SafeAKitLogger.recordOutput("Chassis/TOF Velocity-Only Pose", pose.plus(new Transform2d(positionChangeVelocityOnly, pose.getRotation())));
         SafeAKitLogger.recordOutput("Chassis/TOF Fully-Integrated Pose", pose.plus(new Transform2d(positionChange, pose.getRotation())));
+        SafeAKitLogger.recordOutput("Chassis/Radial Acceleration", accelToGoal.getX());
+        var accel = (lastVel - radialComponent) / (now - timestamp);
+        var filteredAccel = lastAccelAverage.calculate(accel);
+        SafeAKitLogger.recordOutput("Chassis/Radial Acceleration 2", accel);
+        SafeAKitLogger.recordOutput("Chassis/Radial Acceleration 3", filteredAccel);
 
         // Shooter angle speed compensation
         Shooter.getInstance().angleToSpeaker(radialComponent, accelToGoal.getX());

@@ -125,7 +125,7 @@ public class AmpArmCommands {
             } if (ampArm.isArmAtAmp() || ampArm.isArmAtSource() || ampArm.isArmAtTrap()) {
                 return Commands.defer(ARM_TO_STOW, Set.of(ampArm, shooter));
             } if (indexer.isCollected()) {
-                return Commands.defer(() -> FEEDFORWARD.get().andThen(STOW_TO_AMP.get()), Set.of(ampArm, indexer, shooter));
+                return Commands.defer(() -> FEEDFORWARD.get().andThen(ARM_TO_AMP.get()), Set.of(ampArm, indexer, shooter));
             } else if (ampArm.isRollerCollected()) {
                 return Commands.defer(ARM_TO_AMP, Set.of(ampArm));
             } else {

@@ -15,6 +15,7 @@ import org.tahomarobotics.robot.chassis.commands.DriveForwardCommand;
 import org.tahomarobotics.robot.chassis.commands.HitSomething;
 import org.tahomarobotics.robot.climbers.ClimberConstants;
 import org.tahomarobotics.robot.climbers.Climbers;
+import org.tahomarobotics.robot.util.SafeAKitLogger;
 
 /**
  * Pathfinds the pre-climbed robot to the chain, puts the Amp Arm up, the drives forward to the final distance
@@ -29,6 +30,8 @@ public class EngageCommand extends SequentialCommandGroup {
 
         Pose2d target = ChassisConstants.getClosestChainPose();
         double distance = target.getTranslation().getDistance(chassis.getPose().getTranslation());
+
+        SafeAKitLogger.recordOutput("Climbers/Distance", distance);
 
         if (distance < ClimberConstants.CLOSENESS_THRESHOLD) {
             OI.getInstance().rumbleDrive();

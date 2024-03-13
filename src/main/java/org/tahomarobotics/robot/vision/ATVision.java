@@ -2,34 +2,36 @@ package org.tahomarobotics.robot.vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.networktables.DoubleSubscriber;
-import edu.wpi.first.networktables.NetworkTableEvent;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj2.command.Commands;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.tahomarobotics.robot.util.SafeAKitLogger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class ATVision {
     private final PhotonCamera camera;
     private final AprilTagFieldLayout fieldLayout;
     private final VisionConstants.Camera cameraSettings;
     private final Field2d fieldPose;
-    private final Deque<ATCameraResult> deque;
+    private final SwerveDrivePoseEstimator poseEstimator;
     private int updates = 0;
 
-    public ATVision(VisionConstants.Camera cameraSettings, Field2d fieldPose, Deque<ATCameraResult> deque) {
+    public ATVision(VisionConstants.Camera cameraSettings, Field2d fieldPose, SwerveDrivePoseEstimator poseEstimator) {
         this.cameraSettings = cameraSettings;
         this.fieldPose = fieldPose;
-        this.deque = deque;
+        this.poseEstimator = poseEstimator;
 
         // normally this would the default client connecting to robot
         // connect to server running on camera (for debugging0
@@ -37,19 +39,12 @@ public class ATVision {
 
         // create PhotonLib camera (required for each camera)
         camera = new PhotonCamera(inst, cameraSettings.cameraName);
-
         fieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+    }
 
-        // subscribe to new data from photon vision
-        DoubleSubscriber latencySub = inst.getTable("photonvision").getSubTable(cameraSettings.cameraName).getDoubleTopic("latencyMillis").subscribe(0.0);
-        inst.addListener(
-                latencySub,
-                EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-                e -> {
-                    var result = camera.getLatestResult();
-                    Commands.runOnce(() -> processVisionUpdate(result)).schedule();
-                }
-        );
+    public void update() {
+        var result = camera.getLatestResult();
+        processVisionUpdate(result);
     }
 
     private void processSingleTarget(PhotonTrackedTarget target, double timestampSeconds) {
@@ -123,8 +118,41 @@ public class ATVision {
     }
 
     private void addVisionMeasurement(ATCameraResult result) {
-        updates++;
-        deque.add(result);
+        Pose2d pose;
+        synchronized (poseEstimator) {
+            pose = poseEstimator.getEstimatedPosition();
+        }
+
+        double distanceToTargets = result.distanceToTargets();
+
+        synchronized (fieldPose) {
+            fieldPose.getObject(result.camera().cameraName).setPose(result.poseMeters());
+        }
+
+        if (result.numTargets() > 1 && distanceToTargets < VisionConstants.TARGET_DISTANCE_THRESHOLD) {
+            // Multi-tag PnP provides very trustworthy data
+            var stds = VecBuilder.fill(
+                    0.08122476428,
+                    0.0990676807,
+                    Units.degreesToRadians(1.372694632)
+            );
+
+            synchronized (poseEstimator) {
+                poseEstimator.addVisionMeasurement(result.poseMeters(), result.timestamp(), stds);
+            }
+        } else if (result.numTargets() == 1 && distanceToTargets < VisionConstants.SINGLE_TARGET_DISTANCE_THRESHOLD) {
+            // Single tag results are not very trustworthy. Do not use headings from them
+            Pose2d noHdgPose = new Pose2d(result.poseMeters().getTranslation(), pose.getRotation());
+            var stds = VecBuilder.fill(
+                    0.25 * distanceToTargets,
+                    0.25 * distanceToTargets,
+                    Units.degreesToRadians(90)
+            );
+
+            synchronized (poseEstimator) {
+                poseEstimator.addVisionMeasurement(noHdgPose, result.timestamp(), stds);
+            }
+        }
     }
 
     public int getUpdates() {

@@ -8,13 +8,11 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -32,9 +30,7 @@ import org.tahomarobotics.robot.vision.ATVision;
 import org.tahomarobotics.robot.vision.ObjectDetectionCamera;
 import org.tahomarobotics.robot.vision.VisionConstants;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 
 import static org.tahomarobotics.robot.shooter.ShooterConstants.*;
@@ -58,8 +54,8 @@ public class Chassis extends SubsystemIF {
 
     private final CalibrationData<Double[]> swerveCalibration;
 
-    private final ObjectDetectionCamera collectorLeftVision;
-    private final ATVision collectorRightVision, shooterLeftVision, shooterRightVision;
+    private final ObjectDetectionCamera objectDetectionCamera;
+    private final ATVision[] apriltagCameras = new ATVision[3];
 
     private final Thread odometryThread;
 
@@ -74,8 +70,6 @@ public class Chassis extends SubsystemIF {
     private double energyUsed = 0;
 
     private double totalCurrent = 0;
-
-    private final Deque<ATVision.ATCameraResult> queuedVisionMeasurements = new ArrayDeque<>(100);
 
     // CONSTRUCTOR
 
@@ -117,10 +111,11 @@ public class Chassis extends SubsystemIF {
         odometryThread.start();
 
 
-        collectorLeftVision = new ObjectDetectionCamera(VisionConstants.Camera.COLLECTOR_LEFT);
-        collectorRightVision = new ATVision(VisionConstants.Camera.COLLECTOR_RIGHT, fieldPose, queuedVisionMeasurements);
-        shooterLeftVision = new ATVision(VisionConstants.Camera.SHOOTER_LEFT, fieldPose, queuedVisionMeasurements);
-        shooterRightVision = new ATVision(VisionConstants.Camera.SHOOTER_RIGHT, fieldPose, queuedVisionMeasurements);
+        objectDetectionCamera
+                = new ObjectDetectionCamera(VisionConstants.Camera.COLLECTOR_LEFT);
+        apriltagCameras[0] = new ATVision(VisionConstants.Camera.COLLECTOR_RIGHT, fieldPose, poseEstimator);
+        apriltagCameras[1] = new ATVision(VisionConstants.Camera.SHOOTER_LEFT, fieldPose, poseEstimator);
+        apriltagCameras[2] = new ATVision(VisionConstants.Camera.SHOOTER_RIGHT, fieldPose, poseEstimator);
     }
 
     public static Chassis getInstance() {
@@ -230,51 +225,8 @@ public class Chassis extends SubsystemIF {
             setSwerveStates(swerveModuleStates);
         }
 
-        ATVision.ATCameraResult obj;
-        while ((obj = queuedVisionMeasurements.pollFirst()) != null) {
-            synchronized (poseEstimator) {
-                pose = poseEstimator.getEstimatedPosition();
-
-                Transform2d poseDiff = pose.minus(obj.poseMeters());
-
-                // Only add vision measurements close to where the robot currently thinks it is.
-//            if (poseDiff.getTranslation().getNorm() > VisionConstants.POSE_DIFFERENCE_THRESHOLD ||
-//                    poseDiff.getRotation().getDegrees() > VisionConstants.DEGREES_DIFFERENCE_THRESHOLD) {
-//                logger.warn("LARGE DISTANCE MOVED ACCORDING TO CAMERA '" + cameraSettings.cameraName + "', (" + poseDiff.getTranslation().getX() + "," + poseDiff.getTranslation().getY() + ")");
-//                return;
-//            }
-            }
-
-            double distanceToTargets = obj.distanceToTargets();
-
-            synchronized (fieldPose) {
-                fieldPose.getObject(obj.camera().cameraName).setPose(obj.poseMeters());
-            }
-
-            if (obj.numTargets() > 1 && distanceToTargets < VisionConstants.TARGET_DISTANCE_THRESHOLD) {
-                // Multi-tag PnP provides very trustworthy data
-                var stds = VecBuilder.fill(
-                        0.08122476428,
-                        0.0990676807,
-                        Units.degreesToRadians(1.372694632)
-                );
-
-                synchronized (poseEstimator) {
-                    poseEstimator.addVisionMeasurement(obj.poseMeters(), obj.timestamp(), stds);
-                }
-            } else if (obj.numTargets() == 1 && distanceToTargets < VisionConstants.SINGLE_TARGET_DISTANCE_THRESHOLD) {
-                // Single tag results are not very trustworthy. Do not use headings from them
-                Pose2d noHdgPose = new Pose2d(obj.poseMeters().getTranslation(), pose.getRotation());
-                var stds = VecBuilder.fill(
-                        0.25 * distanceToTargets,
-                        0.25 * distanceToTargets,
-                        Units.degreesToRadians(90)
-                );
-
-                synchronized (poseEstimator) {
-                    poseEstimator.addVisionMeasurement(noHdgPose, obj.timestamp(), stds);
-                }
-            }
+        for (ATVision c : apriltagCameras) {
+            c.update();
         }
     }
 

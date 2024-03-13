@@ -59,13 +59,13 @@ public class Robot extends LoggedRobot {
 
         // Initialize all the subsystems as well as auto-register them with the CommandScheduler.
         subsystems.add(OI.getInstance().initialize());
-        subsystems.add(Chassis.getInstance().initialize());
+        //subsystems.add(Chassis.getInstance().initialize());
         subsystems.add(Collector.getInstance().initialize());
         subsystems.add(Shooter.getInstance().initialize());
-        subsystems.add(AmpArm.getInstance().initialize());
-        subsystems.add(Indexer.getInstance().initialize());
-        subsystems.add(Climbers.getInstance().initialize());
-        subsystems.add(Autonomous.getInstance().initialize());
+        //subsystems.add(AmpArm.getInstance().initialize());
+        //subsystems.add(Indexer.getInstance().initialize());
+        //subsystems.add(Climbers.getInstance().initialize());
+        //subsystems.add(Autonomous.getInstance().initialize());
 
         logger.info("Robot Initialized.");
     }

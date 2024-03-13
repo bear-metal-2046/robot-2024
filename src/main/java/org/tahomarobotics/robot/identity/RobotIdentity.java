@@ -31,7 +31,7 @@ public class RobotIdentity extends SubsystemIF {
         }
 
         if (tmp == null) {
-            tmp = RobotID.BEARITONE;
+            tmp = RobotID.ALPHA;
             logger.error("Could not get a valid ID for robot, assigning default");
         }
         robotID = tmp;

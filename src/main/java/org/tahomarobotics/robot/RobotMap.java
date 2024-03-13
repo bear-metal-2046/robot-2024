@@ -7,7 +7,7 @@ import static org.tahomarobotics.robot.chassis.ChassisConstants.*;
 public class RobotMap {
     public static final int PIGEON = 0;
 
-    // SWERVE MODULES on CANCODER
+    //SWERVE MODULES on CANCODER
     public final static SwerveModuleDescriptor FRONT_LEFT_MOD = new SwerveModuleDescriptor(
             "Front-Left", FRONT_LEFT_OFFSET, 1, 11, 21);
     public final static SwerveModuleDescriptor FRONT_RIGHT_MOD = new SwerveModuleDescriptor(
@@ -21,8 +21,8 @@ public class RobotMap {
 
     public final static int BEAM_BREAK_TWO = 2;
 
-    public static final int TOP_SHOOTER_MOTOR = 31;
-    public static final int BOTTOM_SHOOTER_MOTOR = 32;
+    public static final int RIGHT_SHOOTER_MOTOR = 31;
+    public static final int LEFT_SHOOTER_MOTOR = 32;
     public static final int SHOOTER_PIVOT_MOTOR = 33;
 
     public static final int INDEXER_MOTOR = 34;

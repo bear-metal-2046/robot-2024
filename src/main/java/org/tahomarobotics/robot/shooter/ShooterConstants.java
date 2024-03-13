@@ -13,6 +13,7 @@ import java.util.function.Supplier;
 
 public class ShooterConstants {
     public static final double SHOOTER_SPEED; // rps
+    public static final double LEFT_SHOOTER_OFFSET; //rps
     public static final double IDLE_SPEED; // rps
     public static final double TRANSFER_VELOCITY = 10; // rps
     public static final double REVERSE_INTAKE_VELOCITY = 40; // rps
@@ -21,7 +22,7 @@ public class ShooterConstants {
                                                                  // should calculate for when moving away from the speaker
     public static final double TIME_SHOT_OFFSET_NEGATIVE = 0.5  ; // The same as ^ but for moving towards the speaker
 
-    static final double SHOOTER_SPEED_TOLERANCE = 5; // rps
+    static final double SHOOTER_SPEED_TOLERANCE = 8; // rps
     public static final double MAX_PIVOT_ANGLE;
     public static final double MIN_PIVOT_ANGLE = 0.01;
 
@@ -37,16 +38,18 @@ public class ShooterConstants {
         switch (RobotIdentity.robotID) {
             case PLAYBEAR_CARTI, BEARITONE -> {
                 SHOOTER_SPEED = 100.0;
+                LEFT_SHOOTER_OFFSET = 0;
                 IDLE_SPEED = 100.0;
                 MAX_PIVOT_ANGLE = Units.degreesToRotations(51.50390625);
                 SHOOTER_GEAR_REDUCTION = (30.0 / 18.0);
                 PIVOT_INVERSION = InvertedValue.Clockwise_Positive;
             }
             default -> {
-                SHOOTER_SPEED = 75.0;
+                SHOOTER_SPEED = 100.0;
+                LEFT_SHOOTER_OFFSET = -33;
                 IDLE_SPEED = 37.5;
                 MAX_PIVOT_ANGLE = Units.degreesToRotations(50.4);
-                SHOOTER_GEAR_REDUCTION = 1.0;
+                SHOOTER_GEAR_REDUCTION = (30.0 / 18.0) * (30.0 / 32.0);
                 PIVOT_INVERSION = InvertedValue.CounterClockwise_Positive;
             }
         }
@@ -90,6 +93,34 @@ public class ShooterConstants {
             .withMotorOutput(new MotorOutputConfigs()
                     .withNeutralMode(NeutralModeValue.Brake)
                     .withInverted(InvertedValue.Clockwise_Positive))
+            .withFeedback(new FeedbackConfigs()
+                    .withSensorToMechanismRatio(1 / SHOOTER_GEAR_REDUCTION))
+            .withMotionMagic(new MotionMagicConfigs()
+                    .withMotionMagicAcceleration(120.0)
+                    .withMotionMagicJerk(500.0))
+            .withAudio(new AudioConfigs().withBeepOnBoot(true).withBeepOnConfig(true));
+
+    static final TalonFXConfiguration rightShooterMotorConfiguration = new TalonFXConfiguration()
+            .withCurrentLimits(new CurrentLimitsConfigs()
+                    .withStatorCurrentLimit(STATOR_CURRENT_LIMIT)
+                    .withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT)
+                    .withStatorCurrentLimitEnable(true)
+                    .withSupplyCurrentLimitEnable(true))
+            .withSlot0(switch (RobotIdentity.robotID) {
+                case BEARITONE, PLAYBEAR_CARTI -> new Slot0Configs()
+                        .withKP(.076223)
+                        .withKS(.10456)
+                        .withKV(.071642)
+                        .withKA(.015732);
+                default -> new Slot0Configs()
+                        .withKP(0.086027)
+                        .withKS(0.077906)
+                        .withKV(0.11218)
+                        .withKA(0.012355);
+            })
+            .withMotorOutput(new MotorOutputConfigs()
+                    .withNeutralMode(NeutralModeValue.Brake)
+                    .withInverted(InvertedValue.CounterClockwise_Positive))
             .withFeedback(new FeedbackConfigs()
                     .withSensorToMechanismRatio(1 / SHOOTER_GEAR_REDUCTION))
             .withMotionMagic(new MotionMagicConfigs()

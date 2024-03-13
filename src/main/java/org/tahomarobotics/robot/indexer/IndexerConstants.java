@@ -23,7 +23,7 @@ public class IndexerConstants {
             }
             default -> {
                 INDEXER_GEAR_REDUCTION = 1d;
-                INVERSION = InvertedValue.Clockwise_Positive;
+                INVERSION = InvertedValue.CounterClockwise_Positive;
             }
         }
     }

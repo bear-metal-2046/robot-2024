@@ -23,7 +23,7 @@ public class Shooter extends SubsystemIF {
 
     private static final Shooter INSTANCE = new Shooter();
 
-    private final ShooterIO io;
+    private final DiffyShooterIO io;
     private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
     private double biasAngle = 0.0;
@@ -36,8 +36,8 @@ public class Shooter extends SubsystemIF {
 
     private Shooter() {
         io = switch (RobotConfiguration.getMode()) {
-            case REAL -> new ShooterIO();
-            case SIM, REPLAY -> new ShooterIOSim();
+            case REAL -> new DiffyShooterIO();
+            case SIM, REPLAY -> null;//new ShooterIOSim();
         };
     }
 
@@ -122,6 +122,7 @@ public class Shooter extends SubsystemIF {
     }
 
     public boolean isReadyToShoot() {
+        System.out.println("checking if ready");
         return io.isReadyToShoot();
     }
 
@@ -189,7 +190,7 @@ public class Shooter extends SubsystemIF {
     @Override
     public void periodic() {
         io.refreshSignals();
-        io.processInputs(inputs);
+        //io.processInputs(inputs);
         double voltage = RobotController.getBatteryVoltage();
         totalCurrent = io.getTotalCurrent();
         energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;

@@ -19,11 +19,11 @@ import org.tahomarobotics.robot.util.SafeAKitLogger;
 import static org.tahomarobotics.robot.shooter.ShooterConstants.*;
 
 
-class ShooterIO {
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(ShooterIO.class);
+class DiffyShooterIO {
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(DiffyShooterIO.class);
 
-    private final TalonFX shooterMotor;
-    private final TalonFX shooterMotorFollower;
+    private final TalonFX rightShooterMotor;
+    private final TalonFX leftShooterMotor;
     private final TalonFX pivotMotor;
 
     private final StatusSignal<Double> shooterVelocity;
@@ -31,13 +31,14 @@ class ShooterIO {
     private final StatusSignal<Double> pivotVelocity;
     private final StatusSignal<Double> motorVoltage;
 
-    private final StatusSignal<Double> shooterMotorCurrent;
-    private final StatusSignal<Double> shooterMotorFollowerCurrent;
+    private final StatusSignal<Double> rightShooterMotorCurrent;
+    private final StatusSignal<Double> leftShooterMotorCurrent;
 
     private final StatusSignal<Double> pivotCurrent;
 
     private final MotionMagicVoltage pivotPositionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
-    private final MotionMagicVelocityVoltage motorVelocity = new MotionMagicVelocityVoltage(SHOOTER_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
+    private final MotionMagicVelocityVoltage rightMotorVelocity = new MotionMagicVelocityVoltage(SHOOTER_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
+    private final MotionMagicVelocityVoltage leftMotorVelocity = new MotionMagicVelocityVoltage(SHOOTER_SPEED+LEFT_SHOOTER_OFFSET).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage idleVelocity = new MotionMagicVelocityVoltage(IDLE_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage transferVelocity = new MotionMagicVelocityVoltage(TRANSFER_VELOCITY).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage reverseIntakeVelocity = new MotionMagicVelocityVoltage(-REVERSE_INTAKE_VELOCITY).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
@@ -51,36 +52,36 @@ class ShooterIO {
     private double targetShooterSpeed = 0.0;
 
     @AutoLog
-    static class ShooterIOInputs {
-
+    static class DiffyShooterIOInputs {
         double angle = 0.0;
 
     }
-    ShooterIO() {
+
+    DiffyShooterIO() {
         RobustConfigurator configurator = new RobustConfigurator(logger);
 
         pivotMotor = new TalonFX(RobotMap.SHOOTER_PIVOT_MOTOR);
-        shooterMotor = new TalonFX(RobotMap.RIGHT_SHOOTER_MOTOR);
-        shooterMotorFollower = new TalonFX(RobotMap.LEFT_SHOOTER_MOTOR);
+        rightShooterMotor = new TalonFX(RobotMap.RIGHT_SHOOTER_MOTOR);
+        leftShooterMotor = new TalonFX(RobotMap.LEFT_SHOOTER_MOTOR);
 
         configurator.configureTalonFX(pivotMotor, pivotMotorConfiguration, "pivot motor");
-        configurator.configureTalonFX(shooterMotor, shooterMotorConfiguration, "shooter motor");
-        configurator.configureTalonFX(shooterMotorFollower, shooterMotorConfiguration, "shooter motor follower");
+        configurator.configureTalonFX(rightShooterMotor, rightShooterMotorConfiguration, "shooter motor");
+        configurator.configureTalonFX(leftShooterMotor, shooterMotorConfiguration, "shooter motor follower");
 
-        shooterVelocity = shooterMotor.getVelocity();
+        shooterVelocity = rightShooterMotor.getVelocity();
         pivotPosition = pivotMotor.getPosition();
         pivotVelocity = pivotMotor.getVelocity();
-        motorVoltage = shooterMotor.getMotorVoltage();
+        motorVoltage = rightShooterMotor.getMotorVoltage();
 
-        shooterMotorCurrent = shooterMotor.getSupplyCurrent();
-        shooterMotorFollowerCurrent = shooterMotorFollower.getSupplyCurrent();
+        rightShooterMotorCurrent = rightShooterMotor.getSupplyCurrent();
+        leftShooterMotorCurrent = leftShooterMotor.getSupplyCurrent();
         pivotCurrent = pivotMotor.getSupplyCurrent();
 
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY,
                 shooterVelocity, pivotPosition, pivotVelocity, motorVoltage,
-                shooterMotorCurrent, shooterMotorFollowerCurrent, pivotCurrent
+                rightShooterMotorCurrent, leftShooterMotorCurrent, pivotCurrent
         );
-        ParentDevice.optimizeBusUtilizationForAll(pivotMotor, shooterMotorFollower, shooterMotor);
+        ParentDevice.optimizeBusUtilizationForAll(pivotMotor, leftShooterMotor, rightShooterMotor);
     }
 
     // GETTERS
@@ -101,7 +102,10 @@ class ShooterIO {
     }
 
     boolean isReadyToShoot() {
-        return isAtAngle() && isSpinningAtVelocity() && Chassis.getInstance().isReadyToShoot();
+        //return isAtAngle() && isSpinningAtVelocity() && Chassis.getInstance().isReadyToShoot();
+        System.out.println("target: " + targetShooterSpeed);
+        System.out.println("actual: " + getShooterVelocity());
+        return isSpinningAtVelocity();
     }
 
     boolean inShootingMode() {
@@ -138,15 +142,15 @@ class ShooterIO {
     void transferToAmp() {
         targetShooterSpeed = transferVelocity.Velocity;
 
-        shooterMotor.setControl(transferVelocity);
-        shooterMotorFollower.setControl(transferVelocity);
+        rightShooterMotor.setControl(transferVelocity);
+        leftShooterMotor.setControl(transferVelocity);
     }
 
     void reverseIntake() {
         targetShooterSpeed = reverseIntakeVelocity.Velocity;
 
-        shooterMotor.setControl(reverseIntakeVelocity);
-        shooterMotorFollower.setControl(reverseIntakeVelocity);
+        rightShooterMotor.setControl(reverseIntakeVelocity);
+        leftShooterMotor.setControl(reverseIntakeVelocity);
     }
 
     void setPivotVoltage(double voltage) {
@@ -156,26 +160,26 @@ class ShooterIO {
 
     // STATES
     void enable() {
-        targetShooterSpeed = motorVelocity.Velocity;
+        targetShooterSpeed = rightMotorVelocity.Velocity;
 
-        shooterMotor.setControl(motorVelocity);
-        shooterMotorFollower.setControl(motorVelocity);
+        rightShooterMotor.setControl(rightMotorVelocity);
+        leftShooterMotor.setControl(leftMotorVelocity);
     }
 
     void idle() {
         targetShooterSpeed = idleVelocity.Velocity;
 
         idleMode = true;
-        shooterMotor.setControl(idleVelocity);
-        shooterMotorFollower.setControl(idleVelocity);
+        rightShooterMotor.setControl(idleVelocity);
+        leftShooterMotor.setControl(idleVelocity);
     }
 
     void stop() {
         targetShooterSpeed = 0.0;
 
         idleMode = false;
-        shooterMotor.stopMotor();
-        shooterMotorFollower.stopMotor();
+        rightShooterMotor.stopMotor();
+        leftShooterMotor.stopMotor();
     }
 
     void toggleShootMode() {
@@ -206,16 +210,16 @@ class ShooterIO {
 
     // INPUTS
 
-    void processInputs(ShooterIOInputs inputs) {
+    void processInputs(DiffyShooterIOInputs inputs) {
         setShooterAngle(inputs.angle);
     }
 
     void refreshSignals() {
         BaseStatusSignal.refreshAll(pivotPosition, pivotVelocity, shooterVelocity,
-                shooterMotorCurrent, shooterMotorFollowerCurrent, pivotCurrent);
+                rightShooterMotorCurrent, leftShooterMotorCurrent, pivotCurrent);
     }
 
     public double getTotalCurrent() {
-        return Math.abs(shooterMotorCurrent.getValue()) + Math.abs(shooterMotorFollowerCurrent.getValue()) + Math.abs(pivotCurrent.getValue());
+        return Math.abs(rightShooterMotorCurrent.getValue()) + Math.abs(leftShooterMotorCurrent.getValue()) + Math.abs(pivotCurrent.getValue());
     }
 }

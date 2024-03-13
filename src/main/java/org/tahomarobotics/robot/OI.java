@@ -74,24 +74,23 @@ public class OI extends SubsystemIF {
      * Configure the button bindings for the controller(s).
      */
     private void configureBindings() {
-        Chassis chassis = Chassis.getInstance();
+        //Chassis chassis = Chassis.getInstance();
         Collector collector = Collector.getInstance();
         Shooter shooter = Shooter.getInstance();
-        AmpArm ampArm = AmpArm.getInstance();
-        Climbers climbers = Climbers.getInstance();
+        //AmpArm ampArm = AmpArm.getInstance();
+        //Climbers climbers = Climbers.getInstance();
 
         // Robot Heading Zeroing
-        driveController.a().onTrue(Commands.runOnce(chassis::orientToZeroHeading));
+        //driveController.a().onTrue(Commands.runOnce(chassis::orientToZeroHeading));
 
         // Robot/Field Orientation
-        driveController.b().onTrue(Commands.runOnce(chassis::toggleOrientation));
+        //driveController.b().onTrue(Commands.runOnce(chassis::toggleOrientation));
 
         //Collector up and down
         driveController.leftBumper().onTrue(Commands.runOnce(collector::toggleDeploy));
 
         //Shooting mode toggle
-        driveController.rightBumper().onTrue(Commands.runOnce(shooter::toggleShootMode));
-
+        //driveController.rightBumper().onTrue(Commands.runOnce(shooter::toggleShootMode));
 
         manipController.povUp().onTrue(Commands.runOnce(shooter::biasUp));
         manipController.povDown().onTrue(Commands.runOnce(shooter::biasDown));
@@ -99,31 +98,31 @@ public class OI extends SubsystemIF {
 
         manipController.b().onTrue(Commands.runOnce(shooter::toggleIdle));
 
-        driveController.y().onTrue(AMP_ARM_CTRL);
+//        driveController.y().onTrue(AMP_ARM_CTRL);
 
-        driveController.start().onTrue(Commands.deferredProxy(() ->
-                switch (climbers.getClimbState()) {
-                    case COCKED -> new PreClimbSequence();
-                    case READY -> new EngageCommand();
-                    default -> Commands.none();
-                })
-        );
-        driveController.x().onTrue(Commands.deferredProxy(ClimbSequence::new).onlyIf(() -> climbers.getClimbState() == Climbers.ClimbState.ENGAGED));
-        driveController.back().onTrue(Commands.deferredProxy(() ->
-                switch (climbers.getClimbState()) {
-                    case READY -> new PreClimbCancel();
-                    case ENGAGED -> new EngagedCancel();
-                    // Descend with break mode in the case that it doesn't work.
-                    // TODO: At this point, we can't be sure of anything about the state of the robot so designating
-                    //  the canceling to a separate command that does a full reset might be ideal.
-                    case CLIMBING, CLIMBED -> Commands.runOnce(() -> {
-                        ampArm.setRollerState(AmpArm.RollerState.DISABLED);
-                        climbers.stop();
-                        climbers.setClimbState(Climbers.ClimbState.ENGAGED);
-                    });
-                    default -> Commands.none();
-                })
-        );
+        //driveController.start().onTrue(Commands.deferredProxy(() ->
+        //        switch (climbers.getClimbState()) {
+        //            case COCKED -> new PreClimbSequence();
+        //            case READY -> new EngageCommand();
+        //            default -> Commands.none();
+        //        })
+        //);
+        //driveController.x().onTrue(Commands.deferredProxy(ClimbSequence::new).onlyIf(() -> climbers.getClimbState() == Climbers.ClimbState.ENGAGED));
+        //driveController.back().onTrue(Commands.deferredProxy(() ->
+//                switch (climbers.getClimbState()) {
+//                    case READY -> new PreClimbCancel();
+//                    case ENGAGED -> new EngagedCancel();
+//                    // Descend with break mode in the case that it doesn't work.
+//                    // TODO: At this point, we can't be sure of anything about the state of the robot so designating
+//                    //  the canceling to a separate command that does a full reset might be ideal.
+//                    case CLIMBING, CLIMBED -> Commands.runOnce(() -> {
+//                        ampArm.setRollerState(AmpArm.RollerState.DISABLED);
+//                        climbers.stop();
+//                        climbers.setClimbState(Climbers.ClimbState.ENGAGED);
+//                    });
+//                    default -> Commands.none();
+//                })
+//        );
 
         SmartDashboard.putData("Climbers UP", new UnladenClimbCommand(ClimberConstants.TOP_POSITION));
         SmartDashboard.putData("Climbers DOWN", Commands.sequence(
@@ -133,48 +132,48 @@ public class OI extends SubsystemIF {
         ));
 
         driveController.rightTrigger(0.5)
-                .whileTrue(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.SCORE))
-                .onlyIf(ampArm::isArmAtAmp))
-                .onFalse(Commands.waitSeconds(0.25).andThen(
-                        Commands.defer(ARM_TO_STOW, Set.of(ampArm))).onlyIf(ampArm::isArmAtAmp))
-                .onTrue(new ShootCommand())
-                .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));
-
-        driveController.leftTrigger(0.01)
-                .whileTrue(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.PASSING))
-                .onlyIf(ampArm::isArmAtSource))
-                .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED))
-                .onlyIf(ampArm::isArmAtSource))
-                .onFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.COLLECTED))
-                .onlyIf(ampArm::isArmAtSource));
+//                .whileTrue(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.SCORE))
+//                .onlyIf(ampArm::isArmAtAmp))
+//                .onFalse(Commands.waitSeconds(0.25).andThen(
+//                        Commands.defer(ARM_TO_STOW, Set.of(ampArm))).onlyIf(ampArm::isArmAtAmp))
+                .onTrue(new ShootCommand());
+//                .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));
+//
+//        driveController.leftTrigger(0.01)
+//                .whileTrue(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.PASSING))
+//                .onlyIf(ampArm::isArmAtSource))
+//                .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED))
+//                .onlyIf(ampArm::isArmAtSource))
+//                .onFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.COLLECTED))
+//                .onlyIf(ampArm::isArmAtSource));
 
         driveController.leftTrigger(0.5)
                 .onTrue(Commands.runOnce(() -> collector.setIsCollecting(true)))
                 .onFalse(Commands.runOnce(() -> collector.setIsCollecting(false)));
 
-        driveController.povLeft()
-                .onTrue(Commands.runOnce(() -> {
-                    collector.setIsEjecting(true);
-                    shooter.enable();
-                    ampArm.setRollerState(AmpArm.RollerState.PASSING);
-                }))
-                .onFalse(Commands.runOnce(() -> {
-                    collector.setIsEjecting(false);
-                    shooter.stop();
-                    ampArm.setRollerState(AmpArm.RollerState.DISABLED);
-                }));
+//        driveController.povLeft()
+//                .onTrue(Commands.runOnce(() -> {
+//                    collector.setIsEjecting(true);
+//                    shooter.enable();
+//                    ampArm.setRollerState(AmpArm.RollerState.PASSING);
+//                }))
+//                .onFalse(Commands.runOnce(() -> {
+//                    collector.setIsEjecting(false);
+//                    shooter.stop();
+//                    ampArm.setRollerState(AmpArm.RollerState.DISABLED);
+//                }));
 
-        manipController.y().onTrue(Commands.deferredProxy(FEEDBACK));
+//        manipController.y().onTrue(Commands.deferredProxy(FEEDBACK));
     }
 
     private void setDefaultCommands() {
-        Chassis.getInstance().setDefaultCommand(new TeleopDriveCommand(
-                inputs -> {
-                    inputs.x = -desensitizePowerBased(driveController.getLeftY(), FORWARD_SENSITIVITY);
-                    inputs.y = -desensitizePowerBased(driveController.getLeftX(), FORWARD_SENSITIVITY);
-                    inputs.rot = -desensitizePowerBased(driveController.getRightX(), ROTATIONAL_SENSITIVITY);
-                }
-        ));
+//        Chassis.getInstance().setDefaultCommand(new TeleopDriveCommand(
+//                inputs -> {
+//                    inputs.x = -desensitizePowerBased(driveController.getLeftY(), FORWARD_SENSITIVITY);
+//                    inputs.y = -desensitizePowerBased(driveController.getLeftX(), FORWARD_SENSITIVITY);
+//                    inputs.rot = -desensitizePowerBased(driveController.getRightX(), ROTATIONAL_SENSITIVITY);
+//                }
+//        ));
     }
 
     public boolean isManipXPressed() {

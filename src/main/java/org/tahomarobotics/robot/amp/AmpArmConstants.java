@@ -12,6 +12,9 @@ import org.tahomarobotics.robot.identity.RobotIdentity;
 public class AmpArmConstants {
     static final double POSITION_TOLERANCE = 0.01;
 
+    public static final double SOURCE_COLLECT_CURRENT = 5;
+    public static final double SOURCE_COLLECT_ACCEL_TIME = 0.25;
+
     // ARM
 
     static final double ARM_GEAR_REDUCTION;
@@ -87,7 +90,7 @@ public class AmpArmConstants {
     static final InvertedValue ROLLER_INVERT;
 
     public static final double NOTE_INTAKE_POSITION = 1;
-    public static final double SOURCE_INTAKE_POSITION = 1;
+    public static final double SOURCE_INTAKE_DISTANCE = 2;
     public static final double TRAP_VELOCITY = 3;
     public static final double REVERSE_INTAKE_VELOCITY = 10;
 

@@ -109,7 +109,7 @@ public class AmpArm extends SubsystemIF {
     }
 
     public double getRollerCurrent() {
-        return rollerCurrent.getValue();
+        return rollerCurrent.getValueAsDouble();
     }
 
     // STATE CONTROL
@@ -177,7 +177,7 @@ public class AmpArm extends SubsystemIF {
 
     public void sourceIntake() {
         rollerMotor.setPosition(0.0);
-        setRollerPosition(SOURCE_INTAKE_POSITION);
+        setRollerPosition(SOURCE_INTAKE_DISTANCE);
     }
 
     // STATE CHECKING

@@ -8,7 +8,6 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -43,10 +42,6 @@ public class SwerveModuleIO {
     private final StatusSignal<Double> drivePosition;
     private final StatusSignal<Double> driveVelocity;
     private final StatusSignal<Double> driveAcceleration;
-
-    private double lastAccel = 0.0;
-
-    private final LinearFilter driveAccelerationAverage = LinearFilter.movingAverage(3);
 
     private final StatusSignal<Double> driveCurrent;
 
@@ -145,15 +140,6 @@ public class SwerveModuleIO {
     SwerveModuleState getState() {
         return new SwerveModuleState(getDriveVelocity(), Rotation2d.fromRotations(getSteerAngle()));
     }
-
-
-    SwerveModuleState getAccelerationState() {
-        return new SwerveModuleState(lastAccel, new Rotation2d());
-    }
-
-    SwerveModuleState getRawAccelerationState() {
-        return new SwerveModuleState(driveAcceleration.getValue(), new Rotation2d());
-    }
     
     SwerveModuleState getDesiredState() {
         return desiredState;
@@ -181,9 +167,6 @@ public class SwerveModuleIO {
         SafeAKitLogger.recordOutput(name + "/Position", getPosition());
 
         SafeAKitLogger.recordOutput(name + "/DriveVelocity", driveVelocity.getValueAsDouble());
-        SafeAKitLogger.recordOutput(name + "/DriveAcceleration", driveAcceleration.getValueAsDouble());
-        lastAccel = driveAccelerationAverage.calculate(driveAcceleration.getValue());
-        SafeAKitLogger.recordOutput(name + "/DriveAccelerationAverage", lastAccel);
         SafeAKitLogger.recordOutput(name + "/DriveVelocityMPS", driveVelocity.getValueAsDouble() * DRIVE_POSITION_COEFFICIENT);
         SafeAKitLogger.recordOutput(name + "/SteerVelocity", steerVelocity.getValueAsDouble());
     }

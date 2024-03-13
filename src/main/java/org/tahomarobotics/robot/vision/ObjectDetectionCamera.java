@@ -5,6 +5,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj2.command.Commands;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
@@ -32,7 +33,10 @@ public class ObjectDetectionCamera {
         inst.addListener(
                 latencySub,
                 EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-                e -> processVisionUpdate(camera.getLatestResult())
+                e -> {
+                    var result = camera.getLatestResult();
+                    Commands.runOnce(() -> processVisionUpdate(result)).schedule();
+                }
         );
     }
 

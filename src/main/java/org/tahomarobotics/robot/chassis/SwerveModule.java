@@ -54,8 +54,6 @@ public class SwerveModule {
     public SwerveModuleState getDesiredState() {
         return io.getDesiredState();
     }
-    public SwerveModuleState getAccelerationState() { return io.getAccelerationState(); }
-    public SwerveModuleState getRawAccelerationState() { return io.getRawAccelerationState(); }
 
     public List<BaseStatusSignal> getStatusSignals() {
         return io.getStatusSignals();

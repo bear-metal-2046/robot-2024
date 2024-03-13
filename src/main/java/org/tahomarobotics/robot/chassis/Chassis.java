@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -31,8 +32,9 @@ import org.tahomarobotics.robot.vision.ATVision;
 import org.tahomarobotics.robot.vision.ObjectDetectionCamera;
 import org.tahomarobotics.robot.vision.VisionConstants;
 
-import javax.sound.sampled.Line;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 import static org.tahomarobotics.robot.shooter.ShooterConstants.*;
@@ -68,11 +70,12 @@ public class Chassis extends SubsystemIF {
     private double targetShootingAngle;
 
     private ChassisSpeeds currentChassisSpeeds = new ChassisSpeeds();
-    private ChassisSpeeds currentChassisAccel = new ChassisSpeeds();
 
     private double energyUsed = 0;
 
     private double totalCurrent = 0;
+
+    private final Deque<ATVision.ATCameraResult> queuedVisionMeasurements = new ArrayDeque<>(100);
 
     // CONSTRUCTOR
 
@@ -115,9 +118,9 @@ public class Chassis extends SubsystemIF {
 
 
         collectorLeftVision = new ObjectDetectionCamera(VisionConstants.Camera.COLLECTOR_LEFT);
-        collectorRightVision = new ATVision(VisionConstants.Camera.COLLECTOR_RIGHT, fieldPose, poseEstimator);
-        shooterLeftVision = new ATVision(VisionConstants.Camera.SHOOTER_LEFT, fieldPose, poseEstimator);
-        shooterRightVision = new ATVision(VisionConstants.Camera.SHOOTER_RIGHT, fieldPose, poseEstimator);
+        collectorRightVision = new ATVision(VisionConstants.Camera.COLLECTOR_RIGHT, fieldPose, queuedVisionMeasurements);
+        shooterLeftVision = new ATVision(VisionConstants.Camera.SHOOTER_LEFT, fieldPose, queuedVisionMeasurements);
+        shooterRightVision = new ATVision(VisionConstants.Camera.SHOOTER_RIGHT, fieldPose, queuedVisionMeasurements);
     }
 
     public static Chassis getInstance() {
@@ -182,24 +185,12 @@ public class Chassis extends SubsystemIF {
         return modules.stream().map(SwerveModule::getState).toArray(SwerveModuleState[]::new);
     }
 
-    private SwerveModuleState[] getSwerveModuleAccelerationStates() {
-        return modules.stream().map(SwerveModule::getAccelerationState).toArray(SwerveModuleState[]::new);
-    }
-
-    private SwerveModuleState[] getSwerveModuleRawAccelerationStates() {
-        return modules.stream().map(SwerveModule::getRawAccelerationState).toArray(SwerveModuleState[]::new);
-    }
-
     private SwerveModuleState[] getSwerveModuleDesiredStates() {
         return modules.stream().map(SwerveModule::getDesiredState).toArray(SwerveModuleState[]::new);
     }
 
     public ChassisSpeeds getCurrentChassisSpeeds() {
         return currentChassisSpeeds;
-    }
-
-    private ChassisSpeeds getCurrentChassisAcceleration() {
-        return currentChassisAccel;
     }
 
     // PERIODIC
@@ -210,9 +201,6 @@ public class Chassis extends SubsystemIF {
         Pose2d pose = getPose();
 
         currentChassisSpeeds = kinematics.toChassisSpeeds(getSwerveModuleStates());
-        currentChassisAccel = kinematics.toChassisSpeeds(getSwerveModuleAccelerationStates());
-        var currentChassisRawAccel = kinematics.toChassisSpeeds(getSwerveModuleRawAccelerationStates());
-
         double voltage = RobotController.getBatteryVoltage();
         totalCurrent = modules.stream().mapToDouble(SwerveModule::getTotalCurent).sum();
         energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;
@@ -220,8 +208,6 @@ public class Chassis extends SubsystemIF {
         SafeAKitLogger.recordOutput("Chassis/States", getSwerveModuleStates());
         SafeAKitLogger.recordOutput("Chassis/DesiredState", getSwerveModuleDesiredStates());
         SafeAKitLogger.recordOutput("Chassis/CurrentChassisSpeeds", getCurrentChassisSpeeds());
-        SafeAKitLogger.recordOutput("Chassis/CurrentChassisAccel", getCurrentChassisAcceleration());
-        SafeAKitLogger.recordOutput("Chassis/CurrentChassisRawAccel", currentChassisRawAccel);
         SafeAKitLogger.recordOutput("Chassis/Gyro/Yaw", getYaw());
         SafeAKitLogger.recordOutput("Chassis/Pose", pose);
         SafeAKitLogger.recordOutput("Chassis/IsAtShootingAngle?", isReadyToShoot());
@@ -244,6 +230,52 @@ public class Chassis extends SubsystemIF {
             setSwerveStates(swerveModuleStates);
         }
 
+        ATVision.ATCameraResult obj;
+        while ((obj = queuedVisionMeasurements.pollFirst()) != null) {
+            synchronized (poseEstimator) {
+                pose = poseEstimator.getEstimatedPosition();
+
+                Transform2d poseDiff = pose.minus(obj.poseMeters());
+
+                // Only add vision measurements close to where the robot currently thinks it is.
+//            if (poseDiff.getTranslation().getNorm() > VisionConstants.POSE_DIFFERENCE_THRESHOLD ||
+//                    poseDiff.getRotation().getDegrees() > VisionConstants.DEGREES_DIFFERENCE_THRESHOLD) {
+//                logger.warn("LARGE DISTANCE MOVED ACCORDING TO CAMERA '" + cameraSettings.cameraName + "', (" + poseDiff.getTranslation().getX() + "," + poseDiff.getTranslation().getY() + ")");
+//                return;
+//            }
+            }
+
+            double distanceToTargets = obj.distanceToTargets();
+
+            synchronized (fieldPose) {
+                fieldPose.getObject(obj.camera().cameraName).setPose(obj.poseMeters());
+            }
+
+            if (obj.numTargets() > 1 && distanceToTargets < VisionConstants.TARGET_DISTANCE_THRESHOLD) {
+                // Multi-tag PnP provides very trustworthy data
+                var stds = VecBuilder.fill(
+                        0.08122476428,
+                        0.0990676807,
+                        Units.degreesToRadians(1.372694632)
+                );
+
+                synchronized (poseEstimator) {
+                    poseEstimator.addVisionMeasurement(obj.poseMeters(), obj.timestamp(), stds);
+                }
+            } else if (obj.numTargets() == 1 && distanceToTargets < VisionConstants.SINGLE_TARGET_DISTANCE_THRESHOLD) {
+                // Single tag results are not very trustworthy. Do not use headings from them
+                Pose2d noHdgPose = new Pose2d(obj.poseMeters().getTranslation(), pose.getRotation());
+                var stds = VecBuilder.fill(
+                        0.25 * distanceToTargets,
+                        0.25 * distanceToTargets,
+                        Units.degreesToRadians(90)
+                );
+
+                synchronized (poseEstimator) {
+                    poseEstimator.addVisionMeasurement(noHdgPose, obj.timestamp(), stds);
+                }
+            }
+        }
     }
 
     @Override
@@ -273,7 +305,7 @@ public class Chassis extends SubsystemIF {
     }
 
     double lastVel = 0.0;
-    LinearFilter lastAccelAverage = LinearFilter.movingAverage(3);
+    LinearFilter lastAccelAverage = LinearFilter.movingAverage(5);
     double timestamp = Timer.getFPGATimestamp();
     // SETTERS
 
@@ -300,32 +332,21 @@ public class Chassis extends SubsystemIF {
         var speedsTranslation = new Translation2d(curSpeeds.vxMetersPerSecond, curSpeeds.vyMetersPerSecond);
         var speedsToGoal = speedsTranslation.rotateBy(robotToGoal.getAngle().unaryMinus());
 
-        var curAccel = getCurrentChassisAcceleration();
-        var accelTranslation = new Translation2d(curAccel.vxMetersPerSecond, curAccel.vyMetersPerSecond);
-        var accelToGoal = accelTranslation.rotateBy(robotToGoal.getAngle().unaryMinus());
-
         double tangentialComponent = speedsToGoal.getY();
         double radialComponent = speedsToGoal.getX();
 
-        SafeAKitLogger.recordOutput("Chassis/RadialVelocity", radialComponent);
+        double timeShotOffset = (radialComponent > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE);
+        double radialAcceleration = lastAccelAverage.calculate((radialComponent - lastVel) / (now - timestamp));
+        double radialVelocity = radialComponent + (radialAcceleration * timeShotOffset);
+        lastVel = radialComponent;
+        timestamp = now;
+
+        SafeAKitLogger.recordOutput("Chassis/RadialVelocity", radialVelocity);
+        SafeAKitLogger.recordOutput("Chassis/RadialAcceleration", radialAcceleration);
         SafeAKitLogger.recordOutput("Chassis/TangentialVelocity", tangentialComponent);
 
-        double timeShotOffset = (radialComponent > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE);
-        var positionChangeVelocityOnly = speedsTranslation.times(timeShotOffset);
-
-        var velocityChange = accelTranslation.times(timeShotOffset);
-        var positionChange = speedsTranslation.plus(velocityChange).times(timeShotOffset);
-
-        SafeAKitLogger.recordOutput("Chassis/TOF Velocity-Only Pose", pose.plus(new Transform2d(positionChangeVelocityOnly, pose.getRotation())));
-        SafeAKitLogger.recordOutput("Chassis/TOF Fully-Integrated Pose", pose.plus(new Transform2d(positionChange, pose.getRotation())));
-        SafeAKitLogger.recordOutput("Chassis/Radial Acceleration", accelToGoal.getX());
-        var accel = (lastVel - radialComponent) / (now - timestamp);
-        var filteredAccel = lastAccelAverage.calculate(accel);
-        SafeAKitLogger.recordOutput("Chassis/Radial Acceleration 2", accel);
-        SafeAKitLogger.recordOutput("Chassis/Radial Acceleration 3", filteredAccel);
-
         // Shooter angle speed compensation
-        Shooter.getInstance().angleToSpeaker(radialComponent, accelToGoal.getX());
+        Shooter.getInstance().angleToSpeaker(radialVelocity);
 
         // Calculate position and velocity adjustment
         double adj = Math.atan2(-tangentialComponent, ShooterConstants.SHOT_SPEED + radialComponent);

@@ -32,6 +32,8 @@ public class Shooter extends SubsystemIF {
 
     private double totalCurrent = 0;
 
+    private boolean dontAngle = false;
+
     // CONSTRUCTOR
 
     private Shooter() {
@@ -87,7 +89,9 @@ public class Shooter extends SubsystemIF {
     }
 
     public void setAngle(double angle) {
-        inputs.angle = MathUtil.clamp(angle + (io.inShootingMode() ? biasAngle : 0), MIN_PIVOT_ANGLE, MAX_PIVOT_ANGLE);
+        if (!dontAngle) {
+            inputs.angle = MathUtil.clamp(angle + (io.inShootingMode() ? biasAngle : 0), MIN_PIVOT_ANGLE, MAX_PIVOT_ANGLE);
+        }
     }
 
     public void biasUp() {
@@ -108,6 +112,10 @@ public class Shooter extends SubsystemIF {
 
     public void reverseIntake() {
         io.reverseIntake();
+    }
+
+    public void setDontAngle(boolean dontAngle) {
+        this.dontAngle = dontAngle;
     }
 
     // GETTERS
@@ -134,6 +142,10 @@ public class Shooter extends SubsystemIF {
 
     public boolean isAtAngle() {
         return io.isAtAngle();
+    }
+
+    public boolean getDontAngle() {
+        return dontAngle;
     }
 
     public double getPivotVelocity() {

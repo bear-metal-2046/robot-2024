@@ -71,6 +71,9 @@ public class Chassis extends SubsystemIF {
 
     private double totalCurrent = 0;
 
+    private final LinearFilter lastAccelAverage = LinearFilter.movingAverage(5);
+    private double lastVelocity = 0.0;
+
     // CONSTRUCTOR
 
     private Chassis() {
@@ -200,6 +203,32 @@ public class Chassis extends SubsystemIF {
         totalCurrent = modules.stream().mapToDouble(SwerveModule::getTotalCurent).sum();
         energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;
 
+        var goal = SPEAKER_TARGET_POSITION.get();
+
+        // Get polar coordinates (theta + distance) from robot to goal
+        var robotToGoal = goal.minus(pose.getTranslation());
+        var goalRot = MathUtil.angleModulus(robotToGoal.getAngle().getRadians() + Math.PI);
+        var goalDis = robotToGoal.getNorm();
+
+        // Get robot speed relative to angle from robot to goal
+        // X component is towards/from goal, Y component is tangential to goal
+        var curSpeeds = getCurrentChassisSpeeds();
+        var speedsTranslation = new Translation2d(curSpeeds.vxMetersPerSecond, curSpeeds.vyMetersPerSecond);
+        var speedsToGoal = speedsTranslation.rotateBy(robotToGoal.getAngle().unaryMinus());
+
+        double tangentialComponent = speedsToGoal.getY();
+        double radialComponent = speedsToGoal.getX();
+
+        double timeShotOffset = (radialComponent > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE);
+        double radialAcceleration = lastAccelAverage.calculate((radialComponent - lastVelocity) / 0.02);
+        double radialVelocity = radialComponent + (radialAcceleration * timeShotOffset);
+        lastVelocity = radialComponent;
+
+        SafeAKitLogger.recordOutput("Chassis/RadialVelocity", radialComponent);
+        SafeAKitLogger.recordOutput("Chassis/RadialAcceleration", radialAcceleration);
+        SafeAKitLogger.recordOutput("Chassis/PrecomposedRadialVelocity", radialVelocity);
+        SafeAKitLogger.recordOutput("Chassis/TangentialVelocity", tangentialComponent);
+
         SafeAKitLogger.recordOutput("Chassis/States", getSwerveModuleStates());
         SafeAKitLogger.recordOutput("Chassis/DesiredState", getSwerveModuleDesiredStates());
         SafeAKitLogger.recordOutput("Chassis/CurrentChassisSpeeds", getCurrentChassisSpeeds());
@@ -256,53 +285,20 @@ public class Chassis extends SubsystemIF {
         desiredSpeeds = ChassisSpeeds.discretize(velocity, Robot.defaultPeriodSecs);
     }
 
-    double lastVel = 0.0;
-    LinearFilter lastAccelAverage = LinearFilter.movingAverage(5);
-    double timestamp = Timer.getFPGATimestamp();
     // SETTERS
 
     private void aimToSpeaker(ChassisSpeeds speeds) {
-        double now = Timer.getFPGATimestamp();
-        if (now - timestamp > 10.0) timestamp = now - 0.02;
-
         //
         // Based off of 2022 Cheesy Poof shooting utils
         // https://github.com/Team254/FRC-2022-Public/blob/6a24236b37f0fcb75ceb9d5dec767be58ea903c0/src/main/java/com/team254/frc2022/shooting/ShootingUtil.java#L26
         //
 
-        var pose = getPose();
-        var goal = SPEAKER_TARGET_POSITION.get();
-
-        // Get polar coordinates (theta + distance) from robot to goal
-        var robotToGoal = goal.minus(pose.getTranslation());
-        var goalRot = MathUtil.angleModulus(robotToGoal.getAngle().getRadians() + Math.PI);
-        var goalDis = robotToGoal.getNorm();
-
-        // Get robot speed relative to angle from robot to goal
-        // X component is towards/from goal, Y component is tangential to goal
-        var curSpeeds = getCurrentChassisSpeeds();
-        var speedsTranslation = new Translation2d(curSpeeds.vxMetersPerSecond, curSpeeds.vyMetersPerSecond);
-        var speedsToGoal = speedsTranslation.rotateBy(robotToGoal.getAngle().unaryMinus());
-
-        double tangentialComponent = speedsToGoal.getY();
-        double radialComponent = speedsToGoal.getX();
-
-        double timeShotOffset = (radialComponent > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE);
-        double radialAcceleration = lastAccelAverage.calculate((radialComponent - lastVel) / (now - timestamp));
-        double radialVelocity = radialComponent + (radialAcceleration * timeShotOffset);
-        lastVel = radialComponent;
-        timestamp = now;
-
-        SafeAKitLogger.recordOutput("Chassis/RadialVelocity", radialVelocity);
-        SafeAKitLogger.recordOutput("Chassis/RadialAcceleration", radialAcceleration);
-        SafeAKitLogger.recordOutput("Chassis/TangentialVelocity", tangentialComponent);
-
         // Shooter angle speed compensation
         Shooter.getInstance().angleToSpeaker(radialVelocity);
 
         // Calculate position and velocity adjustment
-        double adj = Math.atan2(-tangentialComponent, ShooterConstants.SHOT_SPEED + radialComponent);
-        double adjSpeed = tangentialComponent / goalDis;
+        double adj = Math.atan2(-totalCurrent, SHOT_SPEED + radialComponent);
+        double adjSpeed = totalCurrent / goalDis;
 
         // modifiers
         if (DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Red) {

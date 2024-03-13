@@ -203,6 +203,10 @@ public class Chassis extends SubsystemIF {
         return currentChassisAccel;
     }
 
+    public ObjectDetectionCamera getObjectDetectionCamera() {
+        return collectorLeftVision;
+    }
+
     // PERIODIC
 
     @Override

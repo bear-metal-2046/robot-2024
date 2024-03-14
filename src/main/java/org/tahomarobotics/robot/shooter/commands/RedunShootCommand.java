@@ -21,8 +21,8 @@ public class RedunShootCommand extends SequentialCommandGroup {
                 Commands.sequence(
                         Commands.runOnce(indexer::transitionToTransferring),
                         Commands.waitSeconds(0.1),
-                        Commands.runOnce(() -> shooter.setAngle(ShooterConstants.SHOOTER_COLLECT_PIVOT_ANGLE)),
-                        Commands.runOnce(shooter::disableRedunShootMode)
+                        Commands.runOnce(shooter::disableRedunShootMode),
+                        Commands.runOnce(() -> shooter.setAngle(ShooterConstants.SHOOTER_COLLECT_PIVOT_ANGLE))
                 ).onlyIf(shooter::inRedundantShootingMode)
         );
     }

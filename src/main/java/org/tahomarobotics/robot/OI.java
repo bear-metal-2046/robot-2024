@@ -148,8 +148,8 @@ public class OI extends SubsystemIF {
                 .onlyIf(ampArm::isArmAtAmp))
                 .onFalse(Commands.waitSeconds(0.25).andThen(
                         Commands.defer(ARM_TO_STOW, Set.of(ampArm))).onlyIf(ampArm::isArmAtAmp))
-                .onTrue(new ShootCommand().onlyIf(() -> !shooter.inRedundantShootingMode()))
-                .onFalse(new RedunShootCommand())
+                .onTrue(new ShootCommand())
+                .onTrue(new RedunShootCommand())
                 .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));
 
         driveController.leftTrigger(0.01)

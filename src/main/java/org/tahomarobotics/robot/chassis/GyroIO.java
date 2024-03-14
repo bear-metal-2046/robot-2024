@@ -14,8 +14,6 @@ public class GyroIO {
     private final StatusSignal<Double> yaw = pigeon2.getYaw();
     private final StatusSignal<Double> yawVelocity = pigeon2.getAngularVelocityZWorld();
 
-    private final Chassis chassis = Chassis.getInstance();
-
     GyroIO() {
         pigeon2.getConfigurator().apply(new Pigeon2Configuration());
 

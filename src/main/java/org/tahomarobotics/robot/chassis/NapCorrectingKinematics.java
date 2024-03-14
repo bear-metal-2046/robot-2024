@@ -36,7 +36,9 @@ public class NapCorrectingKinematics extends SwerveDriveKinematics {
         ampSideFieldCompensation = new Compensation(1.0, 0.987654321,1.0, 1.0);
     }
 
-
+    public Twist2d toTwist2d_super(SwerveModulePosition... moduleDeltas) {
+        return super.toTwist2d(moduleDeltas);
+    }
 
     @Override
     public Twist2d toTwist2d(SwerveModulePosition... moduleDeltas) {

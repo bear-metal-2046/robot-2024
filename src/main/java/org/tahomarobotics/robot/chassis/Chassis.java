@@ -54,7 +54,7 @@ public class Chassis extends SubsystemIF {
     private final SwerveDrivePoseEstimator poseEstimator;
 
     private final Field2d fieldPose = new Field2d();
-    private final SwerveDriveKinematics kinematics;
+    private final NapCorrectingKinematics kinematics;
 
     private final CalibrationData<Double[]> swerveCalibration;
 
@@ -443,8 +443,8 @@ public class Chassis extends SubsystemIF {
             } else {
                 // Use the angle delta from the kinematics and module deltas
                 SwerveModulePosition[] deltas = calculateModuleDeltas(lastModulePosition, modulePositions);
-                Twist2d twist = kinematics.toTwist2d(deltas);
-                yaw = getPose().getRotation().plus(new Rotation2d(twist.dtheta));
+                Twist2d twist = kinematics.toTwist2d_super(deltas);
+                yaw = yaw.plus(new Rotation2d(twist.dtheta));
             }
         }
 

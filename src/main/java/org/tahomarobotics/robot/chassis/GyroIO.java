@@ -1,6 +1,7 @@
 package org.tahomarobotics.robot.chassis;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -14,6 +15,8 @@ public class GyroIO {
     protected final Pigeon2 pigeon2 = new Pigeon2(RobotMap.PIGEON, RobotConfiguration.CANBUS_NAME);
     private final StatusSignal<Double> yaw = pigeon2.getYaw();
     private final StatusSignal<Double> yawVelocity = pigeon2.getAngularVelocityZWorld();
+
+    public record ValidYaw(Rotation2d yaw, boolean valid){}
 
     GyroIO() {
         pigeon2.getConfigurator().apply(new Pigeon2Configuration());
@@ -31,9 +34,11 @@ public class GyroIO {
         pigeon2.setYaw(0.0);
     }
 
-    Rotation2d getYaw() {
-        return Rotation2d.fromDegrees(BaseStatusSignal.getLatencyCompensatedValue(yaw.refresh(), yawVelocity.refresh()));
+    ValidYaw getYaw() {
+        boolean valid = BaseStatusSignal.refreshAll(yaw, yawVelocity).equals(StatusCode.OK);
+        return new ValidYaw(Rotation2d.fromDegrees(BaseStatusSignal.getLatencyCompensatedValue(yaw, yawVelocity)), valid);
     }
+
     List<BaseStatusSignal> getStatusSignals() {
         return List.of(yaw, yawVelocity);
     }

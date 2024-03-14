@@ -34,6 +34,7 @@ import org.tahomarobotics.robot.vision.ObjectDetectionCamera;
 import org.tahomarobotics.robot.vision.VisionConstants;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.tahomarobotics.robot.shooter.ShooterConstants.SPEAKER_TARGET_POSITION;
@@ -77,6 +78,10 @@ public class Chassis extends SubsystemIF {
 
     private double totalCurrent = 0;
 
+    private Rotation2d yaw = new Rotation2d();
+
+    private SwerveModulePosition lastModulePosition[];
+
     // CONSTRUCTOR
 
     private Chassis() {
@@ -91,6 +96,8 @@ public class Chassis extends SubsystemIF {
                 new SwerveModule(RobotMap.BACK_LEFT_MOD, angularOffsets[2]),
                 new SwerveModule(RobotMap.BACK_RIGHT_MOD, angularOffsets[3])
         );
+
+        lastModulePosition = getSwerveModulePositions();
 
         kinematics = new NapCorrectingKinematics(
                 this::getYaw,
@@ -168,7 +175,7 @@ public class Chassis extends SubsystemIF {
     // Getters
 
     public Rotation2d getYaw() {
-        return gyroIO.getYaw();
+        return yaw;
     }
 
     public Pose2d getPose() {
@@ -283,6 +290,7 @@ public class Chassis extends SubsystemIF {
     // SETTERS
 
     private void aimToSpeaker(ChassisSpeeds speeds) {
+
         //
         // Based off of 2022 Cheesy Poof shooting utils
         // https://github.com/Team254/FRC-2022-Public/blob/6a24236b37f0fcb75ceb9d5dec767be58ea903c0/src/main/java/com/team254/frc2022/shooting/ShootingUtil.java#L26
@@ -409,18 +417,38 @@ public class Chassis extends SubsystemIF {
         }
     }
 
+    private SwerveModulePosition[] calculateModuleDeltas(SwerveModulePosition[] start, SwerveModulePosition[] end) {
+        SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[end.length];
+        for (int i = 0; i < end.length; i++) {
+            moduleDeltas[i] = new SwerveModulePosition(end[i].distanceMeters - start[i].distanceMeters, end[i].angle);
+        }
+
+        return moduleDeltas;
+    }
+
     private void updatePosition() {
-        Rotation2d yaw;
+
         SwerveModulePosition[] modulePositions;
         // Calculate new position
-
-        synchronized (gyroIO) {
-            yaw = getYaw();
-        }
 
         synchronized (modules) {
             modulePositions = getSwerveModulePositions();
         }
+
+        synchronized (gyroIO) {
+
+            var validYaw = gyroIO.getYaw();
+            if (validYaw.valid()) {
+                yaw = validYaw.yaw();
+            } else {
+                // Use the angle delta from the kinematics and module deltas
+                SwerveModulePosition[] deltas = calculateModuleDeltas(lastModulePosition, modulePositions);
+                Twist2d twist = kinematics.toTwist2d(deltas);
+                yaw = getPose().getRotation().plus(new Rotation2d(twist.dtheta));
+            }
+        }
+
+        lastModulePosition = Arrays.copyOf(modulePositions, modulePositions.length);
 
         synchronized (poseEstimator) {
             poseEstimator.update(yaw, modulePositions);

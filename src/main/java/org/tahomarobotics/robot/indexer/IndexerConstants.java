@@ -7,7 +7,7 @@ import org.tahomarobotics.robot.collector.CollectorConstants;
 import org.tahomarobotics.robot.identity.RobotIdentity;
 
 public class IndexerConstants {
-    static final double COLLECT_SPEED = CollectorConstants.COLLECT_MAX_RPS - 20; // Rotations
+    static final double COLLECT_SPEED = CollectorConstants.COLLECT_MAX_RPS + 5; // Rotations
     static final double TRANSFER_DISTANCE = 5.0; // Rotations
     static final double POSITION_TOLERANCE = 0.1; // Rotations
     static final double FACTOR = 1.75; // For indexing into shooter faster

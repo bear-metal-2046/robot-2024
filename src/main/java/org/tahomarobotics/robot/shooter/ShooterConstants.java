@@ -45,9 +45,9 @@ public class ShooterConstants {
                 PIVOT_INVERSION = InvertedValue.Clockwise_Positive;
             }
             default -> {
-                SHOOTER_SPEED = 100.0;
-                LEFT_SHOOTER_OFFSET = -33;
-                IDLE_SPEED = 37.5;
+                SHOOTER_SPEED = 133.0;
+                LEFT_SHOOTER_OFFSET = -42;
+                IDLE_SPEED = 50;
                 MAX_PIVOT_ANGLE = Units.degreesToRotations(50.4);
                 SHOOTER_GEAR_REDUCTION = (30.0 / 18.0) * (30.0 / 32.0);
                 PIVOT_INVERSION = InvertedValue.CounterClockwise_Positive;

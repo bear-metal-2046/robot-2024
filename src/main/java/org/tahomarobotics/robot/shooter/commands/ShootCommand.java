@@ -17,10 +17,8 @@ public class ShootCommand extends SequentialCommandGroup {
     public ShootCommand() {
         Shooter shooter = Shooter.getInstance();
 
-        logger.info("initted");
         addCommands(
                 Commands.sequence(
-                        Commands.print("SHOOT"),
                         Commands.waitUntil(shooter::isReadyToShoot),
                         Commands.runOnce(indexer::transitionToTransferring),
                         Commands.waitSeconds(0.1)

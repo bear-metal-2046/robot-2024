@@ -5,9 +5,9 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -36,7 +36,7 @@ import org.tahomarobotics.robot.vision.VisionConstants;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.tahomarobotics.robot.shooter.ShooterConstants.*;
+import static org.tahomarobotics.robot.shooter.ShooterConstants.SPEAKER_TARGET_POSITION;
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
 public class Chassis extends SubsystemIF {
@@ -68,8 +68,10 @@ public class Chassis extends SubsystemIF {
 
     private double targetShootingAngle;
 
-    private ChassisSpeeds currentChassisSpeeds = new ChassisSpeeds();
-    private ChassisSpeeds currentChassisAccel = new ChassisSpeeds();
+    private ChassisSpeeds currentChassisSpeeds = new ChassisSpeeds(), currentAcceleration = new ChassisSpeeds();
+    private final LinearFilter xAccelFilter = LinearFilter.movingAverage(25),
+            yAccelFilter = LinearFilter.movingAverage(25),
+            omegaAccelFilter = LinearFilter.movingAverage(25);
 
     private double energyUsed = 0;
 
@@ -94,8 +96,8 @@ public class Chassis extends SubsystemIF {
                 this::getYaw,
                 this::getPose,
                 modules.stream()
-                    .map(SwerveModule::getTranslationOffset)
-                    .toArray(Translation2d[]::new)
+                        .map(SwerveModule::getTranslationOffset)
+                        .toArray(Translation2d[]::new)
         );
 
 
@@ -199,8 +201,8 @@ public class Chassis extends SubsystemIF {
         return currentChassisSpeeds;
     }
 
-    private ChassisSpeeds getCurrentChassisAcceleration() {
-        return currentChassisAccel;
+    public ChassisSpeeds getCurrentAcceleration() {
+        return currentAcceleration;
     }
 
     // PERIODIC
@@ -212,9 +214,14 @@ public class Chassis extends SubsystemIF {
 
         apriltagCameras.forEach(ATVision::update);
 
-        currentChassisSpeeds = kinematics.toChassisSpeeds(getSwerveModuleStates());
-        currentChassisAccel = kinematics.toChassisSpeeds(getSwerveModuleAccelerationStates());
-        var currentChassisRawAccel = kinematics.toChassisSpeeds(getSwerveModuleRawAccelerationStates());
+        ChassisSpeeds newChassisSpeeds = kinematics.toChassisSpeeds(getSwerveModuleStates());
+        ChassisSpeeds unfilteredAcceleration = newChassisSpeeds.minus(currentChassisSpeeds).div(Robot.defaultPeriodSecs);
+        currentAcceleration = new ChassisSpeeds(
+                xAccelFilter.calculate(unfilteredAcceleration.vxMetersPerSecond),
+                yAccelFilter.calculate(unfilteredAcceleration.vyMetersPerSecond),
+                omegaAccelFilter.calculate(unfilteredAcceleration.omegaRadiansPerSecond)
+        );
+        currentChassisSpeeds = newChassisSpeeds;
 
         double voltage = RobotController.getBatteryVoltage();
         totalCurrent = modules.stream().mapToDouble(SwerveModule::getTotalCurent).sum();
@@ -222,9 +229,8 @@ public class Chassis extends SubsystemIF {
 
         SafeAKitLogger.recordOutput("Chassis/States", getSwerveModuleStates());
         SafeAKitLogger.recordOutput("Chassis/DesiredState", getSwerveModuleDesiredStates());
-        SafeAKitLogger.recordOutput("Chassis/CurrentChassisSpeeds", getCurrentChassisSpeeds());
-        SafeAKitLogger.recordOutput("Chassis/CurrentChassisAccel", getCurrentChassisAcceleration());
-        SafeAKitLogger.recordOutput("Chassis/CurrentChassisRawAccel", currentChassisRawAccel);
+        SafeAKitLogger.recordOutput("Chassis/Speed", getCurrentChassisSpeeds());
+        SafeAKitLogger.recordOutput("Chassis/Acceleration", getCurrentAcceleration());
         SafeAKitLogger.recordOutput("Chassis/Gyro/Yaw", getYaw());
         SafeAKitLogger.recordOutput("Chassis/Pose", pose);
         SafeAKitLogger.recordOutput("Chassis/IsAtShootingAngle?", isReadyToShoot());
@@ -277,7 +283,6 @@ public class Chassis extends SubsystemIF {
     // SETTERS
 
     private void aimToSpeaker(ChassisSpeeds speeds) {
-
         //
         // Based off of 2022 Cheesy Poof shooting utils
         // https://github.com/Team254/FRC-2022-Public/blob/6a24236b37f0fcb75ceb9d5dec767be58ea903c0/src/main/java/com/team254/frc2022/shooting/ShootingUtil.java#L26
@@ -296,28 +301,19 @@ public class Chassis extends SubsystemIF {
         var curSpeeds = getCurrentChassisSpeeds();
         var speedsTranslation = new Translation2d(curSpeeds.vxMetersPerSecond, curSpeeds.vyMetersPerSecond);
         var speedsToGoal = speedsTranslation.rotateBy(robotToGoal.getAngle().unaryMinus());
-
-        var curAccel = getCurrentChassisAcceleration();
-        var accelTranslation = new Translation2d(curAccel.vxMetersPerSecond, curAccel.vyMetersPerSecond);
-        var accelToGoal = accelTranslation.rotateBy(robotToGoal.getAngle().unaryMinus());
+        var curAccel = getCurrentAcceleration();
+        var accelToGoal = new Translation2d(curAccel.vxMetersPerSecond, curAccel.vyMetersPerSecond)
+                .rotateBy(robotToGoal.getAngle().unaryMinus());
 
         double tangentialComponent = speedsToGoal.getY();
         double radialComponent = speedsToGoal.getX();
 
         SafeAKitLogger.recordOutput("Chassis/RadialVelocity", radialComponent);
+        SafeAKitLogger.recordOutput("Chassis/AcceleratedRadialVelocity", radialComponent);
         SafeAKitLogger.recordOutput("Chassis/TangentialVelocity", tangentialComponent);
 
-        double timeShotOffset = (radialComponent > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE);
-        var positionChangeVelocityOnly = speedsTranslation.times(timeShotOffset);
-
-        var velocityChange = accelTranslation.times(timeShotOffset);
-        var positionChange = speedsTranslation.plus(velocityChange).times(timeShotOffset);
-
-        SafeAKitLogger.recordOutput("Chassis/TOF Velocity-Only Pose", pose.plus(new Transform2d(positionChangeVelocityOnly, pose.getRotation())));
-        SafeAKitLogger.recordOutput("Chassis/TOF Fully-Integrated Pose", pose.plus(new Transform2d(positionChange, pose.getRotation())));
-
         // Shooter angle speed compensation
-        Shooter.getInstance().angleToSpeaker(radialComponent, accelToGoal.getX());
+        if (!Shooter.getInstance().isShooting()) Shooter.getInstance().angleToSpeaker(radialComponent);
 
         // Calculate position and velocity adjustment
         double adj = Math.atan2(-tangentialComponent, ShooterConstants.SHOT_SPEED + radialComponent);
@@ -374,7 +370,6 @@ public class Chassis extends SubsystemIF {
     }
 
 
-
     // Odometry Thread
 
     /**
@@ -395,7 +390,6 @@ public class Chassis extends SubsystemIF {
         BaseStatusSignal[] signals = signalList.toArray(BaseStatusSignal[]::new);
 
 
-
         while (true) {
             // Wait for all signals to arrive
             BaseStatusSignal.waitForAll(4 / RobotConfiguration.ODOMETRY_UPDATE_FREQUENCY, signals);
@@ -405,7 +399,7 @@ public class Chassis extends SubsystemIF {
 
     private void simulatedOdometryThread() {
         try {
-            while(true) {
+            while (true) {
                 Thread.sleep(4);
                 updatePosition();
             }

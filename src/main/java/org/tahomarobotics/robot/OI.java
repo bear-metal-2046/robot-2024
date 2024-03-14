@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -156,15 +157,12 @@ public class OI extends SubsystemIF {
                 .onTrue(new RedunShootCommand())
                 .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));
 
-        Timer sourceCollectTimer = new Timer();
-        driveController.leftTrigger(0.01).onTrue(new SourceIntakeCommand(driveController.leftTrigger()));
-
-        driveController.leftTrigger(0.01).onTrue(Commands.runOnce( () -> {
-                    logger.info("&&&&&&-RESETTING TIMER FOR SOURCE COLLECT-&&&&&");
-                    sourceCollectTimer.reset();
-                    sourceCollectTimer.start();
-                }
-        ));
+        driveController.leftTrigger(0.5).whileTrue(
+                new SourceIntakeCommand().onlyIf(() -> !ampArm.getRollerState().equals(AmpArm.RollerState.COLLECTED)
+                        && !ampArm.getRollerState().equals(AmpArm.RollerState.CENTERING)))
+                .onFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED))
+                        .onlyIf(() -> !ampArm.getRollerState().equals(AmpArm.RollerState.COLLECTED)
+                                && !ampArm.getRollerState().equals(AmpArm.RollerState.CENTERING)));
 
         driveController.leftTrigger(0.5)
                 .onTrue(Commands.runOnce(() -> collector.setIsCollecting(true)))

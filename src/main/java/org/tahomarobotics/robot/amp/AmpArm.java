@@ -180,6 +180,10 @@ public class AmpArm extends SubsystemIF {
         setRollerPosition(SOURCE_INTAKE_DISTANCE);
     }
 
+    public RollerState getRollerState() {
+        return rollerState;
+    }
+
     // STATE CHECKING
 
     public boolean isArmAtStow() {
@@ -274,6 +278,7 @@ public class AmpArm extends SubsystemIF {
     public enum RollerState {
         DISABLED,
         PASSING,
+        CENTERING,
         COLLECTED,
         TRAP,
         SCORE,

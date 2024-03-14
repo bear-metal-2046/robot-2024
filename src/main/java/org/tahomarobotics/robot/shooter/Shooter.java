@@ -32,6 +32,8 @@ public class Shooter extends SubsystemIF {
 
     private double totalCurrent = 0;
 
+    private boolean isShooting = false;
+
     // CONSTRUCTOR
 
     private Shooter() {
@@ -110,6 +112,10 @@ public class Shooter extends SubsystemIF {
         io.reverseIntake();
     }
 
+    public void setIsShooting(boolean isShooting) {
+        this.isShooting = isShooting;
+    }
+
     // GETTERS
 
     private double getShooterVelocity() {
@@ -134,6 +140,10 @@ public class Shooter extends SubsystemIF {
 
     public boolean isAtAngle() {
         return io.isAtAngle();
+    }
+
+    public boolean isShooting() {
+        return isShooting;
     }
 
     public double getPivotVelocity() {

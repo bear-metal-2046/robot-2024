@@ -19,13 +19,19 @@ public class ShootCommand extends SequentialCommandGroup {
 
         addCommands(
                 Commands.sequence(
-                        Commands.runOnce(() -> logger.info("Shooting")),
+                        Commands.runOnce(() -> {
+                            logger.info("Shooting");
+                            shooter.setIsShooting(true);
+                        }),
                         Commands.waitUntil(shooter::isReadyToShoot),
                         Commands.runOnce(indexer::transitionToTransferring),
                         Commands.waitSeconds(0.1),
                         Commands.either(Commands.runOnce(shooter::toggleShootMode), Commands.runOnce(shooter::disableShootMode), () -> !RobotState.isAutonomous()),
                         Commands.runOnce(() -> shooter.setAngle(ShooterConstants.SHOOTER_COLLECT_PIVOT_ANGLE)),
-                        Commands.runOnce(() -> logger.info("Shot"))
+                        Commands.runOnce(() -> {
+                            logger.info("Shot");
+                            shooter.setIsShooting(false);
+                        })
                 ).onlyIf(shooter::inShootingMode)
         );
     }

@@ -57,8 +57,8 @@ public class Chassis extends SubsystemIF {
 
     private final CalibrationData<Double[]> swerveCalibration;
 
-    private final ObjectDetectionCamera collectorLeftVision;
-    private final ATVision collectorRightVision, shooterLeftVision, shooterRightVision;
+    private final ObjectDetectionCamera objectDetectionCamera;
+    private final List<ATVision> apriltagCameras = new ArrayList<>();
 
     private final Thread odometryThread;
 
@@ -115,10 +115,10 @@ public class Chassis extends SubsystemIF {
         odometryThread.start();
 
 
-        collectorLeftVision = new ObjectDetectionCamera(VisionConstants.Camera.COLLECTOR_LEFT);
-        collectorRightVision = new ATVision(VisionConstants.Camera.COLLECTOR_RIGHT, fieldPose, poseEstimator);
-        shooterLeftVision = new ATVision(VisionConstants.Camera.SHOOTER_LEFT, fieldPose, poseEstimator);
-        shooterRightVision = new ATVision(VisionConstants.Camera.SHOOTER_RIGHT, fieldPose, poseEstimator);
+        objectDetectionCamera = new ObjectDetectionCamera(VisionConstants.Camera.COLLECTOR_LEFT);
+        apriltagCameras.add(new ATVision(VisionConstants.Camera.COLLECTOR_RIGHT, fieldPose, poseEstimator));
+        apriltagCameras.add(new ATVision(VisionConstants.Camera.SHOOTER_LEFT, fieldPose, poseEstimator));
+        apriltagCameras.add(new ATVision(VisionConstants.Camera.SHOOTER_RIGHT, fieldPose, poseEstimator));
     }
 
     public static Chassis getInstance() {
@@ -210,6 +210,8 @@ public class Chassis extends SubsystemIF {
         modules.forEach(SwerveModule::periodic);
         Pose2d pose = getPose();
 
+        apriltagCameras.forEach(ATVision::update);
+
         currentChassisSpeeds = kinematics.toChassisSpeeds(getSwerveModuleStates());
         currentChassisAccel = kinematics.toChassisSpeeds(getSwerveModuleAccelerationStates());
         var currentChassisRawAccel = kinematics.toChassisSpeeds(getSwerveModuleRawAccelerationStates());
@@ -244,7 +246,6 @@ public class Chassis extends SubsystemIF {
             SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, ChassisConstants.MAX_VELOCITY);
             setSwerveStates(swerveModuleStates);
         }
-
     }
 
     @Override

@@ -6,14 +6,10 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.DoubleSubscriber;
-import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
@@ -21,7 +17,6 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import org.tahomarobotics.robot.util.SafeAKitLogger;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,16 +41,6 @@ public class ATVision {
         camera = new PhotonCamera(inst, cameraSettings.cameraName);
 
         fieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-
-        // subscribe to new data from photon vision
-        DoubleSubscriber latencySub = inst.getTable("photonvision").getSubTable(cameraSettings.cameraName).getDoubleTopic("latencyMillis").subscribe(0.0);
-        inst.addListener(
-                latencySub,
-                EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-                e -> {
-                    new InstantCommand(() -> processVisionUpdate(camera.getLatestResult())).schedule();
-                }
-        );
     }
 
     private void processSingleTarget(PhotonTrackedTarget target, double timestampSeconds) {
@@ -131,20 +116,8 @@ public class ATVision {
     private void addVisionMeasurement(ATCameraResult result) {
         Pose2d pose;
 
-
         synchronized (poseEstimator) {
             pose = poseEstimator.getEstimatedPosition();
-
-
-
-            Transform2d poseDiff = pose.minus(result.poseMeters());
-
-            // Only add vision measurements close to where the robot currently thinks it is.
-//            if (poseDiff.getTranslation().getNorm() > VisionConstants.POSE_DIFFERENCE_THRESHOLD ||
-//                    poseDiff.getRotation().getDegrees() > VisionConstants.DEGREES_DIFFERENCE_THRESHOLD) {
-//                logger.warn("LARGE DISTANCE MOVED ACCORDING TO CAMERA '" + cameraSettings.cameraName + "', (" + poseDiff.getTranslation().getX() + "," + poseDiff.getTranslation().getY() + ")");
-//                return;
-//            }
         }
 
         double distanceToTargets = result.distanceToTargets();
@@ -179,6 +152,10 @@ public class ATVision {
                 updates++;
             }
         }
+    }
+
+    public void update() {
+        processVisionUpdate(camera.getLatestResult());
     }
 
     public int getUpdates() {

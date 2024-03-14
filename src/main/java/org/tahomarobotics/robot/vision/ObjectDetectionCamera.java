@@ -8,7 +8,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
-import org.tahomarobotics.robot.util.SafeAKitLogger;
 
 import java.util.EnumSet;
 
@@ -50,7 +49,6 @@ public class ObjectDetectionCamera {
         double yOffset = (Math.tan(Units.degreesToRadians(-target.getYaw())) * xOffset) + cameraSettings.offset.getY();
 
         notePosition = new Translation3d(xOffset, yOffset, 0);
-        SafeAKitLogger.recordOutput("Object Detection/Note Position", notePosition);
     }
 
     public Translation3d getNotePosition() {

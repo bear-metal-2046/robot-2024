@@ -140,7 +140,7 @@ public class Shooter extends SubsystemIF {
         return io.getPivotVelocity();
     }
 
-    public void angleToSpeaker(double radialVelocity, double radialAcceleration) {
+    public void angleToSpeaker(double radialVelocity) {
         if (DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Blue)
             radialVelocity *= -1;
 
@@ -150,15 +150,9 @@ public class Shooter extends SubsystemIF {
         SafeAKitLogger.recordOutput("Shooter/Target Angle Before Compensation", angleCalc(distance));
 
         double timeShotOffset = (radialVelocity > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE);
-        double velocityChange = radialAcceleration * timeShotOffset;
+        double targetAngle = angleCalc(distance + radialVelocity * timeShotOffset);
 
-        double targetAngleVelocityOnly = angleCalc(distance + radialVelocity * timeShotOffset);
-        double targetAngle = angleCalc(distance + (radialVelocity + velocityChange) * timeShotOffset);
-
-        SafeAKitLogger.recordOutput("Shooter/Target Angle Velocity-Only", targetAngleVelocityOnly);
-        SafeAKitLogger.recordOutput("Shooter/Target Angle Fully-Integrated", targetAngle);
-
-        setAngle(targetAngleVelocityOnly);
+        setAngle(targetAngle);
     }
 
     private double angleCalc(double distance) {

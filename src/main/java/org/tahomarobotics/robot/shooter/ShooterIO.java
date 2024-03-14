@@ -195,7 +195,7 @@ class ShooterIO {
         if (redundantShootingMode){
             disableRedundantShootMode();
             idle();
-        } else if (Indexer.getInstance().hasCollected()) {
+        } else if (Indexer.getInstance().isCollected()) {
             enableRedundantShootMode();
             enable();
         }

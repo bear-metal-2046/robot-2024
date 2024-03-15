@@ -173,8 +173,8 @@ public final class ChassisConstants {
     };
 
     public static PathConstraints CLIMB_MOVEMENT_CONSTRAINTS = new PathConstraints(
-            4.0,
-            4.0,
+            2.0,
+            2.0,
             540,
             720);
 

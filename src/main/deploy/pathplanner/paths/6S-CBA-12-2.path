@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.658721713839824,
-        "y": 5.2047678870132525
+        "x": 2.5085249599885775,
+        "y": 5.5040931765173085
       },
       "isLocked": false,
       "linkedName": "1st col"
@@ -28,30 +28,12 @@
       "linkedName": "3rd col"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.3,
-      "rotationDegrees": 54.377283655034404,
-      "rotateFast": true
-    }
-  ],
-  "constraintZones": [
-    {
-      "name": "New Constraints Zone",
-      "minWaypointRelativePos": 0.35,
-      "maxWaypointRelativePos": 0.6,
-      "constraints": {
-        "maxVelocity": 0.75,
-        "maxAcceleration": 3.0,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 720.0
-      }
-    }
-  ],
+  "rotationTargets": [],
+  "constraintZones": [],
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.3,
+      "waypointRelativePos": 0.2,
       "command": {
         "type": "parallel",
         "data": {

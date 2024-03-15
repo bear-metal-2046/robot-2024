@@ -20,12 +20,12 @@
         "y": 7.492890875003802
       },
       "prevControl": {
-        "x": 7.714116890333459,
-        "y": 7.4799769563415435
+        "x": 7.602738857403534,
+        "y": 7.4598028796628215
       },
       "nextControl": {
-        "x": 8.046496217878682,
-        "y": 7.502135578177894
+        "x": 8.04599381761249,
+        "y": 7.5078758131357235
       },
       "isLocked": false,
       "linkedName": null
@@ -36,8 +36,40 @@
         "y": 6.896548567871911
       },
       "prevControl": {
-        "x": 5.7279631676380465,
-        "y": 6.970506193264639
+        "x": 4.862713364050712,
+        "y": 7.070914889805584
+      },
+      "nextControl": {
+        "x": 5.928089231356779,
+        "y": 6.722020177278586
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.153148175055266,
+        "y": 5.820285763253409
+      },
+      "prevControl": {
+        "x": 8.479880020080278,
+        "y": 5.642068393239764
+      },
+      "nextControl": {
+        "x": 8.024328973051668,
+        "y": 5.890550782528099
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.395153853370769,
+        "y": 6.896548567871911
+      },
+      "prevControl": {
+        "x": 5.670450827349585,
+        "y": 6.792285196553275
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,8 +78,18 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.05,
+      "waypointRelativePos": 1.1,
       "rotationDegrees": 0,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 1.95,
+      "rotationDegrees": 10.894001380821052,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 2.95,
+      "rotationDegrees": -19.752373433918653,
       "rotateFast": false
     }
   ],
@@ -55,7 +97,24 @@
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 1.7,
+      "waypointRelativePos": 1.6,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Shoot"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 2.35,
       "command": {
         "type": "parallel",
         "data": {

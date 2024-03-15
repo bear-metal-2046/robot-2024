@@ -6,12 +6,17 @@
 package org.tahomarobotics.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import org.tahomarobotics.robot.amp.AmpArm;
+import org.tahomarobotics.robot.amp.AmpArmConstants;
+import org.tahomarobotics.robot.amp.commands.SourceIntakeCommand;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.chassis.commands.TeleopDriveCommand;
 import org.tahomarobotics.robot.climbers.ClimberConstants;
@@ -152,13 +157,12 @@ public class OI extends SubsystemIF {
                 .onTrue(new RedunShootCommand())
                 .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));
 
-        driveController.leftTrigger(0.01)
-                .whileTrue(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.PASSING))
-                .onlyIf(ampArm::isArmAtSource))
-                .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED))
-                .onlyIf(ampArm::isArmAtSource))
-                .onFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.COLLECTED))
-                .onlyIf(ampArm::isArmAtSource));
+        driveController.leftTrigger(0.5).whileTrue(
+                new SourceIntakeCommand().onlyIf(() -> !ampArm.getRollerState().equals(AmpArm.RollerState.COLLECTED)
+                        && !ampArm.getRollerState().equals(AmpArm.RollerState.CENTERING)))
+                .onFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED))
+                        .onlyIf(() -> !ampArm.getRollerState().equals(AmpArm.RollerState.COLLECTED)
+                                && !ampArm.getRollerState().equals(AmpArm.RollerState.CENTERING)));
 
         driveController.leftTrigger(0.5)
                 .onTrue(Commands.runOnce(() -> collector.setIsCollecting(true)))
@@ -240,5 +244,9 @@ public class OI extends SubsystemIF {
             controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
             controller.setRumble(GenericHID.RumbleType.kRightRumble, 0);
         });
+    }
+
+    public void log(String msg) {
+        logger.info(msg);
     }
 }

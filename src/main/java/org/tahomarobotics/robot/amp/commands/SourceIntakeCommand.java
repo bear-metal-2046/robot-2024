@@ -12,13 +12,11 @@ public class SourceIntakeCommand extends SequentialCommandGroup {
         addCommands(
             Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.PASSING)),
             Commands.waitSeconds(AmpArmConstants.SOURCE_COLLECT_ACCEL_TIME*2),
-                Commands.waitUntil(() -> (ampArm.getRollerCurrent() > AmpArmConstants.SOURCE_COLLECT_CURRENT)),
-                Commands.sequence(
-                        Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.CENTERING)),
-                        Commands.runOnce(ampArm::sourceIntake),
-                        Commands.waitUntil(ampArm::isRollerAtPosition),
-                        Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.COLLECTED))
-            )
+            Commands.waitUntil(() -> (ampArm.getRollerCurrent() > AmpArmConstants.SOURCE_COLLECT_CURRENT)),
+            Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.CENTERING)),
+            Commands.runOnce(ampArm::sourceIntake),
+            Commands.waitUntil(ampArm::isRollerAtPosition),
+            Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.COLLECTED))
         );
     }
 }

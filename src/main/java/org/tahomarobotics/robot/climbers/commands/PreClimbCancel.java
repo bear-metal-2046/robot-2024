@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.amp.commands.AmpArmCommands;
 import org.tahomarobotics.robot.climbers.ClimberConstants;
 import org.tahomarobotics.robot.climbers.Climbers;
+import org.tahomarobotics.robot.shooter.Shooter;
+import org.tahomarobotics.robot.shooter.ShooterConstants;
 
 public class PreClimbCancel extends SequentialCommandGroup {
     private static final Logger logger = LoggerFactory.getLogger(PreClimbCancel.class);
@@ -15,7 +17,10 @@ public class PreClimbCancel extends SequentialCommandGroup {
         Climbers climbers = Climbers.getInstance();
 
         addCommands(Commands.runOnce(() -> logger.info("Canceled Pre-Climb")),
-                new UnladenClimbCommand(ClimberConstants.BOTTOM_POSITION));
+                Commands.runOnce(() -> Shooter.getInstance().setAngle(ShooterConstants.MAX_PIVOT_ANGLE)),
+                Commands.waitUntil(Shooter.getInstance()::isAtAngle),
+                new UnladenClimbCommand(ClimberConstants.BOTTOM_POSITION)
+        );
 
         if (climbers.isTrapping())
             addCommands(

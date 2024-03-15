@@ -29,11 +29,9 @@ public class NapCorrectingKinematics extends SwerveDriveKinematics {
         this.gyroSupplier = gyroSupplier;
         this.poseSupplier = poseSupplier;
 
-//        this is for feild house carpet
-//        sourceSideFieldCompensation = new Compensation(1.0, 1.0, 0.976, 1.0);
-//        ampSideFieldCompensation = new Compensation(1.0, 1.0, 0.976, 1.0);
-        sourceSideFieldCompensation = new Compensation(1.0, 0.987654321, 1.0, 1.0);
-        ampSideFieldCompensation = new Compensation(1.0, 0.987654321,1.0, 1.0);
+//      this is for feild house carpet (Only if Pos X and Neg X are perfect @ 1.0 compensation)
+        sourceSideFieldCompensation = new Compensation(1.0, 1.0, 0.976, 1.1);
+        ampSideFieldCompensation = new Compensation(1.0, 1.0, 0.976, 1.1);
     }
 
     public Twist2d toTwist2d_super(SwerveModulePosition... moduleDeltas) {
@@ -49,7 +47,7 @@ public class NapCorrectingKinematics extends SwerveDriveKinematics {
 
             // adjust module angle to field-oriented
             var m = moduleDeltas[i];
-            var g = gyroSupplier.get();
+            var g = robotPose.getRotation();
             var fr = m.angle.plus(g);
 
             // create directional components in x and y

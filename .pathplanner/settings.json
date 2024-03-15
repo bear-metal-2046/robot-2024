@@ -3,13 +3,16 @@
   "robotLength": 0.92,
   "holonomicMode": true,
   "pathFolders": [
+    "4A-123",
     "4A-213",
     "4S-345",
     "6A-12-CBA",
     "6S-CBA-12",
-    "4A-123"
+    "Distance & Nap Paths"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "Distance Check Autos"
+  ],
   "defaultMaxVel": 4.0,
   "defaultMaxAccel": 4.0,
   "defaultMaxAngVel": 540.0,

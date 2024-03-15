@@ -159,10 +159,12 @@ public class OI extends SubsystemIF {
 
         driveController.leftTrigger(0.5).whileTrue(
                 new SourceIntakeCommand().onlyIf(() -> !ampArm.getRollerState().equals(AmpArm.RollerState.COLLECTED)
-                        && !ampArm.getRollerState().equals(AmpArm.RollerState.CENTERING)))
+                        && !ampArm.getRollerState().equals(AmpArm.RollerState.CENTERING)
+                        && ampArm.isArmAtSource()))
                 .onFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED))
                         .onlyIf(() -> !ampArm.getRollerState().equals(AmpArm.RollerState.COLLECTED)
-                                && !ampArm.getRollerState().equals(AmpArm.RollerState.CENTERING)));
+                                && !ampArm.getRollerState().equals(AmpArm.RollerState.CENTERING)
+                                && ampArm.isArmAtSource()));
 
         driveController.leftTrigger(0.5)
                 .onTrue(Commands.runOnce(() -> collector.setIsCollecting(true)))

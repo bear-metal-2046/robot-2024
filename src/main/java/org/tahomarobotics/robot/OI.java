@@ -122,8 +122,8 @@ public class OI extends SubsystemIF {
         driveController.x().onTrue(Commands.deferredProxy(ClimbSequence::new).onlyIf(() -> climbers.getClimbState() == Climbers.ClimbState.ENGAGED));
         driveController.back().onTrue(Commands.deferredProxy(() ->
                 switch (climbers.getClimbState()) {
-                    case READY -> new PreClimbCancel();
-                    case ENGAGED -> new EngagedCancel();
+                    case READY, PRE_CLIMBING -> new PreClimbCancel();
+                    case ENGAGED, ENGAGING -> new EngagedCancel();
                     // Descend with break mode in the case that it doesn't work.
                     // TODO: At this point, we can't be sure of anything about the state of the robot so designating
                     //  the canceling to a separate command that does a full reset might be ideal.

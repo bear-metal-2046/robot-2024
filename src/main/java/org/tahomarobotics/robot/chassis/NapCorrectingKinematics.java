@@ -15,8 +15,6 @@ public class NapCorrectingKinematics extends SwerveDriveKinematics {
     private final Supplier<Rotation2d> gyroSupplier;
     private final Supplier<Pose2d> poseSupplier;
 
-    private final Chassis chassis = Chassis.getInstance();
-
     private record Compensation (double posX, double negX, double posY, double negY){}
 
     private Compensation sourceSideFieldCompensation;
@@ -47,7 +45,7 @@ public class NapCorrectingKinematics extends SwerveDriveKinematics {
 
             // adjust module angle to field-oriented
             var m = moduleDeltas[i];
-            var g = chassis.getPose().getRotation();
+            var g = robotPose.getRotation();
             var fr = m.angle.plus(g);
 
             // create directional components in x and y

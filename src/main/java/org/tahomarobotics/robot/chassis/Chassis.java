@@ -57,8 +57,8 @@ public class Chassis extends SubsystemIF {
 
     private final CalibrationData<Double[]> swerveCalibration;
 
-    private final ObjectDetectionCamera objectDetectionCamera;
-    private final List<ATVision> apriltagCameras = new ArrayList<>();
+//    private final ObjectDetectionCamera objectDetectionCamera;
+//    private final List<ATVision> apriltagCameras = new ArrayList<>();
 
     private final Thread odometryThread;
 
@@ -117,10 +117,10 @@ public class Chassis extends SubsystemIF {
         odometryThread.start();
 
 
-        objectDetectionCamera = new ObjectDetectionCamera(VisionConstants.Camera.COLLECTOR_LEFT);
-        apriltagCameras.add(new ATVision(VisionConstants.Camera.COLLECTOR_RIGHT, fieldPose, poseEstimator));
-        apriltagCameras.add(new ATVision(VisionConstants.Camera.SHOOTER_LEFT, fieldPose, poseEstimator));
-        apriltagCameras.add(new ATVision(VisionConstants.Camera.SHOOTER_RIGHT, fieldPose, poseEstimator));
+//        objectDetectionCamera = new ObjectDetectionCamera(VisionConstants.Camera.COLLECTOR_LEFT);
+//        apriltagCameras.add(new ATVision(VisionConstants.Camera.COLLECTOR_RIGHT, fieldPose, poseEstimator));
+//        apriltagCameras.add(new ATVision(VisionConstants.Camera.SHOOTER_LEFT, fieldPose, poseEstimator));
+//        apriltagCameras.add(new ATVision(VisionConstants.Camera.SHOOTER_RIGHT, fieldPose, poseEstimator));
     }
 
     public static Chassis getInstance() {
@@ -212,7 +212,7 @@ public class Chassis extends SubsystemIF {
         modules.forEach(SwerveModule::periodic);
         Pose2d pose = getPose();
 
-        apriltagCameras.forEach(ATVision::update);
+//        apriltagCameras.forEach(ATVision::update);
 
         ChassisSpeeds newChassisSpeeds = kinematics.toChassisSpeeds(getSwerveModuleStates());
         ChassisSpeeds unfilteredAcceleration = newChassisSpeeds.minus(currentChassisSpeeds).div(Robot.defaultPeriodSecs);

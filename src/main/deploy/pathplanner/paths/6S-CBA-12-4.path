@@ -3,12 +3,12 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.395153853370769,
+        "x": 5.385909150196678,
         "y": 6.896548567871911
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.737207870812138,
+        "x": 5.7279631676380465,
         "y": 6.804101536131
       },
       "isLocked": false,
@@ -41,7 +41,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "6S-CBA-12-4-END"
     }
   ],
   "rotationTargets": [
@@ -72,8 +72,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 4.5,
+    "maxAcceleration": 5.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

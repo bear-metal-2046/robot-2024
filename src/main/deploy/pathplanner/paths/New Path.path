@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.385909150196678,
+        "y": 6.7393886139123635
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.125209669527507,
+        "y": 6.066012981655621
+      },
+      "isLocked": false,
+      "linkedName": "6S-CBA-12-4-END"
+    },
+    {
+      "anchor": {
+        "x": 8.048383664334896,
+        "y": 4.280297569604149
+      },
+      "prevControl": {
+        "x": 7.312503580305739,
+        "y": 4.957409452478199
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -43.36342295838322,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "6S-CBA-12",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

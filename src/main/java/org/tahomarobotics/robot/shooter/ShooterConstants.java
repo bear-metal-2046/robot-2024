@@ -12,8 +12,8 @@ import org.tahomarobotics.robot.identity.RobotIdentity;
 import java.util.function.Supplier;
 
 public class ShooterConstants {
-    public static final double SHOOTER_SPEED; // rps
-    public static final double LEFT_SHOOTER_OFFSET; //rps
+    public static final double RIGHT_SHOOTER_SPEED; // rps
+    public static final double LEFT_SHOOTER_SPEED; //rps
     public static final double IDLE_SPEED; // rps
     public static final double TRANSFER_VELOCITY = 10; // rps
     public static final double REVERSE_INTAKE_VELOCITY = 40; // rps
@@ -37,16 +37,16 @@ public class ShooterConstants {
     static {
         switch (RobotIdentity.robotID) {
             case PLAYBEAR_CARTI, BEARITONE -> {
-                SHOOTER_SPEED = 100.0;
-                LEFT_SHOOTER_OFFSET = 0;
+                RIGHT_SHOOTER_SPEED = 100.0;
+                LEFT_SHOOTER_SPEED = 0;
                 IDLE_SPEED = 100.0;
                 MAX_PIVOT_ANGLE = Units.degreesToRotations(51.50390625);
                 SHOOTER_GEAR_REDUCTION = (30.0 / 18.0);
                 PIVOT_INVERSION = InvertedValue.Clockwise_Positive;
             }
             default -> {
-                SHOOTER_SPEED = 133.0;
-                LEFT_SHOOTER_OFFSET = -42;
+                RIGHT_SHOOTER_SPEED = 133.0;
+                LEFT_SHOOTER_SPEED = 94;
                 IDLE_SPEED = 50;
                 MAX_PIVOT_ANGLE = Units.degreesToRotations(50.4);
                 SHOOTER_GEAR_REDUCTION = (30.0 / 18.0) * (30.0 / 32.0);
@@ -55,7 +55,7 @@ public class ShooterConstants {
         }
     }
 
-    public static final double SHOT_SPEED = Units.inchesToMeters(Units.rotationsToRadians(SHOOTER_SPEED) * (1.75)) * 0.8; // meters/sec
+    public static final double SHOT_SPEED = Units.inchesToMeters(Units.rotationsToRadians(RIGHT_SHOOTER_SPEED) * (1.75)) * 0.8; // meters/sec
 
     static final double BIAS_AMT = Units.degreesToRotations(.5);
 
@@ -72,7 +72,7 @@ public class ShooterConstants {
                     .filter(a -> a == DriverStation.Alliance.Blue)
                     .map(a -> BLUE_SPEAKER_TARGET_POSITION).orElse(RED_SPEAKER_TARGET_POSITION);
 
-    static final TalonFXConfiguration shooterMotorConfiguration = new TalonFXConfiguration()
+    static final TalonFXConfiguration leftShooterMotorConfiguration = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
                     .withStatorCurrentLimit(STATOR_CURRENT_LIMIT)
                     .withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT)

@@ -114,7 +114,7 @@ public class Shooter extends SubsystemIF {
     // GETTERS
 
     private double getShooterVelocity() {
-        return io.getShooterVelocity();
+        return io.getRightShooterVelocity();
     }
 
     private double getPivotPosition() {
@@ -122,7 +122,6 @@ public class Shooter extends SubsystemIF {
     }
 
     public boolean isReadyToShoot() {
-        System.out.println("checking if ready");
         return io.isReadyToShoot();
     }
 

@@ -11,7 +11,6 @@ import org.littletonrobotics.junction.AutoLog;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
-import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SafeAKitLogger;
@@ -26,7 +25,8 @@ class DiffyShooterIO {
     private final TalonFX leftShooterMotor;
     private final TalonFX pivotMotor;
 
-    private final StatusSignal<Double> shooterVelocity;
+    private final StatusSignal<Double> rightShooterVelocity;
+    private final StatusSignal<Double> leftShooterVelocity;
     private final StatusSignal<Double> pivotPosition;
     private final StatusSignal<Double> pivotVelocity;
     private final StatusSignal<Double> motorVoltage;
@@ -37,8 +37,8 @@ class DiffyShooterIO {
     private final StatusSignal<Double> pivotCurrent;
 
     private final MotionMagicVoltage pivotPositionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
-    private final MotionMagicVelocityVoltage rightMotorVelocity = new MotionMagicVelocityVoltage(SHOOTER_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
-    private final MotionMagicVelocityVoltage leftMotorVelocity = new MotionMagicVelocityVoltage(SHOOTER_SPEED+LEFT_SHOOTER_OFFSET).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
+    private final MotionMagicVelocityVoltage rightMotorVelocity = new MotionMagicVelocityVoltage(RIGHT_SHOOTER_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
+    private final MotionMagicVelocityVoltage leftMotorVelocity = new MotionMagicVelocityVoltage(LEFT_SHOOTER_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage idleVelocity = new MotionMagicVelocityVoltage(IDLE_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage transferVelocity = new MotionMagicVelocityVoltage(TRANSFER_VELOCITY).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage reverseIntakeVelocity = new MotionMagicVelocityVoltage(-REVERSE_INTAKE_VELOCITY).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
@@ -66,9 +66,10 @@ class DiffyShooterIO {
 
         configurator.configureTalonFX(pivotMotor, pivotMotorConfiguration, "pivot motor");
         configurator.configureTalonFX(rightShooterMotor, rightShooterMotorConfiguration, "shooter motor");
-        configurator.configureTalonFX(leftShooterMotor, shooterMotorConfiguration, "shooter motor follower");
+        configurator.configureTalonFX(leftShooterMotor, leftShooterMotorConfiguration, "shooter motor follower");
 
-        shooterVelocity = rightShooterMotor.getVelocity();
+        rightShooterVelocity = rightShooterMotor.getVelocity();
+        leftShooterVelocity = leftShooterMotor.getVelocity();
         pivotPosition = pivotMotor.getPosition();
         pivotVelocity = pivotMotor.getVelocity();
         motorVoltage = rightShooterMotor.getMotorVoltage();
@@ -78,7 +79,7 @@ class DiffyShooterIO {
         pivotCurrent = pivotMotor.getSupplyCurrent();
 
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY,
-                shooterVelocity, pivotPosition, pivotVelocity, motorVoltage,
+                rightShooterVelocity, leftShooterVelocity, pivotPosition, pivotVelocity, motorVoltage,
                 rightShooterMotorCurrent, leftShooterMotorCurrent, pivotCurrent
         );
         ParentDevice.optimizeBusUtilizationForAll(pivotMotor, leftShooterMotor, rightShooterMotor);
@@ -86,15 +87,15 @@ class DiffyShooterIO {
 
     // GETTERS
 
-    double getShooterVelocity() {
-        return shooterVelocity.getValue();
+    double getRightShooterVelocity() {
+        return rightShooterVelocity.getValue();
     }
     double getPivotPosition() {
         return BaseStatusSignal.getLatencyCompensatedValue(pivotPosition, pivotVelocity);
     }
 
     boolean isSpinningAtVelocity() {
-        return Math.abs(targetShooterSpeed - getShooterVelocity()) < SHOOTER_SPEED_TOLERANCE;
+        return Math.abs(targetShooterSpeed - getRightShooterVelocity()) < SHOOTER_SPEED_TOLERANCE;
     }
 
     boolean isAtAngle() {
@@ -103,8 +104,8 @@ class DiffyShooterIO {
 
     boolean isReadyToShoot() {
         //return isAtAngle() && isSpinningAtVelocity() && Chassis.getInstance().isReadyToShoot();
-        System.out.println("target: " + targetShooterSpeed);
-        System.out.println("actual: " + getShooterVelocity());
+        System.out.println("LEFT: " + leftShooterMotor.getVelocity().getValue()*60);
+        System.out.println("RIGHT " + rightShooterMotor.getVelocity().getValue()*60);
         return isSpinningAtVelocity();
     }
 
@@ -215,7 +216,7 @@ class DiffyShooterIO {
     }
 
     void refreshSignals() {
-        BaseStatusSignal.refreshAll(pivotPosition, pivotVelocity, shooterVelocity,
+        BaseStatusSignal.refreshAll(pivotPosition, pivotVelocity, rightShooterVelocity, leftShooterVelocity,
                 rightShooterMotorCurrent, leftShooterMotorCurrent, pivotCurrent);
     }
 

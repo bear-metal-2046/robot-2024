@@ -37,7 +37,7 @@ class ShooterIO {
     private final StatusSignal<Double> pivotCurrent;
 
     private final MotionMagicVoltage pivotPositionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
-    private final MotionMagicVelocityVoltage motorVelocity = new MotionMagicVelocityVoltage(SHOOTER_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
+    private final MotionMagicVelocityVoltage motorVelocity = new MotionMagicVelocityVoltage(RIGHT_SHOOTER_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage idleVelocity = new MotionMagicVelocityVoltage(IDLE_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage transferVelocity = new MotionMagicVelocityVoltage(TRANSFER_VELOCITY).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage reverseIntakeVelocity = new MotionMagicVelocityVoltage(-REVERSE_INTAKE_VELOCITY).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
@@ -64,8 +64,8 @@ class ShooterIO {
         shooterMotorFollower = new TalonFX(RobotMap.LEFT_SHOOTER_MOTOR);
 
         configurator.configureTalonFX(pivotMotor, pivotMotorConfiguration, "pivot motor");
-        configurator.configureTalonFX(shooterMotor, shooterMotorConfiguration, "shooter motor");
-        configurator.configureTalonFX(shooterMotorFollower, shooterMotorConfiguration, "shooter motor follower");
+        configurator.configureTalonFX(shooterMotor, leftShooterMotorConfiguration, "shooter motor");
+        configurator.configureTalonFX(shooterMotorFollower, leftShooterMotorConfiguration, "shooter motor follower");
 
         shooterVelocity = shooterMotor.getVelocity();
         pivotPosition = pivotMotor.getPosition();

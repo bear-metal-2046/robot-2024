@@ -3,59 +3,59 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.732679339232552,
-        "y": 6.813346239305091
+        "x": 5.385909150196678,
+        "y": 6.7393886139123635
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.684883766163928,
-        "y": 6.924282677394183
+        "x": 6.143974810472144,
+        "y": 6.4528028155155415
       },
       "isLocked": false,
-      "linkedName": "3rd col"
+      "linkedName": "6S-CBA-12-4-END"
     },
     {
       "anchor": {
-        "x": 7.863489600853075,
-        "y": 7.238602585313279
+        "x": 8.140830696075806,
+        "y": 4.280297569604149
       },
       "prevControl": {
-        "x": 7.669780820919216,
-        "y": 7.2256886666510205
+        "x": 8.00216014846444,
+        "y": 4.150871725166874
       },
       "nextControl": {
-        "x": 8.002160148464439,
-        "y": 7.247847288487371
+        "x": 8.318230360359689,
+        "y": 4.44587058960244
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.385909150196678,
-        "y": 6.896548567871911
+        "x": 5.4043985565448605,
+        "y": 6.7393886139123635
       },
       "prevControl": {
-        "x": 5.718718464463955,
-        "y": 6.970506193264639
+        "x": 6.060772481905325,
+        "y": 6.314132267904176
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Long Shoot 1"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.05,
-      "rotationDegrees": 0,
-      "rotateFast": false
+      "waypointRelativePos": 1.2,
+      "rotationDegrees": -45.248393371887055,
+      "rotateFast": true
     }
   ],
   "constraintZones": [],
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 1.7,
+      "waypointRelativePos": 1.8,
       "command": {
         "type": "parallel",
         "data": {
@@ -78,15 +78,15 @@
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": 10.62,
-    "rotateFast": false
+    "velocity": 0,
+    "rotation": 12.528807709151437,
+    "rotateFast": true
   },
   "reversed": false,
   "folder": "6S-CBA-12",
   "previewStartingState": {
-    "rotation": 32.074000875294054,
-    "velocity": 0.0
+    "rotation": 0,
+    "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

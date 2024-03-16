@@ -19,11 +19,11 @@ public class ShootCommand extends SequentialCommandGroup {
 
         addCommands(
                 Commands.sequence(
+                        Commands.waitUntil(shooter::isReadyToShoot),
                         Commands.runOnce(() -> {
                             logger.info("Shooting");
                             shooter.setIsShooting(true);
                         }),
-                        Commands.waitUntil(shooter::isReadyToShoot),
                         Commands.runOnce(indexer::transitionToTransferring),
                         Commands.waitSeconds(0.1),
                         Commands.either(Commands.runOnce(shooter::toggleShootMode), Commands.runOnce(shooter::disableShootMode), () -> !RobotState.isAutonomous()),

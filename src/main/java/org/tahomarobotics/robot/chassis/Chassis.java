@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.tahomarobotics.robot.shooter.ShooterConstants.SPEAKER_TARGET_POSITION;
+import static org.tahomarobotics.robot.shooter.ShooterConstants.*;
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
 public class Chassis extends SubsystemIF {
@@ -71,9 +71,9 @@ public class Chassis extends SubsystemIF {
     private double targetShootingAngle;
 
     private ChassisSpeeds currentChassisSpeeds = new ChassisSpeeds(), currentAcceleration = new ChassisSpeeds();
-    private final LinearFilter xAccelFilter = LinearFilter.movingAverage(25),
-            yAccelFilter = LinearFilter.movingAverage(25),
-            omegaAccelFilter = LinearFilter.movingAverage(25);
+    private final LinearFilter xAccelFilter = LinearFilter.movingAverage(3),
+            yAccelFilter = LinearFilter.movingAverage(3),
+            omegaAccelFilter = LinearFilter.movingAverage(3);
 
     private double energyUsed = 0;
 
@@ -316,6 +316,11 @@ public class Chassis extends SubsystemIF {
 
         double tangentialComponent = speedsToGoal.getY();
         double radialComponent = speedsToGoal.getX();
+        double tangentialAccel = accelToGoal.getX();
+        double radialAccel = accelToGoal.getY();
+
+        double timeOffset = (radialComponent > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE);
+        radialComponent += radialAccel * timeOffset;
 
         SafeAKitLogger.recordOutput("Chassis/RadialVelocity", radialComponent);
         SafeAKitLogger.recordOutput("Chassis/AcceleratedRadialVelocity", radialComponent);

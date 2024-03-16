@@ -8,29 +8,69 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.125209669527507,
-        "y": 6.066012981655621
+        "x": 6.143974810472144,
+        "y": 6.4528028155155415
       },
       "isLocked": false,
       "linkedName": "6S-CBA-12-4-END"
     },
     {
       "anchor": {
-        "x": 8.048383664334896,
+        "x": 8.140830696075806,
         "y": 4.280297569604149
       },
       "prevControl": {
-        "x": 7.312503580305739,
-        "y": 4.957409452478199
+        "x": 8.00216014846444,
+        "y": 4.150871725166874
+      },
+      "nextControl": {
+        "x": 8.318230360359689,
+        "y": 4.44587058960244
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.4043985565448605,
+        "y": 6.7393886139123635
+      },
+      "prevControl": {
+        "x": 6.060772481905325,
+        "y": 6.314132267904176
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.2,
+      "rotationDegrees": -45.248393371887055,
+      "rotateFast": true
+    }
+  ],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 1.8,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Shoot"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 4.0,
     "maxAcceleration": 4.0,
@@ -39,8 +79,8 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -43.36342295838322,
-    "rotateFast": false
+    "rotation": 12.528807709151437,
+    "rotateFast": true
   },
   "reversed": false,
   "folder": "6S-CBA-12",

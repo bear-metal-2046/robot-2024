@@ -327,7 +327,7 @@ public class Chassis extends SubsystemIF {
         SafeAKitLogger.recordOutput("Chassis/TangentialVelocity", tangentialComponent);
 
         // Shooter angle speed compensation
-        if (!Shooter.getInstance().isShooting()) Shooter.getInstance().angleToSpeaker(radialComponent);
+        if (!Shooter.getInstance().isShooting() || RobotState.isAutonomous()) Shooter.getInstance().angleToSpeaker(radialComponent);
 
         // Calculate position and velocity adjustment
         double adj = Math.atan2(-tangentialComponent, ShooterConstants.SHOT_SPEED + radialComponent);

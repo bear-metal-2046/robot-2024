@@ -310,24 +310,18 @@ public class Chassis extends SubsystemIF {
         var curSpeeds = getCurrentChassisSpeeds();
         var speedsTranslation = new Translation2d(curSpeeds.vxMetersPerSecond, curSpeeds.vyMetersPerSecond);
         var speedsToGoal = speedsTranslation.rotateBy(robotToGoal.getAngle().unaryMinus());
-        var curAccel = getCurrentAcceleration();
-        var accelToGoal = new Translation2d(curAccel.vxMetersPerSecond, curAccel.vyMetersPerSecond)
-                .rotateBy(robotToGoal.getAngle().unaryMinus());
 
         double tangentialComponent = speedsToGoal.getY();
         double radialComponent = speedsToGoal.getX();
-        double tangentialAccel = accelToGoal.getX();
-        double radialAccel = accelToGoal.getY();
 
         double timeOffset = (radialComponent > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE);
-        radialComponent += radialAccel * timeOffset;
 
         SafeAKitLogger.recordOutput("Chassis/RadialVelocity", radialComponent);
         SafeAKitLogger.recordOutput("Chassis/AcceleratedRadialVelocity", radialComponent);
         SafeAKitLogger.recordOutput("Chassis/TangentialVelocity", tangentialComponent);
 
         // Shooter angle speed compensation
-        if (!Shooter.getInstance().isShooting() || RobotState.isAutonomous()) Shooter.getInstance().angleToSpeaker(radialComponent);
+        Shooter.getInstance().angleToSpeaker(radialComponent);
 
         // Calculate position and velocity adjustment
         double adj = Math.atan2(-tangentialComponent, ShooterConstants.SHOT_SPEED + radialComponent);

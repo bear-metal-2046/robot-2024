@@ -235,6 +235,11 @@ public class Shooter extends SubsystemIF {
     }
 
     @Override
+    public void onTeleopInit() {
+        disableShootMode();
+    }
+
+    @Override
     public double getEnergyUsed() {
         return energyUsed / 1000d;
     }

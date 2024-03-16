@@ -12,17 +12,15 @@ import org.tahomarobotics.robot.shooter.ShooterConstants;
 public class ShootCommand extends SequentialCommandGroup {
     private static final Logger logger = LoggerFactory.getLogger(ShootCommand.class);
 
-    private final Indexer indexer = Indexer.getInstance();
-
     public ShootCommand() {
         Shooter shooter = Shooter.getInstance();
+        Indexer indexer = Indexer.getInstance();
 
         addCommands(
                 Commands.sequence(
                         Commands.waitUntil(shooter::isReadyToShoot),
                         Commands.runOnce(() -> {
                             logger.info("Shooting");
-                            shooter.setIsShooting(true);
                         }),
                         Commands.runOnce(indexer::transitionToTransferring),
                         Commands.waitSeconds(0.1),
@@ -30,7 +28,6 @@ public class ShootCommand extends SequentialCommandGroup {
                         Commands.runOnce(() -> shooter.setAngle(ShooterConstants.SHOOTER_COLLECT_PIVOT_ANGLE)),
                         Commands.runOnce(() -> {
                             logger.info("Shot");
-                            shooter.setIsShooting(false);
                         })
                 ).onlyIf(shooter::inShootingMode)
         );

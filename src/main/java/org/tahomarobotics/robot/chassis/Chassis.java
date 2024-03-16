@@ -225,9 +225,9 @@ public class Chassis extends SubsystemIF {
         ChassisSpeeds newChassisSpeeds = kinematics.toChassisSpeeds(getSwerveModuleStates());
         ChassisSpeeds unfilteredAcceleration = newChassisSpeeds.minus(currentChassisSpeeds).div(Robot.defaultPeriodSecs);
         currentAcceleration = new ChassisSpeeds(
-                xAccelFilter.calculate(unfilteredAcceleration.vxMetersPerSecond),
-                yAccelFilter.calculate(unfilteredAcceleration.vyMetersPerSecond),
-                omegaAccelFilter.calculate(unfilteredAcceleration.omegaRadiansPerSecond)
+                xAccelFilter.calculate(ChassisConstants.clampAccel(unfilteredAcceleration.vxMetersPerSecond)),
+                yAccelFilter.calculate(ChassisConstants.clampAccel(unfilteredAcceleration.vyMetersPerSecond)),
+                omegaAccelFilter.calculate(ChassisConstants.clampAccel(unfilteredAcceleration.omegaRadiansPerSecond))
         );
         currentChassisSpeeds = newChassisSpeeds;
 

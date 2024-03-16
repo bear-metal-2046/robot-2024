@@ -22,6 +22,7 @@ import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.*;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.PIDConstants;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -87,7 +88,7 @@ public final class ChassisConstants {
         setTolerance(SHOOT_ROTATION_TARGET_TOLERANCE);
     }};
 
-    public static final double DRIVE_SUPPLY_CURRENT_LIMIT = 60.0; // Amps
+    public static final double DRIVE_SUPPLY_CURRENT_LIMIT = 55.0; // Amps
     public static final double DRIVE_STATOR_CURRENT_LIMIT = 120.0;
     public static final double STEER_SUPPLY_CURRENT_LIMIT = 40.0;
     public static final double STEER_STATOR_CURRENT_LIMIT = 80.0;
@@ -187,5 +188,9 @@ public final class ChassisConstants {
         int minIndex = IntStream.range(0, 3).reduce((i, j) -> currentTranslation.getDistance(poses[j].getTranslation()) < currentTranslation.getDistance(poses[i].getTranslation()) ? j : i).getAsInt();
 
         return poses[minIndex];
+    }
+
+    public static double clampAccel(double value) {
+        return MathUtil.clamp(value, -TRANSLATION_LIMIT, TRANSLATION_LIMIT);
     }
 }

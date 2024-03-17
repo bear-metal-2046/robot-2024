@@ -1,6 +1,5 @@
 package org.tahomarobotics.robot.shooter.commands;
 
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import org.slf4j.Logger;
@@ -21,7 +20,7 @@ public class RedunShootCommand extends SequentialCommandGroup {
                 Commands.sequence(
                         Commands.runOnce(indexer::transitionToTransferring),
                         Commands.waitSeconds(0.1),
-                        Commands.runOnce(shooter::disableRedunShootMode),
+                        Commands.runOnce(shooter::disableRedundantShootMode),
                         Commands.runOnce(() -> shooter.setAngle(ShooterConstants.SHOOTER_COLLECT_PIVOT_ANGLE))
                 ).onlyIf(shooter::inRedundantShootingMode)
         );

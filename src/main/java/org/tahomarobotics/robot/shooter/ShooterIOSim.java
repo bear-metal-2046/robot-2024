@@ -7,7 +7,7 @@ public class ShooterIOSim extends ShooterIO {
     }
 
     @Override
-    public double getShooterVelocity() {
+    public double getTopShooterVelocity() {
         return ShooterConstants.SHOOTER_SPEED;
     }
 }

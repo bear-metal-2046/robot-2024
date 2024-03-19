@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7543128599770712,
-      "y": 4.428212820389605
+      "x": 1.37,
+      "y": 6.52
     },
-    "rotation": -60.52411099675428
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -18,30 +18,29 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "sequential",
           "data": {
             "commands": [
               {
-                "type": "sequential",
+                "type": "parallel",
                 "data": {
                   "commands": [
                     {
-                      "type": "parallel",
+                      "type": "named",
                       "data": {
-                        "commands": [
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "CollectorDown"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "SpinUp"
-                            }
-                          }
-                        ]
+                        "name": "SpinUp"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "CollectorDown"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot"
                       }
                     }
                   ]
@@ -50,16 +49,22 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "6S-CBA-12-1"
+                  "pathName": "6A-21-ABC-1"
                 }
               }
             ]
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "MCDONALDS"
+            "pathName": "6A-21-ABC-2"
           }
         },
         {
@@ -71,36 +76,18 @@
         {
           "type": "path",
           "data": {
-            "pathName": "6S-CBA-12-3"
+            "pathName": "6A-21-ABC-3"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "Shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "6S-CBA-12-4"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "New Path"
           }
         }
       ]
     }
   },
-  "folder": "6S",
+  "folder": "6A",
   "choreoAuto": false
 }

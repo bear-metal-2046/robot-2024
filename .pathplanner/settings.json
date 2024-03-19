@@ -6,13 +6,18 @@
     "4A-123",
     "4A-213",
     "4S-345",
-    "6A-12-CBA",
+    "5S-C-345",
+    "6A-21-ABC",
     "6S-CBA-12",
-    "Distance & Nap Paths",
-    "5S-C-345"
+    "Distance & Nap Paths"
   ],
   "autoFolders": [
-    "Distance Check Autos"
+    "4A",
+    "4S",
+    "5S",
+    "6S",
+    "Distance Check Autos",
+    "6A"
   ],
   "defaultMaxVel": 4.0,
   "defaultMaxAccel": 4.0,

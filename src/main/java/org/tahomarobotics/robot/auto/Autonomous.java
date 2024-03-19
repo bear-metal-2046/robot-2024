@@ -56,6 +56,15 @@ public class Autonomous extends SubsystemIF {
         NamedCommands.registerCommand("EnableShootMode",
                Commands.runOnce(shooter::enableShootMode).onlyIf(indexer::isCollected));
 
+        NamedCommands.registerCommand("DropNote",
+                Commands.sequence(
+                        Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.PASSING)),
+                        Commands.waitSeconds(1),
+                        Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED))
+                )
+        );
+
+
         NamedCommands.registerCommand("SpinUp", Commands.runOnce(shooter::enable).andThen(Commands.runOnce(() -> logger.info("Shooter Spun Up"))));
 
         NamedCommands.registerCommand("CollectorDown", Commands.runOnce(collector::setDeployed)

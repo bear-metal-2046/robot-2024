@@ -20,24 +20,24 @@
         "y": 5.849123698247397
       },
       "prevControl": {
-        "x": 4.854602852062848,
-        "y": 6.831307376900469
+        "x": 5.080833945451674,
+        "y": 7.016729709135094
       },
       "nextControl": {
-        "x": 8.232302948496747,
-        "y": 5.7884230153287115
+        "x": 8.227062816029521,
+        "y": 5.773509478296678
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.2,
-        "y": 6.74
+        "x": 4.544641161354395,
+        "y": 6.5729839567787245
       },
       "prevControl": {
-        "x": 6.029716962441035,
-        "y": 6.712349061208187
+        "x": 5.654005542245319,
+        "y": 6.730143910738272
       },
       "nextControl": null,
       "isLocked": false,
@@ -56,23 +56,11 @@
       "rotateFast": true
     }
   ],
-  "constraintZones": [
-    {
-      "name": "New Constraints Zone",
-      "minWaypointRelativePos": 0.0,
-      "maxWaypointRelativePos": 0.25,
-      "constraints": {
-        "maxVelocity": 1.0,
-        "maxAcceleration": 1.0,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 720.0
-      }
-    }
-  ],
+  "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Shoot",
-      "waypointRelativePos": 1.8,
+      "name": "ShootMode",
+      "waypointRelativePos": 1.6,
       "command": {
         "type": "parallel",
         "data": {
@@ -80,7 +68,7 @@
             {
               "type": "named",
               "data": {
-                "name": "Shoot"
+                "name": "EnableShootMode"
               }
             }
           ]
@@ -88,8 +76,8 @@
       }
     },
     {
-      "name": "New Event Marker",
-      "waypointRelativePos": 0.0,
+      "name": "DropNote",
+      "waypointRelativePos": 0.2,
       "command": {
         "type": "parallel",
         "data": {
@@ -97,7 +85,7 @@
             {
               "type": "named",
               "data": {
-                "name": "Shoot"
+                "name": "DropNote"
               }
             }
           ]
@@ -107,20 +95,20 @@
   ],
   "globalConstraints": {
     "maxVelocity": 4.0,
-    "maxAcceleration": 4.0,
+    "maxAcceleration": 5.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 20.81808012146444,
+    "rotation": 19.2306723756613,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "6A-12-CBA",
+  "folder": "6A-21-ABC",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

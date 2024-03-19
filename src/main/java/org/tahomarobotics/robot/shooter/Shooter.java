@@ -73,7 +73,7 @@ public class Shooter extends SubsystemIF {
     }
 
     public void enableRedundantShootMode(){io.enableRedundantShootMode();}
-    public void disableRedunShootMode(){io.disableRedundantShootMode();}
+    public void disableRedundantShootMode(){io.disableRedundantShootMode();}
 
     public void idle() {
         io.idle();
@@ -124,8 +124,12 @@ public class Shooter extends SubsystemIF {
 
     // GETTERS
 
-    private double getShooterVelocity() {
-        return io.getShooterVelocity();
+    private double getTopShooterVelocity() {
+        return io.getTopShooterVelocity();
+    }
+
+    private double getBottomShooterVelocity() {
+        return io.getBottomShooterVelocity();
     }
 
     private double getPivotPosition() {
@@ -215,7 +219,10 @@ public class Shooter extends SubsystemIF {
         SafeAKitLogger.recordOutput("Shooter/Is Spinning At velocity", isAtVelocity());
         SafeAKitLogger.recordOutput("Shooter/Is In Shooting Mode", inShootingMode());
         SafeAKitLogger.recordOutput("Shooter/Distance", distance);
-        SafeAKitLogger.recordOutput("Shooter/Velocity", getShooterVelocity());
+        SafeAKitLogger.recordOutput("Shooter/Top Velocity", getTopShooterVelocity());
+        SafeAKitLogger.recordOutput("Shooter/Top Current", io.getTopShooterCurrent());
+        SafeAKitLogger.recordOutput("Shooter/Bottom Velocity", getBottomShooterVelocity());
+        SafeAKitLogger.recordOutput("Shooter/Bottom Current", io.getBottomShooterCurrent());
         SafeAKitLogger.recordOutput("Shooter/Angle", getPivotPosition());
         SafeAKitLogger.recordOutput("Shooter/Angle (Degrees)", getPivotPosition() * 360);
 
@@ -232,6 +239,11 @@ public class Shooter extends SubsystemIF {
     @Override
     public void onDisabledInit() {
         stop();
+    }
+
+    @Override
+    public void onTeleopInit() {
+        disableShootMode();
     }
 
     @Override

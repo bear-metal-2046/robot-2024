@@ -29,9 +29,11 @@ public class NapCorrectingKinematics extends SwerveDriveKinematics {
         this.gyroSupplier = gyroSupplier;
         this.poseSupplier = poseSupplier;
 
-//      this is for feild house carpet (Only if Pos X and Neg X are perfect @ 1.0 compensation)
-        sourceSideFieldCompensation = new Compensation(1.0, 1.0, 0.976, 1.1);
-        ampSideFieldCompensation = new Compensation(1.0, 1.0, 0.976, 1.1);
+//      This is for Field-house carpet (Only if Pos X and Neg X are perfect @ 1.0 compensation)
+//        sourceSideFieldCompensation = new Compensation(1.0, 1.0, 0.976, 1.1);
+//        ampSideFieldCompensation = new Compensation(1.0, 1.0, 0.976, 1.1);
+        sourceSideFieldCompensation = new Compensation(0.987654321, 1.0, 1.0, 1.0);
+        ampSideFieldCompensation = new Compensation(0.987654321, 1.0,1.0, 1.0);
     }
 
     public Twist2d toTwist2d_super(SwerveModulePosition... moduleDeltas) {

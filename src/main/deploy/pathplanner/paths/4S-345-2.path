@@ -54,8 +54,8 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "New Event Marker",
-      "waypointRelativePos": 1.85,
+      "name": "ShootMode",
+      "waypointRelativePos": 1.8,
       "command": {
         "type": "parallel",
         "data": {
@@ -63,7 +63,7 @@
             {
               "type": "named",
               "data": {
-                "name": "Shoot"
+                "name": "EnableShootMode"
               }
             }
           ]
@@ -73,7 +73,7 @@
   ],
   "globalConstraints": {
     "maxVelocity": 4.0,
-    "maxAcceleration": 4.0,
+    "maxAcceleration": 5.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -88,5 +88,5 @@
     "rotation": -12.09475707701204,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

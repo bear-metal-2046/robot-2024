@@ -22,17 +22,18 @@ import static org.tahomarobotics.robot.shooter.ShooterConstants.*;
 class ShooterIO {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(ShooterIO.class);
 
-    private final TalonFX shooterMotor;
-    private final TalonFX shooterMotorFollower;
+    private final TalonFX topShooterMotor;
+    private final TalonFX bottomShooterMotor;
     private final TalonFX pivotMotor;
 
-    private final StatusSignal<Double> shooterVelocity;
+    private final StatusSignal<Double> topShooterVelocity;
+    private final StatusSignal<Double> bottomShooterVelocity;
     private final StatusSignal<Double> pivotPosition;
     private final StatusSignal<Double> pivotVelocity;
     private final StatusSignal<Double> motorVoltage;
 
-    private final StatusSignal<Double> shooterMotorCurrent;
-    private final StatusSignal<Double> shooterMotorFollowerCurrent;
+    private final StatusSignal<Double> topShooterCurrent;
+    private final StatusSignal<Double> bottomShooterCurrent;
 
     private final StatusSignal<Double> pivotCurrent;
 
@@ -61,40 +62,55 @@ class ShooterIO {
         RobustConfigurator configurator = new RobustConfigurator(logger);
 
         pivotMotor = new TalonFX(RobotMap.SHOOTER_PIVOT_MOTOR);
-        shooterMotor = new TalonFX(RobotMap.TOP_SHOOTER_MOTOR);
-        shooterMotorFollower = new TalonFX(RobotMap.BOTTOM_SHOOTER_MOTOR);
+        topShooterMotor = new TalonFX(RobotMap.TOP_SHOOTER_MOTOR);
+        bottomShooterMotor = new TalonFX(RobotMap.BOTTOM_SHOOTER_MOTOR);
 
         configurator.configureTalonFX(pivotMotor, pivotMotorConfiguration, "pivot motor");
-        configurator.configureTalonFX(shooterMotor, shooterMotorConfiguration, "shooter motor");
-        configurator.configureTalonFX(shooterMotorFollower, shooterMotorConfiguration, "shooter motor follower");
+        configurator.configureTalonFX(topShooterMotor, shooterMotorConfiguration, "shooter motor");
+        configurator.configureTalonFX(bottomShooterMotor, shooterMotorConfiguration, "shooter motor follower");
 
-        shooterVelocity = shooterMotor.getVelocity();
+        topShooterVelocity = topShooterMotor.getVelocity();
+        bottomShooterVelocity = bottomShooterMotor.getVelocity();
         pivotPosition = pivotMotor.getPosition();
         pivotVelocity = pivotMotor.getVelocity();
-        motorVoltage = shooterMotor.getMotorVoltage();
+        motorVoltage = topShooterMotor.getMotorVoltage();
 
-        shooterMotorCurrent = shooterMotor.getSupplyCurrent();
-        shooterMotorFollowerCurrent = shooterMotorFollower.getSupplyCurrent();
+        topShooterCurrent = topShooterMotor.getSupplyCurrent();
+        bottomShooterCurrent = bottomShooterMotor.getSupplyCurrent();
         pivotCurrent = pivotMotor.getSupplyCurrent();
 
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY,
-                shooterVelocity, pivotPosition, pivotVelocity, motorVoltage,
-                shooterMotorCurrent, shooterMotorFollowerCurrent, pivotCurrent
+                topShooterVelocity, bottomShooterVelocity, pivotVelocity, motorVoltage,
+                topShooterCurrent, bottomShooterCurrent, pivotCurrent
         );
-        ParentDevice.optimizeBusUtilizationForAll(pivotMotor, shooterMotorFollower, shooterMotor);
+        ParentDevice.optimizeBusUtilizationForAll(pivotMotor, bottomShooterMotor, topShooterMotor);
     }
 
     // GETTERS
 
-    double getShooterVelocity() {
-        return shooterVelocity.getValue();
+    double getTopShooterVelocity() {
+        return topShooterVelocity.getValue();
     }
+
+    double getBottomShooterVelocity() {
+        return bottomShooterVelocity.getValue();
+    }
+
+    double getTopShooterCurrent() {
+        return topShooterCurrent.getValueAsDouble();
+    }
+
+    double getBottomShooterCurrent() {
+        return bottomShooterCurrent.getValueAsDouble();
+    }
+
     double getPivotPosition() {
         return BaseStatusSignal.getLatencyCompensatedValue(pivotPosition, pivotVelocity);
     }
 
     boolean isSpinningAtVelocity() {
-        return Math.abs(targetShooterSpeed - getShooterVelocity()) < SHOOTER_SPEED_TOLERANCE;
+        return Math.abs(targetShooterSpeed - getTopShooterVelocity()) < SHOOTER_SPEED_TOLERANCE
+                && Math.abs(targetShooterSpeed - getBottomShooterVelocity()) < SHOOTER_SPEED_TOLERANCE;
     }
 
     boolean isAtAngle() {
@@ -141,15 +157,15 @@ class ShooterIO {
     void transferToAmp() {
         targetShooterSpeed = transferVelocity.Velocity;
 
-        shooterMotor.setControl(transferVelocity);
-        shooterMotorFollower.setControl(transferVelocity);
+        topShooterMotor.setControl(transferVelocity);
+        bottomShooterMotor.setControl(transferVelocity);
     }
 
     void reverseIntake() {
         targetShooterSpeed = reverseIntakeVelocity.Velocity;
 
-        shooterMotor.setControl(reverseIntakeVelocity);
-        shooterMotorFollower.setControl(reverseIntakeVelocity);
+        topShooterMotor.setControl(reverseIntakeVelocity);
+        bottomShooterMotor.setControl(reverseIntakeVelocity);
     }
 
     void setPivotVoltage(double voltage) {
@@ -161,24 +177,24 @@ class ShooterIO {
     void enable() {
         targetShooterSpeed = motorVelocity.Velocity;
 
-        shooterMotor.setControl(motorVelocity);
-        shooterMotorFollower.setControl(motorVelocity);
+        topShooterMotor.setControl(motorVelocity);
+        bottomShooterMotor.setControl(motorVelocity);
     }
 
     void idle() {
         targetShooterSpeed = idleVelocity.Velocity;
 
         idleMode = true;
-        shooterMotor.setControl(idleVelocity);
-        shooterMotorFollower.setControl(idleVelocity);
+        topShooterMotor.setControl(idleVelocity);
+        bottomShooterMotor.setControl(idleVelocity);
     }
 
     void stop() {
         targetShooterSpeed = 0.0;
 
         idleMode = false;
-        shooterMotor.stopMotor();
-        shooterMotorFollower.stopMotor();
+        topShooterMotor.stopMotor();
+        bottomShooterMotor.stopMotor();
     }
 
     void toggleShootMode() {
@@ -232,11 +248,11 @@ class ShooterIO {
     }
 
     void refreshSignals() {
-        BaseStatusSignal.refreshAll(pivotPosition, pivotVelocity, shooterVelocity,
-                shooterMotorCurrent, shooterMotorFollowerCurrent, pivotCurrent);
+        BaseStatusSignal.refreshAll(pivotPosition, pivotVelocity, topShooterVelocity, bottomShooterVelocity,
+                topShooterCurrent, bottomShooterCurrent, pivotCurrent);
     }
 
     public double getTotalCurrent() {
-        return Math.abs(shooterMotorCurrent.getValue()) + Math.abs(shooterMotorFollowerCurrent.getValue()) + Math.abs(pivotCurrent.getValue());
+        return Math.abs(topShooterCurrent.getValue()) + Math.abs(bottomShooterCurrent.getValue()) + Math.abs(pivotCurrent.getValue());
     }
 }

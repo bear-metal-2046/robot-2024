@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7543128599770712,
-      "y": 4.428212820389605
+      "x": 0.75,
+      "y": 4.42
     },
-    "rotation": -60.52411099675428
+    "rotation": -59.5484703509012
   },
   "command": {
     "type": "sequential",
@@ -57,9 +57,15 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "MCDONALDS"
+            "pathName": "5S-C-345-1"
           }
         },
         {
@@ -71,7 +77,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "6S-CBA-12-3"
+            "pathName": "4S-345-2"
           }
         },
         {
@@ -83,19 +89,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "6S-CBA-12-4"
+            "pathName": "4S-345-3"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "Shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "New Path"
           }
         }
       ]

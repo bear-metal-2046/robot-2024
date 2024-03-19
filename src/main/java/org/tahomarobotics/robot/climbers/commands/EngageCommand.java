@@ -4,9 +4,9 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import org.tahomarobotics.robot.OI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tahomarobotics.robot.OI;
 import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.amp.commands.AmpArmCommands;
 import org.tahomarobotics.robot.chassis.Chassis;
@@ -41,12 +41,12 @@ public class EngageCommand extends SequentialCommandGroup {
         addCommands(
                 Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.ENGAGING)),
                 Commands.runOnce(() -> logger.info("Pathfinding To Pre-climb Pose")),
-                AutoBuilder.pathfindToPose(target, ChassisConstants.CLIMB_MOVEMENT_CONSTRAINTS)
+                AutoBuilder.pathfindToPose(target, ChassisConstants.CLIMB_MOVEMENT_CONSTRAINTS),
+                AmpArmCommands.ARM_TO_CLIMB.get()
         );
 
         if (climbers.isTrapping())
             addCommands(
-                    AmpArmCommands.ARM_TO_CLIMB.get(),
                     Commands.runOnce(ampArm::shiftNote),
                     Commands.runOnce(() -> logger.info("Shifted Note Back")),
                     Commands.waitUntil(ampArm::isRollerAtPosition),

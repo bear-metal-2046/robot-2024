@@ -17,9 +17,9 @@ public class ShooterConstants {
     public static final double TRANSFER_VELOCITY = 10; // rps
     public static final double REVERSE_INTAKE_VELOCITY = 40; // rps
 
-    public static final double TIME_SHOT_OFFSET_POSITIVE = 0.3;  // The number of seconds forward in time the shooter
+    public static final double TIME_SHOT_OFFSET_POSITIVE = 0.4;  // The number of seconds forward in time the shooter
                                                                  // should calculate for when moving away from the speaker
-    public static final double TIME_SHOT_OFFSET_NEGATIVE = 0.4; // The same as ^ but for moving towards the speaker
+    public static final double TIME_SHOT_OFFSET_NEGATIVE = 0.5; // The same as ^ but for moving towards the speaker
 
     static final double SHOOTER_SPEED_TOLERANCE = 5; // rps
     public static final double MAX_PIVOT_ANGLE;
@@ -81,6 +81,7 @@ public class ShooterConstants {
             .withSlot0(switch (RobotIdentity.robotID) {
                 case BEARITONE, PLAYBEAR_CARTI -> new Slot0Configs()
                         .withKP(.076223)
+                        .withKI(0.5)
                         .withKS(.10456)
                         .withKV(.071642)
                         .withKA(.015732);

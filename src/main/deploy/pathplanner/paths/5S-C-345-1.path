@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.4199314885116257,
-        "y": 3.3188484394986815
+        "x": 2.409114728139366,
+        "y": 4.38198930451915
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.459866775589407,
-        "y": 2.6070062950936714
+        "x": 2.122528929742544,
+        "y": 1.6732912745104773
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "1st col"
     },
     {
       "anchor": {
@@ -20,12 +20,12 @@
         "y": 4.095403506122328
       },
       "prevControl": {
-        "x": 2.9453075122366466,
-        "y": 4.160116428340965
+        "x": 4.008448377257114,
+        "y": 4.215584647385511
       },
       "nextControl": {
-        "x": 8.418157204594017,
-        "y": 4.093023700063379
+        "x": 8.41809294620754,
+        "y": 4.089871096077714
       },
       "isLocked": false,
       "linkedName": null
@@ -67,23 +67,6 @@
   "eventMarkers": [
     {
       "name": "ShootMode",
-      "waypointRelativePos": 0.0,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "EnableShootMode"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "ShootMode",
       "waypointRelativePos": 1.7,
       "command": {
         "type": "parallel",
@@ -93,23 +76,6 @@
               "type": "named",
               "data": {
                 "name": "EnableShootMode"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Shoot",
-      "waypointRelativePos": 0.15,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Shoot"
               }
             }
           ]
@@ -129,9 +95,9 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "4S-345",
+  "folder": "5S-C-345",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": -19.653824058053292,
     "velocity": 0
   },
   "useDefaultConstraints": false

@@ -25,10 +25,7 @@ public class ShootCommand extends SequentialCommandGroup {
                         Commands.waitSeconds(0.2),
                         Commands.either(Commands.runOnce(shooter::toggleShootMode), Commands.runOnce(shooter::disableShootMode), () -> !RobotState.isAutonomous()),
                         Commands.runOnce(() -> shooter.setAngle(ShooterConstants.SHOOTER_COLLECT_PIVOT_ANGLE)),
-                        Commands.runOnce(() -> {
-                            logger.info("Shot");
-                            Autonomous.getInstance().shot();
-                        })
+                        Commands.runOnce(() -> logger.info("Shot"))
                 ).onlyIf(shooter::inShootingMode)
         );
     }

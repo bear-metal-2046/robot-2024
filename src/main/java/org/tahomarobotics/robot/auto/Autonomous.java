@@ -56,18 +56,18 @@ public class Autonomous extends SubsystemIF {
 
         NamedCommands.registerCommand("Shoot",
                 Commands.waitUntil(this::everythingIsZeroed)
-                        .andThen(Commands.runOnce(shooter::enableShootMode))
-                        .andThen(new ShootCommand()).onlyIf(indexer::isCollected));
+                        .andThen(shooter::enableShootMode)
+                        .andThen(new ShootCommand()).onlyIf(indexer::isCollected).andThen(this::shot));
 
         NamedCommands.registerCommand("DontUseLookupTable", Commands.runOnce(() -> useLookupTable = false));
 
         NamedCommands.registerCommand("EnableShootMode",
                Commands.runOnce(shooter::enableShootMode).onlyIf(indexer::isCollected));
 
-        NamedCommands.registerCommand("SpinUp", Commands.runOnce(shooter::enable).andThen(Commands.runOnce(() -> logger.info("Shooter Spun Up"))));
+        NamedCommands.registerCommand("SpinUp", Commands.runOnce(shooter::enable).andThen(() -> logger.info("Shooter Spun Up")));
 
         NamedCommands.registerCommand("CollectorDown", Commands.runOnce(collector::setDeployed)
-                .andThen(Commands.runOnce(() -> collector.setCollectionState(Collector.CollectionState.COLLECTING))));
+                .andThen(() -> collector.setCollectionState(Collector.CollectionState.COLLECTING)));
 
         NamedCommands.registerCommand("CollectorUp",
                 Commands.runOnce(collector::toggleDeploy));

@@ -67,7 +67,15 @@ public class Robot extends LoggedRobot {
         subsystems.add(Climbers.getInstance().initialize());
         subsystems.add(Autonomous.getInstance().initialize());
 
+        logCommandScheduler();
+
         logger.info("Robot Initialized.");
+    }
+
+    private void logCommandScheduler() {
+        CommandScheduler commandScheduler = CommandScheduler.getInstance();
+        commandScheduler.onCommandInitialize(command -> logger.info(command.getName() + " initialized!"));
+        commandScheduler.onCommandFinish(command -> logger.info(command.getName() + " finished!"));
     }
 
     @SuppressWarnings("DataFlowIssue")

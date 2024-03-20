@@ -100,7 +100,11 @@ public final class ChassisConstants {
     public static final double TRANSLATION_LIMIT = 6.0;
     public static final double ROTATION_LIMIT = TRANSLATION_LIMIT / Math.hypot(HALF_TRACK_WIDTH, HALF_WHEELBASE);
 
-    public static final PathConstraints AUTO_PATHFINDING_CONSTRAINTS = new PathConstraints(0,0,0,0);
+    public static final PathConstraints AUTO_PATHFINDING_CONSTRAINTS = new PathConstraints(
+            2.0,
+            2.0,
+            540,
+            720);
 
 
     public static final double MASS = 25.33313;

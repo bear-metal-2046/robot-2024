@@ -13,6 +13,7 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -198,8 +199,9 @@ public class Autonomous extends SubsystemIF {
                 if (commandExists) {
                     autoCommand = autoCommand.andThen(AutoBuilder.followPath(paths.get(j))); // This is the same as it is built in CommandUtil
                 } else {
-                    System.out.println(paths.get(j).getPreviewStartingHolonomicPose());
-                    autoCommand = AutoBuilder.pathfindThenFollowPath(paths.get(j), ChassisConstants.AUTO_PATHFINDING_CONSTRAINTS);
+                    Pose2d initPose = (DriverStation.getAlliance().map(value -> value.equals(DriverStation.Alliance.Red)).orElse(false)) ? paths.get(j).flipPath().getStartingDifferentialPose() : paths.get(j).getStartingDifferentialPose();
+                    Command pathFindToPose = AutoBuilder.pathfindToPose(initPose, ChassisConstants.AUTO_PATHFINDING_CONSTRAINTS);
+                    autoCommand = pathFindToPose.andThen(AutoBuilder.pathfindThenFollowPath(paths.get(j), ChassisConstants.AUTO_PATHFINDING_CONSTRAINTS));
                     commandExists = true;
                 }
             }

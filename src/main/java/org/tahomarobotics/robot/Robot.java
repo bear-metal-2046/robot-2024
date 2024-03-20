@@ -152,6 +152,8 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void autonomousInit() {
+        Autonomous.getInstance().resetAuto();
+
         subsystems.forEach(SubsystemIF::onAutonomousInit);
         autoCommand = Autonomous.getInstance().getSelectedAuto();
         autoCommand.schedule();

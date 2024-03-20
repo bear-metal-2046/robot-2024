@@ -139,6 +139,10 @@ public class AmpArm extends SubsystemIF {
                 setArmPosition(ARM_CLIMB_POSE);
                 setWristPosition(WRIST_MOVING_POSE);
             }
+            case PRE_CLIMB -> {
+                setArmPosition(ARM_PRE_CLIMB_POSE);
+                setWristPosition(WRIST_MOVING_POSE);
+            }
         }
     }
 
@@ -272,7 +276,8 @@ public class AmpArm extends SubsystemIF {
         STOW,
         AMP,
         SOURCE,
-        CLIMB
+        CLIMB,
+        PRE_CLIMB
     }
 
     public enum RollerState {

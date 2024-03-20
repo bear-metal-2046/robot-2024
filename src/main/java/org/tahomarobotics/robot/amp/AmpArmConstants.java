@@ -20,13 +20,14 @@ public class AmpArmConstants {
     static final double ARM_GEAR_REDUCTION;
 
     static final double ARM_MIN_POSE = -90d / 360d;
-    static final double ARM_MAX_POSE = 90d / 360d;
+    static final double ARM_MAX_POSE = 149d / 360d;
 
     public static final double ARM_STOW_POSE, ARM_AMP_POSE, ARM_TRAP_POSE,
-            ARM_SOURCE_POSE, ARM_CLIMB_POSE;
+            ARM_SOURCE_POSE, ARM_CLIMB_POSE, ARM_PRE_CLIMB_POSE;
 
     static {
         ARM_CLIMB_POSE = Units.degreesToRotations(90);
+        ARM_PRE_CLIMB_POSE = Units.degreesToRotations(149);
         ARM_GEAR_REDUCTION = RobotIdentity.robotID == RobotID.BEARITONE ?
                 (14.0 / 64.0) * (18.0 / 72.0) * (16.0 / 48.0) :
                 (16.0 / 64.0) * (18.0 / 72.0) * (16.0 / 48.0);

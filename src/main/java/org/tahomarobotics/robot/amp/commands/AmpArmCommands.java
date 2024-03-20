@@ -23,6 +23,7 @@ public class AmpArmCommands {
     private static final Supplier<Command> ARM_TO_SOURCE;
     public static final Supplier<Command> ARM_TO_STOW;
     public static final Supplier<Command> ARM_TO_CLIMB;
+    public static final Supplier<Command> ARM_TO_PRE_CLIMB;
     public static final Supplier<Command> ARM_TO_TRAP;
     public static Command AMP_ARM_CTRL;
 
@@ -59,6 +60,12 @@ public class AmpArmCommands {
         ARM_TO_CLIMB = () -> Commands.sequence(
                 Commands.runOnce(() -> logger.info("Arm To Climb")),
                 Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.CLIMB)),
+                Commands.waitUntil(ampArm::isArmAtPosition)
+        );
+
+        ARM_TO_PRE_CLIMB = () -> Commands.sequence(
+                Commands.runOnce(() -> logger.info("Arm To Pre-Climb")),
+                Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.PRE_CLIMB)),
                 Commands.waitUntil(ampArm::isArmAtPosition)
         );
 

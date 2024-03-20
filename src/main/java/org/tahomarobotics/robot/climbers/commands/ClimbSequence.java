@@ -21,7 +21,9 @@ public class ClimbSequence extends SequentialCommandGroup {
         AmpArm ampArm = AmpArm.getInstance();
 
         addCommands(
-                Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.CLIMBING))
+                Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.CLIMBING)),
+                AmpArmCommands.ARM_TO_PRE_CLIMB.get(),
+                Commands.waitUntil(ampArm::isArmAtPosition)
         );
 
         if (climbers.isTrapping())

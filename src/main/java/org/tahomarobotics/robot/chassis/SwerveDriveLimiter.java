@@ -18,13 +18,16 @@ public class SwerveDriveLimiter {
     }
     public SwerveModuleState[] calculate(SwerveModuleState states[]) {
 
+
         double acceleration[] = new double[states.length];
         double currentTime = MathSharedStore.getTimestamp();
         double dT = currentTime - prevTime;
         prevTime = currentTime;
 
         double averageAcceleration = 0;
+        boolean brakeMode = true;
         for (int i = 0; i < states.length; i++) {
+            brakeMode &= states[i].speedMetersPerSecond == 0.0;
             acceleration[i] = (states[i].speedMetersPerSecond -  prevStates[i].speedMetersPerSecond) / dT;
             averageAcceleration += Math.abs(acceleration[i]);
         }
@@ -33,7 +36,7 @@ public class SwerveDriveLimiter {
         double scale = averageAcceleration > accelerationLimit ?  accelerationLimit/averageAcceleration : 1.0;
 
         for(int i = 0; i < states.length; i++) {
-            states[i].speedMetersPerSecond = prevStates[i].speedMetersPerSecond + scale * acceleration[i] * dT;
+            states[i].speedMetersPerSecond = brakeMode ? 0.0 : prevStates[i].speedMetersPerSecond + scale * acceleration[i] * dT;
         }
 
         prevStates = states;

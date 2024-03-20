@@ -26,9 +26,15 @@ public class CollectorConstants {
 
     static {
         switch (RobotIdentity.robotID) {
-            case PLAYBEAR_CARTI, BEARITONE -> {
+            case BEARITONE -> {
                 STOW_POSITION = Units.degreesToRotations(90.0000000);
                 COLLECT_POSITION = Units.degreesToRotations(211.46484375);
+                EJECT_POSITION = Units.degreesToRotations(183.69140625);
+                ZERO_POSITION = Units.degreesToRotations(73.037109375);
+            }
+            case PLAYBEAR_CARTI -> {
+                STOW_POSITION = Units.degreesToRotations(90.0000000);
+                COLLECT_POSITION = Units.degreesToRotations(221.8359375);
                 EJECT_POSITION = Units.degreesToRotations(183.69140625);
                 ZERO_POSITION = Units.degreesToRotations(73.037109375);
             }

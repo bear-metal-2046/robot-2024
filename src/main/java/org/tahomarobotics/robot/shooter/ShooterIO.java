@@ -217,6 +217,10 @@ class ShooterIO {
         }
     }
 
+    void idleforFiling() {
+
+    }
+
     public void toggleIdle() {
         if (idleMode) {
             stop();

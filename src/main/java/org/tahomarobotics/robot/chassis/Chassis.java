@@ -6,6 +6,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -38,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.tahomarobotics.robot.chassis.ChassisConstants.ACCELERATION_LIMIT;
 import static org.tahomarobotics.robot.shooter.ShooterConstants.*;
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
@@ -83,6 +85,7 @@ public class Chassis extends SubsystemIF {
 
     private SwerveModulePosition lastModulePosition[];
 
+    private final SwerveDriveLimiter accelerationLimiter;
     // CONSTRUCTOR
 
     private Chassis() {
@@ -118,6 +121,8 @@ public class Chassis extends SubsystemIF {
                 VecBuilder.fill(0.1, 0.1, 0.01)
         );
 
+        accelerationLimiter = new SwerveDriveLimiter(getSwerveModuleStates(), ACCELERATION_LIMIT);
+
         shootModeController = ChassisConstants.SHOOT_MODE_CONTROLLER;
         shootModeController.enableContinuousInput(0, 2 * Math.PI);
 
@@ -131,6 +136,9 @@ public class Chassis extends SubsystemIF {
         apriltagCameras.add(new ATVision(VisionConstants.Camera.SHOOTER_RIGHT, fieldPose, poseEstimator));
     }
 
+    public SwerveDriveKinematics getKinematics() {
+        return kinematics;
+    }
     public static Chassis getInstance() {
         return INSTANCE;
     }
@@ -258,8 +266,21 @@ public class Chassis extends SubsystemIF {
 
             var swerveModuleStates = kinematics.toSwerveModuleStates(desiredSpeeds);
             SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, ChassisConstants.MAX_VELOCITY);
+
+            swerveModuleStates = accelerationLimiter.calculate(swerveModuleStates);
+
             setSwerveStates(swerveModuleStates);
         }
+    }
+
+    private SwerveModuleState[] limitAcceleration(SwerveModuleState inputs[]) {
+        double average = 0;
+        for (SwerveModuleState input : inputs) {
+            average += input.speedMetersPerSecond;
+
+        }
+
+        return null;
     }
 
     @Override

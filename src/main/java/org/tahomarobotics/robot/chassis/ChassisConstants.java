@@ -97,7 +97,8 @@ public final class ChassisConstants {
     public static final double MAX_VELOCITY = SWERVE_DRIVE_MOTOR.freeSpeedRadPerSec * DRIVE_REDUCTION * WHEEL_RADIUS * 1.1; // m/s
     public static final double MAX_ANGULAR_VELOCITY = MAX_VELOCITY / Math.hypot(HALF_TRACK_WIDTH, HALF_WHEELBASE); // r/s
 
-    public static final double TRANSLATION_LIMIT = 6.0;
+    public static final double ACCELERATION_LIMIT = 6.0;
+    public static final double TRANSLATION_LIMIT = ACCELERATION_LIMIT;
     public static final double ROTATION_LIMIT = TRANSLATION_LIMIT / Math.hypot(HALF_TRACK_WIDTH, HALF_WHEELBASE);
 
 

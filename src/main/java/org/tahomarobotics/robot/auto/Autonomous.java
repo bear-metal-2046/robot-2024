@@ -3,17 +3,12 @@ package org.tahomarobotics.robot.auto;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.commands.PathfindHolonomic;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
-import com.pathplanner.lib.pathfinding.Pathfinder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -39,8 +34,6 @@ import org.tahomarobotics.robot.util.SubsystemIF;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class Autonomous extends SubsystemIF {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Autonomous.class);
@@ -88,6 +81,11 @@ public class Autonomous extends SubsystemIF {
         NamedCommands.registerCommand("AmpArmToStow",
                 Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.STOW))
                         .andThen(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));
+
+        NamedCommands.registerCommand("CheckCollected",
+                Commands.runOnce(() -> skipToNextPath(PathPlannerAuto.getPathGroupFromAutoFile(getSelectedAuto().getName()))
+                        //.onlyIf(indexer::getCollectorBeanBake)
+                        .withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming).schedule()));
 
         autoChooser = PathPlannerHelper.getAutoChooser(chassis, this::onAutoChange);
 
@@ -195,7 +193,6 @@ public class Autonomous extends SubsystemIF {
         boolean commandExists = false;
         for (int j = 0; j < paths.spliterator().getExactSizeIfKnown(); j++) {
             if (j > closestIndex) {
-                System.out.println("path " + j + " added");
                 if (commandExists) {
                     autoCommand = autoCommand.andThen(AutoBuilder.followPath(paths.get(j))); // This is the same as it is built in CommandUtil
                 } else {
@@ -206,7 +203,6 @@ public class Autonomous extends SubsystemIF {
                 }
             }
         }
-        System.out.println("skipped path " + closestIndex);
         return autoCommand;
     }
 

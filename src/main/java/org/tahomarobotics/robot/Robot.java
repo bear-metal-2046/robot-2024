@@ -8,6 +8,7 @@ package org.tahomarobotics.robot;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobotBase;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -74,8 +75,12 @@ public class Robot extends LoggedRobot {
 
     private void logCommandScheduler() {
         CommandScheduler commandScheduler = CommandScheduler.getInstance();
-        commandScheduler.onCommandInitialize(command -> logger.info(command.getName() + " initialized!"));
-        commandScheduler.onCommandFinish(command -> logger.info(command.getName() + " finished!"));
+        commandScheduler.onCommandInitialize(command -> {
+            if (RobotState.isAutonomous()) logger.info(command.getName() + " initialized!");
+        });
+        commandScheduler.onCommandFinish(command -> {
+            if (RobotState.isAutonomous()) logger.info(command.getName() + " finished!");
+        });
     }
 
     @SuppressWarnings("DataFlowIssue")

@@ -36,8 +36,6 @@ public class TeleopDriveCommand extends Command {
 
     private final ChassisSpeeds velocityInput = new ChassisSpeeds();
 
-    private final SwerveRateLimiter rateLimiter;
-
     private final TeleopDriveCommandInputsAutoLogged inputs = new TeleopDriveCommandInputsAutoLogged();
     private final Consumer<TeleopDriveCommandInputsAutoLogged> inpMut;
 
@@ -48,10 +46,6 @@ public class TeleopDriveCommand extends Command {
         this.inpMut = inpMut;
 
         addRequirements(chassis);
-
-        rateLimiter = new SwerveRateLimiter(
-                ChassisConstants.TRANSLATION_LIMIT,
-                ChassisConstants.ROTATION_LIMIT);
 
         maxVelocity = ChassisConstants.MAX_VELOCITY;
         maxRotationalVelocity = ChassisConstants.MAX_ANGULAR_VELOCITY;
@@ -68,9 +62,7 @@ public class TeleopDriveCommand extends Command {
         velocityInput.vyMetersPerSecond = inputs.y * maxVelocity * direction;
         velocityInput.omegaRadiansPerSecond = inputs.rot * maxRotationalVelocity;
 
-        ChassisSpeeds velocityOutput = rateLimiter.calculate(velocityInput);
-
-        chassis.drive(velocityOutput);
+        chassis.drive(velocityInput);
     }
 
     @Override

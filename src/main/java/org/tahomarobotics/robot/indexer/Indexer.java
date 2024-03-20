@@ -13,8 +13,10 @@ import org.tahomarobotics.robot.OI;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
+import org.tahomarobotics.robot.auto.Autonomous;
 import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.collector.CollectorConstants;
+import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SafeAKitLogger;
@@ -233,6 +235,14 @@ public class Indexer extends SubsystemIF {
             }
             case COLLECTED -> {
                 disable();
+
+                if (RobotState.isAutonomous() && Autonomous.getInstance().isUsingLookupTable()) {
+                    Double angle = Autonomous.getInstance().getSelectedAutoShotAngle();
+                    if (angle != null) {
+                        Shooter.getInstance().setAngle(angle);
+                        return;
+                    }
+                }
 
                 // Fix possible broken state
                 if (!getCollectorBeanBake()) {

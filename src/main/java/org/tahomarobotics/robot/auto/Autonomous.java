@@ -41,7 +41,7 @@ public class Autonomous extends SubsystemIF {
     private int shotNumber = 0;
     private boolean useLookupTable = true;
     private String currentAutoName = AutoConstants.DEFAULT_AUTO_NAME;
-    private double[] currentAutoAngles = null;
+    private double[] currentAutoAngles = new double[]{};
 
     private Autonomous() {
         Shooter shooter = Shooter.getInstance();
@@ -56,9 +56,8 @@ public class Autonomous extends SubsystemIF {
 
         NamedCommands.registerCommand("Shoot",
                 Commands.waitUntil(this::everythingIsZeroed)
-                        .andThen(Commands.race(Commands.waitUntil(indexer::isCollected), Commands.waitSeconds(1))
                         .andThen(Commands.runOnce(shooter::enableShootMode))
-                        .andThen(new ShootCommand())));
+                        .andThen(new ShootCommand()).onlyIf(indexer::isCollected));
 
         NamedCommands.registerCommand("DontUseLookupTable", Commands.runOnce(() -> useLookupTable = false));
 
@@ -131,6 +130,9 @@ public class Autonomous extends SubsystemIF {
         return Collector.getInstance().isZeroed() && Shooter.getInstance().isZeroed();
     }
 
+    public void resetAuto() {
+        shotNumber = 0;
+    }
 
     // PATH VISUALIZATION
 
@@ -198,7 +200,8 @@ public class Autonomous extends SubsystemIF {
     private void onAutoChange(String autoName) {
         shotNumber = 0;
         currentAutoName = autoName;
-        currentAutoAngles = AutoConstants.SHOT_TABLE.get(getSelectedAutoName());
+        currentAutoAngles = AutoConstants.SHOT_TABLE.getOrDefault(getSelectedAutoName(), new double[]{});
+
         new InstantCommand(() ->
             postAutoTrajectory(chassis.getField(), autoName)).schedule();
     }

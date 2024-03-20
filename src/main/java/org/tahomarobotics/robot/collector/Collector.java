@@ -261,12 +261,12 @@ public class Collector extends SubsystemIF {
             case DISABLED -> {
                 stopCollect();
 
-                if (isDeployed()) setCollectionState(Collector.CollectionState.COLLECTING);
+                if (isDeployed() && !Indexer.getInstance().isCollected()) setCollectionState(Collector.CollectionState.COLLECTING);
             }
             case COLLECTING -> {
                 collect();
 
-                if (isStowed()) setCollectionState(Collector.CollectionState.DISABLED);
+                if (isStowed() || Indexer.getInstance().isCollected()) setCollectionState(Collector.CollectionState.DISABLED);
             }
         }
     }

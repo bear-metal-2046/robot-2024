@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
-import org.tahomarobotics.robot.auto.AutoConstants;
 import org.tahomarobotics.robot.auto.Autonomous;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.identity.RobotIdentity;
@@ -139,9 +138,6 @@ public class Shooter extends SubsystemIF {
     }
 
     public boolean isReadyToShoot() {
-        if (RobotState.isAutonomous())
-            return true;
-
         return io.isReadyToShoot();
     }
 
@@ -170,12 +166,8 @@ public class Shooter extends SubsystemIF {
     }
 
     public void angleToSpeaker(double radialVelocity) {
-        if (Autonomous.getInstance().isUsingLookupTable()) {
-            Double angle = Autonomous.getInstance().getSelectedAutoShotAngle();
-            if (angle != null) {
-                setAngle(angle);
-                return;
-            }
+        if (RobotState.isAutonomous() && Autonomous.getInstance().isUsingLookupTable()) {
+            return;
         }
 
         if (DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Blue)

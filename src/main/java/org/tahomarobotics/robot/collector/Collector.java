@@ -284,9 +284,6 @@ public class Collector extends SubsystemIF {
         SafeAKitLogger.recordOutput("Collector/Deploy State", deploymentState);
         SafeAKitLogger.recordOutput("Collector/Collection State", collectionState);
 
-        SafeAKitLogger.recordOutput("Collector/Left Angle", deployLeft.getPosition().getValueAsDouble());
-        SafeAKitLogger.recordOutput("Collector/Right Angle", deployRight.getPosition().getValueAsDouble());
-
         SafeAKitLogger.recordOutput("Collector/Deploy Right Position", deployPositionRight.getValue());
         SafeAKitLogger.recordOutput("Collector/Deploy Left Position", deployPositionLeft.getValue());
         SafeAKitLogger.recordOutput("Collector/Deploy Velocity", deployVelocity.getValue());

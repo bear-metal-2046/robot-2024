@@ -20,7 +20,7 @@ public class ClimberConstants {
     public static final double POSITION_EPSILON = 0.005;
     public static final double VELOCITY_EPSILON = 0.005;
 
-    public static final double CLIMB_MAX_VEL = 0.5; // meter per sec
+    public static final double CLIMB_MAX_VEL = 0.75; // meter per sec
     public static final double CLIMB_MAX_ACCEL = 2;
     public static final double CLIMB_MAX_JERK = 10;
 

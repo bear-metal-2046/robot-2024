@@ -40,6 +40,7 @@ public class Autonomous extends SubsystemIF {
 
     private int shotNumber = 0;
     private boolean useLookupTable = true;
+    private boolean isShootingAfterCollect = false;
     private String currentAutoName = AutoConstants.DEFAULT_AUTO_NAME;
     private double[] currentAutoAngles = new double[]{};
 
@@ -60,6 +61,10 @@ public class Autonomous extends SubsystemIF {
                         .andThen(new ShootCommand()).onlyIf(indexer::isCollected));
 
         NamedCommands.registerCommand("DontUseLookupTable", Commands.runOnce(() -> useLookupTable = false));
+
+        NamedCommands.registerCommand("ShootAfterCollect", Commands.runOnce(() -> isShootingAfterCollect = true));
+
+        NamedCommands.registerCommand("DontShootAfterCollect", Commands.runOnce(() -> isShootingAfterCollect = false));
 
         NamedCommands.registerCommand("EnableShootMode",
                Commands.runOnce(shooter::enableShootMode).onlyIf(indexer::isCollected));
@@ -102,6 +107,9 @@ public class Autonomous extends SubsystemIF {
 
     public boolean isUsingLookupTable() {
         return useLookupTable;
+    }
+    public boolean isShootingAfterCollect() {
+        return isShootingAfterCollect;
     }
 
     public static Autonomous getInstance() {

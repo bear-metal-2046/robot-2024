@@ -12,7 +12,12 @@
     "5S-C-345"
   ],
   "autoFolders": [
-    "Distance Check Autos"
+    "4A",
+    "Distance Check Autos",
+    "4S",
+    "5S",
+    "6S",
+    "6A"
   ],
   "defaultMaxVel": 4.0,
   "defaultMaxAccel": 4.0,

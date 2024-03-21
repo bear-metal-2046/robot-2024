@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.42,
-      "y": 3.32
+      "x": 1.37,
+      "y": 6.52
     },
     "rotation": 0
   },
@@ -22,35 +22,21 @@
           "data": {
             "commands": [
               {
-                "type": "sequential",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "parallel",
-                      "data": {
-                        "commands": [
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "CollectorDown"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "SpinUp"
-                            }
-                          }
-                        ]
-                      }
-                    }
-                  ]
+                  "name": "SpinUp"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "CollectorDown"
                 }
               },
               {
                 "type": "path",
                 "data": {
-                  "pathName": "4S-345-1"
+                  "pathName": "6A-21-ABC-1-RACE"
                 }
               }
             ]
@@ -65,19 +51,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "4S-345-2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
+            "pathName": "6A-21-ABC-2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "4S-345-3"
+            "pathName": "6A-21-ABC-3"
           }
         },
         {
@@ -89,6 +69,6 @@
       ]
     }
   },
-  "folder": "4S",
+  "folder": "6A",
   "choreoAuto": false
 }

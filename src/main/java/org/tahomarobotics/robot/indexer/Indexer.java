@@ -18,6 +18,7 @@ import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.collector.CollectorConstants;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
+import org.tahomarobotics.robot.shooter.commands.ShootCommand;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SafeAKitLogger;
 import org.tahomarobotics.robot.util.SubsystemIF;
@@ -180,6 +181,11 @@ public class Indexer extends SubsystemIF {
 
     public void transitionToCollected() {
         setState(State.COLLECTED);
+
+        if (Autonomous.getInstance().isShootingAfterCollect() && RobotState.isAutonomous()) {
+            Shooter.getInstance().enableShootMode();
+            new ShootCommand().schedule();
+        }
     }
 
     public void transitionToTransferring() {

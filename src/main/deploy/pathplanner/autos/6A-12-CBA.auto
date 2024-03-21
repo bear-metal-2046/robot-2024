@@ -43,6 +43,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "6A-21-ABC-2"
@@ -63,6 +69,6 @@
       ]
     }
   },
-  "folder": null,
+  "folder": "6A",
   "choreoAuto": false
 }

@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 1.673500489858123,
-        "y": 7.300410029391488
+        "x": 2.075477174464464,
+        "y": 7.391950836389372
       },
       "prevControl": {
-        "x": 3.0221706157698036,
-        "y": 8.106680213360427
+        "x": 0.8048691439099667,
+        "y": 8.780124022795883
       },
       "nextControl": null,
       "isLocked": false,
@@ -54,7 +54,7 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "New Event Marker",
+      "name": "ShootMode",
       "waypointRelativePos": 1.9,
       "command": {
         "type": "parallel",
@@ -63,7 +63,7 @@
             {
               "type": "named",
               "data": {
-                "name": "Shoot"
+                "name": "EnableShootMode"
               }
             }
           ]

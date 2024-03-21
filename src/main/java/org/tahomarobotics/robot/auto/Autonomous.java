@@ -3,8 +3,7 @@ package org.tahomarobotics.robot.auto;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.PathPlannerTrajectory;
+import com.pathplanner.lib.path.*;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -20,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SelectCommand;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.amp.AmpArm;
@@ -191,20 +191,35 @@ public class Autonomous extends SubsystemIF {
 
         Command autoCommand = new InstantCommand();
         boolean commandExists = false;
-        for (int j = 0; j < paths.spliterator().getExactSizeIfKnown(); j++) {
-            if (j > closestIndex) {
-                if (commandExists) {
-                    autoCommand = autoCommand.andThen(AutoBuilder.followPath(paths.get(j))); // This is the same as it is built in CommandUtil
-                } else {
-                    Pose2d initPose = (DriverStation.getAlliance().map(value -> value.equals(DriverStation.Alliance.Red)).orElse(false)) ? paths.get(j).flipPath().getStartingDifferentialPose() : paths.get(j).getStartingDifferentialPose();
-                    Command pathFindToPose = AutoBuilder.pathfindToPose(initPose, ChassisConstants.AUTO_PATHFINDING_CONSTRAINTS);
-                    autoCommand = pathFindToPose.andThen(AutoBuilder.pathfindThenFollowPath(paths.get(j), ChassisConstants.AUTO_PATHFINDING_CONSTRAINTS));
-                    commandExists = true;
-                }
+        long pathsSize = paths.spliterator().getExactSizeIfKnown();
+        for (int j = closestIndex + 1; j < pathsSize; j++) {
+            if (commandExists) {
+                System.out.println("added another path");
+                autoCommand = autoCommand.andThen(AutoBuilder.followPath(paths.get(j))); // This is the same as it is built in CommandUtil
+            } else {
+                PathPlannerPath path = paths.get(j);
+                int targetIndexOnPath = path.numPoints()/2;
+                PathPoint targetPoint = (DriverStation.getAlliance().map(value -> value.equals(DriverStation.Alliance.Red)).orElse(false))
+                        ? path.flipPath().getPoint(targetIndexOnPath) : path.getPoint(targetIndexOnPath);
+
+                Translation2d targetTranslation = targetPoint.position;
+                Translation2d currentTranslation = Chassis.getInstance().getPose().getTranslation();
+                Rotation2d targetRotation = Rotation2d.fromRadians(Math.atan((targetTranslation.getX() - currentTranslation.getX()) / (targetTranslation.getY() - currentTranslation.getY())) + Math.PI);
+
+                Command pathFindToPose = AutoBuilder.pathfindToPose(new Pose2d(targetTranslation, targetRotation), ChassisConstants.AUTO_PATHFINDING_CONSTRAINTS);
+                path = PathPlannerPath.fromPathPoints(path.getAllPathPoints().subList(targetIndexOnPath, path.numPoints()), ChassisConstants.AUTO_PATHFINDING_CONSTRAINTS, path.getGoalEndState());
+                autoCommand = pathFindToPose.andThen(AutoBuilder.followPath(path));
+                commandExists = true;
             }
         }
         return autoCommand;
     }
+
+//    public PathPlannerPath reconstructPathFromIndex(PathPlannerPath path, int index) {
+//        List<Pose2d> poses = path.getPathPoses();
+//        List<PathPoint> points = path.getAllPathPoints();
+//
+//    }
 
     private void postAutoTrajectory(Field2d field, String autoName) {
         if (autoName == null || autoName.equals(AutoConstants.DEFAULT_AUTO_NAME)) {

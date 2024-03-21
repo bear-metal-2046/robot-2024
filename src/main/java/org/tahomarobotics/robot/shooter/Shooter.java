@@ -181,7 +181,7 @@ public class Shooter extends SubsystemIF {
         double timeShotOffset = (radialVelocity > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE);
         double targetAngle = angleCalc(distance + radialVelocity * timeShotOffset);
 
-        setAngle(targetAngle);
+        setAngle(0);
     }
 
     private double angleCalc(double distance) {

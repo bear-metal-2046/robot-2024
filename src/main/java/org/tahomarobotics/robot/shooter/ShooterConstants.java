@@ -39,10 +39,10 @@ public class ShooterConstants {
     static {
         switch (RobotIdentity.robotID) {
             case PLAYBEAR_CARTI, BEARITONE -> {
-                SHOOTER_SPEED = 100.0;
-                IDLE_SPEED = 100.0;
+                SHOOTER_SPEED = 6500.0 / 60.0;
+                IDLE_SPEED = SHOOTER_SPEED;
                 MAX_PIVOT_ANGLE = Units.degreesToRotations(51.50390625);
-                SHOOTER_GEAR_REDUCTION = (30.0 / 18.0);
+                SHOOTER_GEAR_REDUCTION = (24.0 / 18.0);
                 PIVOT_INVERSION = InvertedValue.Clockwise_Positive;
             }
             default -> {

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.385909150196678,
-        "y": 6.896548567871911
+        "x": 4.000353337334807,
+        "y": 6.522371125357045
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.7279631676380465,
-        "y": 6.804101536131
+        "x": 4.342407354776175,
+        "y": 6.429924093616134
       },
       "isLocked": false,
       "linkedName": "Long Shoot 1"
@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 5.385909150196678,
-        "y": 6.7393886139123635
+        "x": 4.009570956417567,
+        "y": 6.514331664247155
       },
       "prevControl": {
-        "x": 6.190198326342598,
-        "y": 6.554494550430542
+        "x": 4.995408182262204,
+        "y": 6.532248919165983
       },
       "nextControl": null,
       "isLocked": false,
@@ -55,7 +55,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.0,
-    "maxAcceleration": 4.0,
+    "maxAcceleration": 5.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

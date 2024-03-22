@@ -124,7 +124,11 @@ public class ATVision {
             fieldPose.getObject(result.camera().cameraName).setPose(result.poseMeters());
         }
 
-        double distanceToMidlineTrust = Math.abs(pose.getX() - fieldLayout.getFieldWidth() / 2) + 1;
+        double distanceToMidlineTrust = ((16.5417 / 2) - Math.abs((16.5417 / 2) - pose.getX())) / (16.5417 / 2);
+        distanceToMidlineTrust *= 3;
+        distanceToMidlineTrust += .5;
+
+        SafeAKitLogger.recordOutput("ATCamera/TRUST", distanceToMidlineTrust);
 
         SafeAKitLogger.recordOutput("ATCamera/" + cameraSettings.cameraName + "/Pose", result.poseMeters());
         SafeAKitLogger.recordOutput("ATCamera/" + cameraSettings.cameraName + "/Multitag?", result.numTargets() > 1);
@@ -135,8 +139,8 @@ public class ATVision {
         if (result.numTargets() > 1 && distanceToTargets < VisionConstants.TARGET_DISTANCE_THRESHOLD) {
             // Multi-tag PnP provides very trustworthy data
             var stds = VecBuilder.fill(
-                    0.08122476428 * distanceToMidlineTrust / 2,
-                    0.0990676807 * distanceToMidlineTrust / 2,
+                    0.08122476428 * distanceToMidlineTrust,
+                    0.0990676807 * distanceToMidlineTrust,
                     Units.degreesToRadians(1.372694632)
             );
 
@@ -148,8 +152,8 @@ public class ATVision {
             // Single tag results are not very trustworthy. Do not use headings from them
             Pose2d noHdgPose = new Pose2d(result.poseMeters().getTranslation(), pose.getRotation());
             var stds = VecBuilder.fill(
-                    0.25 * distanceToTargets * distanceToMidlineTrust,
-                    0.25 * distanceToTargets * distanceToMidlineTrust,
+                    0.25 * distanceToTargets,
+                    0.25 * distanceToTargets,
                     Units.degreesToRadians(90)
             );
 

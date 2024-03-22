@@ -55,7 +55,7 @@
     {
       "name": "New Constraints Zone",
       "minWaypointRelativePos": 0,
-      "maxWaypointRelativePos": 0.25,
+      "maxWaypointRelativePos": 0.15,
       "constraints": {
         "maxVelocity": 1.0,
         "maxAcceleration": 4.0,
@@ -65,23 +65,6 @@
     }
   ],
   "eventMarkers": [
-    {
-      "name": "ShootMode",
-      "waypointRelativePos": 0.0,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "EnableShootMode"
-              }
-            }
-          ]
-        }
-      }
-    },
     {
       "name": "ShootMode",
       "waypointRelativePos": 1.7,
@@ -101,7 +84,7 @@
     },
     {
       "name": "Shoot",
-      "waypointRelativePos": 0.15,
+      "waypointRelativePos": 0.1,
       "command": {
         "type": "parallel",
         "data": {
@@ -118,7 +101,7 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.0,
+    "maxVelocity": 4.5,
     "maxAcceleration": 5.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0

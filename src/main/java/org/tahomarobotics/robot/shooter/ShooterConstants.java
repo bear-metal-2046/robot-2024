@@ -42,7 +42,7 @@ public class ShooterConstants {
                 SHOOTER_SPEED = 100.0;
                 IDLE_SPEED = SHOOTER_SPEED;
                 MAX_PIVOT_ANGLE = Units.degreesToRotations(51.50390625);
-                SHOOTER_GEAR_REDUCTION = (24.0 / 18.0);
+                SHOOTER_GEAR_REDUCTION = (30.0 / 18.0);
                 PIVOT_INVERSION = InvertedValue.Clockwise_Positive;
             }
             default -> {
@@ -81,8 +81,7 @@ public class ShooterConstants {
             .withSlot0(switch (RobotIdentity.robotID) {
                 case BEARITONE, PLAYBEAR_CARTI -> new Slot0Configs()
                         .withKP(.076223)
-                        .withKI(0.125)
-                        .withKD(0.005458194)
+                        .withKI(0.5)
                         .withKS(.10456)
                         .withKV(.071642)
                         .withKA(.015732);

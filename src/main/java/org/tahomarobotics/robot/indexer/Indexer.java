@@ -236,14 +236,6 @@ public class Indexer extends SubsystemIF {
             case COLLECTED -> {
                 disable();
 
-                if (RobotState.isAutonomous() && Autonomous.getInstance().isUsingLookupTable()) {
-                    Double angle = Autonomous.getInstance().getSelectedAutoShotAngle();
-                    if (angle != null) {
-                        Shooter.getInstance().setAngle(angle);
-                        return;
-                    }
-                }
-
                 // Fix possible broken state
                 if (!getCollectorBeanBake()) {
                     logger.error("Indexer in COLLECTED state with no note detected! Transitioning to DISABLED...");

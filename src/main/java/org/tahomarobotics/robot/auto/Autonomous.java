@@ -56,13 +56,17 @@ public class Autonomous extends SubsystemIF {
 
         NamedCommands.registerCommand("Shoot",
                 Commands.waitUntil(this::everythingIsZeroed)
-                        .andThen(shooter::enableShootMode)
+                        .andThen(this::enableShootModeInAuto)
                         .andThen(new ShootCommand()).onlyIf(indexer::isCollected).andThen(this::shot));
 
         NamedCommands.registerCommand("DontUseLookupTable", Commands.runOnce(() -> useLookupTable = false));
 
         NamedCommands.registerCommand("EnableShootMode",
-               Commands.runOnce(shooter::enableShootMode).onlyIf(indexer::isCollected));
+               Commands.runOnce(shooter::enableShootMode).onlyIf(indexer::isCollected)
+                       .andThen(this::enableShootModeInAuto)
+        );
+
+
 
         NamedCommands.registerCommand("SpinUp", Commands.runOnce(shooter::enable).andThen(() -> logger.info("Shooter Spun Up")));
 
@@ -98,6 +102,17 @@ public class Autonomous extends SubsystemIF {
                         this.onAutoChange(AutoConstants.DEFAULT_AUTO_NAME);
                 }
         );
+    }
+
+    private void enableShootModeInAuto() {
+        if (isUsingLookupTable()) {
+            Double angle = getSelectedAutoShotAngle();
+            if (angle != null) {
+                Shooter.getInstance().setAngle(angle);
+            }
+        }
+
+        Shooter.getInstance().enableShootMode();
     }
 
     public boolean isUsingLookupTable() {

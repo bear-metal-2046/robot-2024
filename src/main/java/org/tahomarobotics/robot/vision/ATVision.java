@@ -135,8 +135,8 @@ public class ATVision {
         if (result.numTargets() > 1 && distanceToTargets < VisionConstants.TARGET_DISTANCE_THRESHOLD) {
             // Multi-tag PnP provides very trustworthy data
             var stds = VecBuilder.fill(
-                    0.08122476428 * distanceToMidlineTrust,
-                    0.0990676807 * distanceToMidlineTrust,
+                    0.08122476428 * distanceToMidlineTrust / 2,
+                    0.0990676807 * distanceToMidlineTrust / 2,
                     Units.degreesToRadians(1.372694632)
             );
 

@@ -30,7 +30,7 @@ class ShooterIO {
     private final StatusSignal<Double> bottomShooterVelocity;
     private final StatusSignal<Double> pivotPosition;
     private final StatusSignal<Double> pivotVelocity;
-    private final StatusSignal<Double> motorVoltage;
+    private final StatusSignal<Double> topShooterVoltage, bottomShooterVoltage;
 
     private final StatusSignal<Double> topShooterCurrent;
     private final StatusSignal<Double> bottomShooterCurrent;
@@ -73,15 +73,16 @@ class ShooterIO {
         bottomShooterVelocity = bottomShooterMotor.getVelocity();
         pivotPosition = pivotMotor.getPosition();
         pivotVelocity = pivotMotor.getVelocity();
-        motorVoltage = topShooterMotor.getMotorVoltage();
+        topShooterVoltage = topShooterMotor.getMotorVoltage();
+        bottomShooterVoltage = bottomShooterMotor.getMotorVoltage();
 
         topShooterCurrent = topShooterMotor.getSupplyCurrent();
         bottomShooterCurrent = bottomShooterMotor.getSupplyCurrent();
         pivotCurrent = pivotMotor.getSupplyCurrent();
 
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY,
-                topShooterVelocity, bottomShooterVelocity, pivotVelocity, motorVoltage,
-                topShooterCurrent, bottomShooterCurrent, pivotCurrent
+                topShooterVelocity, bottomShooterVelocity, pivotVelocity, topShooterVoltage,
+                topShooterCurrent, bottomShooterCurrent, pivotCurrent, bottomShooterVoltage
         );
         ParentDevice.optimizeBusUtilizationForAll(pivotMotor, bottomShooterMotor, topShooterMotor);
     }
@@ -102,6 +103,14 @@ class ShooterIO {
 
     double getBottomShooterCurrent() {
         return bottomShooterCurrent.getValueAsDouble();
+    }
+
+    double getTopShooterVoltage() {
+        return topShooterVoltage.getValueAsDouble();
+    }
+
+    double getBottomShooterVoltage() {
+        return bottomShooterVoltage.getValueAsDouble();
     }
 
     double getPivotPosition() {
@@ -249,7 +258,7 @@ class ShooterIO {
 
     void refreshSignals() {
         BaseStatusSignal.refreshAll(pivotPosition, pivotVelocity, topShooterVelocity, bottomShooterVelocity,
-                topShooterCurrent, bottomShooterCurrent, pivotCurrent);
+                topShooterCurrent, bottomShooterCurrent, pivotCurrent, topShooterVelocity, bottomShooterVoltage);
     }
 
     public double getTotalCurrent() {

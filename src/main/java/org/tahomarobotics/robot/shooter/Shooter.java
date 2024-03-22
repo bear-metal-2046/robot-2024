@@ -181,15 +181,15 @@ public class Shooter extends SubsystemIF {
         double timeShotOffset = (radialVelocity > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE);
         double targetAngle = angleCalc(distance + radialVelocity * timeShotOffset);
 
-        setAngle(0);
+        setAngle(targetAngle);
     }
 
     private double angleCalc(double distance) {
         return switch (RobotIdentity.robotID) {
             // y = 0.07068257 + 0.1999213*e^(-0.5485811*x)
             case PLAYBEAR_CARTI -> 0.07068257 + 0.1999213 * Math.pow(Math.E, -0.5485811 * distance);
-            // y = 0.0000369x^4 - 0.00108x^3 + 0.0126x^2 - 0.0706x + 0.234
-            case BEARITONE -> 0.0000369 * Math.pow(distance, 4) - 0.00108 * Math.pow(distance, 3) + 0.0126 * Math.pow(distance, 2) - 0.0706 * distance + 0.234;
+            // y = 0.00006435x^4 - 0.001775x^3 + 0.01868x^2 - 0.09331x + 0.2599
+            case BEARITONE -> 0.00006435 * Math.pow(distance, 4) - 0.001775 * Math.pow(distance, 3) + 0.01868 * Math.pow(distance, 2) - 0.09331 * distance + 0.2599;
             default -> 0.04875446 + (0.201136 - 0.04875446)/(1 + Math.pow((distance/2.019404), 2.137465)) + 0.002;
         };
     }
@@ -226,8 +226,10 @@ public class Shooter extends SubsystemIF {
         SafeAKitLogger.recordOutput("Shooter/Distance", distance);
         SafeAKitLogger.recordOutput("Shooter/Top Velocity", getTopShooterVelocity());
         SafeAKitLogger.recordOutput("Shooter/Top Current", io.getTopShooterCurrent());
+        SafeAKitLogger.recordOutput("Shooter/Top Voltage", io.getTopShooterVoltage());
         SafeAKitLogger.recordOutput("Shooter/Bottom Velocity", getBottomShooterVelocity());
         SafeAKitLogger.recordOutput("Shooter/Bottom Current", io.getBottomShooterCurrent());
+        SafeAKitLogger.recordOutput("Shooter/Bottom Voltage", io.getBottomShooterVoltage());
         SafeAKitLogger.recordOutput("Shooter/Angle", getPivotPosition());
         SafeAKitLogger.recordOutput("Shooter/Angle (Degrees)", getPivotPosition() * 360);
 

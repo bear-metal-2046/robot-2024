@@ -81,7 +81,8 @@ public class ShooterConstants {
             .withSlot0(switch (RobotIdentity.robotID) {
                 case BEARITONE, PLAYBEAR_CARTI -> new Slot0Configs()
                         .withKP(.076223)
-                        .withKI(0.5)
+                        .withKI(0.125)
+                        .withKD(0.005458194)
                         .withKS(.10456)
                         .withKV(.071642)
                         .withKA(.015732);

@@ -80,11 +80,12 @@ public class ShooterConstants {
                     .withSupplyCurrentLimitEnable(true))
             .withSlot0(switch (RobotIdentity.robotID) {
                 case BEARITONE, PLAYBEAR_CARTI -> new Slot0Configs()
-                        .withKP(.063518)
-                        .withKI(0.025)
-                        .withKS(.16858)
-                        .withKV(.090866)
-                        .withKA(.014885);
+                        .withKP(.076223)
+                        .withKI(0.125)
+                        .withKD(0.005458194)
+                        .withKS(.10456)
+                        .withKV(.071642)
+                        .withKA(.015732);
                 default -> new Slot0Configs()
                         .withKP(0.086027)
                         .withKS(0.077906)

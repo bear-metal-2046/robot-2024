@@ -124,9 +124,10 @@ public class ATVision {
             fieldPose.getObject(result.camera().cameraName).setPose(result.poseMeters());
         }
 
-        double distanceToMidlineTrust = ((16.5417 / 2) - Math.abs((16.5417 / 2) - pose.getX())) / (16.5417 / 2);
-        distanceToMidlineTrust *= 3;
+        double distanceToMidlineTrust = ((16.5417 / 2) - Math.abs((16.5417 / 2) - pose.getX()) * 2.0) / (16.5417 / 2);
+        distanceToMidlineTrust *= 2.5;
         distanceToMidlineTrust += .5;
+        distanceToMidlineTrust = Math.max(1, distanceToMidlineTrust);
 
         SafeAKitLogger.recordOutput("ATCamera/TRUST", distanceToMidlineTrust);
 
@@ -135,6 +136,7 @@ public class ATVision {
         SafeAKitLogger.recordOutput("ATCamera/" + cameraSettings.cameraName + "/Number of Targets", result.numTargets());
         SafeAKitLogger.recordOutput("ATCamera/" + cameraSettings.cameraName + "/Ambiguity", result.ambiguity());
         SafeAKitLogger.recordOutput("ATCamera/" + cameraSettings.cameraName + "/Reprojection Error", result.reprojectionError());
+        SafeAKitLogger.recordOutput("ATCamera/" + cameraSettings.cameraName + "/Updates", updates);
 
         if (result.numTargets() > 1 && distanceToTargets < VisionConstants.TARGET_DISTANCE_THRESHOLD) {
             // Multi-tag PnP provides very trustworthy data

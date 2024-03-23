@@ -77,9 +77,6 @@ public class Indexer extends SubsystemIF {
     public SubsystemIF initialize() {
         SmartDashboard.putData("Reset Indexer", runOnce(() -> setState(State.DISABLED)));
 
-        if (RobotState.isAutonomous())
-            Indexer.getInstance().setState(Indexer.State.COLLECTED);
-
         return this;
     }
 

@@ -76,6 +76,7 @@ public class ShooterConstants {
             .withCurrentLimits(new CurrentLimitsConfigs()
                     .withStatorCurrentLimit(STATOR_CURRENT_LIMIT)
                     .withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT)
+                    .withSupplyTimeThreshold(1.0)
                     .withStatorCurrentLimitEnable(true)
                     .withSupplyCurrentLimitEnable(true))
             .withSlot0(switch (RobotIdentity.robotID) {

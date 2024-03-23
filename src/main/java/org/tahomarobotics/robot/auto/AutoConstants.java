@@ -7,13 +7,13 @@ public class AutoConstants {
 
     public static final HashMap<String, double[]> SHOT_TABLE = new HashMap<>() {{
         put("WAVY-6S-CBA-12", new double[]{
-                47.00390625,
-                47.187101013269495,
-                43.98862815970471,
-                31.8994556346769,
-                33.322191916602785,
-                33.354378414301713,
-                33.304378414301713
+                47.00,
+                47.18,
+                43.98,
+                32.82,
+                33.92,
+                33.95,
+                33.95
         });
         put("4S-345", new double[]{
                 33.59848922325562,

@@ -14,6 +14,12 @@
         {
           "type": "named",
           "data": {
+            "name": "DontUseLookupTable"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "ZeroCollectorShooter"
           }
         },
@@ -34,6 +40,12 @@
                 }
               },
               {
+                "type": "named",
+                "data": {
+                  "name": "EnableShootMode"
+                }
+              },
+              {
                 "type": "path",
                 "data": {
                   "pathName": "6A-21-ABC-1"
@@ -43,9 +55,21 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "6A-21-ABC-2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         },
         {

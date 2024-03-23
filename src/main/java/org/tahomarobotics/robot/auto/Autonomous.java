@@ -62,9 +62,10 @@ public class Autonomous extends SubsystemIF {
         NamedCommands.registerCommand("DontUseLookupTable", Commands.runOnce(() -> useLookupTable = false));
 
         NamedCommands.registerCommand("EnableShootMode",
-               Commands.runOnce(shooter::enableShootMode).onlyIf(indexer::isCollected)
-                       .andThen(this::enableShootModeInAuto)
-        );
+                Commands.race(
+                    Commands.waitUntil(indexer::isCollected).andThen(this::enableShootModeInAuto),
+                    Commands.waitSeconds(0.25)
+        ));
 
 
 
@@ -146,6 +147,7 @@ public class Autonomous extends SubsystemIF {
     }
 
     public void resetAuto() {
+        Indexer.getInstance().setState(Indexer.State.COLLECTED);
         shotNumber = 0;
     }
 

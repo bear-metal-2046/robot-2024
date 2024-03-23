@@ -157,8 +157,8 @@ public class AmpArmConstants {
                     .withNeutralMode(NeutralModeValue.Brake)
                     .withInverted(WRIST_INVERT))
             .withMotionMagic(new MotionMagicConfigs()
-                    .withMotionMagicCruiseVelocity(5)
-                    .withMotionMagicAcceleration(20)
+                    .withMotionMagicCruiseVelocity(10)
+                    .withMotionMagicAcceleration(30)
                     .withMotionMagicJerk(75))
             .withFeedback(new FeedbackConfigs().withSensorToMechanismRatio(1 / WRIST_GEAR_REDUCTION))
             .withAudio(new AudioConfigs().withBeepOnBoot(true).withBeepOnConfig(true));

@@ -41,13 +41,12 @@ public class EngageCommand extends SequentialCommandGroup {
         addCommands(
                 Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.ENGAGING)),
                 Commands.runOnce(() -> logger.info("Pathfinding To Pre-climb Pose")),
-                AutoBuilder.pathfindToPose(target, ChassisConstants.CLIMB_MOVEMENT_CONSTRAINTS),
-                AmpArmCommands.ARM_TO_CLIMB.get()
+                AutoBuilder.pathfindToPose(target, ChassisConstants.CLIMB_MOVEMENT_CONSTRAINTS)
         );
 
         if (climbers.isTrapping())
             addCommands(
-                    Commands.runOnce(ampArm::shiftNote),
+                    AmpArmCommands.ARM_TO_CLIMB.get().alongWith(Commands.runOnce(ampArm::shiftNote).beforeStarting(Commands.waitSeconds(0.5))),
                     Commands.runOnce(() -> logger.info("Shifted Note Back")),
                     Commands.waitUntil(ampArm::isRollerAtPosition),
                     Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.COLLECTED)),
@@ -55,6 +54,7 @@ public class EngageCommand extends SequentialCommandGroup {
             );
         else
             addCommands(
+                    AmpArmCommands.ARM_TO_CLIMB.get(),
                     new DriveForwardCommand(-0.5, 1.765132)
             );
 

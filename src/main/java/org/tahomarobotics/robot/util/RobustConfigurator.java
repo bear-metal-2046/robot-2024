@@ -20,16 +20,17 @@ public class RobustConfigurator {
 
     private String detail;
 
-    public static void retryConfigurator(Supplier<StatusCode> func, String succeed, String fail, String retry) {
+    public static StatusCode retryConfigurator(Supplier<StatusCode> func, String succeed, String fail, String retry) {
         final Logger logger = LoggerFactory.getLogger(RobustConfigurator.class);
 
-        retryConfigurator(logger, func, succeed, fail, retry);
+        return retryConfigurator(logger, func, succeed, fail, retry);
     }
 
-    public static void retryConfigurator(Logger logger, Supplier<StatusCode> func, String succeed, String fail, String retry) {
+    public static StatusCode retryConfigurator(Logger logger, Supplier<StatusCode> func, String succeed, String fail, String retry) {
         boolean success = false;
+        StatusCode statusCode = null;
         for (int i = 0; i < RETRIES; i++) {
-            StatusCode statusCode = func.get();
+            statusCode = func.get();
             if (statusCode == StatusCode.OK) {
                 success = true;
                 break;
@@ -41,6 +42,8 @@ public class RobustConfigurator {
         } else {
             logger.error(fail);
         }
+
+        return statusCode;
     }
 
     private void retryMotorConfigurator(Supplier<StatusCode> func) {

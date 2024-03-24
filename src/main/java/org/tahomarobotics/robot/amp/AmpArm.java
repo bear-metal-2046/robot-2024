@@ -192,14 +192,20 @@ public class AmpArm extends SubsystemIF {
     }
 
     private void zeroArmAndWrist() {
-        RobustConfigurator.retryConfigurator(() -> armMotor.setPosition(ARM_STOW_POSE),
+        boolean isDisabled = RobotState.isDisabled();
+
+        if (RobustConfigurator.retryConfigurator(() -> armMotor.setPosition(ARM_STOW_POSE),
                 "Set arm position to STOW",
                 "FAILED TO SET ARM POSITION",
-                "Retrying setting arm position.");
-        RobustConfigurator.retryConfigurator(() -> wristMotor.setPosition(WRIST_STOW_POSE),
+                "Retrying setting arm position.").isError() && isDisabled) {
+            throw new RuntimeException("AGHHHHGHHH... the amp arm didnt zero this is not good... POWER CYCLEEEE!");
+        }
+        if (RobustConfigurator.retryConfigurator(() -> wristMotor.setPosition(WRIST_STOW_POSE),
                 "Set wrist position to STOW",
                 "FAILED TO SET WRIST POSITION",
-                "Retrying setting wrist position.");
+                "Retrying setting wrist position.").isError() && isDisabled) {
+            throw new RuntimeException("OHH NOOO... YOUR WRIST IS BROKEN (it didnt zero 🤭)... POWER CYCLE POR FAVOR!");
+        }
     }
 
     // STATE CHECKING

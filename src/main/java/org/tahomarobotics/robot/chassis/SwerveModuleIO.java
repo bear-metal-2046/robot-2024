@@ -181,6 +181,7 @@ public class SwerveModuleIO {
         SafeAKitLogger.recordOutput(name + "/Position", getPosition());
 
         SafeAKitLogger.recordOutput(name + "/DriveVelocity", driveVelocity.getValueAsDouble());
+        SafeAKitLogger.recordOutput(name + "/DriveCurrent", driveCurrent.getValueAsDouble());
         SafeAKitLogger.recordOutput(name + "/DriveAcceleration", driveAcceleration.getValueAsDouble());
         lastAccel = driveAccelerationAverage.calculate(driveAcceleration.getValue());
         SafeAKitLogger.recordOutput(name + "/DriveAccelerationAverage", lastAccel);

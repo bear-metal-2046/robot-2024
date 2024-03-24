@@ -23,6 +23,10 @@ public class RobustConfigurator {
     public static void retryConfigurator(Supplier<StatusCode> func, String succeed, String fail, String retry) {
         final Logger logger = LoggerFactory.getLogger(RobustConfigurator.class);
 
+        retryConfigurator(logger, func, succeed, fail, retry);
+    }
+
+    public static void retryConfigurator(Logger logger, Supplier<StatusCode> func, String succeed, String fail, String retry) {
         boolean success = false;
         for (int i = 0; i < RETRIES; i++) {
             StatusCode statusCode = func.get();
@@ -40,7 +44,7 @@ public class RobustConfigurator {
     }
 
     private void retryMotorConfigurator(Supplier<StatusCode> func) {
-        retryConfigurator(func,
+        retryConfigurator(logger, func,
                 "Successful motor configuration" + detail,
                 "Failed motor configuration" + detail,
                 "Retrying failed motor configuration" + detail

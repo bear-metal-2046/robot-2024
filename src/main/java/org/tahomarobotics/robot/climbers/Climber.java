@@ -17,6 +17,7 @@ import static org.tahomarobotics.robot.climbers.ClimberConstants.TOP_POSITION;
 
 class Climber {
     private final TalonFX motor;
+    private final String name;
 
     public final StatusSignal<Double> position, velocity, current;
 
@@ -25,6 +26,7 @@ class Climber {
 
     public Climber(int motorID, String name, boolean isInverted) {
         Logger logger = LoggerFactory.getLogger(name);
+        this.name = name;
 
         RobustConfigurator configurator = new RobustConfigurator(logger);
         motor = new TalonFX(motorID);
@@ -58,7 +60,10 @@ class Climber {
     }
 
     public void zero() {
-        motor.setPosition(0);
+        RobustConfigurator.retryConfigurator(() -> motor.setPosition(0),
+                "Zeroed " + name + " Motor",
+                "FAILED TO SET " + name + " POSITION",
+                "Retrying setting " + name + " position.");
     }
 
     public void stop() {

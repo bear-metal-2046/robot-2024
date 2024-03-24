@@ -9,6 +9,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.function.Supplier;
 
@@ -19,21 +20,31 @@ public class RobustConfigurator {
 
     private String detail;
 
-    private void retryConfigurator(Supplier<StatusCode> func) {
+    public static void retryConfigurator(Supplier<StatusCode> func, String succeed, String fail, String retry) {
+        final Logger logger = LoggerFactory.getLogger(RobustConfigurator.class);
+
         boolean success = false;
-        for(int i = 0; i < RETRIES; i++) {
+        for (int i = 0; i < RETRIES; i++) {
             StatusCode statusCode = func.get();
             if (statusCode == StatusCode.OK) {
                 success = true;
                 break;
             }
-            logger.warn("Retrying failed motor configuration" + detail);
+            logger.warn(retry);
         }
         if (success) {
-            logger.info("Successful motor configuration" + detail);
+            logger.info(succeed);
         } else {
-            logger.error("Failed motor configuration" + detail);
+            logger.error(fail);
         }
+    }
+
+    private void retryMotorConfigurator(Supplier<StatusCode> func) {
+        retryConfigurator(func,
+                "Successful motor configuration" + detail,
+                "Failed motor configuration" + detail,
+                "Retrying failed motor configuration" + detail
+        );
     }
 
     public RobustConfigurator(Logger logger) {
@@ -48,13 +59,13 @@ public class RobustConfigurator {
 
     public void configureTalonFX(TalonFX motor, TalonFXConfiguration configuration) {
         var configurator = motor.getConfigurator();
-        retryConfigurator(() -> configurator.apply(configuration));
+        retryMotorConfigurator(() -> configurator.apply(configuration));
     }
 
     public void configureTalonFX(TalonFX motor, TalonFXConfiguration configuration, String device) {
         var configurator = motor.getConfigurator();
         this.detail = " for " + device;
-        retryConfigurator(() -> configurator.apply(configuration));
+        retryMotorConfigurator(() -> configurator.apply(configuration));
     }
 
     public void configureTalonFX(TalonFX motor, TalonFXConfiguration configuration, int encoderId) {
@@ -78,32 +89,32 @@ public class RobustConfigurator {
     public void setMotorNeutralMode(TalonFX motor, NeutralModeValue mode) {
         var configurator = motor.getConfigurator();
         var configuration = new MotorOutputConfigs();
-        retryConfigurator(() -> configurator.refresh(configuration));
+        retryMotorConfigurator(() -> configurator.refresh(configuration));
 
         configuration.withNeutralMode(mode);
-        retryConfigurator(() -> configurator.apply(configuration));
+        retryMotorConfigurator(() -> configurator.apply(configuration));
 
     }
 
     public void configureCancoder(CANcoder encoder, MagnetSensorConfigs configuration, double angularOffset) {
         configuration.withMagnetOffset(angularOffset);
         var configurator = encoder.getConfigurator();
-        retryConfigurator(() -> configurator.apply(configuration));
+        retryMotorConfigurator(() -> configurator.apply(configuration));
     }
 
     public void configureCancoder(CANcoder encoder, MagnetSensorConfigs configuration, double angularOffset, String device) {
         configuration.withMagnetOffset(angularOffset);
         this.detail = " for " + device;
         var configurator = encoder.getConfigurator();
-        retryConfigurator(() -> configurator.apply(configuration));
+        retryMotorConfigurator(() -> configurator.apply(configuration));
     }
 
     public void setCancoderAngularOffset(CANcoder encoder, double angularOffset) {
         var configurator = encoder.getConfigurator();
         var configuration = new MagnetSensorConfigs();
-        retryConfigurator(() -> configurator.refresh(configuration));
+        retryMotorConfigurator(() -> configurator.refresh(configuration));
 
         configuration.withMagnetOffset(angularOffset);
-        retryConfigurator(() -> configurator.apply(configuration));
+        retryMotorConfigurator(() -> configurator.apply(configuration));
     }
 }

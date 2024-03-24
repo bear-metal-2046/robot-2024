@@ -213,8 +213,15 @@ public class Collector extends SubsystemIF {
     }
 
     public void zeroCollector() {
-        deployLeft.setPosition(ZERO_POSITION);
-        deployRight.setPosition(ZERO_POSITION);
+        RobustConfigurator.retryConfigurator(() -> deployLeft.setPosition(ZERO_POSITION),
+                "Zeroed Left Collector Motor",
+                "FAILED TO SET LEFT COLLECTOR POSITION",
+                "Retrying setting left collector position.");
+
+        RobustConfigurator.retryConfigurator(() -> deployLeft.setPosition(ZERO_POSITION),
+                "Zeroed Right Collector Motor",
+                "FAILED TO SET RIGHT COLLECTOR POSITION",
+                "Retrying setting right collector position.");
 
         isZeroed = true;
     }

@@ -309,6 +309,7 @@ public class Collector extends SubsystemIF {
 
     @Override
     public SubsystemIF initialize() {
+        zeroCollector();
 
         Commands.waitUntil(() -> RobotState.isEnabled() && RobotState.isTeleop())
                 .andThen(Commands.waitSeconds(0.25))

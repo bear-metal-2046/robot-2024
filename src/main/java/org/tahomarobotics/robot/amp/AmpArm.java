@@ -191,6 +191,17 @@ public class AmpArm extends SubsystemIF {
         return rollerState;
     }
 
+    private void zeroArmAndWrist() {
+        RobustConfigurator.retryConfigurator(() -> armMotor.setPosition(ARM_STOW_POSE),
+                "Set arm position to STOW",
+                "FAILED TO SET ARM POSITION",
+                "Retrying setting arm position.");
+        RobustConfigurator.retryConfigurator(() -> wristMotor.setPosition(WRIST_STOW_POSE),
+                "Set wrist position to STOW",
+                "FAILED TO SET WRIST POSITION",
+                "Retrying setting wrist position.");
+    }
+
     // STATE CHECKING
 
     public boolean isArmAtStow() {
@@ -260,16 +271,11 @@ public class AmpArm extends SubsystemIF {
 
     @Override
     public SubsystemIF initialize() {
+        zeroArmAndWrist();
+
         Commands.waitUntil(RobotState::isEnabled)
                 .andThen(Commands.runOnce(() -> {
-                    RobustConfigurator.retryConfigurator(() -> armMotor.setPosition(ARM_STOW_POSE),
-                            "Set arm position to STOW",
-                            "FAILED TO SET ARM POSITION",
-                            "Retrying setting arm position.");
-                    RobustConfigurator.retryConfigurator(() -> wristMotor.setPosition(WRIST_STOW_POSE),
-                            "Set wrist position to STOW",
-                            "FAILED TO SET WRIST POSITION",
-                            "Retrying setting wrist position.");
+                    zeroArmAndWrist();
                     setArmPosition(ARM_STOW_POSE);
                     setWristPosition(WRIST_STOW_POSE);
                 }))

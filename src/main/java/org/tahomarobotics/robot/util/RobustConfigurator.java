@@ -66,14 +66,12 @@ public class RobustConfigurator {
 
     public void configureTalonFX(TalonFX motor, TalonFXConfiguration configuration) {
         var configurator = motor.getConfigurator();
-        motor.clearStickyFaults();
         retryMotorConfigurator(() -> configurator.apply(configuration));
     }
 
     public void configureTalonFX(TalonFX motor, TalonFXConfiguration configuration, String device) {
         var configurator = motor.getConfigurator();
         this.detail = " for " + device;
-        motor.clearStickyFaults();
         retryMotorConfigurator(() -> configurator.apply(configuration));
     }
 
@@ -108,7 +106,6 @@ public class RobustConfigurator {
     public void configureCancoder(CANcoder encoder, MagnetSensorConfigs configuration, double angularOffset) {
         configuration.withMagnetOffset(angularOffset);
         var configurator = encoder.getConfigurator();
-        encoder.clearStickyFaults();
         retryMotorConfigurator(() -> configurator.apply(configuration));
     }
 
@@ -116,7 +113,6 @@ public class RobustConfigurator {
         configuration.withMagnetOffset(angularOffset);
         this.detail = " for " + device;
         var configurator = encoder.getConfigurator();
-        encoder.clearStickyFaults();
         retryMotorConfigurator(() -> configurator.apply(configuration));
     }
 

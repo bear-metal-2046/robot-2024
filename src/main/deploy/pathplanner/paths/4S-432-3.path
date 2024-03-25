@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.94059134064214,
-        "y": 3.864285926770052
+        "x": 6.280692364555861,
+        "y": 2.698388075835748
       },
       "isLocked": false,
-      "linkedName": "4S-345-1-END"
+      "linkedName": "4S-345-2-END"
     },
     {
       "anchor": {
-        "x": 8.066873070683078,
-        "y": 2.5607827792232163
+        "x": 8.035126228809046,
+        "y": 5.560647447156021
       },
       "prevControl": {
-        "x": 8.171965771018844,
-        "y": 2.4863808674810817
+        "x": 7.836169811213324,
+        "y": 5.343604082506142
       },
       "nextControl": {
-        "x": 7.0222216120107905,
-        "y": 3.300359033150499
+        "x": 8.128829333080063,
+        "y": 5.662869015451675
       },
       "isLocked": false,
       "linkedName": null
@@ -36,18 +36,18 @@
         "y": 5.140054964794614
       },
       "prevControl": {
-        "x": 5.787823057330096,
-        "y": 3.7248223211591314
+        "x": 6.321387995427713,
+        "y": 2.5898663935108086
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "4S-345-2-END"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.95,
-      "rotationDegrees": -33.025473058771745,
+      "waypointRelativePos": 1.05,
+      "rotationDegrees": 42.224969845771575,
       "rotateFast": true
     }
   ],
@@ -79,13 +79,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -12.90740867126587,
+    "rotation": -7.1058173922106995,
     "rotateFast": true
   },
   "reversed": false,
-  "folder": "4S-345",
+  "folder": "4S-432",
   "previewStartingState": {
-    "rotation": -12.09475707701204,
+    "rotation": -7.815293546766795,
     "velocity": 0
   },
   "useDefaultConstraints": false

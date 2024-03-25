@@ -70,8 +70,8 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "New Event Marker",
-      "waypointRelativePos": 2.65,
+      "name": "ShootMode",
+      "waypointRelativePos": 2.25,
       "command": {
         "type": "parallel",
         "data": {

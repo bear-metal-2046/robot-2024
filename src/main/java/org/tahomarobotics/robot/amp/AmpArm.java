@@ -160,7 +160,8 @@ public class AmpArm extends SubsystemIF {
             case PASSING -> rollerMotor.setControl(velocityControl.withVelocity(ShooterConstants.TRANSFER_VELOCITY));
             case SCORE -> rollerMotor.setControl(velocityControl.withVelocity(-ShooterConstants.TRANSFER_VELOCITY * 4));
             case TRAP -> rollerMotor.setControl(velocityControl.withVelocity(-AmpArmConstants.TRAP_VELOCITY));
-            case REVERSE_INTAKE ->  rollerMotor.setControl(velocityControl.withVelocity(-AmpArmConstants.REVERSE_INTAKE_VELOCITY));
+            case REVERSE_INTAKE ->
+                    rollerMotor.setControl(velocityControl.withVelocity(-AmpArmConstants.REVERSE_INTAKE_VELOCITY));
             default -> rollerMotor.stopMotor();
         }
     }
@@ -171,17 +172,40 @@ public class AmpArm extends SubsystemIF {
     }
 
     public void shiftNote() {
-        rollerMotor.setPosition(0);
+        RobustConfigurator.retryConfigurator(() -> rollerMotor.setPosition(0),
+                "Zeroed Roller",
+                "FAILED TO SET ROLLER POSITION",
+                "Retrying setting roller position.");
         setRollerPosition(NOTE_INTAKE_POSITION);
     }
 
     public void sourceIntake() {
-        rollerMotor.setPosition(0.0);
+        RobustConfigurator.retryConfigurator(() -> rollerMotor.setPosition(0),
+                "Zeroed Roller",
+                "FAILED TO SET ROLLER POSITION",
+                "Retrying setting roller position.");
         setRollerPosition(SOURCE_INTAKE_DISTANCE);
     }
 
     public RollerState getRollerState() {
         return rollerState;
+    }
+
+    private void zeroArmAndWrist() {
+        boolean isDisabled = RobotState.isDisabled();
+
+        if (RobustConfigurator.retryConfigurator(() -> armMotor.setPosition(ARM_STOW_POSE),
+                "Set arm position to STOW",
+                "FAILED TO SET ARM POSITION",
+                "Retrying setting arm position.").isError() && isDisabled) {
+            throw new RuntimeException("AGHHHHGHHH... the amp arm didnt zero this is not good... POWER CYCLEEEE!");
+        }
+        if (RobustConfigurator.retryConfigurator(() -> wristMotor.setPosition(WRIST_STOW_POSE),
+                "Set wrist position to STOW",
+                "FAILED TO SET WRIST POSITION",
+                "Retrying setting wrist position.").isError() && isDisabled) {
+            throw new RuntimeException("OHH NOOO... YOUR WRIST IS BROKEN (it didnt zero 🤭)... POWER CYCLE POR FAVOR!");
+        }
     }
 
     // STATE CHECKING
@@ -253,10 +277,11 @@ public class AmpArm extends SubsystemIF {
 
     @Override
     public SubsystemIF initialize() {
+        zeroArmAndWrist();
+
         Commands.waitUntil(RobotState::isEnabled)
                 .andThen(Commands.runOnce(() -> {
-                    armMotor.setPosition(ARM_STOW_POSE);
-                    wristMotor.setPosition(WRIST_STOW_POSE);
+                    zeroArmAndWrist();
                     setArmPosition(ARM_STOW_POSE);
                     setWristPosition(WRIST_STOW_POSE);
                 }))

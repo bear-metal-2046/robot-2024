@@ -56,18 +56,23 @@ public class Autonomous extends SubsystemIF {
 
         NamedCommands.registerCommand("Shoot",
                 Commands.waitUntil(this::everythingIsZeroed)
-                        .andThen(Commands.runOnce(shooter::enableShootMode))
-                        .andThen(new ShootCommand()).onlyIf(indexer::isCollected));
+                        .andThen(this::enableShootModeInAuto)
+                        .andThen(new ShootCommand()).onlyIf(indexer::isCollected).andThen(this::shot));
 
         NamedCommands.registerCommand("DontUseLookupTable", Commands.runOnce(() -> useLookupTable = false));
 
         NamedCommands.registerCommand("EnableShootMode",
-               Commands.runOnce(shooter::enableShootMode).onlyIf(indexer::isCollected));
+                Commands.race(
+                    Commands.waitUntil(indexer::isCollected).andThen(this::enableShootModeInAuto),
+                    Commands.waitSeconds(0.25)
+        ));
 
-        NamedCommands.registerCommand("SpinUp", Commands.runOnce(shooter::enable).andThen(Commands.runOnce(() -> logger.info("Shooter Spun Up"))));
+
+
+        NamedCommands.registerCommand("SpinUp", Commands.runOnce(shooter::enable).andThen(() -> logger.info("Shooter Spun Up")));
 
         NamedCommands.registerCommand("CollectorDown", Commands.runOnce(collector::setDeployed)
-                .andThen(Commands.runOnce(() -> collector.setCollectionState(Collector.CollectionState.COLLECTING))));
+                .andThen(() -> collector.setCollectionState(Collector.CollectionState.COLLECTING)));
 
         NamedCommands.registerCommand("CollectorUp",
                 Commands.runOnce(collector::toggleDeploy));
@@ -98,6 +103,17 @@ public class Autonomous extends SubsystemIF {
                         this.onAutoChange(AutoConstants.DEFAULT_AUTO_NAME);
                 }
         );
+    }
+
+    private void enableShootModeInAuto() {
+        if (isUsingLookupTable()) {
+            Double angle = getSelectedAutoShotAngle();
+            if (angle != null) {
+                Shooter.getInstance().setAngle(angle);
+            }
+        }
+
+        Shooter.getInstance().enableShootMode();
     }
 
     public boolean isUsingLookupTable() {
@@ -131,6 +147,7 @@ public class Autonomous extends SubsystemIF {
     }
 
     public void resetAuto() {
+        Indexer.getInstance().setState(Indexer.State.COLLECTED);
         shotNumber = 0;
     }
 

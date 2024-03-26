@@ -3,41 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.385909150196678,
-        "y": 6.7393886139123635
+        "x": 4.009570956417567,
+        "y": 6.514331664247155
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.143974810472144,
-        "y": 6.4528028155155415
+        "x": 7.1265444535481555,
+        "y": 6.868242306920283
       },
       "isLocked": false,
       "linkedName": "6S-CBA-12-4-END"
     },
     {
       "anchor": {
-        "x": 8.140830696075806,
-        "y": 4.280297569604149
+        "x": 8.18310388437535,
+        "y": 4.142795023431404
       },
       "prevControl": {
-        "x": 8.00216014846444,
-        "y": 4.150871725166874
+        "x": 8.05927034054589,
+        "y": 4.2675917452588
       },
       "nextControl": {
-        "x": 8.318230360359689,
-        "y": 4.44587058960244
+        "x": 8.354026145373805,
+        "y": 3.970543328128964
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.4043985565448605,
-        "y": 6.7393886139123635
+        "x": 4.023074068701452,
+        "y": 6.504545561372408
       },
       "prevControl": {
-        "x": 6.060772481905325,
-        "y": 6.314132267904176
+        "x": 7.148168843467824,
+        "y": 6.8922134205033485
       },
       "nextControl": null,
       "isLocked": false,
@@ -54,8 +54,8 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 5.0,
+    "maxAcceleration": 5.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -70,5 +70,5 @@
     "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

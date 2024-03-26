@@ -3,41 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.409114728139366,
-        "y": 4.38198930451915
+        "x": 2.491354725086104,
+        "y": 4.3592781654348505
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5493573329488999,
-        "y": 5.334193731450526
+        "x": 1.3327839106410195,
+        "y": 5.3932858583402625
       },
       "isLocked": false,
       "linkedName": "1st col"
     },
     {
       "anchor": {
-        "x": 2.5385405725766406,
-        "y": 5.6854924520659855
+        "x": 2.6158016107338167,
+        "y": 5.718076024566146
       },
       "prevControl": {
-        "x": 2.520623142499092,
-        "y": 5.434648430980306
+        "x": 2.5978841806562682,
+        "y": 5.467232003480467
       },
       "nextControl": {
-        "x": 2.5570299789248225,
-        "y": 5.944344140940534
+        "x": 2.6342910170819986,
+        "y": 5.976927713440695
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.732679339232552,
-        "y": 6.813346239305091
+        "x": 2.9178041817425835,
+        "y": 7.088686920469721
       },
       "prevControl": {
-        "x": 1.6972725837343565,
-        "y": 6.36035578377463
+        "x": 1.4284602970841465,
+        "y": 6.770303834599172
       },
       "nextControl": null,
       "isLocked": false,
@@ -55,7 +55,7 @@
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.0,
+      "waypointRelativePos": 0.05,
       "command": {
         "type": "parallel",
         "data": {
@@ -72,7 +72,7 @@
     },
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 1.05,
+      "waypointRelativePos": 1.2,
       "command": {
         "type": "parallel",
         "data": {
@@ -95,8 +95,8 @@
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 2.0,
-    "rotation": 31.476839349583997,
+    "velocity": 0.0,
+    "rotation": 13.12909659048102,
     "rotateFast": false
   },
   "reversed": false,

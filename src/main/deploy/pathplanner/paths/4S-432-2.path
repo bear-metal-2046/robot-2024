@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.491354725086104,
-        "y": 4.3592781654348505
+        "x": 4.295034175653936,
+        "y": 5.140054964794614
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.204768926689282,
-        "y": 1.6505801354261775
+        "x": 5.923475160236269,
+        "y": 3.281692118332296
       },
       "isLocked": false,
-      "linkedName": "1st col"
+      "linkedName": "4S-345-1-END"
     },
     {
       "anchor": {
-        "x": 8.224033024642626,
-        "y": 4.095403506122328
+        "x": 7.985387124410115,
+        "y": 4.10012647253288
       },
       "prevControl": {
-        "x": 4.008448377257114,
-        "y": 4.215584647385511
+        "x": 8.113706158378758,
+        "y": 4.1108197253636005
       },
       "nextControl": {
-        "x": 8.41809294620754,
-        "y": 4.089871096077714
+        "x": 7.714082918597768,
+        "y": 4.077517788715184
       },
       "isLocked": false,
       "linkedName": null
@@ -36,38 +36,26 @@
         "y": 5.140054964794614
       },
       "prevControl": {
-        "x": 4.757269334358488,
-        "y": 3.7441047855068685
+        "x": 5.927996896999808,
+        "y": 3.317866012440609
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "4S-345-1-END"
+      "linkedName": "4S-345-2-END"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.05,
-      "rotationDegrees": 0,
+      "waypointRelativePos": 0.95,
+      "rotationDegrees": 0.0,
       "rotateFast": true
     }
   ],
-  "constraintZones": [
-    {
-      "name": "New Constraints Zone",
-      "minWaypointRelativePos": 0,
-      "maxWaypointRelativePos": 0.25,
-      "constraints": {
-        "maxVelocity": 1.0,
-        "maxAcceleration": 4.0,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 720.0
-      }
-    }
-  ],
+  "constraintZones": [],
   "eventMarkers": [
     {
       "name": "ShootMode",
-      "waypointRelativePos": 1.7,
+      "waypointRelativePos": 1.65,
       "command": {
         "type": "parallel",
         "data": {
@@ -84,20 +72,20 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.0,
+    "maxVelocity": 4.5,
     "maxAcceleration": 5.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -5.492324557127434,
-    "rotateFast": false
+    "rotation": -12.90740867126587,
+    "rotateFast": true
   },
   "reversed": false,
-  "folder": "5S-C-345",
+  "folder": "4S-432",
   "previewStartingState": {
-    "rotation": -19.653824058053292,
+    "rotation": -12.09475707701204,
     "velocity": 0
   },
   "useDefaultConstraints": false

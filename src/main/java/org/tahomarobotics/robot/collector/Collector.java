@@ -213,10 +213,30 @@ public class Collector extends SubsystemIF {
     }
 
     public void zeroCollector() {
-        deployLeft.setPosition(ZERO_POSITION);
-        deployRight.setPosition(ZERO_POSITION);
+        boolean isDisabled = RobotState.isDisabled();
+        boolean failed = false;
 
-        isZeroed = true;
+        if (RobustConfigurator.retryConfigurator(() -> deployLeft.setPosition(ZERO_POSITION),
+                "Zeroed Left Collector Motor",
+                "FAILED TO SET LEFT COLLECTOR POSITION",
+                "Retrying setting left collector position.").isError()) {
+            if (isDisabled)
+                throw new RuntimeException("AHHH THE COLLECTOR DIDNT ZERO, PLEASE POWER CYCLE!");
+            else
+                failed = true;
+        }
+
+        if (RobustConfigurator.retryConfigurator(() -> deployRight.setPosition(ZERO_POSITION),
+                "Zeroed Right Collector Motor",
+                "FAILED TO SET RIGHT COLLECTOR POSITION",
+                "Retrying setting right collector position.").isError()) {
+            if (isDisabled)
+                throw new RuntimeException("AHHH THE COLLECTOR DIDNT ZERO, PLEASE POWER CYCLE!");
+            else
+                failed = true;
+        }
+
+        isZeroed = !failed;
     }
 
     public boolean isZeroed() {
@@ -302,6 +322,7 @@ public class Collector extends SubsystemIF {
 
     @Override
     public SubsystemIF initialize() {
+        zeroCollector();
 
         Commands.waitUntil(() -> RobotState.isEnabled() && RobotState.isTeleop())
                 .andThen(Commands.waitSeconds(0.25))

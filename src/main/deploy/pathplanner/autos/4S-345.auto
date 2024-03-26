@@ -22,29 +22,21 @@
           "data": {
             "commands": [
               {
-                "type": "sequential",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "parallel",
-                      "data": {
-                        "commands": [
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "CollectorDown"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "SpinUp"
-                            }
-                          }
-                        ]
-                      }
-                    }
-                  ]
+                  "name": "SpinUp"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "CollectorDown"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "EnableShootMode"
                 }
               },
               {

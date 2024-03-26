@@ -155,7 +155,11 @@ class ShooterIO {
     }
 
     void zero() {
-        pivotMotor.setPosition(0.0);
+        RobustConfigurator.retryConfigurator(() -> pivotMotor.setPosition(0.0),
+                "Zeroed Pivot Motor",
+                "FAILED TO SET PIVOT POSITION",
+                "Retrying setting pivot position.");
+
         isZeroed = true;
     }
 

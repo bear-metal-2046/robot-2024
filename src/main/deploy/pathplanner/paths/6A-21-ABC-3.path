@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.673500489858123,
-        "y": 7.300410029391488
+        "x": 1.912694650976074,
+        "y": 6.980472790903429
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9931030853052696,
-        "y": 7.192379069442823
+        "x": 2.2322972464232205,
+        "y": 6.872441830954764
       },
       "isLocked": false,
       "linkedName": "6A-2-END"
@@ -111,7 +111,7 @@
   ],
   "globalConstraints": {
     "maxVelocity": 2.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

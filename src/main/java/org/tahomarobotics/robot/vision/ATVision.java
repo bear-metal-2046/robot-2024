@@ -63,7 +63,7 @@ public class ATVision {
                 timestampSeconds, // Photon vision timestamp
                 newRobotPose.toPose2d(),
                 distance,
-                1,
+                List.of(target.getFiducialId()),
                 target.getPoseAmbiguity(),
                 -1
         ));
@@ -88,7 +88,7 @@ public class ATVision {
 
         var multiRes = result.getMultiTagResult().estimatedPose;
         SafeAKitLogger.recordOutput("ATCamera/Reprojection Error", multiRes.bestReprojErr);
-        if (multiRes.isPresent && multiRes.ambiguity < 0.2) {
+        if (multiRes.isPresent && multiRes.bestReprojErr < 15.0) {
             Pose3d pose = new Pose3d(multiRes.best.getTranslation(), multiRes.best.getRotation()).plus(cameraSettings.offset.inverse());
 
             double distances = 0;
@@ -102,7 +102,7 @@ public class ATVision {
                     result.getTimestampSeconds(), // Photon vision timestamp
                     pose.toPose2d(),
                     distances,
-                    result.getMultiTagResult().fiducialIDsUsed.size(),
+                    result.getMultiTagResult().fiducialIDsUsed,
                     multiRes.ambiguity,
                     multiRes.bestReprojErr
             ));
@@ -124,17 +124,26 @@ public class ATVision {
             fieldPose.getObject(result.camera().cameraName).setPose(result.poseMeters());
         }
 
+        double distanceToMidlineTrust = ((16.5417 / 2) - Math.abs((16.5417 / 2) - pose.getX()) * 2.0) / (16.5417 / 2);
+        distanceToMidlineTrust *= 2.5;
+        distanceToMidlineTrust += .5;
+        distanceToMidlineTrust = Math.max(1, distanceToMidlineTrust);
+
+        SafeAKitLogger.recordOutput("ATCamera/TRUST", distanceToMidlineTrust);
+
         SafeAKitLogger.recordOutput("ATCamera/" + cameraSettings.cameraName + "/Pose", result.poseMeters());
-        SafeAKitLogger.recordOutput("ATCamera/" + cameraSettings.cameraName + "/Multitag?", result.numTargets() > 1);
-        SafeAKitLogger.recordOutput("ATCamera/" + cameraSettings.cameraName + "/Number of Targets", result.numTargets());
+        SafeAKitLogger.recordOutput("ATCamera/" + cameraSettings.cameraName + "/Multitag?", result.targets().size() > 1);
+        SafeAKitLogger.recordOutput("ATCamera/" + cameraSettings.cameraName + "/Number of Targets", result.targets().size());
         SafeAKitLogger.recordOutput("ATCamera/" + cameraSettings.cameraName + "/Ambiguity", result.ambiguity());
         SafeAKitLogger.recordOutput("ATCamera/" + cameraSettings.cameraName + "/Reprojection Error", result.reprojectionError());
+        SafeAKitLogger.recordOutput("ATCamera/" + cameraSettings.cameraName + "/Updates", updates);
+        SafeAKitLogger.recordOutput("ATCamera/" + cameraSettings.cameraName + "/Apriltag IDs", result.targets().toString());
 
-        if (result.numTargets() > 1 && distanceToTargets < VisionConstants.TARGET_DISTANCE_THRESHOLD) {
+        if (result.targets().size() > 1 && distanceToTargets < VisionConstants.TARGET_DISTANCE_THRESHOLD) {
             // Multi-tag PnP provides very trustworthy data
             var stds = VecBuilder.fill(
-                    0.08122476428,
-                    0.0990676807,
+                    0.08122476428 * distanceToMidlineTrust,
+                    0.0990676807 * distanceToMidlineTrust,
                     Units.degreesToRadians(1.372694632)
             );
 
@@ -142,7 +151,7 @@ public class ATVision {
                 poseEstimator.addVisionMeasurement(result.poseMeters(), result.timestamp(), stds);
                 updates++;
             }
-        } else if (result.numTargets() == 1 && distanceToTargets < VisionConstants.SINGLE_TARGET_DISTANCE_THRESHOLD) {
+        } else if (result.targets().size() == 1 && distanceToTargets < VisionConstants.SINGLE_TARGET_DISTANCE_THRESHOLD) {
             // Single tag results are not very trustworthy. Do not use headings from them
             Pose2d noHdgPose = new Pose2d(result.poseMeters().getTranslation(), pose.getRotation());
             var stds = VecBuilder.fill(
@@ -175,6 +184,6 @@ public class ATVision {
     }
 
     public record ATCameraResult(VisionConstants.Camera camera, double timestamp, Pose2d poseMeters,
-                                 double distanceToTargets, int numTargets, double ambiguity, double reprojectionError) {
+                                 double distanceToTargets, List<Integer> targets, double ambiguity, double reprojectionError) {
     }
 }

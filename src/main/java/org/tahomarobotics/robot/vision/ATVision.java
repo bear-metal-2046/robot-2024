@@ -15,16 +15,11 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.MultiTargetPNPResult;
-import org.photonvision.targeting.PNPResult;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.tahomarobotics.robot.util.SafeAKitLogger;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-
-import static org.tahomarobotics.robot.vision.VisionConstants.*;
 
 public class ATVision {
     private final PhotonCamera camera;
@@ -212,13 +207,13 @@ public class ATVision {
         var camRot = camPose.getRotation();
 
         boolean updateNotFlat =
-                Math.abs(camPose.getZ()) > 0.1 ||
-                Math.abs(camRot.getX()) > MAX_ROLL_PITCH ||
-                Math.abs(camRot.getY()) > MAX_ROLL_PITCH;
+                Math.abs(camPose.getZ()) > VisionConstants.MAX_HEIGHT_METERS ||
+                Math.abs(camRot.getX()) > VisionConstants.MAX_ROLL_PITCH ||
+                Math.abs(camRot.getY()) > VisionConstants.MAX_ROLL_PITCH;
 
         boolean updateNotInField =
-                camPose.getX() < 0 || camPose.getX() > FIELD_LENGTH ||
-                camPose.getY() < 0 || camPose.getY() > FIELD_WIDTH;
+                camPose.getX() < 0 || camPose.getX() > VisionConstants.FIELD_LENGTH ||
+                camPose.getY() < 0 || camPose.getY() > VisionConstants.FIELD_WIDTH;
 
         boolean updateTooAmbiguous = filterResults.ambiguity > VisionConstants.MAX_VALID_AMBIGUITY;
 

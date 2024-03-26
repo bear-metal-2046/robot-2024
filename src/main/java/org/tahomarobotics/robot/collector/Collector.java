@@ -236,7 +236,7 @@ public class Collector extends SubsystemIF {
                 failed = true;
         }
 
-        isZeroed = !failed;
+        isZeroed = !failed && !isDisabled;
     }
 
     public boolean isZeroed() {

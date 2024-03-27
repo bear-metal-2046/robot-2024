@@ -9,13 +9,13 @@ import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.chassis.Chassis;
 
 
-public class HitSomething extends Command {
-    private static final Logger logger = LoggerFactory.getLogger(HitSomething.class);
+public class MoveIntoChain extends Command {
+    private static final Logger logger = LoggerFactory.getLogger(MoveIntoChain.class);
     private final Chassis chassis = Chassis.getInstance();
     private final Timer timer = new Timer();
     private final double speed;
 
-    public HitSomething(double speed) {
+    public MoveIntoChain(double speed) {
         addRequirements(this.chassis);
         this.speed = speed;
     }
@@ -33,7 +33,7 @@ public class HitSomething extends Command {
 
     @Override
     public boolean isFinished() {
-        return timer.hasElapsed(.25) && Math.abs(AmpArm.getInstance().getArmCurrent()) > 0.3;
+        return (timer.hasElapsed(.25) && Math.abs(Chassis.getInstance().getPitch()) > 0.5) || timer.hasElapsed(5);
     }
 
     @Override

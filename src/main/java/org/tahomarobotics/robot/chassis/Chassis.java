@@ -193,6 +193,10 @@ public class Chassis extends SubsystemIF {
         }
     }
 
+    public double getPitch() {
+        return gyroIO.getPitch();
+    }
+
     public SwerveModulePosition[] getSwerveModulePositions() {
         return modules.stream().map(SwerveModule::getPosition).toArray(SwerveModulePosition[]::new);
     }
@@ -254,6 +258,7 @@ public class Chassis extends SubsystemIF {
 
         SafeAKitLogger.recordOutput("Chassis/Energy", getEnergyUsed());
         SafeAKitLogger.recordOutput("Chassis/TotalCurrent", totalCurrent);
+        SafeAKitLogger.recordOutput("Chassis/Pitch", getPitch());
 
         fieldPose.setRobotPose(pose);
         SmartDashboard.putData(fieldPose);

@@ -10,8 +10,7 @@ import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.amp.commands.AmpArmCommands;
 import org.tahomarobotics.robot.climbers.Climbers;
 
-import static org.tahomarobotics.robot.climbers.ClimberConstants.ALMOST_BOTTOM_POSITION;
-import static org.tahomarobotics.robot.climbers.ClimberConstants.BOTTOM_POSITION;
+import static org.tahomarobotics.robot.climbers.ClimberConstants.*;
 
 public class ClimbSequence extends SequentialCommandGroup {
     private static final Logger logger = LoggerFactory.getLogger(ClimbSequence.class);
@@ -26,8 +25,7 @@ public class ClimbSequence extends SequentialCommandGroup {
 
         if (climbers.isTrapping())
             addCommands(
-                    new LadenClimbCommand(BOTTOM_POSITION),
-                    AmpArmCommands.ARM_TO_TRAP.get(),
+                    new LadenClimbCommand(BOTTOM_POSITION).alongWith(AmpArmCommands.ARM_TO_TRAP.get()),
                     Commands.waitSeconds(0.25),
                     Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.TRAP)),
                     Commands.waitUntil(OI.getInstance()::isManipXPressed).raceWith(Commands.waitSeconds(5)),

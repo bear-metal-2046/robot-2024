@@ -15,6 +15,7 @@ public class GyroIO {
     protected final Pigeon2 pigeon2 = new Pigeon2(RobotMap.PIGEON, RobotConfiguration.CANBUS_NAME);
     private final StatusSignal<Double> yaw = pigeon2.getYaw();
     private final StatusSignal<Double> yawVelocity = pigeon2.getAngularVelocityZWorld();
+    private final StatusSignal<Double> pitch = pigeon2.getPitch();
 
     public record ValidYaw(Rotation2d yaw, boolean valid){}
 
@@ -25,6 +26,7 @@ public class GyroIO {
 
         yaw.setUpdateFrequency(RobotConfiguration.ODOMETRY_UPDATE_FREQUENCY);
         yawVelocity.setUpdateFrequency(RobotConfiguration.ODOMETRY_UPDATE_FREQUENCY);
+        pitch.setUpdateFrequency(RobotConfiguration.ODOMETRY_UPDATE_FREQUENCY);
 
         // Don't update unused signals
         pigeon2.optimizeBusUtilization();
@@ -35,8 +37,12 @@ public class GyroIO {
     }
 
     ValidYaw getYaw() {
-        boolean valid = BaseStatusSignal.refreshAll(yaw, yawVelocity).equals(StatusCode.OK);
+        boolean valid = BaseStatusSignal.refreshAll(yaw, yawVelocity, pitch).equals(StatusCode.OK);
         return new ValidYaw(Rotation2d.fromDegrees(BaseStatusSignal.getLatencyCompensatedValue(yaw, yawVelocity)), valid);
+    }
+
+    public double getPitch() {
+        return pitch.getValueAsDouble();
     }
 
     List<BaseStatusSignal> getStatusSignals() {

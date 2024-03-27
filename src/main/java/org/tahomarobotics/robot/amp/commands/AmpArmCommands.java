@@ -22,7 +22,6 @@ public class AmpArmCommands {
     private static final Supplier<Command> ARM_TO_AMP;
     private static final Supplier<Command> ARM_TO_SOURCE;
     public static final Supplier<Command> ARM_TO_STOW;
-    public static final Supplier<Command> ARM_TO_CLIMB;
     public static final Supplier<Command> ARM_TO_TRAP;
     public static Command AMP_ARM_CTRL;
 
@@ -54,12 +53,6 @@ public class AmpArmCommands {
                 Commands.waitUntil(ampArm::isArmAtPosition).alongWith(
                         Commands.waitUntil(() -> ampArm.getArmPosition() > WRIST_MOVING_POSE_THRESHOLD)
                                 .andThen(Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.SOURCE))))
-        );
-
-        ARM_TO_CLIMB = () -> Commands.sequence(
-                Commands.runOnce(() -> logger.info("Arm To Climb")),
-                Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.CLIMB)),
-                Commands.waitUntil(ampArm::isArmAtPosition)
         );
 
         ARM_TO_TRAP = () -> Commands.sequence(

@@ -21,7 +21,6 @@ public class AmpArmConstants {
 
     static final double ARM_MIN_POSE = -90d / 360d;
     static final double ARM_MAX_POSE = 155d / 360d;
-    static final boolean SWING_ARM_FURTHER = true;
 
     public static final double ARM_STOW_POSE, ARM_AMP_POSE, ARM_TRAP_POSE,
             ARM_SOURCE_POSE, ARM_CLIMB_POSE;
@@ -53,14 +52,13 @@ public class AmpArmConstants {
     static final double WRIST_GEAR_REDUCTION;
     static final InvertedValue WRIST_INVERT;
 
-    public static final double WRIST_MOVING_POSE, WRIST_AMP_POSE, WRIST_TRAP_POSE, WRIST_SOURCE_POSE, WRIST_CLIMB_POSE;
+    public static final double WRIST_MOVING_POSE, WRIST_AMP_POSE, WRIST_TRAP_POSE, WRIST_SOURCE_POSE;
     public static final double WRIST_STOW_POSE = 0;
 
     // The angle at which the wrist exits moving pose and transitions to the following state.
     public static final double WRIST_MOVING_POSE_THRESHOLD = Units.degreesToRotations(2);
 
     static {
-        WRIST_CLIMB_POSE = Units.degreesToRotations(-261.38671875);
         switch (RobotIdentity.robotID) {
             case PLAYBEAR_CARTI, BEARITONE -> {
                 WRIST_MOVING_POSE = Units.degreesToRotations(123.22265625);
@@ -93,7 +91,7 @@ public class AmpArmConstants {
 
     public static final double NOTE_INTAKE_POSITION = 1;
     public static final double SOURCE_INTAKE_DISTANCE = 2;
-    public static final double TRAP_VELOCITY = 3;
+    public static final double TRAP_VELOCITY = 6;
     public static final double REVERSE_INTAKE_VELOCITY = 10;
 
     static {

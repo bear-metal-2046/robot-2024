@@ -53,4 +53,5 @@ public class VisionConstants {
     public static final double DEGREES_DIFFERENCE_THRESHOLD = 60;
     public static final double TARGET_DISTANCE_THRESHOLD = 8;
     public static final double SINGLE_TARGET_DISTANCE_THRESHOLD = 4;
+    public static final boolean IS_SAVING_SNAPSHOTS = true;
 }

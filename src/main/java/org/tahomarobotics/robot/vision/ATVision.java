@@ -48,6 +48,7 @@ public class ATVision {
         Transform3d bestCamPose = target.getBestCameraToTarget();
 
         if (tagPose.isEmpty() || target.getPoseAmbiguity() > 0.2) {
+            saveSnapshot();
             return;
         }
 
@@ -106,8 +107,19 @@ public class ATVision {
                     multiRes.ambiguity,
                     multiRes.bestReprojErr
             ));
+        } else if (multiRes.isPresent && multiRes.bestReprojErr >= 15.0) {
+            saveSnapshot();
         } else if (validTargets.size() == 1) {
             processSingleTarget(validTargets.get(0), result.getTimestampSeconds());
+        }
+    }
+
+    // Save snapshot to file
+    public void saveSnapshot() {
+        if (VisionConstants.IS_SAVING_SNAPSHOTS) {
+            System.out.println("Camera snapshot taken");
+            camera.takeInputSnapshot();
+            camera.takeOutputSnapshot();
         }
     }
 

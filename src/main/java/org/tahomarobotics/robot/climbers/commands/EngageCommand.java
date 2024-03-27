@@ -12,7 +12,6 @@ import org.tahomarobotics.robot.amp.commands.AmpArmCommands;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.chassis.ChassisConstants;
 import org.tahomarobotics.robot.chassis.commands.DriveForwardCommand;
-import org.tahomarobotics.robot.chassis.commands.MoveIntoChain;
 import org.tahomarobotics.robot.climbers.ClimberConstants;
 import org.tahomarobotics.robot.climbers.Climbers;
 import org.tahomarobotics.robot.util.SafeAKitLogger;

@@ -25,6 +25,7 @@ public class ClimberConstants {
     public static final double CLIMB_MAX_JERK = 10;
 
     public static final double TOP_POSITION = 0.57;
+    public static final double PARTIAL_CLIMB_POSITION = 0.57 - Units.inchesToMeters(1);
 
     public static final double BOTTOM_POSITION = 0.0025;
     public static final double ALMOST_BOTTOM_POSITION = 0.0025 + Units.inchesToMeters(1);

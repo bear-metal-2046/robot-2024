@@ -12,10 +12,11 @@ import org.tahomarobotics.robot.amp.commands.AmpArmCommands;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.chassis.ChassisConstants;
 import org.tahomarobotics.robot.chassis.commands.DriveForwardCommand;
-import org.tahomarobotics.robot.chassis.commands.HitSomething;
 import org.tahomarobotics.robot.climbers.ClimberConstants;
 import org.tahomarobotics.robot.climbers.Climbers;
 import org.tahomarobotics.robot.util.SafeAKitLogger;
+
+import static org.tahomarobotics.robot.climbers.ClimberConstants.PARTIAL_CLIMB_POSITION;
 
 /**
  * Pathfinds the pre-climbed robot to the chain, puts the Amp Arm up, the drives forward to the final distance
@@ -42,7 +43,7 @@ public class EngageCommand extends SequentialCommandGroup {
                 Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.ENGAGING)),
                 Commands.runOnce(() -> logger.info("Pathfinding To Pre-climb Pose")),
                 AutoBuilder.pathfindToPose(target, ChassisConstants.CLIMB_MOVEMENT_CONSTRAINTS),
-                AmpArmCommands.ARM_TO_CLIMB.get()
+                AmpArmCommands.ARM_TO_CLIMB.get().withTimeout(0.5)
         );
 
         if (climbers.isTrapping())
@@ -50,15 +51,12 @@ public class EngageCommand extends SequentialCommandGroup {
                     Commands.runOnce(ampArm::shiftNote),
                     Commands.runOnce(() -> logger.info("Shifted Note Back")),
                     Commands.waitUntil(ampArm::isRollerAtPosition),
-                    Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.COLLECTED)),
-                    new HitSomething(-0.5)
-            );
-        else
-            addCommands(
-                    new DriveForwardCommand(-0.5, 1.765132)
+                    Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.COLLECTED))
             );
 
         addCommands(
+                new DriveForwardCommand(-0.5,1.5),
+                new LadenClimbCommand(PARTIAL_CLIMB_POSITION).alongWith(new DriveForwardCommand(0.5,0.25)),
                 Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.ENGAGED))
         );
     }

@@ -56,7 +56,7 @@ public class EngageCommand extends SequentialCommandGroup {
 
         addCommands(
                 new DriveForwardCommand(-0.5,1.5),
-                new LadenClimbCommand(PARTIAL_CLIMB_POSITION),
+                new LadenClimbCommand(PARTIAL_CLIMB_POSITION).alongWith(new DriveForwardCommand(0.5,0.25)),
                 Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.ENGAGED))
         );
     }

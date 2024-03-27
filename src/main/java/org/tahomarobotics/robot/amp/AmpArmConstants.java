@@ -27,11 +27,7 @@ public class AmpArmConstants {
             ARM_SOURCE_POSE, ARM_CLIMB_POSE;
 
     static {
-        if (SWING_ARM_FURTHER) {
-            ARM_CLIMB_POSE = Units.degreesToRotations(145);
-        } else {
-            ARM_CLIMB_POSE = Units.degreesToRotations(90);
-        }
+        ARM_CLIMB_POSE = Units.degreesToRotations(150);
         ARM_GEAR_REDUCTION = RobotIdentity.robotID == RobotID.BEARITONE ?
                 (14.0 / 64.0) * (18.0 / 72.0) * (16.0 / 48.0) :
                 (16.0 / 64.0) * (18.0 / 72.0) * (16.0 / 48.0);

@@ -48,6 +48,7 @@ public class EngageCommand extends SequentialCommandGroup {
 
         if (climbers.isTrapping()) {
             addCommands(
+                    Commands.waitSeconds(0.75),
                     Commands.runOnce(ampArm::shiftNote),
                     Commands.waitUntil(ampArm::isRollerAtPosition),
                     Commands.runOnce(() -> logger.info("Shifted Note Back"))

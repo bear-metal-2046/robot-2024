@@ -91,7 +91,8 @@ public class AmpArmConstants {
 
     public static final double NOTE_INTAKE_POSITION = 1;
     public static final double SOURCE_INTAKE_DISTANCE = 2;
-    public static final double TRAP_VELOCITY = 6;
+
+    public static final double TRAP_VELOCITY = 4.5;
     public static final double REVERSE_INTAKE_VELOCITY = 10;
 
     static {

@@ -12,7 +12,8 @@ import org.tahomarobotics.robot.OI;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
-import org.tahomarobotics.robot.collector.Collector;
+//import org.tahomarobotics.robot.collector.Collector;
+//import org.tahomarobotics.robot.collector.CollectorConstants;
 import org.tahomarobotics.robot.collector.CollectorConstants;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.util.RobustConfigurator;
@@ -204,25 +205,25 @@ public class Indexer extends SubsystemIF {
             case DISABLED -> {
                 disable();
 
-                if (Collector.getInstance().isCollecting() && !isCollected()) transitionToCollecting();
-                if (Collector.getInstance().isEjecting()) transitionToEjecting();
+//                if (Collector.getInstance().isCollecting() && !isCollected()) transitionToCollecting();
+//                if (Collector.getInstance().isEjecting()) transitionToEjecting();
             }
             case COLLECTING -> {
                 collect();
 
-                if (!Collector.getInstance().isCollecting()) transitionToDisabled();
+//                if (!Collector.getInstance().isCollecting()) transitionToDisabled();
                 if (getCollectorBeanBake()) transitionToIndexing();
-                if (Collector.getInstance().isEjecting()) transitionToEjecting();
+//                if (Collector.getInstance().isEjecting()) transitionToEjecting();
             }
             case INDEXING -> {
                 index();
-
-                if (Collector.getInstance().isEjecting()) transitionToEjecting();
+//
+//                if (Collector.getInstance().isEjecting()) transitionToEjecting();
             }
             case EJECTING -> {
                 eject();
-
-                if (!Collector.getInstance().isEjecting()) transitionToDisabled();
+//
+//                if (!Collector.getInstance().isEjecting()) transitionToDisabled();
             }
             case TRANSFERRING -> {
                 transfer();
@@ -237,7 +238,7 @@ public class Indexer extends SubsystemIF {
                     logger.error("Indexer in COLLECTED state with no note detected! Transitioning to DISABLED...");
                     transitionToDisabled();
                 }
-                if (Collector.getInstance().isEjecting()) transitionToEjecting();
+//                if (Collector.getInstance().isEjecting()) transitionToEjecting();
             }
         }
     }

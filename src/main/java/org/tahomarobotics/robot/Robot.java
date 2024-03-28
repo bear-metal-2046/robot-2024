@@ -20,11 +20,11 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.slf4j.LoggerFactory;
-import org.tahomarobotics.robot.amp.AmpArm;
-import org.tahomarobotics.robot.auto.Autonomous;
-import org.tahomarobotics.robot.chassis.Chassis;
-import org.tahomarobotics.robot.climbers.Climbers;
-import org.tahomarobotics.robot.collector.Collector;
+//import org.tahomarobotics.robot.amp.AmpArm;
+//import org.tahomarobotics.robot.auto.Autonomous;
+//import org.tahomarobotics.robot.chassis.Chassis;
+//import org.tahomarobotics.robot.climbers.Climbers;
+//import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.identity.RobotIdentity;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.shooter.Shooter;
@@ -60,13 +60,13 @@ public class Robot extends LoggedRobot {
 
         // Initialize all the subsystems as well as auto-register them with the CommandScheduler.
         subsystems.add(OI.getInstance().initialize());
-        subsystems.add(Chassis.getInstance().initialize());
-        subsystems.add(Collector.getInstance().initialize());
+//        subsystems.add(Chassis.getInstance().initialize());
+//        subsystems.add(Collector.getInstance().initialize());
         subsystems.add(Shooter.getInstance().initialize());
-        subsystems.add(AmpArm.getInstance().initialize());
+//        subsystems.add(AmpArm.getInstance().initialize());
         subsystems.add(Indexer.getInstance().initialize());
-        subsystems.add(Climbers.getInstance().initialize());
-        subsystems.add(Autonomous.getInstance().initialize());
+//        subsystems.add(Climbers.getInstance().initialize());
+//        subsystems.add(Autonomous.getInstance().initialize());
 
         logCommandScheduler();
 
@@ -165,10 +165,10 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void autonomousInit() {
-        Autonomous.getInstance().resetAuto();
+//        Autonomous.getInstance().resetAuto();
 
         subsystems.forEach(SubsystemIF::onAutonomousInit);
-        autoCommand = Autonomous.getInstance().getSelectedAuto();
+//        autoCommand = Autonomous.getInstance().getSelectedAuto();
         autoCommand.schedule();
 
         logger.info("-=-=-=- AUTONOMOUS initiated -=-=-=-");

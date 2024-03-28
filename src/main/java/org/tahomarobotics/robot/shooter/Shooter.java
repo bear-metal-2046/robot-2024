@@ -11,10 +11,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
-import org.tahomarobotics.robot.auto.Autonomous;
-import org.tahomarobotics.robot.chassis.Chassis;
+//import org.tahomarobotics.robot.auto.Autonomous;
+//import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.identity.RobotIdentity;
-import org.tahomarobotics.robot.shooter.commands.ZeroShooterCommand;
+//import org.tahomarobotics.robot.shooter.commands.ZeroShooterCommand;
 import org.tahomarobotics.robot.util.SafeAKitLogger;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
@@ -38,10 +38,7 @@ public class Shooter extends SubsystemIF {
     // CONSTRUCTOR
 
     private Shooter() {
-        io = switch (RobotConfiguration.getMode()) {
-            case REAL -> new ShooterIO();
-            case SIM, REPLAY -> new ShooterIOSim();
-        };
+        io = new ShooterIO();
     }
 
     public static Shooter getInstance() {
@@ -51,10 +48,10 @@ public class Shooter extends SubsystemIF {
     @Override
     public SubsystemIF initialize() {
         Commands.waitUntil(() -> RobotState.isEnabled() && RobotState.isTeleop())
-                .andThen(new ZeroShooterCommand())
+//                .andThen(new ZeroShooterCommand())
                 .ignoringDisable(true).schedule();
 
-        io.zero();
+        //io.zero();
 
         return this;
     }
@@ -133,9 +130,9 @@ public class Shooter extends SubsystemIF {
         return io.getBottomShooterVelocity();
     }
 
-    private double getPivotPosition() {
-        return io.getPivotPosition();
-    }
+//    private double getPivotPosition() {
+//        return io.getPivotPosition();
+//    }
 
     public boolean isReadyToShoot() {
         return io.isReadyToShoot();
@@ -153,36 +150,36 @@ public class Shooter extends SubsystemIF {
         return io.inRedundantShootingMode();
     }
 
-    public boolean isAtAngle() {
-        return io.isAtAngle();
-    }
+//    public boolean isAtAngle() {
+//        return io.isAtAngle();
+//    }
 
     public boolean isShooting() {
         return isShooting;
     }
 
-    public double getPivotVelocity() {
-        return io.getPivotVelocity();
-    }
+//    public double getPivotVelocity() {
+//        return io.getPivotVelocity();
+//    }
 
-    public void angleToSpeaker(double radialVelocity) {
-        if (RobotState.isAutonomous() && Autonomous.getInstance().isUsingLookupTable()) {
-            return;
-        }
-
-        if (DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Blue)
-            radialVelocity *= -1;
-
-        Translation2d target = SPEAKER_TARGET_POSITION.get();
-        distance = Chassis.getInstance().getPose().getTranslation().getDistance(target) + SHOOTER_PIVOT_OFFSET.getX();
-
-        SafeAKitLogger.recordOutput("Shooter/Target Angle Before Compensation", angleCalc(distance));
-
-        double timeShotOffset = (radialVelocity > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE);
-        double targetAngle = angleCalc(distance + radialVelocity * timeShotOffset);
-
-        setAngle(targetAngle);
-    }
+//    public void angleToSpeaker(double radialVelocity) {
+//        if (RobotState.isAutonomous() && Autonomous.getInstance().isUsingLookupTable()) {
+//            return;
+//        }
+//
+//        if (DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Blue)
+//            radialVelocity *= -1;
+//
+//        Translation2d target = SPEAKER_TARGET_POSITION.get();
+//        distance = Chassis.getInstance().getPose().getTranslation().getDistance(target) + SHOOTER_PIVOT_OFFSET.getX();
+//
+//        SafeAKitLogger.recordOutput("Shooter/Target Angle Before Compensation", angleCalc(distance));
+//
+//        double timeShotOffset = (radialVelocity > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE);
+//        double targetAngle = angleCalc(distance + radialVelocity * timeShotOffset);
+//
+//        setAngle(targetAngle);
+//    }
 
     private double angleCalc(double distance) {
         return switch (RobotIdentity.robotID) {
@@ -194,13 +191,13 @@ public class Shooter extends SubsystemIF {
         };
     }
 
-    public void setPivotVoltage(double voltage) {
-        io.setPivotVoltage(voltage);
-    }
-
-    public void zero() {
-        io.zero();
-    }
+//    public void setPivotVoltage(double voltage) {
+//        io.setPivotVoltage(voltage);
+//    }
+//
+//    public void zero() {
+//        io.zero();
+//    }
 
     public boolean isZeroed() {
         return io.isZeroed();
@@ -220,7 +217,7 @@ public class Shooter extends SubsystemIF {
 
         SafeAKitLogger.recordOutput("Shooter/Bias Degrees", Units.rotationsToDegrees(biasAngle));
         SafeAKitLogger.recordOutput("Shooter/Distance To Speaker", distance);
-        SafeAKitLogger.recordOutput("Shooter/Is at Angle", isAtAngle());
+        //SafeAKitLogger.recordOutput("Shooter/Is at Angle", isAtAngle());
         SafeAKitLogger.recordOutput("Shooter/Is Spinning At velocity", isAtVelocity());
         SafeAKitLogger.recordOutput("Shooter/Is In Shooting Mode", inShootingMode());
         SafeAKitLogger.recordOutput("Shooter/Distance", distance);
@@ -230,8 +227,8 @@ public class Shooter extends SubsystemIF {
         SafeAKitLogger.recordOutput("Shooter/Bottom Velocity", getBottomShooterVelocity());
         SafeAKitLogger.recordOutput("Shooter/Bottom Current", io.getBottomShooterCurrent());
         SafeAKitLogger.recordOutput("Shooter/Bottom Voltage", io.getBottomShooterVoltage());
-        SafeAKitLogger.recordOutput("Shooter/Angle", getPivotPosition());
-        SafeAKitLogger.recordOutput("Shooter/Angle (Degrees)", getPivotPosition() * 360);
+//        SafeAKitLogger.recordOutput("Shooter/Angle", getPivotPosition());
+//        SafeAKitLogger.recordOutput("Shooter/Angle (Degrees)", getPivotPosition() * 360);
 
         SafeAKitLogger.recordOutput("Shooter/TotalCurrent", totalCurrent);
         SafeAKitLogger.recordOutput("Shooter/Energy", getEnergyUsed());

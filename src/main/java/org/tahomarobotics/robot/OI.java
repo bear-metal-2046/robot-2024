@@ -11,14 +11,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import org.tahomarobotics.robot.amp.AmpArm;
-import org.tahomarobotics.robot.amp.commands.SourceIntakeCommand;
-import org.tahomarobotics.robot.chassis.Chassis;
-import org.tahomarobotics.robot.chassis.commands.TeleopDriveCommand;
-import org.tahomarobotics.robot.climbers.ClimberConstants;
-import org.tahomarobotics.robot.climbers.Climbers;
-import org.tahomarobotics.robot.climbers.commands.*;
-import org.tahomarobotics.robot.collector.Collector;
+//import org.tahomarobotics.robot.amp.AmpArm;
+//import org.tahomarobotics.robot.amp.commands.SourceIntakeCommand;
+//import org.tahomarobotics.robot.chassis.Chassis;
+//import org.tahomarobotics.robot.chassis.commands.TeleopDriveCommand;
+//import org.tahomarobotics.robot.climbers.ClimberConstants;
+//import org.tahomarobotics.robot.climbers.Climbers;
+//import org.tahomarobotics.robot.climbers.commands.*;
+//import org.tahomarobotics.robot.collector.Collector;
+import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.shooter.commands.RedunShootCommand;
@@ -29,7 +30,7 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import static org.tahomarobotics.robot.amp.commands.AmpArmCommands.*;
+//import static org.tahomarobotics.robot.amp.commands.AmpArmCommands.*;
 
 public class OI extends SubsystemIF {
     private final static OI INSTANCE = new OI();
@@ -76,30 +77,32 @@ public class OI extends SubsystemIF {
      * Configure the button bindings for the controller(s).
      */
     private void configureBindings() {
-        Chassis chassis = Chassis.getInstance();
-        Collector collector = Collector.getInstance();
+//        Chassis chassis = Chassis.getInstance();
+//        Collector collector = Collector.getInstance();
         Shooter shooter = Shooter.getInstance();
-        AmpArm ampArm = AmpArm.getInstance();
-        Climbers climbers = Climbers.getInstance();
+        Indexer indexer = Indexer.getInstance();
+//        AmpArm ampArm = AmpArm.getInstance();
+//        Climbers climbers = Climbers.getInstance();
 
         // Robot Heading Zeroing
-        driveController.a().onTrue(Commands.runOnce(chassis::orientToZeroHeading));
-
-        // Robot/Field Orientation
-        driveController.b().onTrue(Commands.runOnce(chassis::toggleOrientation));
-
-        //Collector up and down
-        driveController.leftBumper().onTrue(Commands.runOnce(collector::toggleDeploy));
+//        driveController.a().onTrue(Commands.runOnce(chassis::orientToZeroHeading));
+//
+//        // Robot/Field Orientation
+//        driveController.b().onTrue(Commands.runOnce(chassis::toggleOrientation));
+//
+//        //Collector up and down
+//        driveController.leftBumper().onTrue(Commands.runOnce(collector::toggleDeploy));
 
         //Shooting mode toggle
         driveController.rightBumper().onTrue(Commands.runOnce(shooter::toggleShootMode));
+        driveController.rightTrigger(0.1).onTrue(Commands.runOnce(new ShootCommand()::schedule));
 
 
         manipController.povUp().onTrue(Commands.runOnce(shooter::biasUp).ignoringDisable(true));
         manipController.povDown().onTrue(Commands.runOnce(shooter::biasDown).ignoringDisable(true));
         manipController.start().onTrue(Commands.runOnce(shooter::resetBias).ignoringDisable(true));
 
-        manipController.back().onTrue(Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.ENGAGED)).onlyIf(() -> climbers.getClimbState().equals(Climbers.ClimbState.ENGAGING)));
+//        manipController.back().onTrue(Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.ENGAGED)).onlyIf(() -> climbers.getClimbState().equals(Climbers.ClimbState.ENGAGING)));
 
         manipController.rightBumper().onTrue(Commands.runOnce(shooter::toggleRedundantShootMode));
         manipController.povLeft().onTrue(Commands.runOnce(() -> {
@@ -113,84 +116,87 @@ public class OI extends SubsystemIF {
 
         manipController.b().onTrue(Commands.runOnce(shooter::toggleIdle));
 
-        driveController.y().onTrue(AMP_ARM_CTRL);
+//        driveController.y().onTrue(AMP_ARM_CTRL);
+//
+//        driveController.start().onTrue(Commands.deferredProxy(() ->
+//                switch (climbers.getClimbState()) {
+//                    case COCKED -> new PreClimbSequence();
+//                    case READY -> new EngageCommand();
+//                    default -> Commands.none();
+//                })
+//        );
+//        driveController.x().onTrue(Commands.deferredProxy(ClimbSequence::new).onlyIf(() -> climbers.getClimbState() == Climbers.ClimbState.ENGAGED));
+//        driveController.back().onTrue(Commands.deferredProxy(() ->
+//                switch (climbers.getClimbState()) {
+//                    case READY, PRE_CLIMBING -> new PreClimbCancel();
+//                    case ENGAGED, ENGAGING -> new EngagedCancel();
+//                    // Descend with break mode in the case that it doesn't work.
+//                    // TODO: At this point, we can't be sure of anything about the state of the robot so designating
+//                    //  the canceling to a separate command that does a full reset might be ideal.
+//                    case CLIMBING, CLIMBED -> Commands.runOnce(() -> {
+//                        ampArm.setRollerState(AmpArm.RollerState.DISABLED);
+//                        climbers.stop();
+//                        climbers.setClimbState(Climbers.ClimbState.ENGAGED);
+//                    });
+//                    default -> Commands.none();
+//                })
+//        );
 
-        driveController.start().onTrue(Commands.deferredProxy(() ->
-                switch (climbers.getClimbState()) {
-                    case COCKED -> new PreClimbSequence();
-                    case READY -> new EngageCommand();
-                    default -> Commands.none();
-                })
-        );
-        driveController.x().onTrue(Commands.deferredProxy(ClimbSequence::new).onlyIf(() -> climbers.getClimbState() == Climbers.ClimbState.ENGAGED));
-        driveController.back().onTrue(Commands.deferredProxy(() ->
-                switch (climbers.getClimbState()) {
-                    case READY, PRE_CLIMBING -> new PreClimbCancel();
-                    case ENGAGED, ENGAGING -> new EngagedCancel();
-                    // Descend with break mode in the case that it doesn't work.
-                    // TODO: At this point, we can't be sure of anything about the state of the robot so designating
-                    //  the canceling to a separate command that does a full reset might be ideal.
-                    case CLIMBING, CLIMBED -> Commands.runOnce(() -> {
-                        ampArm.setRollerState(AmpArm.RollerState.DISABLED);
-                        climbers.stop();
-                        climbers.setClimbState(Climbers.ClimbState.ENGAGED);
-                    });
-                    default -> Commands.none();
-                })
-        );
+//        SmartDashboard.putData("Climbers UP", new UnladenClimbCommand(ClimberConstants.TOP_POSITION));
+//        SmartDashboard.putData("Climbers DOWN", Commands.sequence(
+//                Commands.runOnce(() -> shooter.setAngle(ShooterConstants.MAX_PIVOT_ANGLE)),
+//                Commands.waitUntil(shooter::isAtAngle),
+//                new UnladenClimbCommand(ClimberConstants.BOTTOM_POSITION)
+//        ));
 
-        SmartDashboard.putData("Climbers UP", new UnladenClimbCommand(ClimberConstants.TOP_POSITION));
-        SmartDashboard.putData("Climbers DOWN", Commands.sequence(
-                Commands.runOnce(() -> shooter.setAngle(ShooterConstants.MAX_PIVOT_ANGLE)),
-                Commands.waitUntil(shooter::isAtAngle),
-                new UnladenClimbCommand(ClimberConstants.BOTTOM_POSITION)
-        ));
+//        driveController.rightTrigger(0.5)
+//                .whileTrue(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.SCORE))
+//                .onlyIf(ampArm::isArmAtAmp))
+//                .onFalse(Commands.waitSeconds(0.25).andThen(
+//                        Commands.defer(ARM_TO_STOW, Set.of(ampArm))).onlyIf(ampArm::isArmAtAmp))
+//                .onTrue(new ShootCommand())
+//                .onTrue(new RedunShootCommand())
+//                .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));
 
-        driveController.rightTrigger(0.5)
-                .whileTrue(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.SCORE))
-                .onlyIf(ampArm::isArmAtAmp))
-                .onFalse(Commands.waitSeconds(0.25).andThen(
-                        Commands.defer(ARM_TO_STOW, Set.of(ampArm))).onlyIf(ampArm::isArmAtAmp))
-                .onTrue(new ShootCommand())
-                .onTrue(new RedunShootCommand())
-                .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));
+//        driveController.leftTrigger(0.5).whileTrue(
+//                        new SourceIntakeCommand().onlyIf(() -> !ampArm.getRollerState().equals(AmpArm.RollerState.COLLECTED)
+//                                && !ampArm.getRollerState().equals(AmpArm.RollerState.CENTERING)
+//                                && ampArm.isArmAtSource()))
+//                .onFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED))
+//                        .onlyIf(() -> !ampArm.getRollerState().equals(AmpArm.RollerState.COLLECTED)
+//                                && !ampArm.getRollerState().equals(AmpArm.RollerState.CENTERING)
+//                                && ampArm.isArmAtSource()));
 
-        driveController.leftTrigger(0.5).whileTrue(
-                        new SourceIntakeCommand().onlyIf(() -> !ampArm.getRollerState().equals(AmpArm.RollerState.COLLECTED)
-                                && !ampArm.getRollerState().equals(AmpArm.RollerState.CENTERING)
-                                && ampArm.isArmAtSource()))
-                .onFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED))
-                        .onlyIf(() -> !ampArm.getRollerState().equals(AmpArm.RollerState.COLLECTED)
-                                && !ampArm.getRollerState().equals(AmpArm.RollerState.CENTERING)
-                                && ampArm.isArmAtSource()));
+//        driveController.leftTrigger(0.5)
+//                .onTrue(Commands.runOnce(() -> collector.setIsCollecting(true)))
+//                .onFalse(Commands.runOnce(() -> collector.setIsCollecting(false)));
+        driveController.leftTrigger(0.1)
+                .onTrue(Commands.runOnce(() -> indexer.setState(Indexer.State.COLLECTING)))
+                .onFalse(Commands.runOnce(() -> indexer.setState(Indexer.State.DISABLED)).onlyIf(() -> !indexer.getState().equals(Indexer.State.COLLECTED)));
 
-        driveController.leftTrigger(0.5)
-                .onTrue(Commands.runOnce(() -> collector.setIsCollecting(true)))
-                .onFalse(Commands.runOnce(() -> collector.setIsCollecting(false)));
+//        driveController.povLeft()
+//                .onTrue(Commands.runOnce(() -> {
+//                    collector.setIsEjecting(true);
+//                    shooter.enable();
+//                    ampArm.setRollerState(AmpArm.RollerState.PASSING);
+//                }))
+//                .onFalse(Commands.runOnce(() -> {
+//                    collector.setIsEjecting(false);
+//                    shooter.stop();
+//                    ampArm.setRollerState(AmpArm.RollerState.DISABLED);
+//                }));
 
-        driveController.povLeft()
-                .onTrue(Commands.runOnce(() -> {
-                    collector.setIsEjecting(true);
-                    shooter.enable();
-                    ampArm.setRollerState(AmpArm.RollerState.PASSING);
-                }))
-                .onFalse(Commands.runOnce(() -> {
-                    collector.setIsEjecting(false);
-                    shooter.stop();
-                    ampArm.setRollerState(AmpArm.RollerState.DISABLED);
-                }));
-
-        manipController.y().onTrue(Commands.deferredProxy(FEEDBACK));
+//        manipController.y().onTrue(Commands.deferredProxy(FEEDBACK));
     }
 
     private void setDefaultCommands() {
-        Chassis.getInstance().setDefaultCommand(new TeleopDriveCommand(
-                inputs -> {
-                    inputs.x = -desensitizePowerBased(driveController.getLeftY(), FORWARD_SENSITIVITY);
-                    inputs.y = -desensitizePowerBased(driveController.getLeftX(), FORWARD_SENSITIVITY);
-                    inputs.rot = -desensitizePowerBased(driveController.getRightX(), ROTATIONAL_SENSITIVITY);
-                }
-        ));
+//        Chassis.getInstance().setDefaultCommand(new TeleopDriveCommand(
+//                inputs -> {
+//                    inputs.x = -desensitizePowerBased(driveController.getLeftY(), FORWARD_SENSITIVITY);
+//                    inputs.y = -desensitizePowerBased(driveController.getLeftX(), FORWARD_SENSITIVITY);
+//                    inputs.rot = -desensitizePowerBased(driveController.getRightX(), ROTATIONAL_SENSITIVITY);
+//                }
+//        ));
     }
 
     public boolean isManipXPressed() {

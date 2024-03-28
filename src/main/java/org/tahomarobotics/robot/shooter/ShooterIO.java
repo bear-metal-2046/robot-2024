@@ -11,7 +11,6 @@ import org.littletonrobotics.junction.AutoLog;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
-import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SafeAKitLogger;
@@ -24,18 +23,18 @@ class ShooterIO {
 
     private final TalonFX topShooterMotor;
     private final TalonFX bottomShooterMotor;
-    private final TalonFX pivotMotor;
+    //private final TalonFX pivotMotor;
 
     private final StatusSignal<Double> topShooterVelocity;
     private final StatusSignal<Double> bottomShooterVelocity;
-    private final StatusSignal<Double> pivotPosition;
-    private final StatusSignal<Double> pivotVelocity;
+    //private final StatusSignal<Double> pivotPosition;
+    //private final StatusSignal<Double> pivotVelocity;
     private final StatusSignal<Double> topShooterVoltage, bottomShooterVoltage;
 
     private final StatusSignal<Double> topShooterCurrent;
     private final StatusSignal<Double> bottomShooterCurrent;
 
-    private final StatusSignal<Double> pivotCurrent;
+    //private final StatusSignal<Double> pivotCurrent;
 
     private final MotionMagicVoltage pivotPositionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage motorVelocity = new MotionMagicVelocityVoltage(SHOOTER_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
@@ -61,30 +60,30 @@ class ShooterIO {
     ShooterIO() {
         RobustConfigurator configurator = new RobustConfigurator(logger);
 
-        pivotMotor = new TalonFX(RobotMap.SHOOTER_PIVOT_MOTOR);
+        //pivotMotor = new TalonFX(RobotMap.SHOOTER_PIVOT_MOTOR);
         topShooterMotor = new TalonFX(RobotMap.TOP_SHOOTER_MOTOR);
         bottomShooterMotor = new TalonFX(RobotMap.BOTTOM_SHOOTER_MOTOR);
 
-        configurator.configureTalonFX(pivotMotor, pivotMotorConfiguration, "pivot motor");
+        //configurator.configureTalonFX(pivotMotor, pivotMotorConfiguration, "pivot motor");
         configurator.configureTalonFX(topShooterMotor, shooterMotorConfiguration, "shooter motor");
         configurator.configureTalonFX(bottomShooterMotor, shooterMotorConfiguration, "shooter motor follower");
 
         topShooterVelocity = topShooterMotor.getVelocity();
         bottomShooterVelocity = bottomShooterMotor.getVelocity();
-        pivotPosition = pivotMotor.getPosition();
-        pivotVelocity = pivotMotor.getVelocity();
+        //pivotPosition = pivotMotor.getPosition();
+        //pivotVelocity = pivotMotor.getVelocity();
         topShooterVoltage = topShooterMotor.getMotorVoltage();
         bottomShooterVoltage = bottomShooterMotor.getMotorVoltage();
 
         topShooterCurrent = topShooterMotor.getSupplyCurrent();
         bottomShooterCurrent = bottomShooterMotor.getSupplyCurrent();
-        pivotCurrent = pivotMotor.getSupplyCurrent();
+        //pivotCurrent = pivotMotor.getSupplyCurrent();
 
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY,
-                topShooterVelocity, bottomShooterVelocity, pivotVelocity, topShooterVoltage,
-                topShooterCurrent, bottomShooterCurrent, pivotCurrent, bottomShooterVoltage
+                topShooterVelocity, bottomShooterVelocity, /*pivotVelocity,*/ topShooterVoltage,
+                topShooterCurrent, bottomShooterCurrent, /*pivotCurrent,*/ bottomShooterVoltage
         );
-        ParentDevice.optimizeBusUtilizationForAll(pivotMotor, bottomShooterMotor, topShooterMotor);
+        //ParentDevice.optimizeBusUtilizationForAll(pivotMotor, bottomShooterMotor, topShooterMotor);
     }
 
     // GETTERS
@@ -113,21 +112,21 @@ class ShooterIO {
         return bottomShooterVoltage.getValueAsDouble();
     }
 
-    double getPivotPosition() {
-        return BaseStatusSignal.getLatencyCompensatedValue(pivotPosition, pivotVelocity);
-    }
+//    double getPivotPosition() {
+//        return BaseStatusSignal.getLatencyCompensatedValue(pivotPosition, pivotVelocity);
+//    }
 
     boolean isSpinningAtVelocity() {
         return Math.abs(targetShooterSpeed - getTopShooterVelocity()) < SHOOTER_SPEED_TOLERANCE
                 && Math.abs(targetShooterSpeed - getBottomShooterVelocity()) < SHOOTER_SPEED_TOLERANCE;
     }
 
-    boolean isAtAngle() {
-        return Math.abs(angle - getPivotPosition()) < PIVOT_ANGLE_TOLERANCE;
-    }
+//    boolean isAtAngle() {
+//        return Math.abs(angle - getPivotPosition()) < PIVOT_ANGLE_TOLERANCE;
+//    }
 
     boolean isReadyToShoot() {
-        return isAtAngle() && isSpinningAtVelocity() && Chassis.getInstance().isReadyToShoot();
+        return /*isAtAngle() &&*/ isSpinningAtVelocity();
     }
 
     boolean inRedundantShootingMode(){return redundantShootingMode;}
@@ -136,9 +135,9 @@ class ShooterIO {
         return shootingMode;
     }
 
-    double getPivotVelocity() {
-        return pivotVelocity.getValue();
-    }
+//    double getPivotVelocity() {
+//        return pivotVelocity.getValue();
+//    }
 
     boolean isIdling() {
         return idleMode;
@@ -146,22 +145,22 @@ class ShooterIO {
 
     // SETTERS
 
-    void setShooterAngle(double angle) {
-        this.angle = angle;
+//    void setShooterAngle(double angle) {
+//        this.angle = angle;
+//
+//        SafeAKitLogger.recordOutput("Shooter/Target Angle", angle);
+//
+//        pivotMotor.setControl(pivotPositionControl.withPosition(angle));
+//    }
 
-        SafeAKitLogger.recordOutput("Shooter/Target Angle", angle);
-
-        pivotMotor.setControl(pivotPositionControl.withPosition(angle));
-    }
-
-    void zero() {
-        RobustConfigurator.retryConfigurator(() -> pivotMotor.setPosition(0.0),
-                "Zeroed Pivot Motor",
-                "FAILED TO SET PIVOT POSITION",
-                "Retrying setting pivot position.");
-
-        isZeroed = true;
-    }
+//    void zero() {
+//        RobustConfigurator.retryConfigurator(() -> pivotMotor.setPosition(0.0),
+//                "Zeroed Pivot Motor",
+//                "FAILED TO SET PIVOT POSITION",
+//                "Retrying setting pivot position.");
+//
+//        isZeroed = true;
+//    }
 
     public boolean isZeroed() {
         return isZeroed;
@@ -181,9 +180,9 @@ class ShooterIO {
         bottomShooterMotor.setControl(reverseIntakeVelocity);
     }
 
-    void setPivotVoltage(double voltage) {
-        pivotMotor.setControl(new VoltageOut(voltage));
-    }
+//    void setPivotVoltage(double voltage) {
+//        pivotMotor.setControl(new VoltageOut(voltage));
+//    }
 
 
     // STATES
@@ -257,15 +256,15 @@ class ShooterIO {
     // INPUTS
 
     void processInputs(ShooterIOInputs inputs) {
-        setShooterAngle(inputs.angle);
+//        setShooterAngle(inputs.angle);
     }
 
     void refreshSignals() {
-        BaseStatusSignal.refreshAll(pivotPosition, pivotVelocity, topShooterVelocity, bottomShooterVelocity,
-                topShooterCurrent, bottomShooterCurrent, pivotCurrent, topShooterVelocity, bottomShooterVoltage);
+        BaseStatusSignal.refreshAll(/*pivotPosition, pivotVelocity,*/ topShooterVelocity, bottomShooterVelocity,
+                topShooterCurrent, bottomShooterCurrent, /*pivotCurrent,*/ topShooterVelocity, bottomShooterVoltage);
     }
 
     public double getTotalCurrent() {
-        return Math.abs(topShooterCurrent.getValue()) + Math.abs(bottomShooterCurrent.getValue()) + Math.abs(pivotCurrent.getValue());
+        return Math.abs(topShooterCurrent.getValue()) + Math.abs(bottomShooterCurrent.getValue())/* + Math.abs(pivotCurrent.getValue())*/;
     }
 }

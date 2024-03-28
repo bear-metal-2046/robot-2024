@@ -27,6 +27,7 @@ public class ATVision {
     private final Field2d fieldPose;
     private final SwerveDrivePoseEstimator poseEstimator;
     private int updates = 0;
+    private double lastTimestamp = 0;
 
     public ATVision(VisionConstants.Camera cameraSettings, Field2d fieldPose, SwerveDrivePoseEstimator poseEstimator) {
         this.cameraSettings = cameraSettings;
@@ -48,7 +49,7 @@ public class ATVision {
         Transform3d bestCamPose = target.getBestCameraToTarget();
 
         if (tagPose.isEmpty() || target.getPoseAmbiguity() > 0.2) {
-            saveSnapshot();
+            saveSnapshot(timestampSeconds);
             return;
         }
 
@@ -108,18 +109,19 @@ public class ATVision {
                     multiRes.bestReprojErr
             ));
         } else if (multiRes.isPresent && multiRes.bestReprojErr >= 15.0) {
-            saveSnapshot();
+            saveSnapshot(result.getTimestampSeconds());
         } else if (validTargets.size() == 1) {
             processSingleTarget(validTargets.get(0), result.getTimestampSeconds());
         }
     }
 
     // Save snapshot to file
-    public void saveSnapshot() {
-        if (VisionConstants.IS_SAVING_SNAPSHOTS) {
-            System.out.println("Camera snapshot taken");
+    public void saveSnapshot(double timeStampSeconds) {
+        if (VisionConstants.IS_SAVING_SNAPSHOTS && timeStampSeconds - lastTimestamp > VisionConstants.MIN_SNAPSHOT_DELAY) {
+            System.out.println("Camera snapshot taken at " + timeStampSeconds);
             camera.takeInputSnapshot();
             camera.takeOutputSnapshot();
+            lastTimestamp = timeStampSeconds;
         }
     }
 

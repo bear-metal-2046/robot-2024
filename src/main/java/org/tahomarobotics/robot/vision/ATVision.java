@@ -173,8 +173,8 @@ public class ATVision {
      * @param result - new data from a camera
      */
     private void processVisionUpdate(PhotonPipelineResult result) {
+        Pose2d robotPose;
         String prefix = "ATCamera/" + cameraSettings.cameraName;
-        Pose2d robotPose = poseEstimator.getEstimatedPosition();
         MultiTargetPNPResult multiRes = result.getMultiTagResult();
 
         // Check for duplicate frame
@@ -185,7 +185,10 @@ public class ATVision {
 
         lastUpdateTime = result.getTimestampSeconds();
 
-        // Process result into
+        synchronized (poseEstimator) {
+            robotPose = poseEstimator.getEstimatedPosition();
+        }
+
         ATCameraResult filterResults = multiRes.estimatedPose.isPresent ?
                 processMultiTarget(robotPose, multiRes) :
                 processSingleTarget(robotPose, result);
@@ -225,6 +228,7 @@ public class ATVision {
             return;
         }
 
+        // Single tag results are not very trustworthy. Do not use headings from them
         Pose2d camPose2d = camPose.toPose2d();
         if (filterResults.numTargets == 1) {
             camPose2d = new Pose2d(camPose2d.getTranslation(), robotPose.getRotation());
@@ -234,12 +238,14 @@ public class ATVision {
             fieldPose.getObject(cameraSettings.cameraName).setPose(camPose2d);
         }
 
-        updates++;
-        poseEstimator.addVisionMeasurement(
-                camPose2d,
-                result.getTimestampSeconds(),
-                filterResults.stds
-        );
+        synchronized (poseEstimator) {
+            poseEstimator.addVisionMeasurement(
+                    camPose2d,
+                    result.getTimestampSeconds(),
+                    filterResults.stds
+            );
+            updates++;
+        }
     }
 
     public void update() {

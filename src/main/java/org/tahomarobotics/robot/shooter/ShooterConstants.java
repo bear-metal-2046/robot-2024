@@ -59,8 +59,8 @@ public class ShooterConstants {
 
     static final double BIAS_AMT = Units.degreesToRotations(.5);
 
-    static final double STATOR_CURRENT_LIMIT = 80.0;
-    static final double SUPPLY_CURRENT_LIMIT = 60.0;
+    static final double STATOR_CURRENT_LIMIT = 45.0;
+    static final double SUPPLY_CURRENT_LIMIT = 30.0;
 
     public static final Translation2d SHOOTER_PIVOT_OFFSET = new Translation2d(0.1238, 0.1899);
 
@@ -80,11 +80,11 @@ public class ShooterConstants {
                     .withSupplyCurrentLimitEnable(true))
             .withSlot0(switch (RobotIdentity.robotID) {
                 case BEARITONE, PLAYBEAR_CARTI -> new Slot0Configs()
-                        .withKP(.076223)
-                        .withKI(0.5)
-                        .withKS(.10456)
-                        .withKV(.071642)
-                        .withKA(.015732);
+                        .withKP(.046891)
+//                        .withKI(0.0)
+                        .withKS(.15208)
+                        .withKV(.0742252)
+                        .withKA(.012556);
                 default -> new Slot0Configs()
                         .withKP(0.086027)
                         .withKS(0.077906)

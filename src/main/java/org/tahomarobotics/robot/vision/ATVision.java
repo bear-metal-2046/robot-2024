@@ -14,6 +14,8 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.util.SafeAKitLogger;
 
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ public class ATVision {
     private final VisionConstants.Camera cameraSettings;
     private final Field2d fieldPose;
     private final SwerveDrivePoseEstimator poseEstimator;
+    private final Logger logger = LoggerFactory.getLogger(ATVision.class);
     private int updates = 0;
     private double lastTimestamp = 0;
 
@@ -118,9 +121,9 @@ public class ATVision {
     // Save snapshot to file
     public void saveSnapshot(double timeStampSeconds) {
         if (VisionConstants.IS_SAVING_SNAPSHOTS && timeStampSeconds - lastTimestamp > VisionConstants.MIN_SNAPSHOT_DELAY) {
-            System.out.println("Camera snapshot taken at " + timeStampSeconds);
-            camera.takeInputSnapshot();
-            camera.takeOutputSnapshot();
+            logger.info("Camera snapshot taken at " + timeStampSeconds);
+//            camera.takeInputSnapshot();
+//            camera.takeOutputSnapshot();
             lastTimestamp = timeStampSeconds;
         }
     }

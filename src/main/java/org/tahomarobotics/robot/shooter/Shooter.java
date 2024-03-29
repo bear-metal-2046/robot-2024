@@ -206,6 +206,10 @@ public class Shooter extends SubsystemIF {
         return io.isZeroed();
     }
 
+    private void configureShooterForTeleop() {
+        io.configureShooterForTeleop();
+    }
+
     // PERIODIC
 
     @Override
@@ -251,6 +255,7 @@ public class Shooter extends SubsystemIF {
     @Override
     public void onTeleopInit() {
         disableShootMode();
+        configureShooterForTeleop();
     }
 
     @Override

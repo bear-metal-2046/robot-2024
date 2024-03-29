@@ -2,6 +2,7 @@ package org.tahomarobotics.robot.shooter;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -252,6 +253,15 @@ class ShooterIO {
 
     void disableRedundantShootMode(){
         redundantShootingMode = false;
+    }
+
+    public void configureShooterForTeleop() {
+        topShooterMotor.getConfigurator().apply(shooterMotorConfiguration.CurrentLimits
+                .withStatorCurrentLimit(STATOR_CURRENT_LIMIT_TELEOP)
+                .withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT_TELEOP));
+        bottomShooterMotor.getConfigurator().apply(shooterMotorConfiguration.CurrentLimits
+                .withStatorCurrentLimit(STATOR_CURRENT_LIMIT_TELEOP)
+                .withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT_TELEOP));
     }
 
     // INPUTS

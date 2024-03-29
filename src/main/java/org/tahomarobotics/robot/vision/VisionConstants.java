@@ -53,6 +53,7 @@ public class VisionConstants {
     public static final double DEGREES_DIFFERENCE_THRESHOLD = 60;
     public static final double TARGET_DISTANCE_THRESHOLD = 8;
     public static final double SINGLE_TARGET_DISTANCE_THRESHOLD = 4;
+    public final static double MAX_VALID_REPROJECTION_ERROR = 15.0;
     public static final double MAX_VALID_AMBIGUITY = 0.4;
     public final static double MAX_HEIGHT_METERS = 0.1;
     public final static double MAX_ROLL_PITCH = Units.degreesToRadians(5);

@@ -19,6 +19,7 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.tahomarobotics.robot.util.SafeAKitLogger;
 
+import java.util.List;
 import java.util.Optional;
 
 public class ATVision {
@@ -114,7 +115,7 @@ public class ATVision {
                 new ATCameraResult.ATCameraResultPose(altPose, 0),
                 tagResult.getPoseAmbiguity(),
                 distance,
-                1 // One target
+                List.of(tagResult.getFiducialId())
         );
     }
 
@@ -151,19 +152,30 @@ public class ATVision {
                 altTransform.getRotation()
             ).plus(cameraSettings.offset.inverse());
 
+        // 3. Calculate trust in new position
+        //    Trust the robot pose the closer to centerline it is
+
+        double midline = VisionConstants.FIELD_LENGTH / 2;
+        double distanceToMidlineTrust = (midline - Math.abs(midline - robotPose.getX()) * 2.0) / midline;
+        distanceToMidlineTrust *= 2.5;
+        distanceToMidlineTrust += .5;
+        distanceToMidlineTrust = Math.max(1, distanceToMidlineTrust);
+
+        SafeAKitLogger.recordOutput("ATCamera/TRUST", distanceToMidlineTrust);
+
         // 3. Create result
 
         return new ATCameraResult(
                 VecBuilder.fill(
-                    0.08122476428,
-                    0.0990676807,
+                    0.08122476428 * distanceToMidlineTrust,
+                    0.0990676807 * distanceToMidlineTrust,
                     Units.degreesToRadians(1.372694632)
                 ),
                 new ATCameraResult.ATCameraResultPose(bestPose, result.estimatedPose.bestReprojErr),
                 new ATCameraResult.ATCameraResultPose(altPose, result.estimatedPose.altReprojErr),
                 result.estimatedPose.ambiguity,
                 distance,
-                result.fiducialIDsUsed.size()
+                result.fiducialIDsUsed
         );
     }
 
@@ -197,14 +209,16 @@ public class ATVision {
             return;
         }
 
+        int numTargets = filterResults.targetList.size();
         SafeAKitLogger.recordOutput(prefix + "/New Frame", true);
         SafeAKitLogger.recordOutput(prefix + "/Best/Pose", filterResults.best.pose);
         SafeAKitLogger.recordOutput(prefix + "/Best/Error", filterResults.best.error);
         SafeAKitLogger.recordOutput(prefix + "/Best/Pose", filterResults.alt.pose);
         SafeAKitLogger.recordOutput(prefix + "/Best/Error", filterResults.alt.error);
-        SafeAKitLogger.recordOutput(prefix + "/Multitag", filterResults.numTargets > 1);
-        SafeAKitLogger.recordOutput(prefix + "/Number of Targets", filterResults.numTargets);
+        SafeAKitLogger.recordOutput(prefix + "/Multitag", numTargets > 1);
+        SafeAKitLogger.recordOutput(prefix + "/Number of Targets", numTargets);
         SafeAKitLogger.recordOutput(prefix + "/Ambiguity", filterResults.ambiguity);
+        SafeAKitLogger.recordOutput(prefix + "Apriltag IDs", filterResults.targetList.toString());
 
         var camPose = filterResults.best.pose;
         var camRot = camPose.getRotation();
@@ -218,7 +232,9 @@ public class ATVision {
                 camPose.getX() < 0 || camPose.getX() > VisionConstants.FIELD_LENGTH ||
                 camPose.getY() < 0 || camPose.getY() > VisionConstants.FIELD_WIDTH;
 
-        boolean updateTooAmbiguous = filterResults.ambiguity > VisionConstants.MAX_VALID_AMBIGUITY;
+        boolean updateTooAmbiguous =
+                filterResults.ambiguity > VisionConstants.MAX_VALID_AMBIGUITY ||
+                filterResults.best.error > VisionConstants.MAX_VALID_REPROJECTION_ERROR;
 
         SafeAKitLogger.recordOutput(prefix + "/NotFlat", updateNotFlat);
         SafeAKitLogger.recordOutput(prefix + "/NotInField", updateNotInField);
@@ -230,7 +246,7 @@ public class ATVision {
 
         // Single tag results are not very trustworthy. Do not use headings from them
         Pose2d camPose2d = camPose.toPose2d();
-        if (filterResults.numTargets == 1) {
+        if (numTargets == 1) {
             camPose2d = new Pose2d(camPose2d.getTranslation(), robotPose.getRotation());
         }
 
@@ -270,7 +286,7 @@ public class ATVision {
             ATCameraResultPose alt,
             double ambiguity,
             double distance,
-            int numTargets
+            List<Integer> targetList
     ) {
         private record ATCameraResultPose(
                 Pose3d pose,

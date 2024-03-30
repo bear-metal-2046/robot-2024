@@ -20,9 +20,10 @@ public class ClimberConstants {
     public static final double POSITION_EPSILON = 0.005;
     public static final double VELOCITY_EPSILON = 0.005;
 
-    public static final double CLIMB_MAX_VEL = 0.5; // meter per sec
-    public static final double CLIMB_MAX_ACCEL = 2;
-    public static final double CLIMB_MAX_JERK = 10;
+    public static final double LADEN_CLIMB_MAX_VEL = 1.0; // meter per sec
+    public static final double UNLADEN_CLIMB_MAX_VEL = 2.0; // meter per sec
+    public static final double CLIMB_MAX_ACCEL = 4;
+    public static final double CLIMB_MAX_JERK = 25;
 
     public static final double TOP_POSITION = 0.57;
     public static final double PARTIAL_CLIMB_POSITION = 0.57 - Units.inchesToMeters(1);
@@ -66,7 +67,7 @@ public class ClimberConstants {
                         .withKI(0);
             })
             .withMotionMagic(new MotionMagicConfigs()
-                    .withMotionMagicCruiseVelocity(CLIMB_MAX_VEL)
+                    .withMotionMagicCruiseVelocity(LADEN_CLIMB_MAX_VEL)
                     .withMotionMagicAcceleration(CLIMB_MAX_ACCEL)
                     .withMotionMagicJerk(CLIMB_MAX_JERK))
             .withMotorOutput(new MotorOutputConfigs()

@@ -8,6 +8,7 @@ package org.tahomarobotics.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -118,10 +119,18 @@ public class OI extends SubsystemIF {
         driveController.start().onTrue(Commands.deferredProxy(() ->
                 switch (climbers.getClimbState()) {
                     case COCKED -> new PreClimbSequence();
-                    case READY -> new EngageCommand();
+                    case READY -> new EngageSequence();
                     default -> Commands.none();
                 })
         );
+
+        Command climbCancel = Commands.runOnce(() -> {
+            ampArm.setRollerState(AmpArm.RollerState.DISABLED);
+            climbers.stop();
+            climbers.setClimbState(Climbers.ClimbState.ENGAGED);
+        });
+        climbCancel.addRequirements(climbers);
+
         driveController.x().onTrue(Commands.deferredProxy(ClimbSequence::new).onlyIf(() -> climbers.getClimbState() == Climbers.ClimbState.ENGAGED));
         driveController.back().onTrue(Commands.deferredProxy(() ->
                 switch (climbers.getClimbState()) {
@@ -130,11 +139,7 @@ public class OI extends SubsystemIF {
                     // Descend with break mode in the case that it doesn't work.
                     // TODO: At this point, we can't be sure of anything about the state of the robot so designating
                     //  the canceling to a separate command that does a full reset might be ideal.
-                    case CLIMBING, CLIMBED -> Commands.runOnce(() -> {
-                        ampArm.setRollerState(AmpArm.RollerState.DISABLED);
-                        climbers.stop();
-                        climbers.setClimbState(Climbers.ClimbState.ENGAGED);
-                    });
+                    case CLIMBING, CLIMBED -> climbCancel;
                     default -> Commands.none();
                 })
         );

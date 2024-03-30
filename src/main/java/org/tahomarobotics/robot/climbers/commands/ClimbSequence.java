@@ -26,7 +26,7 @@ public class ClimbSequence extends SequentialCommandGroup {
         if (climbers.isTrapping())
             addCommands(
                     new LadenClimbCommand(BOTTOM_POSITION).alongWith(AmpArmCommands.ARM_TO_TRAP.get()),
-                    Commands.waitSeconds(0.25),
+                    Commands.waitSeconds(0.4),
                     Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.TRAP)),
                     Commands.waitUntil(OI.getInstance()::isManipXPressed).raceWith(Commands.waitSeconds(5)),
                     new LadenClimbCommand(ALMOST_BOTTOM_POSITION)
@@ -39,5 +39,7 @@ public class ClimbSequence extends SequentialCommandGroup {
         addCommands(
                 Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.CLIMBED))
         );
+
+        addRequirements(climbers, ampArm);
     }
 }

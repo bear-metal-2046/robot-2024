@@ -28,9 +28,9 @@ public class CollectorConstants {
         switch (RobotIdentity.robotID) {
             case PLAYBEAR_CARTI, BEARITONE -> {
                 STOW_POSITION = Units.degreesToRotations(90.0000000);
-                COLLECT_POSITION = Units.degreesToRotations(211.46484375);
-                EJECT_POSITION = Units.degreesToRotations(183.69140625);
-                ZERO_POSITION = Units.degreesToRotations(73.037109375);
+                COLLECT_POSITION = Units.degreesToRotations(213.92578125);
+                EJECT_POSITION = Units.degreesToRotations(213.92578125 - 30);
+                ZERO_POSITION = Units.degreesToRotations(63.5);
             }
             default -> {
                 // TODO: Get these positions.

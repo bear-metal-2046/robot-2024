@@ -53,7 +53,8 @@ public class AmpArmConstants {
     static final InvertedValue WRIST_INVERT;
 
     public static final double WRIST_MOVING_POSE, WRIST_AMP_POSE, WRIST_TRAP_POSE, WRIST_SOURCE_POSE;
-    public static final double WRIST_STOW_POSE = 0;
+    public static final double WRIST_STOW_POSE = Units.degreesToRotations(0.0);
+    public static final double WRIST_PASSTHROUGH_POSE = Units.degreesToRotations(180.0);
 
     // The angle at which the wrist exits moving pose and transitions to the following state.
     public static final double WRIST_MOVING_POSE_THRESHOLD = Units.degreesToRotations(2);
@@ -61,10 +62,10 @@ public class AmpArmConstants {
     static {
         switch (RobotIdentity.robotID) {
             case PLAYBEAR_CARTI, BEARITONE -> {
-                WRIST_MOVING_POSE = Units.degreesToRotations(123.22265625 - 180);
-                WRIST_AMP_POSE = Units.degreesToRotations(145.7421875 + 3.0 - 180);
-                WRIST_TRAP_POSE = Units.degreesToRotations(139.314453125 + 10.0 - 180);
-                WRIST_SOURCE_POSE = Units.degreesToRotations(76.2890625 - 180);
+                WRIST_MOVING_POSE = Units.degreesToRotations(123.22265625);
+                WRIST_AMP_POSE = Units.degreesToRotations(145.7421875 + 3.0);
+                WRIST_TRAP_POSE = Units.degreesToRotations(139.314453125 + 10.0);
+                WRIST_SOURCE_POSE = Units.degreesToRotations(76.2890625);
             }
             default -> {
                 WRIST_MOVING_POSE = Units.degreesToRotations(67.67578125);
@@ -158,7 +159,7 @@ public class AmpArmConstants {
                     .withNeutralMode(NeutralModeValue.Brake)
                     .withInverted(WRIST_INVERT))
             .withMotionMagic(new MotionMagicConfigs()
-                    .withMotionMagicCruiseVelocity(5)
+                    .withMotionMagicCruiseVelocity(10)
                     .withMotionMagicAcceleration(20)
                     .withMotionMagicJerk(75))
             .withFeedback(new FeedbackConfigs().withSensorToMechanismRatio(1 / WRIST_GEAR_REDUCTION))

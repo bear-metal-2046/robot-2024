@@ -62,8 +62,8 @@ class ShooterIO {
         RobustConfigurator configurator = new RobustConfigurator(logger);
 
         pivotMotor = new TalonFX(RobotMap.SHOOTER_PIVOT_MOTOR);
-        topShooterMotor = new TalonFX(RobotMap.TOP_SHOOTER_MOTOR);
-        bottomShooterMotor = new TalonFX(RobotMap.BOTTOM_SHOOTER_MOTOR);
+        topShooterMotor = new TalonFX(RobotMap.LEFT_SHOOTER_MOTOR);
+        bottomShooterMotor = new TalonFX(RobotMap.RIGHT_SHOOTER_MOTOR);
 
         configurator.configureTalonFX(pivotMotor, pivotMotorConfiguration, "pivot motor");
         configurator.configureTalonFX(topShooterMotor, shooterMotorConfiguration, "shooter motor");
@@ -252,6 +252,15 @@ class ShooterIO {
 
     void disableRedundantShootMode(){
         redundantShootingMode = false;
+    }
+
+    public void configureShooterForTeleop() {
+        topShooterMotor.getConfigurator().apply(shooterMotorConfiguration.CurrentLimits
+                .withStatorCurrentLimit(STATOR_CURRENT_LIMIT_TELEOP)
+                .withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT_TELEOP));
+        bottomShooterMotor.getConfigurator().apply(shooterMotorConfiguration.CurrentLimits
+                .withStatorCurrentLimit(STATOR_CURRENT_LIMIT_TELEOP)
+                .withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT_TELEOP));
     }
 
     // INPUTS

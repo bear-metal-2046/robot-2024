@@ -59,8 +59,11 @@ public class ShooterConstants {
 
     static final double BIAS_AMT = Units.degreesToRotations(.5);
 
-    static final double STATOR_CURRENT_LIMIT = 80.0;
-    static final double SUPPLY_CURRENT_LIMIT = 60.0;
+    static final double STATOR_CURRENT_LIMIT_AUTO = 80.0;
+    static final double SUPPLY_CURRENT_LIMIT_AUTO = 60.0;
+
+    static final double STATOR_CURRENT_LIMIT_TELEOP = 45.0;
+    static final double SUPPLY_CURRENT_LIMIT_TELEOP = 30.0;
 
     public static final Translation2d SHOOTER_PIVOT_OFFSET = new Translation2d(0.1238, 0.1899);
 
@@ -74,25 +77,27 @@ public class ShooterConstants {
 
     static final TalonFXConfiguration shooterMotorConfiguration = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
-                    .withStatorCurrentLimit(STATOR_CURRENT_LIMIT)
-                    .withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT)
+                    .withStatorCurrentLimit(STATOR_CURRENT_LIMIT_AUTO)
+                    .withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT_AUTO)
                     .withStatorCurrentLimitEnable(true)
                     .withSupplyCurrentLimitEnable(true))
             .withSlot0(switch (RobotIdentity.robotID) {
                 case BEARITONE, PLAYBEAR_CARTI -> new Slot0Configs()
-                        .withKP(.076223)
-                        .withKI(0.5)
-                        .withKS(.10456)
-                        .withKV(.071642)
-                        .withKA(.015732);
+                        .withKP(.046891)
+//                        .withKI(0.0)
+                        .withKS(.15208)
+                        .withKV(.0742252)
+                        .withKA(.012556);
                 default -> new Slot0Configs()
                         .withKP(0.086027)
                         .withKS(0.077906)
                         .withKV(0.11218)
                         .withKA(0.012355);
             })
-            .withMotorOutput(new MotorOutputConfigs()
-                    .withNeutralMode(NeutralModeValue.Brake)
+//            .withClosedLoopRamps(new ClosedLoopRampsConfigs()
+//                    .withVoltageClosedLoopRampPeriod(1.0))                            // This should make the current after shot significantly less
+            .withMotorOutput(new MotorOutputConfigs()                                  // I'm afraid it will affect autos tho
+                    .withNeutralMode(NeutralModeValue.Brake)                           // Might just want to only do it during teleop
                     .withInverted(InvertedValue.Clockwise_Positive))
             .withFeedback(new FeedbackConfigs()
                     .withSensorToMechanismRatio(1 / SHOOTER_GEAR_REDUCTION))

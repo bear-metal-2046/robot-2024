@@ -123,6 +123,10 @@ public class AmpArm extends SubsystemIF {
                 setArmPosition(ARM_STOW_POSE);
                 setWristPosition(WRIST_STOW_POSE);
             }
+            case PASSTHROUGH -> {
+                setArmPosition(ARM_STOW_POSE);
+                setWristPosition(WRIST_PASSTHROUGH_POSE);
+            }
             case AMP -> {
                 setArmPosition(ARM_AMP_POSE);
                 setWristPosition(WRIST_AMP_POSE);
@@ -157,7 +161,7 @@ public class AmpArm extends SubsystemIF {
         rollerState = state;
 
         switch (state) {
-            case PASSING -> rollerMotor.setControl(velocityControl.withVelocity(ShooterConstants.TRANSFER_VELOCITY));
+            case PASSING -> rollerMotor.setControl(velocityControl.withVelocity(-ShooterConstants.TRANSFER_VELOCITY * 3));
             case SCORE -> rollerMotor.setControl(velocityControl.withVelocity(-ShooterConstants.TRANSFER_VELOCITY * 4));
             case TRAP -> rollerMotor.setControl(velocityControl.withVelocity(-AmpArmConstants.TRAP_VELOCITY));
             case REVERSE_INTAKE ->
@@ -212,6 +216,10 @@ public class AmpArm extends SubsystemIF {
 
     public boolean isArmAtStow() {
         return armState == ArmState.STOW;
+    }
+
+    public boolean isArmAtPassthrough() {
+        return armState == ArmState.PASSTHROUGH;
     }
 
     public boolean isArmAtAmp() {
@@ -295,6 +303,7 @@ public class AmpArm extends SubsystemIF {
     public enum ArmState {
         TRAP,
         STOW,
+        PASSTHROUGH,
         AMP,
         SOURCE,
         CLIMB

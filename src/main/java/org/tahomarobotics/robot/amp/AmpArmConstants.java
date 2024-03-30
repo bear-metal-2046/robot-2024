@@ -53,7 +53,8 @@ public class AmpArmConstants {
     static final InvertedValue WRIST_INVERT;
 
     public static final double WRIST_MOVING_POSE, WRIST_AMP_POSE, WRIST_TRAP_POSE, WRIST_SOURCE_POSE;
-    public static final double WRIST_STOW_POSE = 0;
+    public static final double WRIST_STOW_POSE = Units.degreesToRotations(0.0);
+    public static final double WRIST_PASSTHROUGH_POSE = Units.degreesToRotations(180.0);
 
     // The angle at which the wrist exits moving pose and transitions to the following state.
     public static final double WRIST_MOVING_POSE_THRESHOLD = Units.degreesToRotations(2);
@@ -158,7 +159,7 @@ public class AmpArmConstants {
                     .withNeutralMode(NeutralModeValue.Brake)
                     .withInverted(WRIST_INVERT))
             .withMotionMagic(new MotionMagicConfigs()
-                    .withMotionMagicCruiseVelocity(5)
+                    .withMotionMagicCruiseVelocity(10)
                     .withMotionMagicAcceleration(20)
                     .withMotionMagicJerk(75))
             .withFeedback(new FeedbackConfigs().withSensorToMechanismRatio(1 / WRIST_GEAR_REDUCTION))

@@ -354,7 +354,7 @@ public class Chassis extends SubsystemIF {
             adjSpeed *= -1;
         }
 
-        targetShootingAngle = goalRot + adj;
+        targetShootingAngle = goalRot + adj - Units.degreesToRadians(4);
 
         fieldPose.getObject("goal").setPose(new Pose2d(goal, new Rotation2d()));
 

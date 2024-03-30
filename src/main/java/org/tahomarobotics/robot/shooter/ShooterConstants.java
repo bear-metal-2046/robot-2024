@@ -39,10 +39,10 @@ public class ShooterConstants {
     static {
         switch (RobotIdentity.robotID) {
             case PLAYBEAR_CARTI, BEARITONE -> {
-                SHOOTER_SPEED = 100.0;
+                SHOOTER_SPEED = 5000.0 / 60.0;
                 IDLE_SPEED = SHOOTER_SPEED;
-                MAX_PIVOT_ANGLE = Units.degreesToRotations(51.50390625);
-                SHOOTER_GEAR_REDUCTION = (30.0 / 18.0);
+                MAX_PIVOT_ANGLE = Units.degreesToRotations(56.338);
+                SHOOTER_GEAR_REDUCTION = (24.0 / 18.0);
                 PIVOT_INVERSION = InvertedValue.Clockwise_Positive;
             }
             default -> {
@@ -57,7 +57,7 @@ public class ShooterConstants {
 
     public static final double SHOT_SPEED = Units.inchesToMeters(Units.rotationsToRadians(SHOOTER_SPEED) * (1.75)) * 0.8; // meters/sec
 
-    static final double BIAS_AMT = Units.degreesToRotations(.5);
+    static final double BIAS_AMT = Units.degreesToRotations(.125);
 
     static final double STATOR_CURRENT_LIMIT_AUTO = 80.0;
     static final double SUPPLY_CURRENT_LIMIT_AUTO = 60.0;
@@ -83,11 +83,11 @@ public class ShooterConstants {
                     .withSupplyCurrentLimitEnable(true))
             .withSlot0(switch (RobotIdentity.robotID) {
                 case BEARITONE, PLAYBEAR_CARTI -> new Slot0Configs()
-                        .withKP(.046891)
+                        .withKP(0.0028565)
 //                        .withKI(0.0)
-                        .withKS(.15208)
-                        .withKV(.0742252)
-                        .withKA(.012556);
+                        .withKS(0.19676)
+                        .withKV(0.090443)
+                        .withKA(0.01317);
                 default -> new Slot0Configs()
                         .withKP(0.086027)
                         .withKS(0.077906)
@@ -98,7 +98,7 @@ public class ShooterConstants {
 //                    .withVoltageClosedLoopRampPeriod(1.0))                            // This should make the current after shot significantly less
             .withMotorOutput(new MotorOutputConfigs()                                  // I'm afraid it will affect autos tho
                     .withNeutralMode(NeutralModeValue.Brake)                           // Might just want to only do it during teleop
-                    .withInverted(InvertedValue.Clockwise_Positive))
+                    .withInverted(InvertedValue.CounterClockwise_Positive))
             .withFeedback(new FeedbackConfigs()
                     .withSensorToMechanismRatio(1 / SHOOTER_GEAR_REDUCTION))
             .withMotionMagic(new MotionMagicConfigs()

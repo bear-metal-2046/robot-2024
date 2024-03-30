@@ -40,6 +40,6 @@ public class ClimbSequence extends SequentialCommandGroup {
                 Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.CLIMBED))
         );
 
-        addRequirements(climbers);
+        addRequirements(climbers, ampArm);
     }
 }

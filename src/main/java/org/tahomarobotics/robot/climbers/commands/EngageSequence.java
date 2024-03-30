@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.OI;
 import org.tahomarobotics.robot.amp.AmpArm;
-import org.tahomarobotics.robot.amp.commands.AmpArmCommands;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.chassis.ChassisConstants;
 import org.tahomarobotics.robot.chassis.commands.DriveForwardCommand;
@@ -21,10 +20,10 @@ import static org.tahomarobotics.robot.climbers.ClimberConstants.PARTIAL_CLIMB_P
 /**
  * Pathfinds the pre-climbed robot to the chain, puts the Amp Arm up, the drives forward to the final distance
  */
-public class EngageCommand extends SequentialCommandGroup {
-    private static final Logger logger = LoggerFactory.getLogger(EngageCommand.class);
+public class EngageSequence extends SequentialCommandGroup {
+    private static final Logger logger = LoggerFactory.getLogger(EngageSequence.class);
 
-    public EngageCommand() {
+    public EngageSequence() {
         Climbers climbers = Climbers.getInstance();
         AmpArm ampArm = AmpArm.getInstance();
         Chassis chassis = Chassis.getInstance();
@@ -60,5 +59,7 @@ public class EngageCommand extends SequentialCommandGroup {
                 new LadenClimbCommand(PARTIAL_CLIMB_POSITION).alongWith(new DriveForwardCommand(0.5,0.25)),
                 Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.ENGAGED))
         );
+
+        addRequirements(climbers, ampArm);
     }
 }

@@ -119,7 +119,7 @@ public class OI extends SubsystemIF {
         driveController.start().onTrue(Commands.deferredProxy(() ->
                 switch (climbers.getClimbState()) {
                     case COCKED -> new PreClimbSequence();
-                    case READY -> new EngageCommand();
+                    case READY -> new EngageSequence();
                     default -> Commands.none();
                 })
         );

@@ -144,7 +144,7 @@ public class ATVision {
             var stds = VecBuilder.fill(
                     0.08122476428 * distanceToMidlineTrust,
                     0.0990676807 * distanceToMidlineTrust,
-                    Units.degreesToRadians(1.372694632) * distanceToMidlineTrust * distanceToMidlineTrust
+                    Units.degreesToRadians(5.0) * distanceToMidlineTrust
             );
 
             synchronized (poseEstimator) {

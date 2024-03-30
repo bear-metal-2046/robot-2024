@@ -169,7 +169,7 @@ public class ATVision {
                 VecBuilder.fill(
                     0.08122476428 * distanceToMidlineTrust,
                     0.0990676807 * distanceToMidlineTrust,
-                    Units.degreesToRadians(1.372694632)
+                    Units.degreesToRadians(5.0) * distanceToMidlineTrust
                 ),
                 new ATCameraResult.ATCameraResultPose(bestPose, result.estimatedPose.bestReprojErr),
                 new ATCameraResult.ATCameraResultPose(altPose, result.estimatedPose.altReprojErr),

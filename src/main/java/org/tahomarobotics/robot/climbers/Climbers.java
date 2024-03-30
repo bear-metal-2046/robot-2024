@@ -126,8 +126,8 @@ public class Climbers extends SubsystemIF {
 
         SafeAKitLogger.recordOutput("Climbers/Left Position", getLeftPosition());
         SafeAKitLogger.recordOutput("Climbers/Right Position", getRightPosition());
-        SafeAKitLogger.recordOutput("Climbers/Left Current", leftClimber.getCurrent());
-        SafeAKitLogger.recordOutput("Climbers/Right Current", rightClimber.getCurrent());
+        SafeAKitLogger.recordOutput("MotorCurrents/Climbers Left", leftClimber.getCurrent());
+        SafeAKitLogger.recordOutput("MotorCurrents/Climbers Right", rightClimber.getCurrent());
         SafeAKitLogger.recordOutput("Climbers/Total Current", totalCurrent);
         SafeAKitLogger.recordOutput("Climbers/Energy", energyUsed);
         SafeAKitLogger.recordOutput("Climbers/Climb State", getClimbState());

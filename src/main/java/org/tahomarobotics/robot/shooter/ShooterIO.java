@@ -144,6 +144,18 @@ class ShooterIO {
         return idleMode;
     }
 
+    double getTopShooterMotorCurrent() {
+        return topShooterCurrent.getValueAsDouble();
+    }
+
+    double getBottomShooterMotorCurrent() {
+        return bottomShooterCurrent.getValueAsDouble();
+    }
+
+    double getPivotMotorCurrent() {
+        return pivotCurrent.getValueAsDouble();
+    }
+
     // SETTERS
 
     void setShooterAngle(double angle) {

@@ -269,9 +269,9 @@ public class AmpArm extends SubsystemIF {
         SafeAKitLogger.recordOutput("Amp Arm/Roller Velocity", getRollerVelocity());
 
         SafeAKitLogger.recordOutput("Amp Arm/Total Current", totalCurrent);
-        SafeAKitLogger.recordOutput("Amp Arm/Arm Current", getArmCurrent());
-        SafeAKitLogger.recordOutput("Amp Arm/Wrist Current", wristCurrent.getValueAsDouble());
-        SafeAKitLogger.recordOutput("Amp Arm/Roller Current", rollerCurrent.getValueAsDouble());
+        SafeAKitLogger.recordOutput("MotorCurrents/Arm Current", getArmCurrent());
+        SafeAKitLogger.recordOutput("MotorCurrents/Wrist Current", wristCurrent.getValueAsDouble());
+        SafeAKitLogger.recordOutput("MotorCurrents/Roller Current", rollerCurrent.getValueAsDouble());
         SafeAKitLogger.recordOutput("Amp Arm/Energy Used", getEnergyUsed());
     }
 

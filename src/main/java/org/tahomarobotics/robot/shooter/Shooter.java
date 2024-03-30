@@ -226,13 +226,15 @@ public class Shooter extends SubsystemIF {
         SafeAKitLogger.recordOutput("Shooter/Is In Shooting Mode", inShootingMode());
         SafeAKitLogger.recordOutput("Shooter/Distance", distance);
         SafeAKitLogger.recordOutput("Shooter/Top Velocity", getTopShooterVelocity());
-        SafeAKitLogger.recordOutput("Shooter/Top Current", io.getTopShooterCurrent());
         SafeAKitLogger.recordOutput("Shooter/Top Voltage", io.getTopShooterVoltage());
         SafeAKitLogger.recordOutput("Shooter/Bottom Velocity", getBottomShooterVelocity());
-        SafeAKitLogger.recordOutput("Shooter/Bottom Current", io.getBottomShooterCurrent());
         SafeAKitLogger.recordOutput("Shooter/Bottom Voltage", io.getBottomShooterVoltage());
         SafeAKitLogger.recordOutput("Shooter/Angle", getPivotPosition());
         SafeAKitLogger.recordOutput("Shooter/Angle (Degrees)", getPivotPosition() * 360);
+
+        SafeAKitLogger.recordOutput("MotorCurrents/Shooter Bottom", io.getTopShooterMotorCurrent());
+        SafeAKitLogger.recordOutput("MotorCurrents/Shooter Top", io.getBottomShooterMotorCurrent());
+        SafeAKitLogger.recordOutput("MotorCurrents/Shooter Pivot", io.getPivotMotorCurrent());
 
         SafeAKitLogger.recordOutput("Shooter/TotalCurrent", totalCurrent);
         SafeAKitLogger.recordOutput("Shooter/Energy", getEnergyUsed());

@@ -181,7 +181,6 @@ public class SwerveModuleIO {
         SafeAKitLogger.recordOutput("Chassis/Modules/" + name + "/Position", getPosition());
 
         SafeAKitLogger.recordOutput("Chassis/Modules/" + name + "/DriveVelocity", driveVelocity.getValueAsDouble());
-        SafeAKitLogger.recordOutput("Chassis/Modules/" + name + "/DriveCurrent", driveCurrent.getValueAsDouble());
         SafeAKitLogger.recordOutput("MotorCurrents/" + name + " Drive", driveCurrent.getValueAsDouble());
         SafeAKitLogger.recordOutput("MotorCurrents/" + name + " Steer", steerCurrent.getValueAsDouble());
         SafeAKitLogger.recordOutput("Chassis/Modules/" + name + "/DriveVelocityMPS", driveVelocity.getValueAsDouble() * DRIVE_POSITION_COEFFICIENT);

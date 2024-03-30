@@ -2,7 +2,6 @@ package org.tahomarobotics.robot.shooter;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -63,8 +62,8 @@ class ShooterIO {
         RobustConfigurator configurator = new RobustConfigurator(logger);
 
         pivotMotor = new TalonFX(RobotMap.SHOOTER_PIVOT_MOTOR);
-        topShooterMotor = new TalonFX(RobotMap.TOP_SHOOTER_MOTOR);
-        bottomShooterMotor = new TalonFX(RobotMap.BOTTOM_SHOOTER_MOTOR);
+        topShooterMotor = new TalonFX(RobotMap.LEFT_SHOOTER_MOTOR);
+        bottomShooterMotor = new TalonFX(RobotMap.RIGHT_SHOOTER_MOTOR);
 
         configurator.configureTalonFX(pivotMotor, pivotMotorConfiguration, "pivot motor");
         configurator.configureTalonFX(topShooterMotor, shooterMotorConfiguration, "shooter motor");

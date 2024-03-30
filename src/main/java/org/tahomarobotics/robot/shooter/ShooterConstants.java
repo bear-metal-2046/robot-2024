@@ -94,8 +94,8 @@ public class ShooterConstants {
                         .withKV(0.11218)
                         .withKA(0.012355);
             })
-            .withClosedLoopRamps(new ClosedLoopRampsConfigs()
-                    .withVoltageClosedLoopRampPeriod(1.0)) // This should make the current after shot significantly less
+//            .withClosedLoopRamps(new ClosedLoopRampsConfigs()
+//                    .withVoltageClosedLoopRampPeriod(1.0))                            // This should make the current after shot significantly less
             .withMotorOutput(new MotorOutputConfigs()                                  // I'm afraid it will affect autos tho
                     .withNeutralMode(NeutralModeValue.Brake)                           // Might just want to only do it during teleop
                     .withInverted(InvertedValue.Clockwise_Positive))

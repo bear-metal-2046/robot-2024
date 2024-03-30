@@ -21,8 +21,8 @@ public class RobotMap {
 
     public final static int BEAM_BREAK_TWO = 2;
 
-    public static final int TOP_SHOOTER_MOTOR = 31;
-    public static final int BOTTOM_SHOOTER_MOTOR = 32;
+    public static final int LEFT_SHOOTER_MOTOR = 31;
+    public static final int RIGHT_SHOOTER_MOTOR = 32;
     public static final int SHOOTER_PIVOT_MOTOR = 33;
 
     public static final int INDEXER_MOTOR = 34;

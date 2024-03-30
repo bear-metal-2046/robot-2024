@@ -213,8 +213,8 @@ public class ATVision {
         SafeAKitLogger.recordOutput(prefix + "/New Frame", true);
         SafeAKitLogger.recordOutput(prefix + "/Best/Pose", filterResults.best.pose);
         SafeAKitLogger.recordOutput(prefix + "/Best/Error", filterResults.best.error);
-        SafeAKitLogger.recordOutput(prefix + "/Best/Pose", filterResults.alt.pose);
-        SafeAKitLogger.recordOutput(prefix + "/Best/Error", filterResults.alt.error);
+        SafeAKitLogger.recordOutput(prefix + "/Worst/Pose", filterResults.alt.pose);
+        SafeAKitLogger.recordOutput(prefix + "/Worst/Error", filterResults.alt.error);
         SafeAKitLogger.recordOutput(prefix + "/Multitag", numTargets > 1);
         SafeAKitLogger.recordOutput(prefix + "/Number of Targets", numTargets);
         SafeAKitLogger.recordOutput(prefix + "/Ambiguity", filterResults.ambiguity);

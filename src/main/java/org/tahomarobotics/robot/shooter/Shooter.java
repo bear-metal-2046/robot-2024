@@ -234,6 +234,10 @@ public class Shooter extends SubsystemIF {
         SafeAKitLogger.recordOutput("Shooter/Angle", getPivotPosition());
         SafeAKitLogger.recordOutput("Shooter/Angle (Degrees)", getPivotPosition() * 360);
 
+        SafeAKitLogger.recordOutput("MotorCurrents/Shooter Bottom", io.getTopShooterMotorCurrent());
+        SafeAKitLogger.recordOutput("MotorCurrents/Shooter Top", io.getBottomShooterMotorCurrent());
+        SafeAKitLogger.recordOutput("MotorCurrents/Shooter Pivot", io.getPivotMotorCurrent());
+
         SafeAKitLogger.recordOutput("Shooter/TotalCurrent", totalCurrent);
         SafeAKitLogger.recordOutput("Shooter/Energy", getEnergyUsed());
         SmartDashboard.putBoolean("Shooter/IdleMode", io.isIdling());

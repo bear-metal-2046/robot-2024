@@ -65,7 +65,7 @@ public class SwerveModuleIO {
     // CONSTRUCTOR
 
     SwerveModuleIO(RobotMap.SwerveModuleDescriptor descriptor, double angularOffset) {
-        name = "Chassis/Modules/" + descriptor.moduleName();
+        name = descriptor.moduleName();
         configurator = new RobustConfigurator(logger);
 
         this.angularOffset = angularOffset;
@@ -176,17 +176,16 @@ public class SwerveModuleIO {
 
     
     public void periodic() {
-        SafeAKitLogger.recordOutput(name + "/State", getState());
-        SafeAKitLogger.recordOutput(name + "/DesiredState", desiredState);
-        SafeAKitLogger.recordOutput(name + "/Position", getPosition());
+        SafeAKitLogger.recordOutput("Chassis/Modules/" + name + "/State", getState());
+        SafeAKitLogger.recordOutput("Chassis/Modules/" + name + "/DesiredState", desiredState);
+        SafeAKitLogger.recordOutput("Chassis/Modules/" + name + "/Position", getPosition());
 
-        SafeAKitLogger.recordOutput(name + "/DriveVelocity", driveVelocity.getValueAsDouble());
-        SafeAKitLogger.recordOutput(name + "/DriveCurrent", driveCurrent.getValueAsDouble());
-        SafeAKitLogger.recordOutput(name + "/DriveAcceleration", driveAcceleration.getValueAsDouble());
-        lastAccel = driveAccelerationAverage.calculate(driveAcceleration.getValue());
-        SafeAKitLogger.recordOutput(name + "/DriveAccelerationAverage", lastAccel);
-        SafeAKitLogger.recordOutput(name + "/DriveVelocityMPS", driveVelocity.getValueAsDouble() * DRIVE_POSITION_COEFFICIENT);
-        SafeAKitLogger.recordOutput(name + "/SteerVelocity", steerVelocity.getValueAsDouble());
+        SafeAKitLogger.recordOutput("Chassis/Modules/" + name + "/DriveVelocity", driveVelocity.getValueAsDouble());
+        SafeAKitLogger.recordOutput("Chassis/Modules/" + name + "/DriveCurrent", driveCurrent.getValueAsDouble());
+        SafeAKitLogger.recordOutput("MotorCurrents/" + name + " Drive", driveCurrent.getValueAsDouble());
+        SafeAKitLogger.recordOutput("MotorCurrents/" + name + " Steer", steerCurrent.getValueAsDouble());
+        SafeAKitLogger.recordOutput("Chassis/Modules/" + name + "/DriveVelocityMPS", driveVelocity.getValueAsDouble() * DRIVE_POSITION_COEFFICIENT);
+        SafeAKitLogger.recordOutput("Chassis/Modules/" + name + "/SteerVelocity", steerVelocity.getValueAsDouble());
     }
 
     

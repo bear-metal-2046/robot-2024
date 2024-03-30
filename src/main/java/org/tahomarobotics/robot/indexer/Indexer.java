@@ -265,6 +265,8 @@ public class Indexer extends SubsystemIF {
         SafeAKitLogger.recordOutput("Indexer/BeamBreak Two", getShooterBeanBake());
         SafeAKitLogger.recordOutput("Indexer/Collected", isCollected());
 
+        SafeAKitLogger.recordOutput("MotorCurrents/Indexer", current.getValueAsDouble());
+
         SafeAKitLogger.recordOutput("Indexer/Current", totalCurrent);
         SafeAKitLogger.recordOutput("Indexer/Energy", getEnergyUsed());
 

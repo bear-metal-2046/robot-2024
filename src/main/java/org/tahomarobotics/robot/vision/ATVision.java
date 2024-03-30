@@ -218,7 +218,7 @@ public class ATVision {
         SafeAKitLogger.recordOutput(prefix + "/Multitag", numTargets > 1);
         SafeAKitLogger.recordOutput(prefix + "/Number of Targets", numTargets);
         SafeAKitLogger.recordOutput(prefix + "/Ambiguity", filterResults.ambiguity);
-        SafeAKitLogger.recordOutput(prefix + "Apriltag IDs", filterResults.targetList.toString());
+        SafeAKitLogger.recordOutput(prefix + "/Apriltag IDs", filterResults.targetList.toString());
 
         var camPose = filterResults.best.pose;
         var camRot = camPose.getRotation();

@@ -90,8 +90,8 @@ public final class ChassisConstants {
 
     public static final double DRIVE_SUPPLY_CURRENT_LIMIT = 55.0; // Amps
     public static final double DRIVE_STATOR_CURRENT_LIMIT = 120.0;
-    public static final double STEER_SUPPLY_CURRENT_LIMIT = 40.0;
-    public static final double STEER_STATOR_CURRENT_LIMIT = 80.0;
+    public static final double STEER_SUPPLY_CURRENT_LIMIT = 20.0;
+    public static final double STEER_STATOR_CURRENT_LIMIT = 30.0;
 
     public static final DCMotor SWERVE_DRIVE_MOTOR = DCMotor.getKrakenX60Foc(1);
     public static final double MAX_VELOCITY = SWERVE_DRIVE_MOTOR.freeSpeedRadPerSec * DRIVE_REDUCTION * WHEEL_RADIUS * 1.1; // m/s

@@ -271,7 +271,7 @@ class ShooterIO {
 
     void refreshSignals() {
         BaseStatusSignal.refreshAll(pivotPosition, pivotVelocity, topShooterVelocity, bottomShooterVelocity,
-                topShooterCurrent, bottomShooterCurrent, pivotCurrent, topShooterVelocity, bottomShooterVoltage);
+                topShooterCurrent, bottomShooterCurrent, pivotCurrent, topShooterVoltage, bottomShooterVoltage);
     }
 
     public double getTotalCurrent() {

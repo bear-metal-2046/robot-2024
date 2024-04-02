@@ -93,13 +93,16 @@ public class ATVision {
 
         Pose3d bestPose, altPose;
 
-        if (Math.abs(robotHdg - camHdg1) < Math.abs(robotHdg - camHdg0)) {
-            bestPose = camPose1;
-            altPose = camPose0;
-        } else {
-            bestPose = camPose0;
-            altPose = camPose1;
-        }
+        bestPose = camPose0;
+        altPose = camPose1;
+
+//        if (Math.abs(robotHdg - camHdg1) < Math.abs(robotHdg - camHdg0)) {
+//            bestPose = camPose1;
+//            altPose = camPose0;
+//        } else {
+//            bestPose = camPose0;
+//            altPose = camPose1;
+//        }
 
         // 4. Get distance and return result
 
@@ -153,7 +156,7 @@ public class ATVision {
             ).plus(cameraSettings.offset.inverse());
 
         // 3. Calculate trust in new position
-        //    Trust the robot pose the closer to centerline it is
+        //    Trust the tags less, closer to the center line
 
         double midline = VisionConstants.FIELD_LENGTH / 2;
         double distanceToMidlineTrust = (midline - Math.abs(midline - robotPose.getX()) * 2.0) / midline;

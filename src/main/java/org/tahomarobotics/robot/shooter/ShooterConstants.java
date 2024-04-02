@@ -31,7 +31,7 @@ public class ShooterConstants {
     static final double PIVOT_ANGLE_TOLERANCE = Units.degreesToRotations(2.5);
     public static final double SHOOTER_COLLECT_PIVOT_ANGLE = MIN_PIVOT_ANGLE;
 
-    static final double PIVOT_GEAR_REDUCTION = (14.0 / 56.0) * (10.0 / 90.0);
+    static final double PIVOT_GEAR_REDUCTION = (10.0 / 44.0) * (30.0 / 36.0) * (10.0 / 80.0);
     static final double SHOOTER_GEAR_REDUCTION;
 
     static final InvertedValue PIVOT_INVERSION;

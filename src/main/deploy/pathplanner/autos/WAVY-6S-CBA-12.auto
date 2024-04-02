@@ -83,18 +83,6 @@
           "data": {
             "name": "Shoot"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "6S-CBA-12-5"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
         }
       ]
     }

@@ -29,6 +29,7 @@ public class ATVision {
     private final Field2d fieldPose;
     private final SwerveDrivePoseEstimator poseEstimator;
     private int updates = 0;
+    private int failedUpdates = 0;
     private double lastUpdateTime = 0;
 
     public ATVision(VisionConstants.Camera cameraSettings, Field2d fieldPose, SwerveDrivePoseEstimator poseEstimator) {
@@ -222,6 +223,7 @@ public class ATVision {
         SafeAKitLogger.recordOutput(prefix + "/Number of Targets", numTargets);
         SafeAKitLogger.recordOutput(prefix + "/Ambiguity", filterResults.ambiguity);
         SafeAKitLogger.recordOutput(prefix + "/Apriltag IDs", filterResults.targetList.toString());
+        SafeAKitLogger.recordOutput(prefix + "/Failed Updates", failedUpdates);
 
         var camPose = filterResults.best.pose;
         var camRot = camPose.getRotation();
@@ -244,6 +246,7 @@ public class ATVision {
         SafeAKitLogger.recordOutput(prefix + "/TooAmbiguous", updateTooAmbiguous);
 
         if (updateNotFlat || updateNotInField || updateTooAmbiguous) {
+            failedUpdates++;
             return;
         }
 

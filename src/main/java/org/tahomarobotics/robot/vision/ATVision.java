@@ -247,6 +247,9 @@ public class ATVision {
             return;
         }
 
+        SafeAKitLogger.recordOutput(prefix+ "/Integrated Pose", camPose);
+        SafeAKitLogger.recordOutput(prefix+ "/Updates", updates);
+
         // Single tag results are not very trustworthy. Do not use headings from them
         Pose2d camPose2d = camPose.toPose2d();
         if (numTargets == 1) {

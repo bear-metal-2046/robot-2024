@@ -3,7 +3,6 @@ package org.tahomarobotics.robot.shooter;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -181,7 +180,7 @@ public class Shooter extends SubsystemIF {
 //        double timeShotOffset = (radialVelocity > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE);
         double targetAngle = angleCalc(distance);
 
-        setAngle(targetAngle);
+        setAngle(targetAngle * 1.02272727301);
     }
 
     private double angleCalc(double distance) {

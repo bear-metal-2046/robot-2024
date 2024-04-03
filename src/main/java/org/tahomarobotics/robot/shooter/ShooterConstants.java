@@ -31,7 +31,7 @@ public class ShooterConstants {
     static final double PIVOT_ANGLE_TOLERANCE = Units.degreesToRotations(2.5);
     public static final double SHOOTER_COLLECT_PIVOT_ANGLE = MIN_PIVOT_ANGLE;
 
-    static final double PIVOT_GEAR_REDUCTION = (10.0 / 44.0) * (30.0 / 36.0) * (10.0 / 80.0);
+    static final double PIVOT_GEAR_REDUCTION = (12.0 / 44.0) * (30.0 / 36.0) * (10.0 / 80.0);
     static final double SHOOTER_GEAR_REDUCTION;
 
     static final InvertedValue PIVOT_INVERSION;
@@ -83,11 +83,11 @@ public class ShooterConstants {
                     .withSupplyCurrentLimitEnable(true))
             .withSlot0(switch (RobotIdentity.robotID) {
                 case BEARITONE, PLAYBEAR_CARTI -> new Slot0Configs()
-                        .withKP(0.0028565)
+                        .withKP(0.007663)
 //                        .withKI(0.0)
-                        .withKS(0.19676)
-                        .withKV(0.090443)
-                        .withKA(0.01317);
+                        .withKS(0.015371)
+                        .withKV(0.090404)
+                        .withKA(0.015002);
                 default -> new Slot0Configs()
                         .withKP(0.086027)
                         .withKS(0.077906)
@@ -110,19 +110,20 @@ public class ShooterConstants {
             .withSlot0(new Slot0Configs() {{
                         GravityType = GravityTypeValue.Arm_Cosine;
                     }}
-                    .withKP(52.816)
-                    .withKD(5.4426)
-                    .withKS(0.041681)
-                    .withKV(3.8296)
-                    .withKA(0.26584)
-                    .withKG(0.32742))
+                    .withKP(400.0)
+                    .withKI(20.0)
+                    .withKD(4.312)
+                    .withKS(0.1677)
+                    .withKV(2.1175)
+                    .withKA(/*1.496*/0.0)
+                    .withKG(0.32768))
             .withMotorOutput(new MotorOutputConfigs()
                     .withNeutralMode(NeutralModeValue.Brake)
                     .withInverted(PIVOT_INVERSION))
             .withMotionMagic(new MotionMagicConfigs()
                     .withMotionMagicCruiseVelocity(1.5)
-                    .withMotionMagicAcceleration(20)
-                    .withMotionMagicJerk(200))
+                    .withMotionMagicAcceleration(5)
+                    .withMotionMagicJerk(100))
             .withFeedback(new FeedbackConfigs().withSensorToMechanismRatio(1 / PIVOT_GEAR_REDUCTION))
             .withAudio(new AudioConfigs().withBeepOnBoot(true).withBeepOnConfig(true));
 }

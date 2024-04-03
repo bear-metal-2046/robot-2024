@@ -8,24 +8,40 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.118606016326303,
-        "y": 2.3004752406443036
+        "x": 4.705955759737607,
+        "y": 3.30459078309461
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.102952280262134,
-        "y": 2.666735918490973
+        "x": 7.991584852734923,
+        "y": 0.8459873441486018
       },
       "prevControl": {
-        "x": 4.336345556234032,
-        "y": 5.542560500101864
+        "x": 4.3733476162604505,
+        "y": 1.0167861205287614
       },
       "nextControl": {
-        "x": 8.257257270349985,
-        "y": 2.5489232249785205
+        "x": 8.185507679619782,
+        "y": 0.8368332231279502
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.377985886406556,
+        "y": 3.9158706143499247
+      },
+      "prevControl": {
+        "x": 7.154708698768737,
+        "y": 3.759764558924193
+      },
+      "nextControl": {
+        "x": 5.461066139523584,
+        "y": 4.100153504654835
       },
       "isLocked": false,
       "linkedName": null
@@ -36,8 +52,8 @@
         "y": 5.140054964794614
       },
       "prevControl": {
-        "x": 5.2226059618877025,
-        "y": 4.321691573946297
+        "x": 4.683482236529691,
+        "y": 4.059701162880588
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,14 +62,9 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.05,
-      "rotationDegrees": -41.50019599302867,
+      "waypointRelativePos": 1.1,
+      "rotationDegrees": -8.390531594206372,
       "rotateFast": true
-    },
-    {
-      "waypointRelativePos": 0.5,
-      "rotationDegrees": 20.950870568001793,
-      "rotateFast": false
     }
   ],
   "constraintZones": [
@@ -72,7 +83,7 @@
   "eventMarkers": [
     {
       "name": "ShootMode",
-      "waypointRelativePos": 1.65,
+      "waypointRelativePos": 1.9500000000000002,
       "command": {
         "type": "parallel",
         "data": {
@@ -117,7 +128,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "4S-432",
+  "folder": "4S-Paths",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

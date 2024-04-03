@@ -23,7 +23,7 @@ public class ShooterConstants {
 
     static final double SHOOTER_SPEED_TOLERANCE = 5; // rps
     public static final double MAX_PIVOT_ANGLE;
-    public static final double MIN_PIVOT_ANGLE = Units.degreesToRotations(7);
+    public static final double MIN_PIVOT_ANGLE = Units.degreesToRotations(4);
 
     public static final double CLOSE_REDUNDANT_ANGLE = 0.139;
     public static final double FAR_REDUNDANT_ANGLE = 0.0916;

@@ -8,24 +8,40 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.459866775589407,
-        "y": 2.6070062950936714
+        "x": 4.705955759737607,
+        "y": 3.30459078309461
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.224033024642626,
-        "y": 4.095403506122328
+        "x": 7.991584852734923,
+        "y": 0.8459873441486018
       },
       "prevControl": {
-        "x": 2.9453075122366466,
-        "y": 4.160116428340965
+        "x": 4.3733476162604505,
+        "y": 1.0167861205287614
       },
       "nextControl": {
-        "x": 8.418157204594017,
-        "y": 4.093023700063379
+        "x": 8.185507679619782,
+        "y": 0.8368332231279502
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.377985886406556,
+        "y": 3.9158706143499247
+      },
+      "prevControl": {
+        "x": 7.154708698768737,
+        "y": 3.759764558924193
+      },
+      "nextControl": {
+        "x": 5.461066139523584,
+        "y": 4.100153504654835
       },
       "isLocked": false,
       "linkedName": null
@@ -36,8 +52,8 @@
         "y": 5.140054964794614
       },
       "prevControl": {
-        "x": 4.757269334358488,
-        "y": 3.7441047855068685
+        "x": 4.683482236529691,
+        "y": 4.059701162880588
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,8 +62,8 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.05,
-      "rotationDegrees": 0,
+      "waypointRelativePos": 1.1,
+      "rotationDegrees": -8.390531594206372,
       "rotateFast": true
     }
   ],
@@ -67,7 +83,7 @@
   "eventMarkers": [
     {
       "name": "ShootMode",
-      "waypointRelativePos": 1.6,
+      "waypointRelativePos": 1.9500000000000002,
       "command": {
         "type": "parallel",
         "data": {
@@ -112,7 +128,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "4S-345",
+  "folder": "4S-Paths",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

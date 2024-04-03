@@ -8,24 +8,40 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.280692364555861,
-        "y": 2.698388075835748
+        "x": 5.195878565670175,
+        "y": 3.7225983147618473
       },
       "isLocked": false,
       "linkedName": "4S-345-2-END"
     },
     {
       "anchor": {
-        "x": 8.035126228809046,
-        "y": 5.560647447156021
+        "x": 8.238793608021998,
+        "y": 0.9223973230555149
       },
       "prevControl": {
-        "x": 7.836169811213324,
-        "y": 5.343604082506142
+        "x": 7.2005168358162805,
+        "y": 4.670980994135902
       },
       "nextControl": {
-        "x": 8.128829333080063,
-        "y": 5.662869015451675
+        "x": 8.275808745438244,
+        "y": 0.7887582555007596
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.162240063610563,
+        "y": 4.046217048955837
+      },
+      "prevControl": {
+        "x": 7.6819376839512525,
+        "y": 3.499991213886763
+      },
+      "nextControl": {
+        "x": 4.899228059325685,
+        "y": 4.50018221775574
       },
       "isLocked": false,
       "linkedName": null
@@ -36,8 +52,8 @@
         "y": 5.140054964794614
       },
       "prevControl": {
-        "x": 6.321387995427713,
-        "y": 2.5898663935108086
+        "x": 4.452348838109348,
+        "y": 4.7563803823259825
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,8 +62,13 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.05,
-      "rotationDegrees": 42.224969845771575,
+      "waypointRelativePos": 1.1,
+      "rotationDegrees": -75.24850506308921,
+      "rotateFast": true
+    },
+    {
+      "waypointRelativePos": 0.44999999999999996,
+      "rotationDegrees": -20.22800656888996,
       "rotateFast": true
     }
   ],
@@ -55,7 +76,7 @@
   "eventMarkers": [
     {
       "name": "ShootMode",
-      "waypointRelativePos": 1.65,
+      "waypointRelativePos": 1.85,
       "command": {
         "type": "parallel",
         "data": {
@@ -79,11 +100,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -7.1058173922106995,
+    "rotation": -8.1301023541559,
     "rotateFast": true
   },
   "reversed": false,
-  "folder": "4S-432",
+  "folder": "4S-Paths",
   "previewStartingState": {
     "rotation": -7.815293546766795,
     "velocity": 0

@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.118606016326303,
-        "y": 2.3004752406443036
+        "x": 5.459866775589407,
+        "y": 2.6070062950936714
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.102952280262134,
-        "y": 2.666735918490973
+        "x": 8.224033024642626,
+        "y": 4.095403506122328
       },
       "prevControl": {
-        "x": 4.336345556234032,
-        "y": 5.542560500101864
+        "x": 2.9453075122366466,
+        "y": 4.160116428340965
       },
       "nextControl": {
-        "x": 8.257257270349985,
-        "y": 2.5489232249785205
+        "x": 8.418157204594017,
+        "y": 4.093023700063379
       },
       "isLocked": false,
       "linkedName": null
@@ -36,8 +36,8 @@
         "y": 5.140054964794614
       },
       "prevControl": {
-        "x": 5.2226059618877025,
-        "y": 4.321691573946297
+        "x": 4.757269334358488,
+        "y": 3.7441047855068685
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,13 +47,8 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 1.05,
-      "rotationDegrees": -41.50019599302867,
+      "rotationDegrees": 0,
       "rotateFast": true
-    },
-    {
-      "waypointRelativePos": 0.5,
-      "rotationDegrees": 20.950870568001793,
-      "rotateFast": false
     }
   ],
   "constraintZones": [
@@ -72,7 +67,7 @@
   "eventMarkers": [
     {
       "name": "ShootMode",
-      "waypointRelativePos": 1.65,
+      "waypointRelativePos": 1.5,
       "command": {
         "type": "parallel",
         "data": {
@@ -117,7 +112,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "4S-432",
+  "folder": "4S-Paths",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

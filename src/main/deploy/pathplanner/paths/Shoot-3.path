@@ -55,7 +55,7 @@
   "eventMarkers": [
     {
       "name": "ShootMode",
-      "waypointRelativePos": 1.65,
+      "waypointRelativePos": 1.5,
       "command": {
         "type": "parallel",
         "data": {
@@ -83,7 +83,7 @@
     "rotateFast": true
   },
   "reversed": false,
-  "folder": "4S-432",
+  "folder": "4S-Paths",
   "previewStartingState": {
     "rotation": -12.09475707701204,
     "velocity": 0

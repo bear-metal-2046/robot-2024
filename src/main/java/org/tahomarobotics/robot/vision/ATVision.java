@@ -93,7 +93,7 @@ public class ATVision {
 
         var multiRes = result.getMultiTagResult().estimatedPose;
         SafeAKitLogger.recordOutput("ATCamera/Reprojection Error", multiRes.bestReprojErr);
-        if (multiRes.isPresent && multiRes.bestReprojErr < 15.0) {
+        if (multiRes.isPresent && multiRes.bestReprojErr < VisionConstants.MAX_REPROJECTION_ERROR) {
             Pose3d pose = new Pose3d(multiRes.best.getTranslation(), multiRes.best.getRotation()).plus(cameraSettings.offset.inverse());
 
             double distances = 0;
@@ -111,7 +111,7 @@ public class ATVision {
                     multiRes.ambiguity,
                     multiRes.bestReprojErr
             ));
-        } else if (multiRes.isPresent && multiRes.bestReprojErr >= 15.0) {
+        } else if (multiRes.isPresent && multiRes.bestReprojErr >= VisionConstants.MAX_REPROJECTION_ERROR) {
             saveSnapshot(result.getTimestampSeconds());
         } else if (validTargets.size() == 1) {
             processSingleTarget(validTargets.get(0), result.getTimestampSeconds());

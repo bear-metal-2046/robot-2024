@@ -35,7 +35,6 @@ public class Shooter extends SubsystemIF {
 
     private boolean isShooting = false;
     private boolean countingCyclesSinceBrownout = false;
-    private boolean disabledDueToBrownout = false;
     private int consecutiveBrownouts = 0;
     private int cyclesSinceBrownout = 0;
     private PowerDistribution pdp = new PowerDistribution();
@@ -254,9 +253,8 @@ public class Shooter extends SubsystemIF {
             countingCyclesSinceBrownout = true;
             cyclesSinceBrownout = 0;
             consecutiveBrownouts += 1;
-            if (inShootingMode()) {
-                disableShootMode();  // allows driver override
-                disabledDueToBrownout = true;
+            if (consecutiveBrownouts > 2) {
+                disableShootMode();
             }
         }
 
@@ -264,10 +262,6 @@ public class Shooter extends SubsystemIF {
             countingCyclesSinceBrownout = false;
             consecutiveBrownouts = 0;
             cyclesSinceBrownout = 0;
-            if (disabledDueToBrownout) {
-                enableShootMode();
-                disabledDueToBrownout = false;
-            }
         }
     }
 

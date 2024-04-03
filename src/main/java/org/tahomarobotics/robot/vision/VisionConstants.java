@@ -53,7 +53,11 @@ public class VisionConstants {
     public static final double DEGREES_DIFFERENCE_THRESHOLD = 60;
     public static final double TARGET_DISTANCE_THRESHOLD = 8;
     public static final double SINGLE_TARGET_DISTANCE_THRESHOLD = 4;
-    public static final boolean IS_SAVING_SNAPSHOTS = true;
-    public static final double MIN_SNAPSHOT_DELAY = 5.0;
-    public static final double MAX_REPROJECTION_ERROR = 15.0;
+    public final static double MAX_VALID_REPROJECTION_ERROR = 1.0;
+    public static final double MAX_VALID_AMBIGUITY = 0.2;
+    public final static double MAX_HEIGHT_METERS = 0.1;
+    public final static double MAX_ROLL_PITCH = Units.degreesToRadians(10);
+    public final static double FIELD_LENGTH = 16.541;
+    public final static double FIELD_WIDTH = 8.211;
+    public final static double MIN_SNAPSHOT_DELAY = 5.0;
 }

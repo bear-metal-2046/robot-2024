@@ -22,7 +22,7 @@ public class AmpArmCommands {
     private static final Supplier<Command> ARM_TO_AMP;
     private static final Supplier<Command> ARM_TO_SOURCE;
     public static final Supplier<Command> ARM_TO_STOW;
-    public static final Supplier<Command> ARM_TO_CLIMB;
+    public static final Supplier<Command> ARM_TO_PASSTHROUGH;
     public static final Supplier<Command> ARM_TO_TRAP;
     public static Command AMP_ARM_CTRL;
 
@@ -47,6 +47,15 @@ public class AmpArmCommands {
                                 .andThen(Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.STOW))))
         );
 
+        ARM_TO_PASSTHROUGH = () -> Commands.sequence(
+                Commands.runOnce(() -> logger.info("Arm To Stow")),
+                Commands.runOnce(() -> ampArm.setWristPosition(WRIST_MOVING_POSE)),
+                Commands.runOnce(() -> ampArm.setArmPosition(ARM_STOW_POSE)),
+                Commands.waitUntil(ampArm::isArmAtPosition).alongWith(
+                        Commands.waitUntil(() -> ampArm.getArmPosition() < -WRIST_MOVING_POSE_THRESHOLD)
+                                .andThen(Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.PASSTHROUGH))))
+        );
+
         ARM_TO_SOURCE = () -> Commands.sequence(
                 Commands.runOnce(() -> logger.info("Arm To Source")),
                 Commands.runOnce(() -> ampArm.setWristPosition(WRIST_MOVING_POSE)),
@@ -54,12 +63,6 @@ public class AmpArmCommands {
                 Commands.waitUntil(ampArm::isArmAtPosition).alongWith(
                         Commands.waitUntil(() -> ampArm.getArmPosition() > WRIST_MOVING_POSE_THRESHOLD)
                                 .andThen(Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.SOURCE))))
-        );
-
-        ARM_TO_CLIMB = () -> Commands.sequence(
-                Commands.runOnce(() -> logger.info("Arm To Climb")),
-                Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.CLIMB)),
-                Commands.waitUntil(ampArm::isArmAtPosition)
         );
 
         ARM_TO_TRAP = () -> Commands.sequence(
@@ -79,6 +82,8 @@ public class AmpArmCommands {
                 Commands.runOnce(shooter::stop),
                 Commands.runOnce(() -> shooter.setAngle(ShooterConstants.MIN_PIVOT_ANGLE)),
                 Commands.waitUntil(shooter::isAtAngle),
+                Commands.runOnce(() -> ampArm.setWristPosition(WRIST_PASSTHROUGH_POSE)),
+                Commands.waitUntil(ampArm::isWristAtPosition),
                 Commands.runOnce(() -> {
                     shooter.transferToAmp();
                     ampArm.setRollerState(AmpArm.RollerState.PASSING);
@@ -86,7 +91,6 @@ public class AmpArmCommands {
                 Commands.waitSeconds(0.1),
                 Commands.runOnce(indexer::transitionToTransferring),
                 Commands.waitUntil(() -> !indexer.getShooterBeanBake() && !indexer.getCollectorBeanBake()),
-                Commands.waitSeconds(0.1),
                 Commands.runOnce(() -> {
                     ampArm.setRollerState(AmpArm.RollerState.COLLECTED);
                     indexer.transitionToDisabled();
@@ -111,7 +115,7 @@ public class AmpArmCommands {
                     shooter.stop();
                     ampArm.setArmState(AmpArm.ArmState.STOW);
                 })
-        ).onlyIf(() -> !indexer.isCollected()).onlyIf(ampArm::isRollerCollected).onlyIf(ampArm::isArmAtStow);
+        ).onlyIf(() -> !indexer.isCollected()).onlyIf(ampArm::isRollerCollected).onlyIf(ampArm::isArmAtPassthrough);
     }
 
     static {
@@ -121,7 +125,7 @@ public class AmpArmCommands {
 
         AMP_ARM_CTRL = Commands.deferredProxy(() -> {
             if ((ampArm.isArmAtSource() || ampArm.isArmAtAmp()) && ampArm.isRollerCollected()) {
-                return Commands.defer(ARM_TO_STOW, Set.of(ampArm, indexer, shooter));
+                return Commands.defer(ARM_TO_PASSTHROUGH, Set.of(ampArm, indexer, shooter));
             } if (ampArm.isArmAtAmp() || ampArm.isArmAtSource() || ampArm.isArmAtTrap()) {
                 return Commands.defer(ARM_TO_STOW, Set.of(ampArm, shooter));
             } if (indexer.isCollected()) {

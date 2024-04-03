@@ -23,7 +23,7 @@ public class ShooterConstants {
 
     static final double SHOOTER_SPEED_TOLERANCE = 5; // rps
     public static final double MAX_PIVOT_ANGLE;
-    public static final double MIN_PIVOT_ANGLE = 0.01;
+    public static final double MIN_PIVOT_ANGLE = Units.degreesToRotations(7);
 
     public static final double CLOSE_REDUNDANT_ANGLE = 0.139;
     public static final double FAR_REDUNDANT_ANGLE = 0.0916;
@@ -39,10 +39,10 @@ public class ShooterConstants {
     static {
         switch (RobotIdentity.robotID) {
             case PLAYBEAR_CARTI, BEARITONE -> {
-                SHOOTER_SPEED = 100.0;
+                SHOOTER_SPEED = 5000.0 / 60.0;
                 IDLE_SPEED = SHOOTER_SPEED;
-                MAX_PIVOT_ANGLE = Units.degreesToRotations(51.50390625);
-                SHOOTER_GEAR_REDUCTION = (30.0 / 18.0);
+                MAX_PIVOT_ANGLE = Units.degreesToRotations(56.338);
+                SHOOTER_GEAR_REDUCTION = (24.0 / 18.0);
                 PIVOT_INVERSION = InvertedValue.Clockwise_Positive;
             }
             default -> {
@@ -57,10 +57,13 @@ public class ShooterConstants {
 
     public static final double SHOT_SPEED = Units.inchesToMeters(Units.rotationsToRadians(SHOOTER_SPEED) * (1.75)) * 0.8; // meters/sec
 
-    static final double BIAS_AMT = Units.degreesToRotations(.5);
+    static final double BIAS_AMT = Units.degreesToRotations(.125);
 
-    static final double STATOR_CURRENT_LIMIT = 80.0;
-    static final double SUPPLY_CURRENT_LIMIT = 60.0;
+    static final double STATOR_CURRENT_LIMIT_AUTO = 80.0;
+    static final double SUPPLY_CURRENT_LIMIT_AUTO = 60.0;
+
+    static final double STATOR_CURRENT_LIMIT_TELEOP = 45.0;
+    static final double SUPPLY_CURRENT_LIMIT_TELEOP = 30.0;
 
     public static final Translation2d SHOOTER_PIVOT_OFFSET = new Translation2d(0.1238, 0.1899);
 
@@ -74,26 +77,28 @@ public class ShooterConstants {
 
     static final TalonFXConfiguration shooterMotorConfiguration = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
-                    .withStatorCurrentLimit(STATOR_CURRENT_LIMIT)
-                    .withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT)
+                    .withStatorCurrentLimit(STATOR_CURRENT_LIMIT_AUTO)
+                    .withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT_AUTO)
                     .withStatorCurrentLimitEnable(true)
                     .withSupplyCurrentLimitEnable(true))
             .withSlot0(switch (RobotIdentity.robotID) {
                 case BEARITONE, PLAYBEAR_CARTI -> new Slot0Configs()
-                        .withKP(.076223)
-                        .withKI(0.5)
-                        .withKS(.10456)
-                        .withKV(.071642)
-                        .withKA(.015732);
+                        .withKP(0.0028565)
+//                        .withKI(0.0)
+                        .withKS(0.19676)
+                        .withKV(0.090443)
+                        .withKA(0.01317);
                 default -> new Slot0Configs()
                         .withKP(0.086027)
                         .withKS(0.077906)
                         .withKV(0.11218)
                         .withKA(0.012355);
             })
-            .withMotorOutput(new MotorOutputConfigs()
-                    .withNeutralMode(NeutralModeValue.Brake)
-                    .withInverted(InvertedValue.Clockwise_Positive))
+//            .withClosedLoopRamps(new ClosedLoopRampsConfigs()
+//                    .withVoltageClosedLoopRampPeriod(1.0))                            // This should make the current after shot significantly less
+            .withMotorOutput(new MotorOutputConfigs()                                  // I'm afraid it will affect autos tho
+                    .withNeutralMode(NeutralModeValue.Brake)                           // Might just want to only do it during teleop
+                    .withInverted(InvertedValue.CounterClockwise_Positive))
             .withFeedback(new FeedbackConfigs()
                     .withSensorToMechanismRatio(1 / SHOOTER_GEAR_REDUCTION))
             .withMotionMagic(new MotionMagicConfigs()

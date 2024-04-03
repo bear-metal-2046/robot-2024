@@ -38,6 +38,8 @@ public class Indexer extends SubsystemIF {
             .withSlot(1).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage collectVel = new MotionMagicVelocityVoltage(COLLECT_SPEED)
             .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
+    private final MotionMagicVelocityVoltage indexVel = new MotionMagicVelocityVoltage(INDEX_VELOCITY)
+            .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage ejectVel = new MotionMagicVelocityVoltage(-CollectorConstants.COLLECT_MAX_RPS)
             .withSlot(0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage reverseIntakeVelocity = new MotionMagicVelocityVoltage(-ShooterConstants.TRANSFER_VELOCITY)
@@ -167,7 +169,7 @@ public class Indexer extends SubsystemIF {
 
     public void transitionToIndexing() {
         zero();
-        motor.setControl(collectVel);
+        motor.setControl(indexVel);
 
         OI.getInstance().rumbleDrive();
 
@@ -262,6 +264,8 @@ public class Indexer extends SubsystemIF {
         SafeAKitLogger.recordOutput("Indexer/BeamBreak One", getCollectorBeanBake());
         SafeAKitLogger.recordOutput("Indexer/BeamBreak Two", getShooterBeanBake());
         SafeAKitLogger.recordOutput("Indexer/Collected", isCollected());
+
+        SafeAKitLogger.recordOutput("MotorCurrents/Indexer", current.getValueAsDouble());
 
         SafeAKitLogger.recordOutput("Indexer/Current", totalCurrent);
         SafeAKitLogger.recordOutput("Indexer/Energy", getEnergyUsed());

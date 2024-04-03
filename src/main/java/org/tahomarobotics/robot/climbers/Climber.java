@@ -12,8 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 
-import static org.tahomarobotics.robot.climbers.ClimberConstants.BOTTOM_POSITION;
-import static org.tahomarobotics.robot.climbers.ClimberConstants.TOP_POSITION;
+import static org.tahomarobotics.robot.climbers.ClimberConstants.*;
 
 class Climber {
     private final TalonFX motor;
@@ -30,14 +29,14 @@ class Climber {
 
         RobustConfigurator configurator = new RobustConfigurator(logger);
         motor = new TalonFX(motorID);
-        configurator.configureTalonFX(motor, ClimberConstants.CLIMB_CONFIGURATION
-                .withMotorOutput(ClimberConstants.CLIMB_CONFIGURATION.MotorOutput
+        configurator.configureTalonFX(motor, CLIMB_CONFIGURATION
+                .withMotorOutput(CLIMB_CONFIGURATION.MotorOutput
                         .withInverted(isInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive)
                 ));
 
         position = motor.getPosition();
         velocity = motor.getVelocity();
-        current = motor.getStatorCurrent();
+        current = motor.getSupplyCurrent();
 
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY,
                 position, velocity, current);
@@ -48,11 +47,17 @@ class Climber {
     // SETTERS
 
     public void setPositionLaden(double position) {
+        setMagicVelocity(LADEN_CLIMB_MAX_VEL);
         motor.setControl(ladenPositionControl.withPosition(MathUtil.clamp(position, BOTTOM_POSITION, TOP_POSITION)));
     }
 
     public void setPositionUnladen(double position) {
+        setMagicVelocity(UNLADEN_CLIMB_MAX_VEL);
         motor.setControl(unladenPositionControl.withPosition(MathUtil.clamp(position, BOTTOM_POSITION, TOP_POSITION)));
+    }
+
+    private void setMagicVelocity(double velocity) {
+        motor.getConfigurator().apply(CLIMB_CONFIGURATION.MotionMagic.withMotionMagicCruiseVelocity(velocity));
     }
 
     public void setVoltage(double targetVoltage) {

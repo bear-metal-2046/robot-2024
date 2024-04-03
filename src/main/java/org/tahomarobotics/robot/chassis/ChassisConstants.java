@@ -84,14 +84,14 @@ public final class ChassisConstants {
 
     private static final double SHOOT_ROTATION_TARGET_TOLERANCE = Units.degreesToRadians(5.0);
 
-    public static final PIDController SHOOT_MODE_CONTROLLER = new PIDController(12.5, 0, 0.5) {{
+    public static final PIDController SHOOT_MODE_CONTROLLER = new PIDController(6, 0, 0.4) {{
         setTolerance(SHOOT_ROTATION_TARGET_TOLERANCE);
     }};
 
     public static final double DRIVE_SUPPLY_CURRENT_LIMIT = 55.0; // Amps
     public static final double DRIVE_STATOR_CURRENT_LIMIT = 120.0;
-    public static final double STEER_SUPPLY_CURRENT_LIMIT = 40.0;
-    public static final double STEER_STATOR_CURRENT_LIMIT = 80.0;
+    public static final double STEER_SUPPLY_CURRENT_LIMIT = 20.0;
+    public static final double STEER_STATOR_CURRENT_LIMIT = 30.0;
 
     public static final DCMotor SWERVE_DRIVE_MOTOR = DCMotor.getKrakenX60Foc(1);
     public static final double MAX_VELOCITY = SWERVE_DRIVE_MOTOR.freeSpeedRadPerSec * DRIVE_REDUCTION * WHEEL_RADIUS * 1.1; // m/s

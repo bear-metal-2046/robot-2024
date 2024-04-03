@@ -38,5 +38,7 @@ public class PreClimbSequence extends SequentialCommandGroup {
                 new UnladenClimbCommand(TOP_POSITION),
                 Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.READY))
         );
+
+        addRequirements(climbers);
     }
 }

@@ -236,7 +236,7 @@ public class Collector extends SubsystemIF {
                 failed = true;
         }
 
-        isZeroed = !failed;
+        isZeroed = !failed && !isDisabled;
     }
 
     public boolean isZeroed() {
@@ -308,6 +308,10 @@ public class Collector extends SubsystemIF {
         SafeAKitLogger.recordOutput("Collector/Deploy Left Position", deployPositionLeft.getValue());
         SafeAKitLogger.recordOutput("Collector/Deploy Velocity", deployVelocity.getValue());
         SafeAKitLogger.recordOutput("Collector/Collect Velocity", collectVelocity.getValue());
+
+        SafeAKitLogger.recordOutput("MotorCurrents/Collector Deploy Left", deployCurrentLeft.getValueAsDouble());
+        SafeAKitLogger.recordOutput("MotorCurrents/Collector Deploy Right", deployCurrentRight.getValueAsDouble());
+        SafeAKitLogger.recordOutput("MotorCurrents/Collector Motor", collectCurrent.getValueAsDouble());
 
         SafeAKitLogger.recordOutput("Collector/TotalCurrent", totalCurrent);
         SafeAKitLogger.recordOutput("Collector/Energy", getEnergyUsed());

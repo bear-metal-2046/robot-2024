@@ -9,20 +9,20 @@ public class RobotMap {
 
     // SWERVE MODULES on CANCODER
     public final static SwerveModuleDescriptor FRONT_LEFT_MOD = new SwerveModuleDescriptor(
-            "Front-Left", FRONT_LEFT_OFFSET, 1, 11, 21);
+            "Front Left", FRONT_LEFT_OFFSET, 1, 11, 21);
     public final static SwerveModuleDescriptor FRONT_RIGHT_MOD = new SwerveModuleDescriptor(
-            "Front-Right", FRONT_RIGHT_OFFSET, 2, 12, 22);
+            "Front Right", FRONT_RIGHT_OFFSET, 2, 12, 22);
     public final static SwerveModuleDescriptor BACK_LEFT_MOD = new SwerveModuleDescriptor(
-            "Back-Left", BACK_LEFT_OFFSET, 3, 13, 23);
+            "Back Left", BACK_LEFT_OFFSET, 3, 13, 23);
     public final static SwerveModuleDescriptor BACK_RIGHT_MOD = new SwerveModuleDescriptor(
-            "Back-Right", BACK_RIGHT_OFFSET, 4, 14, 24);
+            "Back Right", BACK_RIGHT_OFFSET, 4, 14, 24);
 
     public final static int BEAM_BREAK_ONE = 1;
 
     public final static int BEAM_BREAK_TWO = 2;
 
-    public static final int TOP_SHOOTER_MOTOR = 31;
-    public static final int BOTTOM_SHOOTER_MOTOR = 32;
+    public static final int LEFT_SHOOTER_MOTOR = 31;
+    public static final int RIGHT_SHOOTER_MOTOR = 32;
     public static final int SHOOTER_PIVOT_MOTOR = 33;
 
     public static final int INDEXER_MOTOR = 34;

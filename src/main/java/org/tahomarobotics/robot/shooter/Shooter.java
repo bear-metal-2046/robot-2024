@@ -170,16 +170,16 @@ public class Shooter extends SubsystemIF {
             return;
         }
 
-        if (DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Blue)
-            radialVelocity *= -1;
+//        if (DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Blue)
+//            radialVelocity *= -1;
 
         Translation2d target = SPEAKER_TARGET_POSITION.get();
         distance = Chassis.getInstance().getPose().getTranslation().getDistance(target) + SHOOTER_PIVOT_OFFSET.getX();
 
         SafeAKitLogger.recordOutput("Shooter/Target Angle Before Compensation", angleCalc(distance));
 
-        double timeShotOffset = (radialVelocity > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE);
-        double targetAngle = angleCalc(distance + radialVelocity * timeShotOffset);
+//        double timeShotOffset = (radialVelocity > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE);
+        double targetAngle = angleCalc(distance);
 
         setAngle(targetAngle);
     }
@@ -188,8 +188,8 @@ public class Shooter extends SubsystemIF {
         return switch (RobotIdentity.robotID) {
             // y = 0.07068257 + 0.1999213*e^(-0.5485811*x)
             case PLAYBEAR_CARTI -> 0.07068257 + 0.1999213 * Math.pow(Math.E, -0.5485811 * distance);
-            // y = 0.00006435x^4 - 0.001775x^3 + 0.01868x^2 - 0.09331x + 0.2599
-            case BEARITONE -> 0.00006435 * Math.pow(distance, 4) - 0.001775 * Math.pow(distance, 3) + 0.01868 * Math.pow(distance, 2) - 0.09331 * distance + 0.2599;
+            // y = .1823 * e ^ (-.5392 * x) + 0.05025
+            case BEARITONE -> 0.1823 * Math.pow(Math.E, -0.5392 * distance) + 0.05025;
             default -> 0.04875446 + (0.201136 - 0.04875446)/(1 + Math.pow((distance/2.019404), 2.137465)) + 0.002;
         };
     }
@@ -205,6 +205,7 @@ public class Shooter extends SubsystemIF {
     public boolean isZeroed() {
         return io.isZeroed();
     }
+
 
     // PERIODIC
 
@@ -225,13 +226,15 @@ public class Shooter extends SubsystemIF {
         SafeAKitLogger.recordOutput("Shooter/Is In Shooting Mode", inShootingMode());
         SafeAKitLogger.recordOutput("Shooter/Distance", distance);
         SafeAKitLogger.recordOutput("Shooter/Top Velocity", getTopShooterVelocity());
-        SafeAKitLogger.recordOutput("Shooter/Top Current", io.getTopShooterCurrent());
         SafeAKitLogger.recordOutput("Shooter/Top Voltage", io.getTopShooterVoltage());
         SafeAKitLogger.recordOutput("Shooter/Bottom Velocity", getBottomShooterVelocity());
-        SafeAKitLogger.recordOutput("Shooter/Bottom Current", io.getBottomShooterCurrent());
         SafeAKitLogger.recordOutput("Shooter/Bottom Voltage", io.getBottomShooterVoltage());
         SafeAKitLogger.recordOutput("Shooter/Angle", getPivotPosition());
         SafeAKitLogger.recordOutput("Shooter/Angle (Degrees)", getPivotPosition() * 360);
+
+        SafeAKitLogger.recordOutput("MotorCurrents/Shooter Bottom", io.getTopShooterMotorCurrent());
+        SafeAKitLogger.recordOutput("MotorCurrents/Shooter Top", io.getBottomShooterMotorCurrent());
+        SafeAKitLogger.recordOutput("MotorCurrents/Shooter Pivot", io.getPivotMotorCurrent());
 
         SafeAKitLogger.recordOutput("Shooter/TotalCurrent", totalCurrent);
         SafeAKitLogger.recordOutput("Shooter/Energy", getEnergyUsed());
@@ -251,6 +254,7 @@ public class Shooter extends SubsystemIF {
     @Override
     public void onTeleopInit() {
         disableShootMode();
+        io.configureShooterForTeleop();
     }
 
     @Override

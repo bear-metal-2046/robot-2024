@@ -62,8 +62,8 @@ class ShooterIO {
         RobustConfigurator configurator = new RobustConfigurator(logger);
 
         pivotMotor = new TalonFX(RobotMap.SHOOTER_PIVOT_MOTOR);
-        topShooterMotor = new TalonFX(RobotMap.TOP_SHOOTER_MOTOR);
-        bottomShooterMotor = new TalonFX(RobotMap.BOTTOM_SHOOTER_MOTOR);
+        topShooterMotor = new TalonFX(RobotMap.LEFT_SHOOTER_MOTOR);
+        bottomShooterMotor = new TalonFX(RobotMap.RIGHT_SHOOTER_MOTOR);
 
         configurator.configureTalonFX(pivotMotor, pivotMotorConfiguration, "pivot motor");
         configurator.configureTalonFX(topShooterMotor, shooterMotorConfiguration, "shooter motor");
@@ -142,6 +142,18 @@ class ShooterIO {
 
     boolean isIdling() {
         return idleMode;
+    }
+
+    double getTopShooterMotorCurrent() {
+        return topShooterCurrent.getValueAsDouble();
+    }
+
+    double getBottomShooterMotorCurrent() {
+        return bottomShooterCurrent.getValueAsDouble();
+    }
+
+    double getPivotMotorCurrent() {
+        return pivotCurrent.getValueAsDouble();
     }
 
     // SETTERS
@@ -254,6 +266,15 @@ class ShooterIO {
         redundantShootingMode = false;
     }
 
+    public void configureShooterForTeleop() {
+        topShooterMotor.getConfigurator().apply(shooterMotorConfiguration.CurrentLimits
+                .withStatorCurrentLimit(STATOR_CURRENT_LIMIT_TELEOP)
+                .withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT_TELEOP));
+        bottomShooterMotor.getConfigurator().apply(shooterMotorConfiguration.CurrentLimits
+                .withStatorCurrentLimit(STATOR_CURRENT_LIMIT_TELEOP)
+                .withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT_TELEOP));
+    }
+
     // INPUTS
 
     void processInputs(ShooterIOInputs inputs) {
@@ -262,7 +283,7 @@ class ShooterIO {
 
     void refreshSignals() {
         BaseStatusSignal.refreshAll(pivotPosition, pivotVelocity, topShooterVelocity, bottomShooterVelocity,
-                topShooterCurrent, bottomShooterCurrent, pivotCurrent, topShooterVelocity, bottomShooterVoltage);
+                topShooterCurrent, bottomShooterCurrent, pivotCurrent, topShooterVoltage, bottomShooterVoltage);
     }
 
     public double getTotalCurrent() {

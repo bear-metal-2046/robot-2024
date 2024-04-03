@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 8.048383664334896,
-        "y": 5.796428890155078
+        "x": 8.059005422358672,
+        "y": 5.889045952004947
       },
       "prevControl": {
-        "x": 7.771042569112164,
-        "y": 5.944344140940536
+        "x": 7.78166432713594,
+        "y": 6.036961202790405
       },
       "nextControl": {
-        "x": 8.29173308268306,
-        "y": 5.666642533702721
+        "x": 8.302354840706835,
+        "y": 5.75925959555259
       },
       "isLocked": false,
       "linkedName": null
@@ -52,7 +52,25 @@
     }
   ],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 1.4,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "EnableShootMode"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 4.0,
     "maxAcceleration": 5.0,

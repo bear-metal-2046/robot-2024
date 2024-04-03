@@ -3,7 +3,7 @@ package org.tahomarobotics.robot.shooter;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -34,6 +34,11 @@ public class Shooter extends SubsystemIF {
     private double totalCurrent = 0;
 
     private boolean isShooting = false;
+    private boolean countingCyclesSinceBrownout = false;
+    private boolean disabledDueToBrownout = false;
+    private int consecutiveBrownouts = 0;
+    private int cyclesSinceBrownout = 0;
+    private PowerDistribution pdp = new PowerDistribution();
 
     // CONSTRUCTOR
 
@@ -241,7 +246,29 @@ public class Shooter extends SubsystemIF {
         SmartDashboard.putBoolean("Shooter/IdleMode", io.isIdling());
         SmartDashboard.putNumber("Shooter/Bias", biasAngle);
 
+        if (countingCyclesSinceBrownout) {
+            cyclesSinceBrownout += 1;
+        }
 
+        if (pdp.getVoltage() < 6.75) {
+            countingCyclesSinceBrownout = true;
+            cyclesSinceBrownout = 0;
+            consecutiveBrownouts += 1;
+            if (inShootingMode()) {
+                disableShootMode();  // allows driver override
+                disabledDueToBrownout = true;
+            }
+        }
+
+        if (cyclesSinceBrownout > 5) {
+            countingCyclesSinceBrownout = false;
+            consecutiveBrownouts = 0;
+            cyclesSinceBrownout = 0;
+            if (disabledDueToBrownout) {
+                enableShootMode();
+                disabledDueToBrownout = false;
+            }
+        }
     }
 
     // onInit

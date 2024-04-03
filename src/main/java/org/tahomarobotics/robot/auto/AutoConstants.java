@@ -15,6 +15,13 @@ public class AutoConstants {
                 23.4,
                 23.4
         });
+        put("5S-C-345", new double[]{
+                38.97,
+                33.0,
+                25.728,
+                25.728,
+                25.728
+        });
         put("4S-345", new double[]{
                 28.665,
                 25.728,
@@ -22,6 +29,18 @@ public class AutoConstants {
                 25.728
         });
         put("4S-432", new double[]{
+                28.665,
+                25.728,
+                25.728,
+                25.728
+        });
+        put("4S-453", new double[]{
+                28.665,
+                25.728,
+                25.728,
+                25.728
+        });
+        put("4S-534", new double[]{
                 28.665,
                 25.728,
                 25.728,

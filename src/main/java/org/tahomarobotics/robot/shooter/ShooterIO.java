@@ -66,8 +66,7 @@ class ShooterIO {
         bottomShooterMotor = new TalonFX(RobotMap.RIGHT_SHOOTER_MOTOR);
 
         configurator.configureTalonFX(pivotMotor, pivotMotorConfiguration, "pivot motor");
-        configurator.configureTalonFX(topShooterMotor, shooterMotorConfiguration, "shooter motor");
-        configurator.configureTalonFX(bottomShooterMotor, shooterMotorConfiguration, "shooter motor follower");
+        configurator.configureTalonFX(topShooterMotor, shooterMotorConfiguration, bottomShooterMotor, false);
 
         topShooterVelocity = topShooterMotor.getVelocity();
         bottomShooterVelocity = bottomShooterMotor.getVelocity();
@@ -183,14 +182,12 @@ class ShooterIO {
         targetShooterSpeed = transferVelocity.Velocity;
 
         topShooterMotor.setControl(transferVelocity);
-        bottomShooterMotor.setControl(transferVelocity);
     }
 
     void reverseIntake() {
         targetShooterSpeed = reverseIntakeVelocity.Velocity;
 
         topShooterMotor.setControl(reverseIntakeVelocity);
-        bottomShooterMotor.setControl(reverseIntakeVelocity);
     }
 
     void setPivotVoltage(double voltage) {
@@ -203,7 +200,6 @@ class ShooterIO {
         targetShooterSpeed = motorVelocity.Velocity;
 
         topShooterMotor.setControl(motorVelocity);
-        bottomShooterMotor.setControl(motorVelocity);
     }
 
     void idle() {
@@ -211,7 +207,6 @@ class ShooterIO {
 
         idleMode = true;
         topShooterMotor.setControl(idleVelocity);
-        bottomShooterMotor.setControl(idleVelocity);
     }
 
     void stop() {
@@ -219,7 +214,6 @@ class ShooterIO {
 
         idleMode = false;
         topShooterMotor.stopMotor();
-        bottomShooterMotor.stopMotor();
     }
 
     void toggleShootMode() {

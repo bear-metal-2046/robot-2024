@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
@@ -192,6 +193,14 @@ public class ATVision {
         Pose2d robotPose;
         String prefix = "ATCamera/" + cameraSettings.cameraName;
         MultiTargetPNPResult multiRes = result.getMultiTagResult();
+        double time = Timer.getFPGATimestamp();
+
+        // Check for results in the future
+        boolean futureFrame = result.getTimestampSeconds() > time;
+        if (futureFrame) {
+            SafeAKitLogger.recordOutput(prefix + "/Future Timestamp Difference", result.getTimestampSeconds() - time);
+            result.setTimestampSeconds(time);
+        }
 
         // Check for duplicate frame
         if (result.getTimestampSeconds() == lastUpdateTime) {
@@ -215,6 +224,7 @@ public class ATVision {
 
         int numTargets = filterResults.targetList.size();
         SafeAKitLogger.recordOutput(prefix + "/New Frame", true);
+        SafeAKitLogger.recordOutput(prefix + "/Result In The Future", futureFrame);
         SafeAKitLogger.recordOutput(prefix + "/Best/Pose", filterResults.best.pose);
         SafeAKitLogger.recordOutput(prefix + "/Best/Error", filterResults.best.error);
         SafeAKitLogger.recordOutput(prefix + "/Worst/Pose", filterResults.alt.pose);

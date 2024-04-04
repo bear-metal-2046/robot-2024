@@ -3,8 +3,12 @@ package org.tahomarobotics.robot.chassis;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableEvent;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import java.util.EnumSet;
 import java.util.function.Supplier;
 
 /**
@@ -23,6 +27,7 @@ public class NapCorrectingKinematics extends SwerveDriveKinematics {
 
     private final Translation2d[] modules;
     private static final double centerLine = 4.1056179;
+    private boolean isMainField = true;
 
     public NapCorrectingKinematics(Supplier<Rotation2d> gyroSupplier, Supplier<Pose2d> poseSupplier, Translation2d... moduleTranslationsMeters) {
         super(moduleTranslationsMeters);
@@ -31,6 +36,12 @@ public class NapCorrectingKinematics extends SwerveDriveKinematics {
         this.poseSupplier = poseSupplier;
 
         SmartDashboard.putBoolean("Is Main Field", true);
+        NetworkTableInstance inst = NetworkTableInstance.getDefault();
+        NetworkTableEntry entry = SmartDashboard.getEntry("Is Main Field");
+
+        inst.addListener(entry, EnumSet.of(NetworkTableEvent.Kind.kValueAll), e -> {
+            this.isMainField = e.valueData.value.getBoolean();
+        });
 
 //      This is for Field-house carpet (Only if Pos X and Neg X are perfect @ 1.0 compensation)
 //        sourceSideFieldCompensation = new Compensation(1.0, 1.0, 0.976, 1.1);
@@ -68,7 +79,7 @@ public class NapCorrectingKinematics extends SwerveDriveKinematics {
             var comp = modulePose.getY() < centerLine ? sourceSideFieldCompensation : ampSideFieldCompensation;
 
             // multiply compensation
-            x *= SmartDashboard.getBoolean("Is Main Field", true) ? c > 0 ? comp.posX : comp.negX : c > 0 ? comp.negX : comp.posX;
+            x *= (isMainField) ? (c > 0 ? comp.posX : comp.negX) : (c > 0 ? comp.negX : comp.posX);
             y *= s > 0 ? comp.posY : comp.negY;
 
             // recreate moduleDelta

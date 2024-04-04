@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
-import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SafeAKitLogger;
 import org.tahomarobotics.robot.util.SubsystemIF;
@@ -161,11 +160,13 @@ public class AmpArm extends SubsystemIF {
         rollerState = state;
 
         switch (state) {
-            case PASSING -> rollerMotor.setControl(velocityControl.withVelocity(-ShooterConstants.TRANSFER_VELOCITY * 3));
-            case SCORE -> rollerMotor.setControl(velocityControl.withVelocity(-ShooterConstants.TRANSFER_VELOCITY * 4));
-            case TRAP -> rollerMotor.setControl(velocityControl.withVelocity(-AmpArmConstants.TRAP_VELOCITY));
-            case REVERSE_INTAKE ->
-                    rollerMotor.setControl(velocityControl.withVelocity(-AmpArmConstants.REVERSE_INTAKE_VELOCITY));
+            case PASSING -> rollerMotor.setControl(velocityControl.withVelocity(AmpArmConstants.PASSING_VELOCITY));
+            case SCORE -> rollerMotor.setControl(velocityControl.withVelocity(AmpArmConstants.SCORE_VELOCITY));
+            case CENTERING -> sourceIntake();
+            case COLLECTING -> rollerMotor.setControl(velocityControl.withVelocity(AmpArmConstants.COLLECT_VELOCITY));
+            case TRAP -> rollerMotor.setControl(velocityControl.withVelocity(AmpArmConstants.TRAP_VELOCITY));
+            case PASSBACK ->
+                    rollerMotor.setControl(velocityControl.withVelocity(AmpArmConstants.PASSBACK_VELOCITY));
             default -> rollerMotor.stopMotor();
         }
     }
@@ -314,9 +315,10 @@ public class AmpArm extends SubsystemIF {
         PASSING,
         CENTERING,
         COLLECTED,
+        COLLECTING,
         TRAP,
         SCORE,
-        REVERSE_INTAKE
+        PASSBACK
     }
 
     @Override

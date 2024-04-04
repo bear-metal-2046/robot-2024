@@ -91,10 +91,13 @@ public class AmpArmConstants {
     static final InvertedValue ROLLER_INVERT;
 
     public static final double NOTE_INTAKE_POSITION = 1;
-    public static final double SOURCE_INTAKE_DISTANCE = 2;
+    public static final double SOURCE_INTAKE_DISTANCE = 1.5;
 
-    public static final double TRAP_VELOCITY = 4.5;
-    public static final double REVERSE_INTAKE_VELOCITY = 10;
+    public static final double PASSING_VELOCITY = -30.0;
+    public static final double SCORE_VELOCITY = -40.0;
+    public static final double TRAP_VELOCITY = -4.5;
+    public static final double COLLECT_VELOCITY = 10.0;
+    public static final double PASSBACK_VELOCITY = 10.0;
 
     static {
         switch (RobotIdentity.robotID) {

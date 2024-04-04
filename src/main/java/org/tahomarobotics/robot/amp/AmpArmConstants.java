@@ -65,7 +65,7 @@ public class AmpArmConstants {
                 WRIST_MOVING_POSE = Units.degreesToRotations(123.22265625);
                 WRIST_AMP_POSE = Units.degreesToRotations(145.7421875 + 3.0);
                 WRIST_TRAP_POSE = Units.degreesToRotations(139.314453125 + 10.0);
-                WRIST_SOURCE_POSE = Units.degreesToRotations(76.2890625);
+                WRIST_SOURCE_POSE = Units.degreesToRotations(76.2890625 + 5.0);
             }
             default -> {
                 WRIST_MOVING_POSE = Units.degreesToRotations(67.67578125);
@@ -91,7 +91,7 @@ public class AmpArmConstants {
     static final InvertedValue ROLLER_INVERT;
 
     public static final double NOTE_INTAKE_POSITION = 1;
-    public static final double SOURCE_INTAKE_DISTANCE = 1.5;
+    public static final double SOURCE_INTAKE_DISTANCE = 1.0;
 
     public static final double PASSING_VELOCITY = -30.0;
     public static final double SCORE_VELOCITY = -40.0;

@@ -108,7 +108,6 @@ public class AmpArmCommands {
                 Commands.waitSeconds(0.5),
                 Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.PASSBACK)),
                 Commands.waitUntil(indexer::getCollectorBeanBake).withTimeout(2.0),
-                Commands.waitSeconds(0.05),
                 Commands.runOnce(() -> {
                     ampArm.setRollerState(AmpArm.RollerState.DISABLED);
                     indexer.transitionToCollected();

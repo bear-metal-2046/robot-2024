@@ -193,7 +193,7 @@ public class ATVision {
         Pose2d robotPose;
         String prefix = "ATCamera/" + cameraSettings.cameraName;
         MultiTargetPNPResult multiRes = result.getMultiTagResult();
-        double time = Timer.getFPGATimestamp();
+        double time = Timer.getFPGATimestamp() - (result.getLatencyMillis() / 1000.0);
 
         // Check for results in the future
         boolean futureFrame = result.getTimestampSeconds() > time;

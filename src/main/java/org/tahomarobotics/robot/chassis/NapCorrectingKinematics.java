@@ -3,6 +3,7 @@ package org.tahomarobotics.robot.chassis;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.function.Supplier;
 
@@ -29,11 +30,14 @@ public class NapCorrectingKinematics extends SwerveDriveKinematics {
         this.gyroSupplier = gyroSupplier;
         this.poseSupplier = poseSupplier;
 
+        SmartDashboard.putBoolean("Is Main Field", true);
+
 //      This is for Field-house carpet (Only if Pos X and Neg X are perfect @ 1.0 compensation)
-        sourceSideFieldCompensation = new Compensation(1.0, 1.0, 0.976, 1.1);
-        ampSideFieldCompensation = new Compensation(1.0, 1.0, 0.976, 1.1);
-//        sourceSideFieldCompensation = new Compensation(0.987654321, 1.0, 1.0, 1.0);
-//        ampSideFieldCompensation = new Compensation(0.987654321, 1.0,1.0, 1.0);
+//        sourceSideFieldCompensation = new Compensation(1.0, 1.0, 0.976, 1.1);
+//        ampSideFieldCompensation = new Compensation(1.0, 1.0, 0.976, 1.1);
+        sourceSideFieldCompensation = new Compensation(0.987654321, 1.0, 1.0, 1.0);
+        ampSideFieldCompensation = new Compensation(0.987654321, 1.0,1.0, 1.0);
+        // ZHOPPE's note to self: The comp field nap is LAYING DOWN in the pos X direction
     }
 
     public Twist2d toTwist2d_super(SwerveModulePosition... moduleDeltas) {
@@ -64,7 +68,7 @@ public class NapCorrectingKinematics extends SwerveDriveKinematics {
             var comp = modulePose.getY() < centerLine ? sourceSideFieldCompensation : ampSideFieldCompensation;
 
             // multiply compensation
-            x *= c > 0 ? comp.posX : comp.negX;
+            x *= SmartDashboard.getBoolean("Is Main Field", true) ? c > 0 ? comp.posX : comp.negX : c > 0 ? comp.negX : comp.posX;
             y *= s > 0 ? comp.posY : comp.negY;
 
             // recreate moduleDelta

@@ -165,9 +165,8 @@ public class AmpArm extends SubsystemIF {
             case CENTERING -> sourceIntake();
             case COLLECTING -> rollerMotor.setControl(velocityControl.withVelocity(AmpArmConstants.COLLECT_VELOCITY));
             case TRAP -> rollerMotor.setControl(velocityControl.withVelocity(AmpArmConstants.TRAP_VELOCITY));
-            case PASSBACK ->
-                    rollerMotor.setControl(velocityControl.withVelocity(AmpArmConstants.PASSBACK_VELOCITY));
-            default -> rollerMotor.stopMotor();
+            case PASSBACK -> rollerMotor.setControl(velocityControl.withVelocity(AmpArmConstants.PASSBACK_VELOCITY));
+            case DISABLED, COLLECTED -> rollerMotor.stopMotor();
         }
     }
 

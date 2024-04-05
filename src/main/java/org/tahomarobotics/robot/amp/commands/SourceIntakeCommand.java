@@ -14,7 +14,7 @@ public class SourceIntakeCommand extends SequentialCommandGroup {
             Commands.waitSeconds(AmpArmConstants.SOURCE_COLLECT_ACCEL_TIME * 2),
             Commands.waitUntil(() -> (ampArm.getRollerCurrent() > AmpArmConstants.SOURCE_COLLECT_CURRENT)),
             Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.CENTERING)),
-            Commands.waitUntil(ampArm::isRollerAtPosition),
+            Commands.waitUntil(ampArm::isRollerAtPosition).withTimeout(3),
             Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.COLLECTED))
         );
     }

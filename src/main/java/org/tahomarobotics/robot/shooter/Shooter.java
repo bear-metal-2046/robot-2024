@@ -252,6 +252,8 @@ public class Shooter extends SubsystemIF {
 
     @Override
     public void onTeleopInit() {
+        biasAngle = Units.degreesToRotations(.5);
+
         disableShootMode();
         io.configureShooterForTeleop();
     }

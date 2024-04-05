@@ -90,7 +90,7 @@ public class AmpArmConstants {
     static final double ROLLER_GEAR_REDUCTION;
     static final InvertedValue ROLLER_INVERT;
 
-    public static final double NOTE_INTAKE_POSITION = 1;
+    public static final double NOTE_INTAKE_POSITION = 1.25;
     public static final double SOURCE_INTAKE_DISTANCE = 1.0;
 
     public static final double PASSING_VELOCITY = -30.0;

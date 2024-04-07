@@ -35,19 +35,20 @@ public class NapCorrectingKinematics extends SwerveDriveKinematics {
         this.gyroSupplier = gyroSupplier;
         this.poseSupplier = poseSupplier;
 
-        SmartDashboard.putBoolean("Is Main Field", true);
-        NetworkTableInstance inst = NetworkTableInstance.getDefault();
-        NetworkTableEntry entry = SmartDashboard.getEntry("Is Main Field");
-
-        inst.addListener(entry, EnumSet.of(NetworkTableEvent.Kind.kValueAll), e -> {
-            this.isMainField = e.valueData.value.getBoolean();
-        });
+//        SmartDashboard.putBoolean("Is Main Field", true);
+//        NetworkTableInstance inst = NetworkTableInstance.getDefault();
+//        NetworkTableEntry entry = SmartDashboard.getEntry("Is Main Field");
+//
+//        inst.addListener(entry, EnumSet.of(NetworkTableEvent.Kind.kValueAll), e -> {
+//            this.isMainField = e.valueData.value.getBoolean();
+//        });
 
 //      This is for Field-house carpet (Only if Pos X and Neg X are perfect @ 1.0 compensation)
-//        sourceSideFieldCompensation = new Compensation(1.0, 1.0, 0.976, 1.1);
-//        ampSideFieldCompensation = new Compensation(1.0, 1.0, 0.976, 1.1);
-        sourceSideFieldCompensation = new Compensation(0.987654321, 1.0, 1.0, 1.0);
-        ampSideFieldCompensation = new Compensation(0.987654321, 1.0,1.0, 1.0);
+        sourceSideFieldCompensation = new Compensation(1.0, 1.0, 0.976, 1.1);
+        ampSideFieldCompensation = new Compensation(1.0, 1.0, 0.976, 1.1);
+//        sourceSideFieldCompensation = new Compensation(0.987654321, 1.0, 1.0, 1.0);
+//        ampSideFieldCompensation = new Compensation(0.987654321, 1.0,1.0, 1.0);
+
         // ZHOPPE's note to self: The comp field nap is LAYING DOWN in the pos X direction
     }
 
@@ -79,7 +80,7 @@ public class NapCorrectingKinematics extends SwerveDriveKinematics {
             var comp = modulePose.getY() < centerLine ? sourceSideFieldCompensation : ampSideFieldCompensation;
 
             // multiply compensation
-            x *= (isMainField) ? (c > 0 ? comp.posX : comp.negX) : (c > 0 ? comp.negX : comp.posX);
+            x *= c > 0 ? comp.posX : comp.negX;
             y *= s > 0 ? comp.posY : comp.negY;
 
             // recreate moduleDelta

@@ -11,6 +11,7 @@ import org.littletonrobotics.junction.AutoLog;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
+import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.util.RobustConfigurator;
@@ -261,33 +262,33 @@ class ShooterIO {
     void disableShooter() {
         shootingMode = IDLE;
     }
-    void enablePassHighMode(){
+    void enablePassHigh(){
         shootingMode = PASSING_HIGH;
         targetShooterSpeed = passVelocity.Velocity;
 
         topShooterMotor.setControl(passVelocity);
     }
-    void enablePassLowMode() {
+    void enablePassLow() {
         shootingMode = PASSING_LOW;
+        AmpArm.getInstance().setArmState(AmpArm.ArmState.PASSING);
         setShooterAngle(LOW_PASS_POS);
     }
 
-    void togglePassHighMode() {
+    void togglePassHigh() {
         if (getShootMode().equals(PASSING_HIGH)) {
             disableShooter();
             idle();
         } else if (Indexer.getInstance().isCollected()){
-            enablePassHighMode();
-            enable();
+            enablePassHigh();
         }
     }
 
-    void togglePassLowMode() {
+    void togglePassLow() {
         if (getShootMode().equals(PASSING_LOW)) {
             disableShooter();
             idle();
         } else if (Indexer.getInstance().isCollected()){
-            enablePassLowMode();
+            enablePassLow();
             enable();
         }
     }

@@ -153,18 +153,18 @@ public class Shooter extends SubsystemIF {
     }
 
     public void enablePassHighMode(){
-        io.enablePassHighMode();
+        io.enablePassHigh();
     }
     public void enablePassLowMode() {
-        io.enablePassLowMode();
+        io.enablePassLow();
     }
 
     public void togglePassLowMode() {
-        io.togglePassLowMode();
+        io.togglePassLow();
     }
 
     public void togglePassHighMode() {
-        io.togglePassHighMode();
+        io.togglePassHigh();
     }
 
     public boolean inPassingMode() {
@@ -207,22 +207,7 @@ public class Shooter extends SubsystemIF {
     }
 
     public void angleToPass(double radialVelocity) {
-        if (RobotState.isAutonomous() && Autonomous.getInstance().isUsingLookupTable()) {
-            return;
-        }
-
-//        if (DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Blue)
-//            radialVelocity *= -1;
-
-        Translation2d target = PASS_TARGET_POSITION.get();
-        distance = Chassis.getInstance().getPose().getTranslation().getDistance(target) + SHOOTER_PIVOT_OFFSET.getX();
-
-        SafeAKitLogger.recordOutput("Shooter/Target Angle Before Compensation", speakerAngleCalc(distance));
-
-//        double timeShotOffset = (radialVelocity > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE);
-        double targetAngle = passAngleCalc(distance);
-
-        setAngle(targetAngle * 1.02272727301);
+        setAngle(HIGH_PASS_POS);
     }
 
     private double speakerAngleCalc(double distance) {
@@ -289,6 +274,7 @@ public class Shooter extends SubsystemIF {
 
         SafeAKitLogger.recordOutput("Shooter/TotalCurrent", totalCurrent);
         SafeAKitLogger.recordOutput("Shooter/Energy", getEnergyUsed());
+        SafeAKitLogger.recordOutput("Shooter/ShootMode", io.getShootMode());
         SmartDashboard.putBoolean("Shooter/IdleMode", io.isIdling());
         SmartDashboard.putNumber("Shooter/Bias", biasAngle);
 

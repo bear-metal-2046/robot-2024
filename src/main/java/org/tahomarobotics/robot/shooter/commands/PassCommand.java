@@ -31,8 +31,7 @@ public class PassCommand extends SequentialCommandGroup {
                         Commands.runOnce(indexer::transitionToTransferring),
                         Commands.waitSeconds(0.2),
                         Commands.runOnce(shooter::disableShootMode),
-//                        Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.STOW))
-//                          .onlyIf(() -> shooter.getShootMode().equals(Shooter.ShootMode.PASSING_LOW)),
+                        Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.STOW)),
                         Commands.runOnce(() -> shooter.setAngle(ShooterConstants.SHOOTER_COLLECT_PIVOT_ANGLE)),
                         Commands.runOnce(() -> logger.info("Passed"))
                 ).onlyIf(shooter::inPassingMode)

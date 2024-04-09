@@ -53,6 +53,7 @@ public class AmpArmConstants {
     static final InvertedValue WRIST_INVERT;
 
     public static final double WRIST_MOVING_POSE, WRIST_AMP_POSE, WRIST_TRAP_POSE, WRIST_SOURCE_POSE;
+    public static final double WRIST_PASSING_POSE = Units.degreesToRotations(56.0);
     public static final double WRIST_STOW_POSE = Units.degreesToRotations(0.0);
     public static final double WRIST_PASSTHROUGH_POSE = Units.degreesToRotations(180.0);
 

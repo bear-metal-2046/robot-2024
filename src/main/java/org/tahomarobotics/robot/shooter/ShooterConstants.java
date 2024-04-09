@@ -56,10 +56,11 @@ public class ShooterConstants {
     }
 
     public static final double LOW_PASS_POS = MIN_PIVOT_ANGLE;
-    public static final double HIGH_PASS_SPEED = SHOOTER_SPEED / 4;
+    public static final double HIGH_PASS_SPEED = 55;
+    public static final double HIGH_PASS_POS = Units.degreesToRotations(40);
 
-    public static final double SHOT_SPEED = Units.inchesToMeters(Units.rotationsToRadians(SHOOTER_SPEED) * (1.75)) * 0.8; // meters/sec
-    public static final double PASS_SPEED = Units.inchesToMeters(Units.rotationsToRadians(HIGH_PASS_SPEED) * (1.75)) * 0.8; // meters/sec
+//    public static final double SHOT_SPEED = Units.inchesToMeters(Units.rotationsToRadians(SHOOTER_SPEED) * (1.75)) * 0.8; // meters/sec
+//    public static final double PASS_SPEED = Units.inchesToMeters(Units.rotationsToRadians(HIGH_PASS_SPEED) * (1.75)) * 0.8; // meters/sec
 
     static final double BIAS_AMT = Units.degreesToRotations(.5);
 

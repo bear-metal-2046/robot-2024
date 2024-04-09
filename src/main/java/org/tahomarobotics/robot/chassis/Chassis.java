@@ -40,6 +40,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.tahomarobotics.robot.chassis.ChassisConstants.ACCELERATION_LIMIT;
+import static org.tahomarobotics.robot.shooter.Shooter.ShootMode.PASSING_HIGH;
 import static org.tahomarobotics.robot.shooter.ShooterConstants.*;
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
@@ -262,6 +263,8 @@ public class Chassis extends SubsystemIF {
 
             if (Shooter.getInstance().inShootingMode()) {
                 aimToSpeaker(desiredSpeeds);
+            } else if (Shooter.getInstance().inPassingMode()) {
+                aimToPass(desiredSpeeds);
             }
 
             var swerveModuleStates = kinematics.toSwerveModuleStates(desiredSpeeds);
@@ -345,16 +348,16 @@ public class Chassis extends SubsystemIF {
         Shooter.getInstance().angleToSpeaker(radialComponent);
 
         // Calculate position and velocity adjustment
-        double adj = Math.atan2(-tangentialComponent, ShooterConstants.SHOT_SPEED + radialComponent);
-        double adjSpeed = tangentialComponent / goalDis;
+//        double adj = Math.atan2(-tangentialComponent, ShooterConstants.SHOT_SPEED + radialComponent);
+//        double adjSpeed = tangentialComponent / goalDis;
+//
+//        // modifiers
+//        if (DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Red) {
+//            adj *= -1;
+//            adjSpeed *= -1;
+//        }
 
-        // modifiers
-        if (DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Red) {
-            adj *= -1;
-            adjSpeed *= -1;
-        }
-
-        targetShootingAngle = goalRot + adj - Units.degreesToRadians(4);
+        targetShootingAngle = goalRot - Units.degreesToRadians(4);
 
         fieldPose.getObject("goal").setPose(new Pose2d(goal, new Rotation2d()));
 
@@ -362,7 +365,60 @@ public class Chassis extends SubsystemIF {
                 shootModeController.calculate(
                         pose.getRotation().getRadians(),
                         targetShootingAngle
-                ) - adjSpeed;
+                ); // - adjSpeed;
+    }
+
+    private void aimToPass(ChassisSpeeds speeds) {
+
+        //
+        // Based off of 2022 Cheesy Poof shooting utils
+        // https://github.com/Team254/FRC-2022-Public/blob/6a24236b37f0fcb75ceb9d5dec767be58ea903c0/src/main/java/com/team254/frc2022/shooting/ShootingUtil.java#L26
+        //
+
+        var pose = getPose();
+        var goal = PASS_TARGET_POSITION.get();
+
+        // Get polar coordinates (theta + distance) from robot to goal
+        var robotToGoal = goal.minus(pose.getTranslation());
+        var goalRot = MathUtil.angleModulus(robotToGoal.getAngle().getRadians() + Math.PI);
+        var goalDis = robotToGoal.getNorm();
+
+        // Get robot speed relative to angle from robot to goal
+        // X component is towards/from goal, Y component is tangential to goal
+        var curSpeeds = getCurrentChassisSpeeds();
+        var speedsTranslation = new Translation2d(curSpeeds.vxMetersPerSecond, curSpeeds.vyMetersPerSecond);
+        var speedsToGoal = speedsTranslation.rotateBy(robotToGoal.getAngle().unaryMinus());
+
+        double tangentialComponent = speedsToGoal.getY();
+        double radialComponent = speedsToGoal.getX();
+
+        double timeOffset = (radialComponent > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE);
+
+        SafeAKitLogger.recordOutput("Chassis/RadialVelocity", radialComponent);
+        SafeAKitLogger.recordOutput("Chassis/AcceleratedRadialVelocity", radialComponent);
+        SafeAKitLogger.recordOutput("Chassis/TangentialVelocity", tangentialComponent);
+
+        if (Shooter.getInstance().getShootMode().equals(PASSING_HIGH)) Shooter.getInstance().angleToPass(radialComponent);
+
+        // Calculate position and velocity adjustment
+//        double adj = Math.atan2(-tangentialComponent, SHOT_SPEED + radialComponent);
+//        double adjSpeed = tangentialComponent / goalDis;
+//
+//        // modifiers
+//        if (DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Red) {
+//            adj *= -1;
+//            adjSpeed *= -1;
+//        }
+
+        targetShootingAngle = goalRot - Units.degreesToRadians(4);
+
+        fieldPose.getObject("passGoal").setPose(new Pose2d(goal, new Rotation2d()));
+
+        speeds.omegaRadiansPerSecond =
+                shootModeController.calculate(
+                        pose.getRotation().getRadians(),
+                        targetShootingAngle
+                ); // - adjSpeed;
     }
 
     public boolean isReadyToShoot() {

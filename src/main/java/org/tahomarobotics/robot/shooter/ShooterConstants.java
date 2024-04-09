@@ -55,7 +55,11 @@ public class ShooterConstants {
         }
     }
 
+    public static final double LOW_PASS_POS = MIN_PIVOT_ANGLE;
+    public static final double HIGH_PASS_SPEED = SHOOTER_SPEED / 4;
+
     public static final double SHOT_SPEED = Units.inchesToMeters(Units.rotationsToRadians(SHOOTER_SPEED) * (1.75)) * 0.8; // meters/sec
+    public static final double PASS_SPEED = Units.inchesToMeters(Units.rotationsToRadians(HIGH_PASS_SPEED) * (1.75)) * 0.8; // meters/sec
 
     static final double BIAS_AMT = Units.degreesToRotations(.5);
 
@@ -74,6 +78,14 @@ public class ShooterConstants {
                     .getAlliance()
                     .filter(a -> a == DriverStation.Alliance.Blue)
                     .map(a -> BLUE_SPEAKER_TARGET_POSITION).orElse(RED_SPEAKER_TARGET_POSITION);
+
+    private static final Translation2d RED_PASS_TARGET_POSITION = new Translation2d(16.541, 8.211);
+    private static final Translation2d BLUE_PASS_TARGET_POSITION = new Translation2d(0, 8.211);
+    public static final Supplier<Translation2d> PASS_TARGET_POSITION = () ->
+            DriverStation
+                    .getAlliance()
+                    .filter(a -> a == DriverStation.Alliance.Blue)
+                    .map(a -> BLUE_PASS_TARGET_POSITION).orElse(RED_PASS_TARGET_POSITION);
 
     static final TalonFXConfiguration shooterMotorConfiguration = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()

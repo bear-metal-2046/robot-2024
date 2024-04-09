@@ -22,6 +22,7 @@ import org.tahomarobotics.robot.climbers.commands.*;
 import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
+import org.tahomarobotics.robot.shooter.commands.PassCommand;
 import org.tahomarobotics.robot.shooter.commands.RedunShootCommand;
 import org.tahomarobotics.robot.shooter.commands.ShootCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
@@ -94,7 +95,8 @@ public class OI extends SubsystemIF {
 
         //Shooting mode toggle
         driveController.rightBumper().onTrue(Commands.runOnce(shooter::toggleShootMode));
-
+        manipController.leftBumper().onTrue(Commands.runOnce(shooter::togglePassHighMode));
+        manipController.rightBumper().onTrue(Commands.runOnce(shooter::togglePassLowMode));
 
         manipController.povUp().onTrue(Commands.runOnce(shooter::biasUp).ignoringDisable(true));
         manipController.povDown().onTrue(Commands.runOnce(shooter::biasDown).ignoringDisable(true));
@@ -102,7 +104,7 @@ public class OI extends SubsystemIF {
 
         manipController.back().onTrue(Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.ENGAGED)).onlyIf(() -> climbers.getClimbState().equals(Climbers.ClimbState.ENGAGING)));
 
-        manipController.rightBumper().onTrue(Commands.runOnce(shooter::toggleRedundantShootMode));
+        manipController.a().onTrue(Commands.runOnce(shooter::toggleRedundantShootMode));
         manipController.povLeft().onTrue(Commands.runOnce(() -> {
             shooter.enableRedundantShootMode();
             shooter.setAngle(ShooterConstants.CLOSE_REDUNDANT_ANGLE);
@@ -158,6 +160,7 @@ public class OI extends SubsystemIF {
                         Commands.defer(ARM_TO_STOW, Set.of(ampArm))).onlyIf(ampArm::isArmAtAmp))
                 .onTrue(new ShootCommand())
                 .onTrue(new RedunShootCommand())
+                .onTrue(new PassCommand())
                 .whileFalse(Commands.runOnce(() -> ampArm.setRollerState(AmpArm.RollerState.DISABLED)));
 
         driveController.leftTrigger(0.5).whileTrue(

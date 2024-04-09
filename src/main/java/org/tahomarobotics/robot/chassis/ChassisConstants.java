@@ -79,7 +79,7 @@ public final class ChassisConstants {
     public static final double DRIVE_POSITION_COEFFICIENT = WHEEL_CIRCUMFERENCE * DRIVE_REDUCTION; // r/s -> m/s
 
     //Placeholder PID values
-    public static final PIDConstants AUTO_TRANSLATION_PID = new PIDConstants(2.5,0,0.5);
+    public static final PIDConstants AUTO_TRANSLATION_PID = new PIDConstants(7.5,0,0.5);
     public static final PIDConstants AUTO_ROTATION_PID = new PIDConstants(5, 0, 0.5);
 
     private static final double SHOOT_ROTATION_TARGET_TOLERANCE = Units.degreesToRadians(5.0);

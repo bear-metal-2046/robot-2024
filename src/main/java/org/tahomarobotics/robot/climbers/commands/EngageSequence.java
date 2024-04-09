@@ -42,6 +42,7 @@ public class EngageSequence extends SequentialCommandGroup {
                 Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.ENGAGING)),
                 Commands.runOnce(() -> logger.info("Pathfinding To Pre-climb Pose")),
                 AutoBuilder.pathfindToPose(target, ChassisConstants.CLIMB_MOVEMENT_CONSTRAINTS),
+                Commands.runOnce(()-> logger.info("Chassis Pose: " + chassis.getPose() + "      Chain Pose: " + target)),
                 Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.CLIMB))
         );
 
@@ -50,15 +51,19 @@ public class EngageSequence extends SequentialCommandGroup {
                     Commands.waitSeconds(0.75),
                     Commands.runOnce(ampArm::shiftNote),
                     Commands.waitUntil(ampArm::isRollerAtPosition),
-                    Commands.runOnce(() -> logger.info("Shifted Note Back"))
+                    Commands.runOnce(() -> logger.info("Shifted Note Back")),
+                    new DriveForwardCommand(-0.5,1.5),
+                    new LadenClimbCommand(PARTIAL_CLIMB_POSITION).alongWith(new DriveForwardCommand(0.5,0.25)),
+                    Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.ENGAGED))
+            );
+        } else {
+            addCommands(
+                    Commands.waitSeconds(0.75),
+                    new DriveForwardCommand(-0.5,1.5),
+                    new LadenClimbCommand(PARTIAL_CLIMB_POSITION).alongWith(new DriveForwardCommand(0.5,0.25)),
+                    Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.ENGAGED))
             );
         }
-
-        addCommands(
-                new DriveForwardCommand(-0.5,1.5),
-                new LadenClimbCommand(PARTIAL_CLIMB_POSITION).alongWith(new DriveForwardCommand(0.5,0.25)),
-                Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.ENGAGED))
-        );
 
         addRequirements(climbers, ampArm);
     }

@@ -42,12 +42,13 @@ public class EngageSequence extends SequentialCommandGroup {
                 Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.ENGAGING)),
                 Commands.runOnce(() -> logger.info("Pathfinding To Pre-climb Pose")),
                 AutoBuilder.pathfindToPose(target, ChassisConstants.CLIMB_MOVEMENT_CONSTRAINTS),
-                Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.CLIMB))
+                Commands.runOnce(()-> logger.info("Chassis Pose: " + chassis.getPose() + "      Chain Pose: " + target)),
+                Commands.runOnce(() -> ampArm.setArmState(AmpArm.ArmState.CLIMB)),
+                Commands.waitSeconds(0.75)
         );
 
         if (climbers.isTrapping()) {
             addCommands(
-                    Commands.waitSeconds(0.75),
                     Commands.runOnce(ampArm::shiftNote),
                     Commands.waitUntil(ampArm::isRollerAtPosition),
                     Commands.runOnce(() -> logger.info("Shifted Note Back"))

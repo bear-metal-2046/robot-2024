@@ -61,7 +61,7 @@ public class Chassis extends SubsystemIF {
 
     private final CalibrationData<Double[]> swerveCalibration;
 
-    private final ObjectDetectionCamera objectDetectionCamera;
+//    private final ObjectDetectionCamera objectDetectionCamera;
     private final List<ATVision> apriltagCameras = new ArrayList<>();
 
     private final Thread odometryThread;
@@ -130,7 +130,7 @@ public class Chassis extends SubsystemIF {
         odometryThread.start();
 
 
-        objectDetectionCamera = new ObjectDetectionCamera(VisionConstants.Camera.COLLECTOR_LEFT);
+//        objectDetectionCamera = new ObjectDetectionCamera(VisionConstants.Camera.COLLECTOR_LEFT);
         apriltagCameras.add(new ATVision(VisionConstants.Camera.COLLECTOR_RIGHT, fieldPose, poseEstimator));
         apriltagCameras.add(new ATVision(VisionConstants.Camera.SHOOTER_LEFT, fieldPose, poseEstimator));
         apriltagCameras.add(new ATVision(VisionConstants.Camera.SHOOTER_RIGHT, fieldPose, poseEstimator));

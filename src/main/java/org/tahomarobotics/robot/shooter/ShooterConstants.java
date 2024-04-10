@@ -31,7 +31,8 @@ public class ShooterConstants {
     static final double PIVOT_ANGLE_TOLERANCE = Units.degreesToRotations(2.5);
     public static final double SHOOTER_COLLECT_PIVOT_ANGLE = MIN_PIVOT_ANGLE;
 
-    static final double PIVOT_GEAR_REDUCTION = (12.0 / 44.0) * (30.0 / 36.0) * (10.0 / 80.0);
+    static final double PIVOT_GEAR_REDUCTION;
+    static final double GEAR_REDUCTION_COMPENSATION;
     static final double SHOOTER_GEAR_REDUCTION;
 
     static final InvertedValue PIVOT_INVERSION;
@@ -51,6 +52,17 @@ public class ShooterConstants {
                 MAX_PIVOT_ANGLE = Units.degreesToRotations(50.4);
                 SHOOTER_GEAR_REDUCTION = 1.0;
                 PIVOT_INVERSION = InvertedValue.CounterClockwise_Positive;
+            }
+        }
+
+        switch (RobotIdentity.robotID) {
+            case BEARITONE -> {
+                PIVOT_GEAR_REDUCTION = (12.0 / 44.0) * (30.0 / 36.0) * (10.0 / 80.0);
+                GEAR_REDUCTION_COMPENSATION = 1.02272727301;
+            }
+            default -> {
+                PIVOT_GEAR_REDUCTION = (10.0 / 44.0) * (30.0 / 36.0) * (10.0 / 80.0);
+                GEAR_REDUCTION_COMPENSATION = 1;
             }
         }
     }

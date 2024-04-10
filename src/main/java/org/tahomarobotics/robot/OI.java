@@ -95,8 +95,8 @@ public class OI extends SubsystemIF {
 
         //Shooting mode toggle
         driveController.rightBumper().onTrue(Commands.runOnce(shooter::toggleShootMode));
-        manipController.leftBumper().onTrue(Commands.runOnce(shooter::togglePassHighMode));
-        manipController.rightBumper().onTrue(Commands.runOnce(shooter::togglePassLowMode));
+        manipController.leftBumper().onTrue(Commands.runOnce(shooter::togglePassHigh));
+        manipController.rightBumper().onTrue(Commands.runOnce(shooter::togglePassLow));
 
         manipController.povUp().onTrue(Commands.runOnce(shooter::biasUp).ignoringDisable(true));
         manipController.povDown().onTrue(Commands.runOnce(shooter::biasDown).ignoringDisable(true));

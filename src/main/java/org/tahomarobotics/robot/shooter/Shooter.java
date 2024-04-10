@@ -152,18 +152,18 @@ public class Shooter extends SubsystemIF {
         return io.getShootMode();
     }
 
-    public void enablePassHighMode(){
+    public void enablePassHigh(){
         io.enablePassHigh();
     }
-    public void enablePassLowMode() {
+    public void enablePassLow() {
         io.enablePassLow();
     }
 
-    public void togglePassLowMode() {
+    public void togglePassLow() {
         io.togglePassLow();
     }
 
-    public void togglePassHighMode() {
+    public void togglePassHigh() {
         io.togglePassHigh();
     }
 
@@ -187,7 +187,7 @@ public class Shooter extends SubsystemIF {
         return io.getPivotVelocity();
     }
 
-    public void angleToSpeaker(double radialVelocity) {
+    public void angleToSpeaker() {
         if (RobotState.isAutonomous() && Autonomous.getInstance().isUsingLookupTable()) {
             return;
         }
@@ -203,29 +203,29 @@ public class Shooter extends SubsystemIF {
 //        double timeShotOffset = (radialVelocity > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE);
         double targetAngle = speakerAngleCalc(distance);
 
-        setAngle(targetAngle * 1.02272727301);
+        setAngle(targetAngle * GEAR_REDUCTION_COMPENSATION);
     }
 
-    public void angleToPass(double radialVelocity) {
-        setAngle(HIGH_PASS_POS);
+    public void angleToPass() {
+        setAngle((getShootMode().equals(ShootMode.PASSING_LOW)) ? LOW_PASS_POS : HIGH_PASS_POS);
     }
 
     private double speakerAngleCalc(double distance) {
         return switch (RobotIdentity.robotID) {
-            // y = 0.07068257 + 0.1999213*e^(-0.5485811*x)
-            case PLAYBEAR_CARTI -> 0.07068257 + 0.1999213 * Math.pow(Math.E, -0.5485811 * distance);
+//            // y = 0.07068257 + 0.1999213*e^(-0.5485811*x)
+//            case PLAYBEAR_CARTI -> 0.07068257 + 0.1999213 * Math.pow(Math.E, -0.5485811 * distance);
             // y = .1823 * e ^ (-.5392 * x) + 0.05025
-            case BEARITONE -> 0.1823 * Math.pow(Math.E, -0.5392 * distance) + 0.05025;
+            case BEARITONE, PLAYBEAR_CARTI -> 0.1823 * Math.pow(Math.E, -0.5392 * distance) + 0.05025;
             default -> 0.04875446 + (0.201136 - 0.04875446)/(1 + Math.pow((distance/2.019404), 2.137465)) + 0.002;
         };
     }
 
     private double passAngleCalc(double distance) {
         return switch (RobotIdentity.robotID) {
-            // y = 0.07068257 + 0.1999213*e^(-0.5485811*x)
-            case PLAYBEAR_CARTI -> 0.07068257 + 0.1999213 * Math.pow(Math.E, -0.5485811 * distance);
-            // y = .1823 * e ^ (-.5392 * x) + 0.05025
-            case BEARITONE -> 0.1823 * Math.pow(Math.E, -0.5392 * distance) + 0.05025;
+//            // y = 0.17068257 + 0.1999213*e^(-0.5485811*x)
+//            case PLAYBEAR_CARTI -> 0.17068257 + 0.1999213 * Math.pow(Math.E, -0.5485811 * distance);
+            // y = .1823 * e ^ (-.5392 * x) + 0.15025
+            case BEARITONE, PLAYBEAR_CARTI -> 0.1823 * Math.pow(Math.E, -0.5392 * distance) + 0.15025;
             default -> 0.04875446 + (0.201136 - 0.04875446)/(1 + Math.pow((distance/2.019404), 2.137465)) + 0.002;
         };
     }

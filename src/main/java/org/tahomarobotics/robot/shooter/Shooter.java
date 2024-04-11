@@ -192,9 +192,6 @@ public class Shooter extends SubsystemIF {
             return;
         }
 
-//        if (DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Blue)
-//            radialVelocity *= -1;
-
         Translation2d target = SPEAKER_TARGET_POSITION.get();
         distance = Chassis.getInstance().getPose().getTranslation().getDistance(target) + SHOOTER_PIVOT_OFFSET.getX();
 
@@ -212,8 +209,6 @@ public class Shooter extends SubsystemIF {
 
     private double speakerAngleCalc(double distance) {
         return switch (RobotIdentity.robotID) {
-//            // y = 0.07068257 + 0.1999213*e^(-0.5485811*x)
-//            case PLAYBEAR_CARTI -> 0.07068257 + 0.1999213 * Math.pow(Math.E, -0.5485811 * distance);
             // y = .1823 * e ^ (-.5392 * x) + 0.05025
             case BEARITONE, PLAYBEAR_CARTI -> 0.1823 * Math.pow(Math.E, -0.5392 * distance) + 0.05025;
             default -> 0.04875446 + (0.201136 - 0.04875446)/(1 + Math.pow((distance/2.019404), 2.137465)) + 0.002;
@@ -222,8 +217,6 @@ public class Shooter extends SubsystemIF {
 
     private double passAngleCalc(double distance) {
         return switch (RobotIdentity.robotID) {
-//            // y = 0.17068257 + 0.1999213*e^(-0.5485811*x)
-//            case PLAYBEAR_CARTI -> 0.17068257 + 0.1999213 * Math.pow(Math.E, -0.5485811 * distance);
             // y = .1823 * e ^ (-.5392 * x) + 0.15025
             case BEARITONE, PLAYBEAR_CARTI -> 0.1823 * Math.pow(Math.E, -0.5392 * distance) + 0.15025;
             default -> 0.04875446 + (0.201136 - 0.04875446)/(1 + Math.pow((distance/2.019404), 2.137465)) + 0.002;

@@ -61,7 +61,7 @@ public class Chassis extends SubsystemIF {
     private final CalibrationData<Double[]> swerveCalibration;
 
 //    private final ObjectDetectionCamera objectDetectionCamera;
-    private final List<ATVision> apriltagCameras = new ArrayList<>();
+    public final List<ATVision> apriltagCameras = new ArrayList<>();
 
     private final Thread odometryThread;
 
@@ -210,6 +210,10 @@ public class Chassis extends SubsystemIF {
 
     private SwerveModuleState[] getSwerveModuleDesiredStates() {
         return modules.stream().map(SwerveModule::getDesiredState).toArray(SwerveModuleState[]::new);
+    }
+
+    public List<SwerveModule> getSwerveModules() {
+        return modules;
     }
 
     public ChassisSpeeds getCurrentChassisSpeeds() {
@@ -366,6 +370,14 @@ public class Chassis extends SubsystemIF {
     public void orientToZeroHeading() {
         Rotation2d heading = new Rotation2d(DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Blue ? 0.0 : Math.PI);
         resetOdometry(new Pose2d(getPose().getTranslation(), heading));
+    }
+
+    public void disableCameras() {
+        apriltagCameras.forEach(ATVision::disable);
+    }
+
+    public void enableCameras() {
+        apriltagCameras.forEach(ATVision::enable);
     }
 
     // onInit

@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.auto.Autonomous;
 import org.tahomarobotics.robot.chassis.Chassis;
+import org.tahomarobotics.robot.checks.Check;
 import org.tahomarobotics.robot.climbers.Climbers;
 import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.identity.RobotIdentity;
@@ -69,6 +70,7 @@ public class Robot extends LoggedRobot {
         subsystems.add(Autonomous.getInstance().initialize());
 
         logCommandScheduler();
+        Check.register();
 
         logger.info("Robot Initialized.");
     }

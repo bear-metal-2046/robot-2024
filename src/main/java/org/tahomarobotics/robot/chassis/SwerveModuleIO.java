@@ -16,6 +16,7 @@ import org.littletonrobotics.junction.AutoLog;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
+import org.tahomarobotics.robot.checks.Check;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SafeAKitLogger;
 
@@ -29,6 +30,7 @@ public class SwerveModuleIO {
     // MEMBER VARIABLES
 
     protected String name;
+    private boolean isTesting = false;
 
     private final TalonFX driveMotor;
     private final TalonFX steerMotor;
@@ -96,13 +98,13 @@ public class SwerveModuleIO {
 
     // CALIBRATION
 
-    
+
     void initializeCalibration() {
-        configurator.setCancoderAngularOffset( steerAbsEncoder, 0);
+        configurator.setCancoderAngularOffset(steerAbsEncoder, 0);
         configurator.setMotorNeutralMode(steerMotor, NeutralModeValue.Coast);
     }
 
-    
+
     double finalizeCalibration() {
         angularOffset = -steerPosition.refresh().getValue();
         configurator.setCancoderAngularOffset(steerAbsEncoder, angularOffset);
@@ -110,7 +112,7 @@ public class SwerveModuleIO {
         return angularOffset;
     }
 
-    
+
     void cancelCalibration() {
         configurator.setCancoderAngularOffset(steerAbsEncoder, angularOffset);
     }
@@ -141,11 +143,18 @@ public class SwerveModuleIO {
     /**
      * @return The current state of the module.
      */
-    
+
     SwerveModuleState getState() {
         return new SwerveModuleState(getDriveVelocity(), Rotation2d.fromRotations(getSteerAngle()));
     }
 
+    double getSteerCurrent() {
+        return steerCurrent.getValueAsDouble();
+    }
+
+    double getDriveCurrent() {
+        return driveCurrent.getValueAsDouble();
+    }
 
     SwerveModuleState getAccelerationState() {
         return new SwerveModuleState(lastAccel, Rotation2d.fromRotations(getSteerAngle()));
@@ -154,7 +163,7 @@ public class SwerveModuleIO {
     SwerveModuleState getRawAccelerationState() {
         return new SwerveModuleState(driveAcceleration.getValue(), Rotation2d.fromRotations(getSteerAngle()));
     }
-    
+
     SwerveModuleState getDesiredState() {
         return desiredState;
     }
@@ -162,19 +171,19 @@ public class SwerveModuleIO {
     /**
      * @return The current position of the module.
      */
-    
+
     SwerveModulePosition getPosition() {
         return new SwerveModulePosition(getDrivePosition(), Rotation2d.fromRotations(getSteerAngle()));
     }
 
     // State
 
-    
+
     void processInputs(SwerveModuleIOInputs inputs) {
         desiredState = inputs.desiredState;
     }
 
-    
+
     public void periodic() {
         SafeAKitLogger.recordOutput("Chassis/Modules/" + name + "/State", getState());
         SafeAKitLogger.recordOutput("Chassis/Modules/" + name + "/DesiredState", desiredState);
@@ -187,8 +196,10 @@ public class SwerveModuleIO {
         SafeAKitLogger.recordOutput("Chassis/Modules/" + name + "/SteerVelocity", steerVelocity.getValueAsDouble());
     }
 
-    
+
     void updateDesiredState() {
+        if (isTesting) return;
+
         double steerAngle = getSteerAngle();
 
         // Optimize the reference state to avoid spinning further than 90 degrees
@@ -201,13 +212,23 @@ public class SwerveModuleIO {
         steerMotor.setControl(steerMotorPosition.withPosition(desiredState.angle.getRotations()));
     }
 
-    
+
     void stop() {
+        isTesting = false;
         driveMotor.stopMotor();
         steerMotor.stopMotor();
     }
 
-    
+    void testSteer() {
+        isTesting = true;
+        steerMotor.setControl(Check.steerControlRequest);
+    }
+
+    void testDrive() {
+        isTesting = true;
+        driveMotor.setControl(Check.driveControlRequest);
+    }
+
     List<BaseStatusSignal> getStatusSignals() {
         return List.of(
                 drivePosition,

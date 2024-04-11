@@ -90,6 +90,9 @@ public class Climbers extends SubsystemIF {
         return rightClimber.getVelocity();
     }
 
+    public double getLeftCurrent() { return leftClimber.getCurrent(); }
+    public double getRightCurrent() { return rightClimber.getCurrent(); }
+
     @Override
     public double getEnergyUsed() {
         return energyUsed;

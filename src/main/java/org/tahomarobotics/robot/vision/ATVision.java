@@ -32,6 +32,8 @@ public class ATVision {
     private int updates = 0;
     private int failedUpdates = 0;
     private double lastUpdateTime = 0;
+    private boolean enabled = true;
+    private int aprilTagCount = 0;
 
     public ATVision(VisionConstants.Camera cameraSettings, Field2d fieldPose, SwerveDrivePoseEstimator poseEstimator) {
         this.cameraSettings = cameraSettings;
@@ -222,15 +224,15 @@ public class ATVision {
             return;
         }
 
-        int numTargets = filterResults.targetList.size();
+        aprilTagCount = filterResults.targetList.size();
         SafeAKitLogger.recordOutput(prefix + "/New Frame", true);
         SafeAKitLogger.recordOutput(prefix + "/Result In The Future", futureFrame);
         SafeAKitLogger.recordOutput(prefix + "/Best/Pose", filterResults.best.pose);
         SafeAKitLogger.recordOutput(prefix + "/Best/Error", filterResults.best.error);
         SafeAKitLogger.recordOutput(prefix + "/Worst/Pose", filterResults.alt.pose);
         SafeAKitLogger.recordOutput(prefix + "/Worst/Error", filterResults.alt.error);
-        SafeAKitLogger.recordOutput(prefix + "/Multitag", numTargets > 1);
-        SafeAKitLogger.recordOutput(prefix + "/Number of Targets", numTargets);
+        SafeAKitLogger.recordOutput(prefix + "/Multitag", aprilTagCount > 1);
+        SafeAKitLogger.recordOutput(prefix + "/Number of Targets", aprilTagCount);
         SafeAKitLogger.recordOutput(prefix + "/Ambiguity", filterResults.ambiguity);
         SafeAKitLogger.recordOutput(prefix + "/Apriltag IDs", filterResults.targetList.toString());
         SafeAKitLogger.recordOutput(prefix + "/Failed Updates", failedUpdates);
@@ -265,7 +267,7 @@ public class ATVision {
 
         // Single tag results are not very trustworthy. Do not use headings from them
         Pose2d camPose2d = camPose.toPose2d();
-        if (numTargets == 1) {
+        if (aprilTagCount == 1) {
             camPose2d = new Pose2d(camPose2d.getTranslation(), robotPose.getRotation());
         }
 
@@ -284,7 +286,20 @@ public class ATVision {
     }
 
     public void update() {
+        if (!enabled) { return; }
         processVisionUpdate(camera.getLatestResult());
+    }
+
+    public void enable() {
+        enabled = true;
+    }
+
+    public void disable() {
+        enabled = false;
+    }
+
+    public int aprilTagCount() {
+        return aprilTagCount;
     }
 
     public int getUpdates() {

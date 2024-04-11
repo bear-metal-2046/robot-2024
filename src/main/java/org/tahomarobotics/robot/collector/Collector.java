@@ -331,6 +331,7 @@ public class Collector extends SubsystemIF {
         Commands.waitUntil(() -> RobotState.isEnabled() && RobotState.isTeleop())
                 .andThen(Commands.waitSeconds(0.25))
                 .andThen(new ZeroCollectorCommand().onlyIf(() -> !isZeroed()))
+                .andThen(this::setStowed)
                 .ignoringDisable(true)
                 .schedule();
 
@@ -359,5 +360,17 @@ public class Collector extends SubsystemIF {
     @Override
     public double getTotalCurrent() {
         return totalCurrent;
+    }
+
+    public double getLeftDeployCurrent() {
+        return deployCurrentLeft.getValueAsDouble();
+    }
+
+    public double getRightDeployCurrent() {
+        return deployCurrentRight.getValueAsDouble();
+    }
+
+    public double getSpinyCurrent() {
+        return collectCurrent.getValueAsDouble();
     }
 }

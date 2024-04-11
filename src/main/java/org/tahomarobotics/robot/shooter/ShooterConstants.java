@@ -42,14 +42,12 @@ public class ShooterConstants {
             case PLAYBEAR_CARTI, BEARITONE -> {
                 SHOOTER_SPEED = 5000.0 / 60.0;
                 IDLE_SPEED = SHOOTER_SPEED;
-                MAX_PIVOT_ANGLE = Units.degreesToRotations(56.338);
                 SHOOTER_GEAR_REDUCTION = (24.0 / 18.0);
                 PIVOT_INVERSION = InvertedValue.Clockwise_Positive;
             }
             default -> {
                 SHOOTER_SPEED = 75.0;
                 IDLE_SPEED = 37.5;
-                MAX_PIVOT_ANGLE = Units.degreesToRotations(50.4);
                 SHOOTER_GEAR_REDUCTION = 1.0;
                 PIVOT_INVERSION = InvertedValue.CounterClockwise_Positive;
             }
@@ -57,10 +55,12 @@ public class ShooterConstants {
 
         switch (RobotIdentity.robotID) {
             case BEARITONE -> {
+                MAX_PIVOT_ANGLE = Units.degreesToRotations(56.338);
                 PIVOT_GEAR_REDUCTION = (12.0 / 44.0) * (30.0 / 36.0) * (10.0 / 80.0);
                 GEAR_REDUCTION_COMPENSATION = 1.02272727301;
             }
             default -> {
+                MAX_PIVOT_ANGLE = Units.degreesToRotations(52.4);
                 PIVOT_GEAR_REDUCTION = (10.0 / 44.0) * (30.0 / 36.0) * (10.0 / 80.0);
                 GEAR_REDUCTION_COMPENSATION = 1;
             }

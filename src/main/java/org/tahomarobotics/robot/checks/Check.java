@@ -45,11 +45,11 @@ public class Check extends ParallelCommandGroup {
     public static MotionMagicVelocityVoltage driveControlRequest = new MotionMagicVelocityVoltage(10 / ChassisConstants.DRIVE_REDUCTION);
 
     public static Command checkModuleSteer(SwerveModule module) {
-        return Check.runForTime(logger, module.name + " Module/Steer", 4, module::testSteer, module::stop, module::getSteerCurrent, new Check.NominalValues(2, 3));
+        return Check.runForTime(logger, module.name + " Module/Steer", 4, module::testSteer, module::stop, module::getSteerCurrent, new Check.NominalValues(1.5, 3.5));
     }
 
     public static Command checkModuleDrive(SwerveModule module) {
-        return Check.runForTime(logger, module.name + " Module/Drive", 4, module::testDrive, module::stop, module::getDriveCurrent, new Check.NominalValues(.5, 2));
+        return Check.runForTime(logger, module.name + " Module/Drive", 4, module::testDrive, module::stop, module::getDriveCurrent, new Check.NominalValues(.25, 2));
     }
 
     public static Command checkAllModuleSteers() {
@@ -101,11 +101,11 @@ public class Check extends ParallelCommandGroup {
             shooterLeftCurrents.add(shooter.getBottomShooterCurrent());
             shooterRightCurrents.add(shooter.getTopShooterCurrent());
         })).andThen(Commands.runOnce(() -> {
-            Check.printStatistics(logger, "Left Climber", leftCurrents, new Check.NominalValues(1.25, 1.75));
-            Check.printStatistics(logger, "Right Climber", rightCurrents, new Check.NominalValues(1.25, 1.75));
-            Check.printStatistics(logger, "Shooter Pivot", pivotCurrents, new Check.NominalValues(.15, 0.55));
-            Check.printStatistics(logger, "Shooter Left", shooterLeftCurrents, new Check.NominalValues(7.5, 10.5));
-            Check.printStatistics(logger, "Shooter Right", shooterRightCurrents, new Check.NominalValues(3, 8));
+            Check.printStatistics(logger, "Left Climber", leftCurrents, new Check.NominalValues(1.0, 2.25));
+            Check.printStatistics(logger, "Right Climber", rightCurrents, new Check.NominalValues(1.0, 2.25));
+            Check.printStatistics(logger, "Shooter Pivot", pivotCurrents, new Check.NominalValues(.15, 0.75));
+            Check.printStatistics(logger, "Shooter Left", shooterLeftCurrents, new Check.NominalValues(7.5, 10.0));
+            Check.printStatistics(logger, "Shooter Right", shooterRightCurrents, new Check.NominalValues(4.75, 7.75));
         }));
 
         command.addRequirements(climbers, shooter);
@@ -144,10 +144,10 @@ public class Check extends ParallelCommandGroup {
             spinyCurrents.add(collector.getSpinyCurrent());
             indexerCurrents.add(indexer.getCurrent());
         })).andThen(Commands.runOnce(() -> {
-            Check.printStatistics(logger, "Left Collector", leftCurrents, new Check.NominalValues(.25, .75));
-            Check.printStatistics(logger, "Right Collector", rightCurrents, new Check.NominalValues(.25, .75));
-            Check.printStatistics(logger, "Collect Collector", spinyCurrents, new Check.NominalValues(15, 25));
-            Check.printStatistics(logger, "Indexer", indexerCurrents, new Check.NominalValues(3.75, 4.25));
+            Check.printStatistics(logger, "Left Collector", leftCurrents, new Check.NominalValues(0.15, 0.75));
+            Check.printStatistics(logger, "Right Collector", rightCurrents, new Check.NominalValues(0.15, 0.75));
+            Check.printStatistics(logger, "Collect Collector", spinyCurrents, new Check.NominalValues(20, 35));
+            Check.printStatistics(logger, "Indexer", indexerCurrents, new Check.NominalValues(3.0, 4.5));
         }));
 
         command.addRequirements(collector, indexer);
@@ -178,18 +178,18 @@ public class Check extends ParallelCommandGroup {
                 }),
                 Commands.waitUntil(arm::isArmAtPosition),
                 Commands.waitUntil(arm::isWristAtPosition),
-                Commands.runOnce(() -> {
-                    arm.setArmState(AmpArm.ArmState.STOW);
-                    arm.setRollerState(AmpArm.RollerState.DISABLED);
-                })
+                Commands.runOnce(() -> arm.setArmState(AmpArm.ArmState.STOW)),
+                Commands.waitUntil(arm::isArmAtPosition),
+                Commands.waitUntil(arm::isWristAtPosition),
+                Commands.runOnce(() -> arm.setRollerState(AmpArm.RollerState.DISABLED))
         ).raceWith(Commands.run(() -> {
             armCurrents.add(arm.getArmCurrent());
             wristCurrents.add(arm.getWristCurrent());
             rollerCurrents.add(arm.getRollerCurrent());
         })).andThen(Commands.runOnce(() -> {
-            Check.printStatistics(logger, "Arm", armCurrents, new Check.NominalValues(.25, .75));
-            Check.printStatistics(logger, "Wrist", wristCurrents, new Check.NominalValues(.25, .75));
-            Check.printStatistics(logger, "Rollers", rollerCurrents, new Check.NominalValues(15, 25));
+            Check.printStatistics(logger, "Arm", armCurrents, new Check.NominalValues(1.5, 2.5));
+            Check.printStatistics(logger, "Wrist", wristCurrents, new Check.NominalValues(0.5, 3.5));
+            Check.printStatistics(logger, "Rollers", rollerCurrents, new Check.NominalValues(9.5, 12));
         }));
 
         command.addRequirements(arm);

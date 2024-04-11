@@ -42,22 +42,10 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Start-4"
+                  "pathName": "Start-2"
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Shoot-5"
           }
         },
         {
@@ -77,10 +65,22 @@
           "data": {
             "name": "Shoot"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shoot-4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
         }
       ]
     }
   },
-  "folder": "3-4-5-Autos",
+  "folder": "2-3-4-Autos",
   "choreoAuto": false
 }

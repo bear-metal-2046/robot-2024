@@ -57,7 +57,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Shoot-5"
+            "pathName": "Shoot-2"
           }
         },
         {
@@ -81,6 +81,6 @@
       ]
     }
   },
-  "folder": "3-4-5-Autos",
+  "folder": "2-3-4-Autos",
   "choreoAuto": false
 }

@@ -1,0 +1,147 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.4199314885116257,
+        "y": 3.3188484394986815
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.795849852569271,
+        "y": 2.4820598336848843
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.72175900873541,
+        "y": 4.050711753597421
+      },
+      "prevControl": {
+        "x": 4.895804622466903,
+        "y": 3.982154274895292
+      },
+      "nextControl": {
+        "x": 6.858919283055958,
+        "y": 4.1451005510706675
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.112941878057669,
+        "y": 5.592395445660457
+      },
+      "prevControl": {
+        "x": 8.34849073941635,
+        "y": 5.814354949633061
+      },
+      "nextControl": {
+        "x": 6.243144747159059,
+        "y": 3.830471226159844
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.295034175653936,
+        "y": 5.140054964794614
+      },
+      "prevControl": {
+        "x": 4.757269334358488,
+        "y": 3.7441047855068685
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "4S-345-1-END"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.9,
+      "rotationDegrees": 39.89144332982128,
+      "rotateFast": true
+    },
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 0,
+      "rotateFast": true
+    },
+    {
+      "waypointRelativePos": 0.4,
+      "rotationDegrees": 35.06927895700643,
+      "rotateFast": true
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "New Constraints Zone",
+      "minWaypointRelativePos": 0,
+      "maxWaypointRelativePos": 0.3,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 4.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0
+      }
+    }
+  ],
+  "eventMarkers": [
+    {
+      "name": "ShootMode",
+      "waypointRelativePos": 2.5,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "EnableShootMode"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Shoot",
+      "waypointRelativePos": 0.2,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Shoot"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.5,
+    "maxAcceleration": 5.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -5.492324557127434,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "4S-Paths",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

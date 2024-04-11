@@ -42,7 +42,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "EnableShootMode"
+                  "name": "Shoot"
                 }
               },
               {

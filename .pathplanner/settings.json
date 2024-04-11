@@ -12,7 +12,9 @@
     "4S-Paths"
   ],
   "autoFolders": [
-    "Distance Check Autos"
+    "3-4-5-Autos",
+    "Distance Check Autos",
+    "2-3-4-Autos"
   ],
   "defaultMaxVel": 4.0,
   "defaultMaxAccel": 4.0,

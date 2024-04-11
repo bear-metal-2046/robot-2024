@@ -15,7 +15,7 @@ public class SwerveModule {
 
     private final SwerveModuleIO io;
     private final SwerveModuleIOInputsAutoLogged inputs = new SwerveModuleIOInputsAutoLogged();
-    private final String name;
+    public final String name;
     private final Translation2d translationOffset;
 
     // Constructor
@@ -56,6 +56,12 @@ public class SwerveModule {
     }
     public SwerveModuleState getAccelerationState() { return io.getAccelerationState(); }
     public SwerveModuleState getRawAccelerationState() { return io.getRawAccelerationState(); }
+    public double getSteerCurrent() {
+        return io.getSteerCurrent();
+    }
+    public double getDriveCurrent() {
+        return io.getDriveCurrent();
+    }
 
     public List<BaseStatusSignal> getStatusSignals() {
         return io.getStatusSignals();
@@ -76,6 +82,13 @@ public class SwerveModule {
 
         io.processInputs(inputs);
         io.updateDesiredState();
+    }
+
+    public void testSteer() {
+        io.testSteer();
+    }
+    public void testDrive() {
+        io.testDrive();
     }
 
     /**

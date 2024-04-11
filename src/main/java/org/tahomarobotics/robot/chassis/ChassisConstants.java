@@ -132,6 +132,10 @@ public final class ChassisConstants {
             .withMotorOutput(new MotorOutputConfigs()
                     .withNeutralMode(NeutralModeValue.Brake)
                     .withInverted(InvertedValue.CounterClockwise_Positive))
+            .withMotionMagic(new MotionMagicConfigs()
+                    .withMotionMagicAcceleration(120)
+                    .withMotionMagicJerk(360)
+            )
             .withAudio(new AudioConfigs().withBeepOnBoot(true).withBeepOnConfig(true));
 
     public static final TalonFXConfiguration steerMotorConfiguration = new TalonFXConfiguration()
@@ -149,6 +153,10 @@ public final class ChassisConstants {
                     .withNeutralMode(NeutralModeValue.Brake)
                     .withInverted(InvertedValue.Clockwise_Positive))
             .withAudio(new AudioConfigs().withBeepOnBoot(true).withBeepOnConfig(true))
+            .withMotionMagic(new MotionMagicConfigs()
+                    .withMotionMagicAcceleration(25)
+                    .withMotionMagicJerk(100)
+            )
             .withClosedLoopGeneral(new ClosedLoopGeneralConfigs() {{
                 ContinuousWrap = true;
             }})

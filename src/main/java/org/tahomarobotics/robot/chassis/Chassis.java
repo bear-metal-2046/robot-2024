@@ -212,6 +212,14 @@ public class Chassis extends SubsystemIF {
         return modules.stream().map(SwerveModule::getDesiredState).toArray(SwerveModuleState[]::new);
     }
 
+    public List<SwerveModule> getSwerveModules() {
+        return modules;
+    }
+
+    public List<ATVision> getApriltagCameras() {
+        return apriltagCameras;
+    }
+
     public ChassisSpeeds getCurrentChassisSpeeds() {
         return currentChassisSpeeds;
     }

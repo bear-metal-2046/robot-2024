@@ -297,6 +297,18 @@ public class Shooter extends SubsystemIF {
         return totalCurrent;
     }
 
+    public Double getPivotCurrent() {
+        return io.getPivotMotorCurrent();
+    }
+
+    public Double getTopShooterCurrent() {
+        return io.getTopShooterCurrent();
+    }
+
+    public Double getBottomShooterCurrent() {
+        return io.getBottomShooterCurrent();
+    }
+
     public enum ShootMode {
         SHOOTING,
         PASSING_HIGH,

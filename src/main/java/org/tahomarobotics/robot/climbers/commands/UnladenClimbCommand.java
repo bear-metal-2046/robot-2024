@@ -28,7 +28,7 @@ public class UnladenClimbCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return climbers.getLeftPosition() - position < ClimberConstants.POSITION_EPSILON
-                && climbers.getRightPosition() - position < ClimberConstants.POSITION_EPSILON;
+        return Math.abs(climbers.getLeftPosition() - position) < ClimberConstants.POSITION_EPSILON
+                && Math.abs(climbers.getRightPosition() - position) < ClimberConstants.POSITION_EPSILON;
     }
 }

@@ -164,7 +164,7 @@ public class AmpArmConstants {
                     .withInverted(WRIST_INVERT))
             .withMotionMagic(new MotionMagicConfigs()
                     .withMotionMagicCruiseVelocity(10)
-                    .withMotionMagicAcceleration(20)
+                    .withMotionMagicAcceleration(50)
                     .withMotionMagicJerk(75))
             .withFeedback(new FeedbackConfigs().withSensorToMechanismRatio(1 / WRIST_GEAR_REDUCTION))
             .withAudio(new AudioConfigs().withBeepOnBoot(true).withBeepOnConfig(true));

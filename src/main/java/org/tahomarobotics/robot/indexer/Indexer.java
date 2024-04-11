@@ -274,6 +274,10 @@ public class Indexer extends SubsystemIF {
 
     }
 
+    public Double getCurrent() {
+        return current.getValueAsDouble();
+    }
+
     // STATES
 
     public enum State {

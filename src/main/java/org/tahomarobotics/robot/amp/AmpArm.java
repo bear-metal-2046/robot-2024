@@ -107,6 +107,10 @@ public class AmpArm extends SubsystemIF {
         return armCurrent.getValueAsDouble();
     }
 
+    public double getWristCurrent() {
+        return wristCurrent.getValueAsDouble();
+    }
+
     public double getRollerCurrent() {
         return rollerCurrent.getValueAsDouble();
     }

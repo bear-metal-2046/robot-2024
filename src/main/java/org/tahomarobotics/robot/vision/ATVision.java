@@ -286,16 +286,8 @@ public class ATVision {
     }
 
     public void update() {
-        if (!enabled) { return; }
+        aprilTagCount = 0;
         processVisionUpdate(camera.getLatestResult());
-    }
-
-    public void enable() {
-        enabled = true;
-    }
-
-    public void disable() {
-        enabled = false;
     }
 
     public int aprilTagCount() {

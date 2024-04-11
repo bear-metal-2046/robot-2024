@@ -376,14 +376,6 @@ public class Chassis extends SubsystemIF {
         resetOdometry(new Pose2d(getPose().getTranslation(), heading));
     }
 
-    public void disableCameras() {
-        apriltagCameras.forEach(ATVision::disable);
-    }
-
-    public void enableCameras() {
-        apriltagCameras.forEach(ATVision::enable);
-    }
-
     // onInit
 
     @Override

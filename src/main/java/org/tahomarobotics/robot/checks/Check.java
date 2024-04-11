@@ -211,23 +211,25 @@ public class Check extends ParallelCommandGroup {
 
     static Command checkVision() {
         Chassis chassis = Chassis.getInstance();
-        SequentialCommandGroup cmd = new SequentialCommandGroup();
+        ParallelCommandGroup cmd = new ParallelCommandGroup();
 
         chassis.getApriltagCameras().forEach(c -> {
             cmd.addCommands(
+                Commands.sequence(
                     Commands.runOnce(() -> {
                         logger.info("Waiting to see an apriltag on " + c.getName() + "...");
-                        SafeAKitLogger.recordOutput("Checks/ATVision/" + c.getName(), false);
+                        SafeAKitLogger.recordOutput("Checks/ATVision/" + c.getName(), true);
                     }),
                     Commands.waitUntil(() -> c.aprilTagCount() == 1),
                     Commands.runOnce(() -> {
                         logger.info(c.getName() + " saw a single apriltag!");
-                        SafeAKitLogger.recordOutput("Checks/ATVision/" + c.getName(), true);
+                        SafeAKitLogger.recordOutput("Checks/ATVision/" + c.getName(), false);
                     })
-            );
+
+            ));
         });
 
-        return cmd;
+        return cmd.ignoringDisable(true);
     }
 
     static {

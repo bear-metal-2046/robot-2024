@@ -11,12 +11,14 @@ import org.littletonrobotics.junction.AutoLog;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
+import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SafeAKitLogger;
 
 import static org.tahomarobotics.robot.shooter.ShooterConstants.*;
+import static org.tahomarobotics.robot.shooter.Shooter.ShootMode.*;
 
 
 class ShooterIO {
@@ -39,13 +41,14 @@ class ShooterIO {
 
     private final MotionMagicVoltage pivotPositionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage motorVelocity = new MotionMagicVelocityVoltage(SHOOTER_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
+    private final MotionMagicVelocityVoltage passVelocity = new MotionMagicVelocityVoltage(HIGH_PASS_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage idleVelocity = new MotionMagicVelocityVoltage(IDLE_SPEED).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage transferVelocity = new MotionMagicVelocityVoltage(TRANSFER_VELOCITY).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     private final MotionMagicVelocityVoltage reverseIntakeVelocity = new MotionMagicVelocityVoltage(-REVERSE_INTAKE_VELOCITY).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
 
     protected double angle = 0.0;
 
-    private boolean shootingMode = false;
+    private Shooter.ShootMode shootingMode = IDLE;
     private boolean redundantShootingMode = false;
     private boolean idleMode = true;
     private boolean isZeroed = false;
@@ -132,6 +135,14 @@ class ShooterIO {
     boolean inRedundantShootingMode(){return redundantShootingMode;}
 
     boolean inShootingMode() {
+        return shootingMode.equals(SHOOTING);
+    }
+
+    boolean inPassingMode() {
+        return shootingMode.equals(PASSING_HIGH) || shootingMode.equals(PASSING_LOW);
+    }
+
+    Shooter.ShootMode getShootMode() {
         return shootingMode;
     }
 
@@ -217,8 +228,8 @@ class ShooterIO {
     }
 
     void toggleShootMode() {
-        if (shootingMode) {
-            disableShootMode();
+        if (inShootingMode()) {
+            disableShooter();
             idle();
         } else if (Indexer.getInstance().isCollected()){
             enableShootMode();
@@ -245,11 +256,41 @@ class ShooterIO {
     }
 
     void enableShootMode() {
-        shootingMode = true;
+        shootingMode = SHOOTING;
     }
 
-    void disableShootMode() {
-        shootingMode = false;
+    void disableShooter() {
+        shootingMode = IDLE;
+    }
+    void enablePassHigh(){
+        shootingMode = PASSING_HIGH;
+        targetShooterSpeed = passVelocity.Velocity;
+
+        topShooterMotor.setControl(passVelocity);
+    }
+    void enablePassLow() {
+        shootingMode = PASSING_LOW;
+        AmpArm.getInstance().setArmState(AmpArm.ArmState.PASSING);
+        setShooterAngle(LOW_PASS_POS);
+    }
+
+    void togglePassHigh() {
+        if (getShootMode().equals(PASSING_HIGH)) {
+            disableShooter();
+            idle();
+        } else if (Indexer.getInstance().isCollected()){
+            enablePassHigh();
+        }
+    }
+
+    void togglePassLow() {
+        if (getShootMode().equals(PASSING_LOW)) {
+            disableShooter();
+            idle();
+        } else if (Indexer.getInstance().isCollected()){
+            enablePassLow();
+            enable();
+        }
     }
 
     void enableRedundantShootMode(){

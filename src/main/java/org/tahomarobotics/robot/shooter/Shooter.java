@@ -65,7 +65,7 @@ public class Shooter extends SubsystemIF {
     }
 
     public void disableShootMode() {
-        io.disableShootMode();
+        io.disableShooter();
     }
 
     public void enableShootMode() {
@@ -148,6 +148,29 @@ public class Shooter extends SubsystemIF {
         return io.inShootingMode();
     }
 
+    public ShootMode getShootMode() {
+        return io.getShootMode();
+    }
+
+    public void enablePassHigh(){
+        io.enablePassHigh();
+    }
+    public void enablePassLow() {
+        io.enablePassLow();
+    }
+
+    public void togglePassLow() {
+        io.togglePassLow();
+    }
+
+    public void togglePassHigh() {
+        io.togglePassHigh();
+    }
+
+    public boolean inPassingMode() {
+        return io.inPassingMode();
+    }
+
     public boolean inRedundantShootingMode() {
         return io.inRedundantShootingMode();
     }
@@ -164,31 +187,38 @@ public class Shooter extends SubsystemIF {
         return io.getPivotVelocity();
     }
 
-    public void angleToSpeaker(double radialVelocity) {
+    public void angleToSpeaker() {
         if (RobotState.isAutonomous() && Autonomous.getInstance().isUsingLookupTable()) {
             return;
         }
 
-//        if (DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Blue)
-//            radialVelocity *= -1;
-
         Translation2d target = SPEAKER_TARGET_POSITION.get();
         distance = Chassis.getInstance().getPose().getTranslation().getDistance(target) + SHOOTER_PIVOT_OFFSET.getX();
 
-        SafeAKitLogger.recordOutput("Shooter/Target Angle Before Compensation", angleCalc(distance));
+        SafeAKitLogger.recordOutput("Shooter/Target Angle Before Compensation", speakerAngleCalc(distance));
 
 //        double timeShotOffset = (radialVelocity > 0 ? TIME_SHOT_OFFSET_POSITIVE : TIME_SHOT_OFFSET_NEGATIVE);
-        double targetAngle = angleCalc(distance);
+        double targetAngle = speakerAngleCalc(distance);
 
-        setAngle(targetAngle * 1.02272727301);
+        setAngle(targetAngle * GEAR_REDUCTION_COMPENSATION);
     }
 
-    private double angleCalc(double distance) {
+    public void angleToPass() {
+        setAngle((getShootMode().equals(ShootMode.PASSING_LOW)) ? LOW_PASS_POS : HIGH_PASS_POS);
+    }
+
+    private double speakerAngleCalc(double distance) {
         return switch (RobotIdentity.robotID) {
-            // y = 0.07068257 + 0.1999213*e^(-0.5485811*x)
-            case PLAYBEAR_CARTI -> 0.07068257 + 0.1999213 * Math.pow(Math.E, -0.5485811 * distance);
             // y = .1823 * e ^ (-.5392 * x) + 0.05025
-            case BEARITONE -> 0.1823 * Math.pow(Math.E, -0.5392 * distance) + 0.05025;
+            case BEARITONE, PLAYBEAR_CARTI -> 0.1823 * Math.pow(Math.E, -0.5392 * distance) + 0.05025;
+            default -> 0.04875446 + (0.201136 - 0.04875446)/(1 + Math.pow((distance/2.019404), 2.137465)) + 0.002;
+        };
+    }
+
+    private double passAngleCalc(double distance) {
+        return switch (RobotIdentity.robotID) {
+            // y = .1823 * e ^ (-.5392 * x) + 0.15025
+            case BEARITONE, PLAYBEAR_CARTI -> 0.1823 * Math.pow(Math.E, -0.5392 * distance) + 0.15025;
             default -> 0.04875446 + (0.201136 - 0.04875446)/(1 + Math.pow((distance/2.019404), 2.137465)) + 0.002;
         };
     }
@@ -237,6 +267,7 @@ public class Shooter extends SubsystemIF {
 
         SafeAKitLogger.recordOutput("Shooter/TotalCurrent", totalCurrent);
         SafeAKitLogger.recordOutput("Shooter/Energy", getEnergyUsed());
+        SafeAKitLogger.recordOutput("Shooter/ShootMode", io.getShootMode());
         SmartDashboard.putBoolean("Shooter/IdleMode", io.isIdling());
         SmartDashboard.putNumber("Shooter/Bias", biasAngle);
 
@@ -264,5 +295,12 @@ public class Shooter extends SubsystemIF {
     @Override
     public double getTotalCurrent() {
         return totalCurrent;
+    }
+
+    public enum ShootMode {
+        SHOOTING,
+        PASSING_HIGH,
+        PASSING_LOW,
+        IDLE
     }
 }

@@ -142,6 +142,10 @@ public class AmpArm extends SubsystemIF {
                 setArmPosition(ARM_CLIMB_POSE);
                 setWristPosition(WRIST_MOVING_POSE);
             }
+            case PASSING -> {
+                setArmPosition(ARM_STOW_POSE);
+                setWristPosition(WRIST_PASSING_POSE);
+            }
         }
     }
 
@@ -234,6 +238,10 @@ public class AmpArm extends SubsystemIF {
         return armState == ArmState.SOURCE;
     }
 
+    public boolean isArmAtPassing() {
+        return armState == ArmState.PASSING;
+    }
+
     public boolean isRollerCollected() {
         return rollerState == RollerState.COLLECTED;
     }
@@ -306,7 +314,8 @@ public class AmpArm extends SubsystemIF {
         PASSTHROUGH,
         AMP,
         SOURCE,
-        CLIMB
+        CLIMB,
+        PASSING
     }
 
     public enum RollerState {

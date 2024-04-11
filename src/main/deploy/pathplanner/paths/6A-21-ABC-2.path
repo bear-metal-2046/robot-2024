@@ -16,28 +16,28 @@
     },
     {
       "anchor": {
-        "x": 8.050364672157917,
-        "y": 7.417685692514242
+        "x": 7.973606034168592,
+        "y": 7.641980762222395
       },
       "prevControl": {
-        "x": 8.315857515855788,
-        "y": 7.416877364156393
+        "x": 8.239090027601971,
+        "y": 7.6442943482217895
       },
       "nextControl": {
-        "x": 7.59199602598123,
-        "y": 7.4190812569667255
+        "x": 5.910536603683168,
+        "y": 7.624001943656261
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.912694650976074,
-        "y": 6.980472790903429
+        "x": 1.6360724895375474,
+        "y": 7.039690340250446
       },
       "prevControl": {
-        "x": 1.5866082783966589,
-        "y": 8.341967439302017
+        "x": 1.8063595647544064,
+        "y": 8.227546523470489
       },
       "nextControl": null,
       "isLocked": false,
@@ -72,8 +72,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 4.5,
+    "maxAcceleration": 5.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -88,5 +88,5 @@
     "rotation": 14.212083913312489,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

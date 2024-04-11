@@ -42,7 +42,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Start-4"
+                  "pathName": "Start-5"
                 }
               }
             ]
@@ -57,7 +57,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Shoot-5"
+            "pathName": "Shoot-4"
           }
         },
         {

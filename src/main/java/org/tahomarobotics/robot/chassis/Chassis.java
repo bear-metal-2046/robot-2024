@@ -61,7 +61,7 @@ public class Chassis extends SubsystemIF {
     private final CalibrationData<Double[]> swerveCalibration;
 
 //    private final ObjectDetectionCamera objectDetectionCamera;
-    public final List<ATVision> apriltagCameras = new ArrayList<>();
+    private final List<ATVision> apriltagCameras = new ArrayList<>();
 
     private final Thread odometryThread;
 
@@ -214,6 +214,10 @@ public class Chassis extends SubsystemIF {
 
     public List<SwerveModule> getSwerveModules() {
         return modules;
+    }
+
+    public List<ATVision> getApriltagCameras() {
+        return apriltagCameras;
     }
 
     public ChassisSpeeds getCurrentChassisSpeeds() {

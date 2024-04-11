@@ -204,7 +204,7 @@ public class Check extends ParallelCommandGroup {
         Chassis chassis = Chassis.getInstance();
         SequentialCommandGroup cmd = new SequentialCommandGroup();
 
-        chassis.apriltagCameras.forEach(c -> {
+        chassis.getApriltagCameras().forEach(c -> {
             cmd.addCommands(
                     Commands.runOnce(() -> {
                         logger.info("Waiting to see an apriltag on " + c.getName() + "...");

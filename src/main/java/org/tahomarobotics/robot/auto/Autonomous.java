@@ -113,7 +113,7 @@ public class Autonomous extends SubsystemIF {
             }
         }
 
-        Shooter.getInstance().enableShootMode();
+        Shooter.getInstance().enableReadyMode();
     }
 
     public boolean isUsingLookupTable() {

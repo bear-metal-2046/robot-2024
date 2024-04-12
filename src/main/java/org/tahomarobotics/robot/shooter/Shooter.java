@@ -64,10 +64,6 @@ public class Shooter extends SubsystemIF {
         io.enable();
     }
 
-    public void disableShootMode() {
-        io.disableShooter();
-    }
-
     public void enableShootMode() {
         io.enableShootMode();
     }
@@ -83,8 +79,14 @@ public class Shooter extends SubsystemIF {
         io.stop();
     }
 
-    public void toggleShootMode() {
-        io.toggleShootMode();
+    public void enableReadyMode() {
+        io.enableReadyMode();
+    }
+    public void disableReadyMode() {
+        io.disableReadyMode();
+    }
+    public void toggleReadyMode() {
+        io.toggleReadyMode();
     }
     public void toggleRedundantShootMode(){
         io.toggleRedundantShootMode();
@@ -95,7 +97,7 @@ public class Shooter extends SubsystemIF {
     }
 
     public void setAngle(double angle) {
-        inputs.angle = MathUtil.clamp(angle + (io.inShootingMode() ? biasAngle : 0), MIN_PIVOT_ANGLE, MAX_PIVOT_ANGLE);
+        inputs.angle = MathUtil.clamp(angle + (io.inReadyMode() ? biasAngle : 0), MIN_PIVOT_ANGLE, MAX_PIVOT_ANGLE);
     }
 
     public void biasUp() {
@@ -144,8 +146,8 @@ public class Shooter extends SubsystemIF {
         return io.isSpinningAtVelocity();
     }
 
-    public boolean inShootingMode() {
-        return io.inShootingMode();
+    public boolean inReadyMode() {
+        return io.inReadyMode();
     }
 
     public ShootMode getShootMode() {
@@ -252,7 +254,7 @@ public class Shooter extends SubsystemIF {
         SafeAKitLogger.recordOutput("Shooter/Distance To Speaker", distance);
         SafeAKitLogger.recordOutput("Shooter/Is at Angle", isAtAngle());
         SafeAKitLogger.recordOutput("Shooter/Is Spinning At velocity", isAtVelocity());
-        SafeAKitLogger.recordOutput("Shooter/Is In Shooting Mode", inShootingMode());
+        SafeAKitLogger.recordOutput("Shooter/Is In Shooting Mode", inReadyMode());
         SafeAKitLogger.recordOutput("Shooter/Distance", distance);
         SafeAKitLogger.recordOutput("Shooter/Top Velocity", getTopShooterVelocity());
         SafeAKitLogger.recordOutput("Shooter/Top Voltage", io.getTopShooterVoltage());
@@ -271,7 +273,7 @@ public class Shooter extends SubsystemIF {
         SmartDashboard.putBoolean("Shooter/IdleMode", io.isIdling());
         SmartDashboard.putNumber("Shooter/Bias", biasAngle);
 
-
+        io.periodic();
     }
 
     // onInit
@@ -283,7 +285,7 @@ public class Shooter extends SubsystemIF {
 
     @Override
     public void onTeleopInit() {
-        disableShootMode();
+        disableReadyMode();
         io.configureShooterForTeleop();
     }
 
@@ -312,7 +314,6 @@ public class Shooter extends SubsystemIF {
     public enum ShootMode {
         SHOOTING,
         PASSING_HIGH,
-        PASSING_LOW,
-        IDLE
+        PASSING_LOW
     }
 }

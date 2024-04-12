@@ -38,7 +38,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.tahomarobotics.robot.chassis.ChassisConstants.ACCELERATION_LIMIT;
-import static org.tahomarobotics.robot.shooter.Shooter.ShootMode.PASSING_HIGH;
 import static org.tahomarobotics.robot.shooter.ShooterConstants.*;
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
@@ -267,10 +266,8 @@ public class Chassis extends SubsystemIF {
 
         if (RobotState.isEnabled()) {
 
-            if (Shooter.getInstance().inShootingMode()) {
-                aimToTarget(desiredSpeeds, SPEAKER_TARGET_POSITION.get(), false);
-            } else if (Shooter.getInstance().inPassingMode()) {
-                aimToTarget(desiredSpeeds, PASS_TARGET_POSITION.get(), true);
+            if (Shooter.getInstance().inReadyMode()) {
+                aimToTarget(desiredSpeeds, (Shooter.getInstance().inPassingMode()) ? PASS_TARGET_POSITION.get() : SPEAKER_TARGET_POSITION.get());
             }
 
             var swerveModuleStates = kinematics.toSwerveModuleStates(desiredSpeeds);
@@ -320,7 +317,7 @@ public class Chassis extends SubsystemIF {
 
     // SETTERS
 
-    private void aimToTarget(ChassisSpeeds speeds, Translation2d target, boolean passing) {
+    private void aimToTarget(ChassisSpeeds speeds, Translation2d target) {
 
         //
         // Based off of 2022 Cheesy Poof shooting utils
@@ -333,10 +330,12 @@ public class Chassis extends SubsystemIF {
         var robotToGoal = target.minus(pose.getTranslation());
         var goalRot = MathUtil.angleModulus(robotToGoal.getAngle().getRadians() + Math.PI);
 
-        if (passing) {
-            Shooter.getInstance().angleToPass();
-        } else {
-            Shooter.getInstance().angleToSpeaker();
+        if (Shooter.getInstance().inReadyMode()) {
+            if (Shooter.getInstance().inPassingMode()) {
+                Shooter.getInstance().angleToPass();
+            } else {
+                Shooter.getInstance().angleToSpeaker();
+            }
         }
 
         targetShootingAngle = goalRot - Units.degreesToRadians(4);

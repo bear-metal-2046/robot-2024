@@ -7,6 +7,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.littletonrobotics.junction.AutoLog;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.RobotConfiguration;
@@ -48,19 +49,20 @@ class ShooterIO {
 
     protected double angle = 0.0;
 
-    private Shooter.ShootMode shootingMode = IDLE;
+    private Shooter.ShootMode shootingMode = SHOOTING;
     private boolean redundantShootingMode = false;
     private boolean idleMode = true;
     private boolean isZeroed = false;
+    private boolean readyMode = false;
+    private boolean redundantShootFar = false;
 
     private double targetShooterSpeed = 0.0;
 
     @AutoLog
     static class ShooterIOInputs {
-
         double angle = 0.0;
-
     }
+
     ShooterIO() {
         RobustConfigurator configurator = new RobustConfigurator(logger);
 
@@ -87,6 +89,36 @@ class ShooterIO {
                 topShooterCurrent, bottomShooterCurrent, pivotCurrent, bottomShooterVoltage
         );
         ParentDevice.optimizeBusUtilizationForAll(pivotMotor, bottomShooterMotor, topShooterMotor);
+    }
+
+    void periodic() {
+        if (!redundantShootingMode) {
+            if (readyMode) {
+                switch (shootingMode) {
+                    case SHOOTING -> enable();
+                    case PASSING_LOW -> {
+                        enable();
+                        AmpArm.getInstance().setArmState(AmpArm.ArmState.PASSING);
+                    }
+                    case PASSING_HIGH -> enablePassHighSpeed();
+                }
+            } else {
+                if (idleMode) idle();
+                setShooterAngle(SHOOTER_COLLECT_PIVOT_ANGLE);
+            }
+        } else {
+            enable();
+            setShooterAngle((redundantShootFar) ? FAR_REDUNDANT_ANGLE : CLOSE_REDUNDANT_ANGLE);
+        }
+
+        SafeAKitLogger.recordOutput("Shooter/ShootMode", shootingMode);
+        SafeAKitLogger.recordOutput("Shooter/ReadyMode", readyMode);
+        SafeAKitLogger.recordOutput("Shooter/RedundantShootingFar", redundantShootFar);
+        SafeAKitLogger.recordOutput("Shooter/RedundantShootEnabled", redundantShootingMode);
+        SmartDashboard.putBoolean("Shooter/RedundantShootEnabled", redundantShootingMode);
+        SmartDashboard.putBoolean("Shooter/RedundantShootingFar", redundantShootFar);
+        SmartDashboard.putString("Shooter/ShootMode", shootingMode.name());
+        SmartDashboard.putBoolean("Shooter/ReadyMode", readyMode);
     }
 
     // GETTERS
@@ -134,8 +166,12 @@ class ShooterIO {
 
     boolean inRedundantShootingMode(){return redundantShootingMode;}
 
-    boolean inShootingMode() {
-        return shootingMode.equals(SHOOTING);
+    boolean inReadyMode() {
+        return readyMode;
+    }
+
+    boolean inShootMode() {
+        return shootingMode == SHOOTING;
     }
 
     boolean inPassingMode() {
@@ -213,6 +249,14 @@ class ShooterIO {
         topShooterMotor.setControl(motorVelocity);
     }
 
+    void toggleReadyMode() {
+        if (readyMode) {
+            disableReadyMode();
+        } else if (Indexer.getInstance().isCollected()) {
+            enableReadyMode();
+        }
+    }
+
     void idle() {
         targetShooterSpeed = idleVelocity.Velocity;
 
@@ -227,14 +271,12 @@ class ShooterIO {
         topShooterMotor.stopMotor();
     }
 
-    void toggleShootMode() {
-        if (inShootingMode()) {
-            disableShooter();
-            idle();
-        } else if (Indexer.getInstance().isCollected()){
-            enableShootMode();
-            enable();
-        }
+    void enableReadyMode() {
+        readyMode = true;
+    }
+    void disableReadyMode() {
+        readyMode = false;
+        AmpArm.getInstance().setArmState(AmpArm.ArmState.STOW);
     }
 
     void toggleRedundantShootMode(){
@@ -245,6 +287,14 @@ class ShooterIO {
             enableRedundantShootMode();
             enable();
         }
+    }
+    void toggleRedundantShootModeFar() {
+        redundantShootingMode = !redundantShootFar || !redundantShootingMode;
+        redundantShootFar = true;
+    }
+    void toggleRedundantShootModeClose() {
+        redundantShootingMode = redundantShootFar || !redundantShootingMode;
+        redundantShootFar = false;
     }
 
     public void toggleIdle() {
@@ -258,38 +308,32 @@ class ShooterIO {
     void enableShootMode() {
         shootingMode = SHOOTING;
     }
-
-    void disableShooter() {
-        shootingMode = IDLE;
-    }
     void enablePassHigh(){
         shootingMode = PASSING_HIGH;
-        targetShooterSpeed = passVelocity.Velocity;
+    }
 
+    void enablePassHighSpeed() {
+        targetShooterSpeed = passVelocity.Velocity;
         topShooterMotor.setControl(passVelocity);
     }
+
     void enablePassLow() {
         shootingMode = PASSING_LOW;
-        AmpArm.getInstance().setArmState(AmpArm.ArmState.PASSING);
-        setShooterAngle(LOW_PASS_POS);
     }
 
     void togglePassHigh() {
         if (getShootMode().equals(PASSING_HIGH)) {
-            disableShooter();
-            idle();
-        } else if (Indexer.getInstance().isCollected()){
+            enableShootMode();
+        } else {
             enablePassHigh();
         }
     }
 
     void togglePassLow() {
         if (getShootMode().equals(PASSING_LOW)) {
-            disableShooter();
-            idle();
-        } else if (Indexer.getInstance().isCollected()){
+            enableShootMode();
+        } else {
             enablePassLow();
-            enable();
         }
     }
 

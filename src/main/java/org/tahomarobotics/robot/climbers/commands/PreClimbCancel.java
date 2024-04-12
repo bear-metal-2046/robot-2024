@@ -19,16 +19,8 @@ public class PreClimbCancel extends SequentialCommandGroup {
         addCommands(Commands.runOnce(() -> logger.info("Canceled Pre-Climb")),
                 Commands.runOnce(() -> Shooter.getInstance().setAngle(ShooterConstants.MAX_PIVOT_ANGLE)),
                 Commands.waitUntil(Shooter.getInstance()::isAtAngle),
-                new UnladenClimbCommand(ClimberConstants.BOTTOM_POSITION)
-        );
-
-        if (climbers.isTrapping())
-            addCommands(
-                    AmpArmCommands.ARM_TO_STOW.get(),
-                    AmpArmCommands.FEEDBACK.get()
-            );
-
-        addCommands(
+                new UnladenClimbCommand(ClimberConstants.BOTTOM_POSITION),
+                AmpArmCommands.ARM_TO_PASSTHROUGH.get(),
                 Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.COCKED))
         );
     }

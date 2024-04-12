@@ -88,8 +88,11 @@ public class Shooter extends SubsystemIF {
     public void toggleReadyMode() {
         io.toggleReadyMode();
     }
-    public void toggleRedundantShootMode(){
-        io.toggleRedundantShootMode();
+    public void toggleRedundantShootModeFar() {
+        io.toggleRedundantShootModeFar();
+    }
+    public void toggleRedundantShootModeClose() {
+        io.toggleRedundantShootModeClose();
     }
 
     public void toggleIdle() {

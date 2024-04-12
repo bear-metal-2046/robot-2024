@@ -7,9 +7,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.fasterxml.jackson.databind.ser.std.EnumSetSerializer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import jdk.jfr.Enabled;
 import org.littletonrobotics.junction.AutoLog;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.RobotConfiguration;
@@ -56,6 +54,7 @@ class ShooterIO {
     private boolean idleMode = true;
     private boolean isZeroed = false;
     private boolean readyMode = false;
+    private boolean redundantShootFar = false;
 
     private double targetShooterSpeed = 0.0;
 
@@ -107,10 +106,17 @@ class ShooterIO {
                 if (idleMode) idle();
                 setShooterAngle(SHOOTER_COLLECT_PIVOT_ANGLE);
             }
+        } else {
+            enable();
+            setShooterAngle((redundantShootFar) ? FAR_REDUNDANT_ANGLE : CLOSE_REDUNDANT_ANGLE);
         }
 
         SafeAKitLogger.recordOutput("Shooter/ShootMode", shootingMode);
         SafeAKitLogger.recordOutput("Shooter/ReadyMode", readyMode);
+        SafeAKitLogger.recordOutput("Shooter/RedundantShootingFar", redundantShootFar);
+        SafeAKitLogger.recordOutput("Shooter/RedundantShootEnabled", redundantShootingMode);
+        SmartDashboard.putBoolean("Shooter/RedundantShootEnabled", redundantShootingMode);
+        SmartDashboard.putBoolean("Shooter/RedundantShootingFar", redundantShootFar);
         SmartDashboard.putString("Shooter/ShootMode", shootingMode.name());
         SmartDashboard.putBoolean("Shooter/ReadyMode", readyMode);
     }
@@ -281,6 +287,14 @@ class ShooterIO {
             enableRedundantShootMode();
             enable();
         }
+    }
+    void toggleRedundantShootModeFar() {
+        redundantShootingMode = !redundantShootFar || !redundantShootingMode;
+        redundantShootFar = true;
+    }
+    void toggleRedundantShootModeClose() {
+        redundantShootingMode = redundantShootFar || !redundantShootingMode;
+        redundantShootFar = false;
     }
 
     public void toggleIdle() {

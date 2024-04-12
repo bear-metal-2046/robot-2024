@@ -65,14 +65,21 @@ public class Shooter extends SubsystemIF {
     }
 
     public void disableShootMode() {
-        io.disableShooter();
+        io.disableShootMode();
     }
 
     public void enableShootMode() {
         io.enableShootMode();
     }
 
-    public void enableRedundantShootMode(){io.enableRedundantShootMode();}
+    public void enableRedundantShootModeFar() {
+        io.enableRedundantShootModeFar();
+    }
+
+    public void enableRedundantShootModeClose() {
+        io.enableRedundantShootModeClose();
+    }
+
     public void disableRedundantShootMode(){io.disableRedundantShootMode();}
 
     public void idle() {
@@ -83,11 +90,15 @@ public class Shooter extends SubsystemIF {
         io.stop();
     }
 
-    public void toggleShootMode() {
-        io.toggleShootMode();
+    public void toggleShooting() {
+        io.toggleShooting();
     }
-    public void toggleRedundantShootMode(){
-        io.toggleRedundantShootMode();
+    public void toggleRedundantShootModeFar(){
+        io.toggleRedundantShootModeFar();
+    }
+
+    public void toggleRedundantShootModeClose() {
+        io.toggleRedundantShootModeClose();
     }
 
     public void toggleIdle() {
@@ -95,7 +106,7 @@ public class Shooter extends SubsystemIF {
     }
 
     public void setAngle(double angle) {
-        inputs.angle = MathUtil.clamp(angle + (io.inShootingMode() ? biasAngle : 0), MIN_PIVOT_ANGLE, MAX_PIVOT_ANGLE);
+        inputs.angle = MathUtil.clamp(angle + (io.inShootMode() ? biasAngle : 0), MIN_PIVOT_ANGLE, MAX_PIVOT_ANGLE);
     }
 
     public void biasUp() {
@@ -144,8 +155,8 @@ public class Shooter extends SubsystemIF {
         return io.isSpinningAtVelocity();
     }
 
-    public boolean inShootingMode() {
-        return io.inShootingMode();
+    public boolean inShootMode() {
+        return io.inShootMode();
     }
 
     public ShootMode getShootMode() {
@@ -167,8 +178,8 @@ public class Shooter extends SubsystemIF {
         io.togglePassHigh();
     }
 
-    public boolean inPassingMode() {
-        return io.inPassingMode();
+    public void toggleShootMode() {
+        io.toggleShootMode();
     }
 
     public boolean inRedundantShootingMode() {
@@ -215,14 +226,6 @@ public class Shooter extends SubsystemIF {
         };
     }
 
-    private double passAngleCalc(double distance) {
-        return switch (RobotIdentity.robotID) {
-            // y = .1823 * e ^ (-.5392 * x) + 0.15025
-            case BEARITONE, PLAYBEAR_CARTI -> 0.1823 * Math.pow(Math.E, -0.5392 * distance) + 0.15025;
-            default -> 0.04875446 + (0.201136 - 0.04875446)/(1 + Math.pow((distance/2.019404), 2.137465)) + 0.002;
-        };
-    }
-
     public void setPivotVoltage(double voltage) {
         io.setPivotVoltage(voltage);
     }
@@ -234,7 +237,6 @@ public class Shooter extends SubsystemIF {
     public boolean isZeroed() {
         return io.isZeroed();
     }
-
 
     // PERIODIC
 
@@ -252,7 +254,7 @@ public class Shooter extends SubsystemIF {
         SafeAKitLogger.recordOutput("Shooter/Distance To Speaker", distance);
         SafeAKitLogger.recordOutput("Shooter/Is at Angle", isAtAngle());
         SafeAKitLogger.recordOutput("Shooter/Is Spinning At velocity", isAtVelocity());
-        SafeAKitLogger.recordOutput("Shooter/Is In Shooting Mode", inShootingMode());
+        SafeAKitLogger.recordOutput("Shooter/Is In Shooting Mode", inShootMode());
         SafeAKitLogger.recordOutput("Shooter/Distance", distance);
         SafeAKitLogger.recordOutput("Shooter/Top Velocity", getTopShooterVelocity());
         SafeAKitLogger.recordOutput("Shooter/Top Voltage", io.getTopShooterVoltage());
@@ -312,7 +314,12 @@ public class Shooter extends SubsystemIF {
     public enum ShootMode {
         SHOOTING,
         PASSING_HIGH,
-        PASSING_LOW,
-        IDLE
+        PASSING_LOW
+    }
+
+    public enum RedundantShootMode {
+        FAR,
+        CLOSE,
+        NONE
     }
 }

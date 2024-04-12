@@ -17,6 +17,7 @@ import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SafeAKitLogger;
 
+import static org.tahomarobotics.robot.shooter.Shooter.RedundantShootMode.*;
 import static org.tahomarobotics.robot.shooter.ShooterConstants.*;
 import static org.tahomarobotics.robot.shooter.Shooter.ShootMode.*;
 
@@ -48,8 +49,9 @@ class ShooterIO {
 
     protected double angle = 0.0;
 
-    private Shooter.ShootMode shootingMode = IDLE;
-    private boolean redundantShootingMode = false;
+    private Shooter.ShootMode shootingMode = SHOOTING;
+    private boolean inShootMode = false;
+    private Shooter.RedundantShootMode redundantShootingMode = NONE;
     private boolean idleMode = true;
     private boolean isZeroed = false;
 
@@ -132,14 +134,10 @@ class ShooterIO {
         return isAtAngle() && isSpinningAtVelocity() && Chassis.getInstance().isReadyToShoot();
     }
 
-    boolean inRedundantShootingMode(){return redundantShootingMode;}
+    boolean inRedundantShootingMode(){return redundantShootingMode != NONE;}
 
-    boolean inShootingMode() {
-        return shootingMode.equals(SHOOTING);
-    }
-
-    boolean inPassingMode() {
-        return shootingMode.equals(PASSING_HIGH) || shootingMode.equals(PASSING_LOW);
+    boolean inShootMode() {
+        return inShootMode;
     }
 
     Shooter.ShootMode getShootMode() {
@@ -228,22 +226,64 @@ class ShooterIO {
     }
 
     void toggleShootMode() {
-        if (inShootingMode()) {
-            disableShooter();
+        inShootMode = !inShootMode;
+        if (inShootMode) switch (shootingMode) {
+            case SHOOTING -> enable();
+            case PASSING_LOW -> {
+                AmpArm.getInstance().setArmState(AmpArm.ArmState.PASSING);
+                enable();
+            }
+            case PASSING_HIGH -> {
+                targetShooterSpeed = passVelocity.Velocity;
+                topShooterMotor.setControl(passVelocity);
+            }
+        } else {
+            setShooterAngle(SHOOTER_COLLECT_PIVOT_ANGLE);
             idle();
+        }
+    }
+
+    void toggleShooting() {
+        if (getShootMode() == SHOOTING) {
+            enableShooting();
         } else if (Indexer.getInstance().isCollected()){
             enableShootMode();
+        }
+    }
+
+    void toggleRedundantShootModeFar(){
+        if (redundantShootingMode == FAR){
+            disableRedundantShootMode();
+            idle();
+        } else if (Indexer.getInstance().isCollected()) {
+            enableRedundantShootModeFar();
             enable();
         }
     }
 
-    void toggleRedundantShootMode(){
-        if (redundantShootingMode){
+    void toggleRedundantShootModeClose(){
+        if (redundantShootingMode == CLOSE){
             disableRedundantShootMode();
             idle();
         } else if (Indexer.getInstance().isCollected()) {
-            enableRedundantShootMode();
+            enableRedundantShootModeClose();
             enable();
+        }
+    }
+
+    void togglePassHigh() {
+        if (getShootMode().equals(PASSING_HIGH)) {
+            enableShooting();
+        } else if (Indexer.getInstance().isCollected()){
+            enablePassHigh();
+        }
+    }
+
+    void togglePassLow() {
+        if (getShootMode().equals(PASSING_LOW)) {
+            enableShooting();
+        } else if (Indexer.getInstance().isCollected()){
+            enablePassLow();
         }
     }
 
@@ -256,49 +296,34 @@ class ShooterIO {
     }
 
     void enableShootMode() {
+        inShootMode = true;
+    }
+
+    void disableShootMode() {
+        inShootMode = false;
+    }
+
+    void enableShooting() {
         shootingMode = SHOOTING;
     }
 
-    void disableShooter() {
-        shootingMode = IDLE;
-    }
     void enablePassHigh(){
         shootingMode = PASSING_HIGH;
-        targetShooterSpeed = passVelocity.Velocity;
-
-        topShooterMotor.setControl(passVelocity);
     }
     void enablePassLow() {
         shootingMode = PASSING_LOW;
-        AmpArm.getInstance().setArmState(AmpArm.ArmState.PASSING);
-        setShooterAngle(LOW_PASS_POS);
     }
 
-    void togglePassHigh() {
-        if (getShootMode().equals(PASSING_HIGH)) {
-            disableShooter();
-            idle();
-        } else if (Indexer.getInstance().isCollected()){
-            enablePassHigh();
-        }
+    void enableRedundantShootModeClose(){
+        redundantShootingMode = CLOSE;
     }
 
-    void togglePassLow() {
-        if (getShootMode().equals(PASSING_LOW)) {
-            disableShooter();
-            idle();
-        } else if (Indexer.getInstance().isCollected()){
-            enablePassLow();
-            enable();
-        }
-    }
-
-    void enableRedundantShootMode(){
-        redundantShootingMode = true;
+    void enableRedundantShootModeFar() {
+        redundantShootingMode = FAR;
     }
 
     void disableRedundantShootMode(){
-        redundantShootingMode = false;
+        redundantShootingMode = NONE;
     }
 
     public void configureShooterForTeleop() {

@@ -39,6 +39,7 @@ import java.util.List;
 
 import static org.tahomarobotics.robot.chassis.ChassisConstants.ACCELERATION_LIMIT;
 import static org.tahomarobotics.robot.shooter.Shooter.ShootMode.PASSING_HIGH;
+import static org.tahomarobotics.robot.shooter.Shooter.ShootMode.PASSING_LOW;
 import static org.tahomarobotics.robot.shooter.ShooterConstants.*;
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
@@ -267,10 +268,12 @@ public class Chassis extends SubsystemIF {
 
         if (RobotState.isEnabled()) {
 
-            if (Shooter.getInstance().inShootingMode()) {
-                aimToTarget(desiredSpeeds, SPEAKER_TARGET_POSITION.get(), false);
-            } else if (Shooter.getInstance().inPassingMode()) {
-                aimToTarget(desiredSpeeds, PASS_TARGET_POSITION.get(), true);
+            if (Shooter.getInstance().inShootMode()) {
+                if (Shooter.getInstance().getShootMode().equals(Shooter.ShootMode.SHOOTING)) {
+                    aimToTarget(desiredSpeeds, SPEAKER_TARGET_POSITION.get(), false);
+                } else if (Shooter.getInstance().getShootMode().equals(PASSING_LOW) || Shooter.getInstance().getShootMode().equals(PASSING_HIGH)) {
+                    aimToTarget(desiredSpeeds, PASS_TARGET_POSITION.get(), true);
+                }
             }
 
             var swerveModuleStates = kinematics.toSwerveModuleStates(desiredSpeeds);

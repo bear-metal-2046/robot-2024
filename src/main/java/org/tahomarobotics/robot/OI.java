@@ -104,13 +104,13 @@ public class OI extends SubsystemIF {
 
         manipController.back().onTrue(Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.ENGAGED)).onlyIf(() -> climbers.getClimbState().equals(Climbers.ClimbState.ENGAGING)));
 
-        manipController.a().onTrue(Commands.runOnce(shooter::toggleRedundantShootMode));
+        manipController.a().onTrue(Commands.runOnce(shooter::toggleRedundantShootModeFar));
         manipController.povLeft().onTrue(Commands.runOnce(() -> {
-            shooter.enableRedundantShootMode();
+            shooter.toggleRedundantShootModeClose();
             shooter.setAngle(ShooterConstants.CLOSE_REDUNDANT_ANGLE);
         } ));
         manipController.povRight().onTrue(Commands.runOnce(() -> {
-            shooter.enableRedundantShootMode();
+            shooter.toggleRedundantShootModeFar();
             shooter.setAngle(ShooterConstants.FAR_REDUNDANT_ANGLE);
         } ));
 

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.061037426419162,
-        "y": 7.174531479495912
+        "x": 5.03406919857318,
+        "y": 7.1790261841393255
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.83630219434352,
-        "y": 7.161047365572992
+        "x": 4.382337025540907,
+        "y": 6.653145741074647
       },
       "isLocked": false,
       "linkedName": "6A-2-END"
@@ -20,12 +20,12 @@
         "y": 5.556066607628711
       },
       "prevControl": {
-        "x": 0.17079877638016142,
-        "y": 7.223973230555157
+        "x": 0.013484113922040247,
+        "y": 7.884694812868444
       },
       "nextControl": {
-        "x": 2.740298403739127,
-        "y": 5.427967277104869
+        "x": 2.721952727670307,
+        "y": 5.405079055291423
       },
       "isLocked": false,
       "linkedName": null
@@ -59,8 +59,8 @@
   "constraintZones": [
     {
       "name": "New Constraints Zone",
-      "minWaypointRelativePos": 0.65,
-      "maxWaypointRelativePos": 1.15,
+      "minWaypointRelativePos": 0.45,
+      "maxWaypointRelativePos": 1.1,
       "constraints": {
         "maxVelocity": 1.0,
         "maxAcceleration": 2.0,

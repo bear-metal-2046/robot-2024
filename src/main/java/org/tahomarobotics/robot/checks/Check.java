@@ -5,10 +5,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.amp.AmpArm;
+import org.tahomarobotics.robot.amp.commands.AmpArmCommands;
+import org.tahomarobotics.robot.amp.commands.SourceIntakeCommand;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.chassis.ChassisConstants;
 import org.tahomarobotics.robot.chassis.SwerveModule;
@@ -19,6 +20,7 @@ import org.tahomarobotics.robot.collector.Collector;
 import org.tahomarobotics.robot.indexer.Indexer;
 import org.tahomarobotics.robot.shooter.Shooter;
 import org.tahomarobotics.robot.shooter.ShooterConstants;
+import org.tahomarobotics.robot.shooter.commands.ShootCommand;
 import org.tahomarobotics.robot.util.SafeAKitLogger;
 
 import java.util.ArrayList;
@@ -45,11 +47,11 @@ public class Check extends ParallelCommandGroup {
     public static MotionMagicVelocityVoltage driveControlRequest = new MotionMagicVelocityVoltage(10 / ChassisConstants.DRIVE_REDUCTION);
 
     public static Command checkModuleSteer(SwerveModule module) {
-        return Check.runForTime(logger, module.name + " Module/Steer", 4, module::testSteer, module::stop, module::getSteerCurrent, new Check.NominalValues(1.5, 3.5));
+        return Check.runForTime(logger, module.name + " Module/Steer", 4, module::testSteer, module::stop, module::getSteerCurrent, new Check.NominalValues(1.75, 3.52));
     }
 
     public static Command checkModuleDrive(SwerveModule module) {
-        return Check.runForTime(logger, module.name + " Module/Drive", 4, module::testDrive, module::stop, module::getDriveCurrent, new Check.NominalValues(.25, 2));
+        return Check.runForTime(logger, module.name + " Module/Drive", 4, module::testDrive, module::stop, module::getDriveCurrent, new Check.NominalValues(.45, 2.0));
     }
 
     public static Command checkAllModuleSteers() {
@@ -103,11 +105,11 @@ public class Check extends ParallelCommandGroup {
                     shooterRightCurrents.add(shooter.getTopShooterCurrent());
                 })),
                 Commands.runOnce(() -> {
-                    Check.printStatistics(logger, "Left Climber", leftCurrents, new Check.NominalValues(1.0, 2.25));
-                    Check.printStatistics(logger, "Right Climber", rightCurrents, new Check.NominalValues(1.0, 2.25));
-                    Check.printStatistics(logger, "Shooter Pivot", pivotCurrents, new Check.NominalValues(.15, 0.75));
-                    Check.printStatistics(logger, "Shooter Left", shooterLeftCurrents, new Check.NominalValues(7.5, 10.0));
-                    Check.printStatistics(logger, "Shooter Right", shooterRightCurrents, new Check.NominalValues(4.75, 7.75));
+                    Check.printStatistics(logger, "Left Climber", leftCurrents, new Check.NominalValues(1.5, 3.0));
+                    Check.printStatistics(logger, "Right Climber", rightCurrents, new Check.NominalValues(2.15, 3.15));
+                    Check.printStatistics(logger, "Shooter Pivot", pivotCurrents, new Check.NominalValues(.15, 1.0));
+                    Check.printStatistics(logger, "Shooter Left", shooterLeftCurrents, new Check.NominalValues(6.25, 8.0));
+                    Check.printStatistics(logger, "Shooter Right", shooterRightCurrents, new Check.NominalValues(7.25, 9.0));
                 })
         );
 
@@ -151,8 +153,8 @@ public class Check extends ParallelCommandGroup {
                 Commands.runOnce(() -> {
                     Check.printStatistics(logger, "Left Collector", leftCurrents, new Check.NominalValues(0.15, 0.75));
                     Check.printStatistics(logger, "Right Collector", rightCurrents, new Check.NominalValues(0.15, 0.75));
-                    Check.printStatistics(logger, "Collect Collector", spinyCurrents, new Check.NominalValues(20, 35));
-                    Check.printStatistics(logger, "Indexer", indexerCurrents, new Check.NominalValues(3.0, 4.5));
+                    Check.printStatistics(logger, "Collect Collector", spinyCurrents, new Check.NominalValues(15, 25));
+                    Check.printStatistics(logger, "Indexer", indexerCurrents, new Check.NominalValues(2.0, 3.25));
                 })
         );
 
@@ -196,7 +198,7 @@ public class Check extends ParallelCommandGroup {
                 })),
                 Commands.runOnce(() -> {
                     Check.printStatistics(logger, "Arm", armCurrents, new Check.NominalValues(1.5, 2.5));
-                    Check.printStatistics(logger, "Wrist", wristCurrents, new Check.NominalValues(0.5, 3.5));
+                    Check.printStatistics(logger, "Wrist", wristCurrents, new Check.NominalValues(0.5, 3.75));
                     Check.printStatistics(logger, "Rollers", rollerCurrents, new Check.NominalValues(9.5, 12));
                 })
         );
@@ -267,8 +269,39 @@ public class Check extends ParallelCommandGroup {
 
     public static void register() {
         SmartDashboard.putData("Check", new Check());
+        SmartDashboard.putData("Check System", checkSystem());
     }
 
     public record NominalValues(double minAverage, double maxAverage) {
+    }
+
+
+    static Command checkSystem() {
+        Collector collector = Collector.getInstance();
+        Indexer indexer = Indexer.getInstance();
+        Shooter shooter = Shooter.getInstance();
+        AmpArm arm = AmpArm.getInstance();
+
+        var cmd = Commands.sequence(
+                Commands.runOnce(collector::toggleDeploy),
+                Commands.runOnce(() -> collector.setCollectionState(Collector.CollectionState.COLLECTING)),
+                Commands.waitUntil(indexer::isCollected),
+                Commands.runOnce(shooter::toggleRedundantShootModeFar),
+                new ShootCommand(),
+                Commands.runOnce(collector::toggleDeploy),
+                Commands.runOnce(() -> collector.setCollectionState(Collector.CollectionState.COLLECTING)),
+                Commands.waitUntil(indexer::isCollected),
+                AmpArmCommands.FEEDFORWARD.get(),
+                AmpArmCommands.ARM_TO_AMP.get(),
+                Commands.runOnce(() -> arm.setRollerState(AmpArm.RollerState.SCORE)),
+                AmpArmCommands.ARM_TO_STOW.get(),
+                AmpArmCommands.ARM_TO_SOURCE.get(),
+                new SourceIntakeCommand(),
+                AmpArmCommands.ARM_TO_PASSTHROUGH.get(),
+                AmpArmCommands.FEEDBACK.get()
+        );
+        cmd.addRequirements(collector, shooter, indexer, arm);
+
+        return cmd;
     }
 }

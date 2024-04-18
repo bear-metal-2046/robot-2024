@@ -16,28 +16,28 @@
     },
     {
       "anchor": {
-        "x": 7.973606034168592,
-        "y": 7.641980762222395
+        "x": 8.054510717717088,
+        "y": 7.421740234784818
       },
       "prevControl": {
-        "x": 8.239090027601971,
-        "y": 7.6442943482217895
+        "x": 8.318737993637809,
+        "y": 7.447644869679434
       },
       "nextControl": {
-        "x": 5.910536603683168,
-        "y": 7.624001943656261
+        "x": 7.1375909708305985,
+        "y": 7.331846141951325
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.6360724895375474,
-        "y": 7.039690340250446
+        "x": 5.061037426419162,
+        "y": 7.174531479495912
       },
       "prevControl": {
-        "x": 1.8063595647544064,
-        "y": 8.227546523470489
+        "x": 5.937504831527885,
+        "y": 7.309372618743409
       },
       "nextControl": null,
       "isLocked": false,
@@ -55,7 +55,7 @@
   "eventMarkers": [
     {
       "name": "ShootMode",
-      "waypointRelativePos": 1.9,
+      "waypointRelativePos": 1.4,
       "command": {
         "type": "parallel",
         "data": {
@@ -79,11 +79,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 1.7899106082459542,
+    "rotation": 16.699244233993745,
     "rotateFast": true
   },
   "reversed": false,
-  "folder": "6A-12-CBA",
+  "folder": "6A-21-ABC",
   "previewStartingState": {
     "rotation": 14.212083913312489,
     "velocity": 0

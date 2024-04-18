@@ -104,7 +104,6 @@ class ShooterIO {
                 }
             } else {
                 if (idleMode) idle();
-                setShooterAngle(SHOOTER_COLLECT_PIVOT_ANGLE);
             }
         } else {
             enable();

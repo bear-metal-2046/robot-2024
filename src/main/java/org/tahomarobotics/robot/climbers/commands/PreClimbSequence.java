@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tahomarobotics.robot.amp.AmpArm;
 import org.tahomarobotics.robot.amp.commands.AmpArmCommands;
 import org.tahomarobotics.robot.climbers.Climbers;
 import org.tahomarobotics.robot.indexer.Indexer;
@@ -20,12 +21,14 @@ public class PreClimbSequence extends SequentialCommandGroup {
 
     public PreClimbSequence() {
         Climbers climbers = Climbers.getInstance();
+        Indexer indexer = Indexer.getInstance();
+        AmpArm arm = AmpArm.getInstance();
 
-        climbers.setTrapping(Indexer.getInstance().isCollected());
+        climbers.setTrapping(indexer.isCollected() || arm.isRollerCollected());
 
         addCommands(
                 Commands.runOnce(() -> logger.info("Pre-Climb Sequence Started")),
-                Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.READY)),
+                Commands.runOnce(() -> climbers.setClimbState(Climbers.ClimbState.PRE_CLIMBING)),
                 AmpArmCommands.ARM_TO_STOW.get()
         );
 

@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 8.059005422358672,
-        "y": 6.14524411657519
+        "x": 8.041026603792337,
+        "y": 5.875561838080198
       },
       "prevControl": {
-        "x": 5.345030503725606,
-        "y": 7.6819030159799455
+        "x": 5.3270516851592715,
+        "y": 7.412220737484954
       },
       "nextControl": {
-        "x": 8.23805274534396,
-        "y": 6.04386710664375
+        "x": 8.220073926777625,
+        "y": 5.774184828148758
       },
       "isLocked": false,
       "linkedName": null
@@ -47,7 +47,7 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 1.0,
-      "rotationDegrees": -14.470294100065939,
+      "rotationDegrees": -29.389011466320238,
       "rotateFast": false
     },
     {
@@ -72,7 +72,7 @@
   "eventMarkers": [
     {
       "name": "ShootMode",
-      "waypointRelativePos": 1.6,
+      "waypointRelativePos": 1.5,
       "command": {
         "type": "parallel",
         "data": {
@@ -96,11 +96,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 20.81808012146444,
+    "rotation": 17.202632113212218,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "6A-12-CBA",
+  "folder": "6A-21-ABC",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

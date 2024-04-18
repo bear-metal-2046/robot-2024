@@ -19,8 +19,8 @@ public class AmpArmCommands {
 
     public static final Supplier<Command> FEEDFORWARD;
     public static final Supplier<Command> FEEDBACK;
-    private static final Supplier<Command> ARM_TO_AMP;
-    private static final Supplier<Command> ARM_TO_SOURCE;
+    public static final Supplier<Command> ARM_TO_AMP;
+    public static final Supplier<Command> ARM_TO_SOURCE;
     public static final Supplier<Command> ARM_TO_STOW;
     public static final Supplier<Command> ARM_TO_PASSTHROUGH;
     public static final Supplier<Command> ARM_TO_TRAP;

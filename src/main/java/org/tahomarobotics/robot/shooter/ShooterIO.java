@@ -251,6 +251,7 @@ class ShooterIO {
     void toggleReadyMode() {
         if (readyMode) {
             disableReadyMode();
+            if (AmpArm.getInstance().isArmAtPassing()) AmpArm.getInstance().setArmState(AmpArm.ArmState.STOW);
         } else if (Indexer.getInstance().isCollected()) {
             enableReadyMode();
         }
@@ -273,9 +274,9 @@ class ShooterIO {
     void enableReadyMode() {
         readyMode = true;
     }
+
     void disableReadyMode() {
         readyMode = false;
-        AmpArm.getInstance().setArmState(AmpArm.ArmState.STOW);
     }
 
     void toggleRedundantShootMode(){

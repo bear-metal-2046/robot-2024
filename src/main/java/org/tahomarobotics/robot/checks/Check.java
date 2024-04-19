@@ -33,6 +33,7 @@ public class Check extends ParallelCommandGroup {
 
     public Check() {
         addCommands(
+                Commands.runOnce(() -> logger.info("-----STARTING SYSTEMS CHECK-----")),
                 Commands.sequence(
                         checkAllModuleSteers(),
                         checkAllModuleDrives()
@@ -258,9 +259,9 @@ public class Check extends ParallelCommandGroup {
 
         if (avg < nom.minAverage() || avg > nom.maxAverage()) {
             logger.error(name + " is not nominal!\nThe average was: " + avg + ", which is out of the [" + nom.minAverage + ", " + nom.maxAverage + "].");
-            SafeAKitLogger.recordOutput("Checks/" + name + "/Bad", true);
+            SafeAKitLogger.recordOutput("Checks/" + name + "/Good", false);
         } else {
-            SafeAKitLogger.recordOutput("Checks/" + name + "/Bad", false);
+            SafeAKitLogger.recordOutput("Checks/" + name + "/Good", true);
         }
 
         SafeAKitLogger.recordOutput("Checks/" + name + "/Avg", avg);

@@ -36,12 +36,6 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "CollectorDown"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
                   "name": "Shoot"
                 }
               },
@@ -87,6 +81,6 @@
       ]
     }
   },
-  "folder": null,
+  "folder": "6 Piece Autos",
   "choreoAuto": false
 }

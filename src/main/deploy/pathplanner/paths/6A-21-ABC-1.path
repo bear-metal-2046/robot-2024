@@ -51,8 +51,8 @@
       "rotateFast": false
     },
     {
-      "waypointRelativePos": 0.2,
-      "rotationDegrees": -4.689333898661849,
+      "waypointRelativePos": 0.35,
+      "rotationDegrees": -2.0214250702115057,
       "rotateFast": true
     }
   ],
@@ -81,6 +81,23 @@
               "type": "named",
               "data": {
                 "name": "EnableShootMode"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Collect Down",
+      "waypointRelativePos": 0.35,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "CollectorDown"
               }
             }
           ]

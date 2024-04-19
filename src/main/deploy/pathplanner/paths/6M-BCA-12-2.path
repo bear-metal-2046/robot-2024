@@ -1,0 +1,114 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.5889498735519214,
+        "y": 5.529469580678293
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.056255590772051,
+        "y": 4.760875086967566
+      },
+      "isLocked": false,
+      "linkedName": "6M-BCA-12-1-END"
+    },
+    {
+      "anchor": {
+        "x": 2.377698755397511,
+        "y": 4.154089960353835
+      },
+      "prevControl": {
+        "x": 2.194305993086325,
+        "y": 4.245786341509428
+      },
+      "nextControl": {
+        "x": 2.5754657596271713,
+        "y": 4.055206458239004
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.9350421309538275,
+        "y": 7.021711521683913
+      },
+      "prevControl": {
+        "x": 0.9753509072235537,
+        "y": 5.790162449890117
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "3rd col"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.75,
+      "rotationDegrees": -24.170055807129902,
+      "rotateFast": true
+    },
+    {
+      "waypointRelativePos": 1.45,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.1,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Shoot"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 1.4,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Shoot"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": 42.397437797500224,
+    "rotateFast": true
+  },
+  "reversed": false,
+  "folder": "6M-BCA-12",
+  "previewStartingState": {
+    "rotation": 1.05118074954372,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

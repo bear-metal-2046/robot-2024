@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.4697684177977053,
+        "y": 5.529469580678293
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.7394881495639696,
+        "y": 5.529469580678293
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.5889498735519214,
+        "y": 5.529469580678293
+      },
+      "prevControl": {
+        "x": 2.3507305275480115,
+        "y": 5.529469580678293
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "6M-BCA-12-1-END"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": 0.0,
+    "rotateFast": true
+  },
+  "reversed": false,
+  "folder": "6M-BCA-12",
+  "previewStartingState": {
+    "rotation": 0.57872556560769,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

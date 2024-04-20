@@ -221,12 +221,12 @@ public class Check extends ParallelCommandGroup {
                 Commands.sequence(
                     Commands.runOnce(() -> {
                         logger.info("Waiting to see an apriltag on " + c.getName() + "...");
-                        SafeAKitLogger.recordOutput("Checks/ATVision/" + c.getName(), true);
+                        SafeAKitLogger.recordOutput("Checks/ATVision/" + c.getName(), false);
                     }),
                     Commands.waitUntil(() -> c.aprilTagCount() == 1),
                     Commands.runOnce(() -> {
                         logger.info(c.getName() + " saw a single apriltag!");
-                        SafeAKitLogger.recordOutput("Checks/ATVision/" + c.getName(), false);
+                        SafeAKitLogger.recordOutput("Checks/ATVision/" + c.getName(), true);
                     })
 
             ));

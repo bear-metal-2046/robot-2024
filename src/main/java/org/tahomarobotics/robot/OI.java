@@ -191,7 +191,7 @@ public class OI extends SubsystemIF {
     }
 
     public boolean isManipXPressed() {
-        return manipController.x().getAsBoolean();
+        return manipController.getHID().getXButtonPressed();
     }
 
     private static double deadband(double value, double deadZone) {

@@ -267,7 +267,7 @@ public class Collector extends SubsystemIF {
             case EJECTING -> {
                 eject();
 
-                if (!isStowed() && !isEjecting()) setDeployEject();
+                if (!isStowed() && !isInEject()) setDeployEject();
 
                 if (isCollecting && !isStowed()) setCollectionState(Collector.CollectionState.COLLECTING);
 

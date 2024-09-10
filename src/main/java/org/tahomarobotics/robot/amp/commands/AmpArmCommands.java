@@ -48,7 +48,7 @@ public class AmpArmCommands {
         );
 
         ARM_TO_PASSTHROUGH = () -> Commands.sequence(
-                Commands.runOnce(() -> logger.info("Arm To Stow")),
+                Commands.runOnce(() -> logger.info("Arm To Passthrough")),
                 Commands.runOnce(() -> ampArm.setWristPosition(WRIST_MOVING_POSE)),
                 Commands.runOnce(() -> ampArm.setArmPosition(ARM_STOW_POSE)),
                 Commands.waitUntil(ampArm::isArmAtPosition).alongWith(

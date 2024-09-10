@@ -36,19 +36,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "CollectorDown"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
                   "name": "Shoot"
                 }
               },
               {
                 "type": "path",
                 "data": {
-                  "pathName": "6A-21-ABC-1"
+                  "pathName": "6A-12-ABC-1"
                 }
               }
             ]
@@ -63,7 +57,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "6A-21-ABC-2"
+            "pathName": "6A-12-ABC-2"
           }
         },
         {
@@ -87,6 +81,6 @@
       ]
     }
   },
-  "folder": null,
+  "folder": "6 Piece Autos",
   "choreoAuto": false
 }

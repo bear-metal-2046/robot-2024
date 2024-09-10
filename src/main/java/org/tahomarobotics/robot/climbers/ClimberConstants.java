@@ -17,7 +17,7 @@ public class ClimberConstants {
         default -> (12.0 / 60.0) * (18.0 / 74.0) * (2 * Math.PI * 0.0254) * 1.25;
     };
 
-    public static final double POSITION_EPSILON = 0.05;
+    public static final double POSITION_EPSILON = 0.01;
     public static final double VELOCITY_EPSILON = 0.005;
 
     public static final double LADEN_CLIMB_MAX_VEL = 1.0; // meter per sec

@@ -118,7 +118,7 @@ public class AmpArm extends SubsystemIF {
     // STATE CONTROL
 
     public void setArmState(ArmState state) {
-        logger.info("Arm State Set To: " + state.name());
+        if (state != armState) logger.info("Arm State Set To: " + state.name());
         armState = state;
 
         switch (state) {

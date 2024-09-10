@@ -19,8 +19,8 @@ public class AmpArmCommands {
 
     public static final Supplier<Command> FEEDFORWARD;
     public static final Supplier<Command> FEEDBACK;
-    private static final Supplier<Command> ARM_TO_AMP;
-    private static final Supplier<Command> ARM_TO_SOURCE;
+    public static final Supplier<Command> ARM_TO_AMP;
+    public static final Supplier<Command> ARM_TO_SOURCE;
     public static final Supplier<Command> ARM_TO_STOW;
     public static final Supplier<Command> ARM_TO_PASSTHROUGH;
     public static final Supplier<Command> ARM_TO_TRAP;
@@ -48,7 +48,7 @@ public class AmpArmCommands {
         );
 
         ARM_TO_PASSTHROUGH = () -> Commands.sequence(
-                Commands.runOnce(() -> logger.info("Arm To Stow")),
+                Commands.runOnce(() -> logger.info("Arm To Passthrough")),
                 Commands.runOnce(() -> ampArm.setWristPosition(WRIST_MOVING_POSE)),
                 Commands.runOnce(() -> ampArm.setArmPosition(ARM_STOW_POSE)),
                 Commands.waitUntil(ampArm::isArmAtPosition).alongWith(

@@ -2,15 +2,21 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.75,
-      "y": 4.42
+      "x": 1.37,
+      "y": 6.52
     },
-    "rotation": -60.60242582630538
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "DontUseLookupTable"
+          }
+        },
         {
           "type": "named",
           "data": {
@@ -24,34 +30,34 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "CollectorDown"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
                   "name": "SpinUp"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "EnableShootMode"
+                  "name": "Shoot"
                 }
               },
               {
                 "type": "path",
                 "data": {
-                  "pathName": "6S-CBA-12-1"
+                  "pathName": "6A-21-ABC-1"
                 }
               }
             ]
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "MCDONALDS"
+            "pathName": "6A-21-ABC-2"
           }
         },
         {
@@ -63,19 +69,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "6S-CBA-12-3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "6S-CBA-12-4"
+            "pathName": "6A-21-ABC-3"
           }
         },
         {

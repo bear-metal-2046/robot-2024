@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.75,
-      "y": 4.42
+      "x": 1.47,
+      "y": 5.53
     },
-    "rotation": -60.60242582630538
+    "rotation": -1.0287541338247
   },
   "command": {
     "type": "sequential",
@@ -15,6 +15,12 @@
           "type": "named",
           "data": {
             "name": "ZeroCollectorShooter"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DontUseLookupTable"
           }
         },
         {
@@ -30,19 +36,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "SpinUp"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "EnableShootMode"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "6S-CBA-12-1"
+                  "name": "Shoot"
                 }
               }
             ]
@@ -51,7 +45,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "MCDONALDS"
+            "pathName": "6M-BCA-12-1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "6M-BCA-12-2"
           }
         },
         {

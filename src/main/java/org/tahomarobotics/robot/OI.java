@@ -131,9 +131,6 @@ public class OI extends SubsystemIF {
                 switch (climbers.getClimbState()) {
                     case READY, PRE_CLIMBING -> new PreClimbCancel();
                     case ENGAGED, ENGAGING -> new EngagedCancel();
-                    // Descend with break mode in the case that it doesn't work.
-                    // TODO: At this point, we can't be sure of anything about the state of the robot so designating
-                    //  the canceling to a separate command that does a full reset might be ideal.
                     case CLIMBING, CLIMBED -> climbCancel;
                     default -> Commands.none();
                 })
@@ -194,7 +191,7 @@ public class OI extends SubsystemIF {
     }
 
     public boolean isManipXPressed() {
-        return manipController.x().getAsBoolean();
+        return manipController.getHID().getXButtonPressed();
     }
 
     private static double deadband(double value, double deadZone) {

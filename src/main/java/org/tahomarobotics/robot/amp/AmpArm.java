@@ -39,9 +39,9 @@ public class AmpArm extends SubsystemIF {
 
     private double targetArmPosition, targetWristPosition, targetRollerPosition;
 
-    private double energyUsed = 0;
+    private double energyUsed, totalCurrent;
 
-    private double totalCurrent = 0;
+    private boolean zeroingFailed;
 
     private AmpArm() {
         RobustConfigurator configurator = new RobustConfigurator(logger);
@@ -204,20 +204,17 @@ public class AmpArm extends SubsystemIF {
     }
 
     private void zeroArmAndWrist() {
-        boolean isDisabled = RobotState.isDisabled();
-
-        if (RobustConfigurator.retryConfigurator(() -> armMotor.setPosition(ARM_STOW_POSE),
+        zeroingFailed = RobustConfigurator.retryConfigurator(() -> armMotor.setPosition(ARM_STOW_POSE),
                 "Set arm position to STOW",
                 "FAILED TO SET ARM POSITION",
-                "Retrying setting arm position.").isError() && isDisabled) {
-//            throw new RuntimeException("AGHHHHGHHH... the amp arm didnt zero this is not good... POWER CYCLEEEE!");
-        }
-        if (RobustConfigurator.retryConfigurator(() -> wristMotor.setPosition(WRIST_STOW_POSE),
+                "Retrying setting arm position.").isError();
+
+        zeroingFailed = RobustConfigurator.retryConfigurator(() -> wristMotor.setPosition(WRIST_STOW_POSE),
                 "Set wrist position to STOW",
                 "FAILED TO SET WRIST POSITION",
-                "Retrying setting wrist position.").isError() && isDisabled) {
-//            throw new RuntimeException("OHH NOOO... YOUR WRIST IS BROKEN (it didnt zero 🤭)... POWER CYCLE POR FAVOR!");
-        }
+                "Retrying setting wrist position.").isError();
+
+        SafeAKitLogger.recordOutput("Amp Arm/Zeroing Failed", zeroingFailed);
     }
 
     // STATE CHECKING

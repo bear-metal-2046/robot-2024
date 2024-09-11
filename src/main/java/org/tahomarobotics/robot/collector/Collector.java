@@ -55,9 +55,7 @@ public class Collector extends SubsystemIF {
     private CollectionState collectionState = CollectionState.DISABLED;
     private DeploymentState deploymentState = DeploymentState.STOWED;
 
-    private boolean isCollecting;
-    private boolean isEjecting;
-    private boolean isZeroed;
+    private boolean isCollecting, isEjecting, isZeroed, zeroingFailed;
 
     private double energyUsed = 0;
 
@@ -212,37 +210,33 @@ public class Collector extends SubsystemIF {
         deployRight.stopMotor();
     }
 
+    /**
+     * Zeros the deploy motors with their current position as "zero".
+     * This is run twice, once on robot startup and once on enabled.
+     * It is run during disabled to ensure the motors can be successfully zeroed on enable.
+     */
     public void zeroCollector() {
         boolean isDisabled = RobotState.isDisabled();
-        boolean failed = false;
 
-        if (RobustConfigurator.retryConfigurator(() -> deployLeft.setPosition(ZERO_POSITION),
-                "Zeroed Left Collector Motor",
-                "FAILED TO SET LEFT COLLECTOR POSITION",
-                "Retrying setting left collector position.").isError()) {
-            if (isDisabled) {
-//                throw new RuntimeException("AHHH THE COLLECTOR DIDNT ZERO, PLEASE POWER CYCLE!");
-            } else
-                failed = true;
-        }
+        zeroingFailed = RobustConfigurator.retryConfigurator(() -> deployLeft.setPosition(ZERO_POSITION),
+                "Zeroed left deploy motor.",
+                "FAILED TO SET LEFT DEPLOY POSITION!",
+                "Retrying setting left deploy position.").isError();
 
-        if (RobustConfigurator.retryConfigurator(() -> deployRight.setPosition(ZERO_POSITION),
-                "Zeroed Right Collector Motor",
-                "FAILED TO SET RIGHT COLLECTOR POSITION",
-                "Retrying setting right collector position.").isError()) {
-            if (isDisabled) {
-//                throw new RuntimeException("AHHH THE COLLECTOR DIDNT ZERO, PLEASE POWER CYCLE!");
-            } else
-                failed = true;
-        }
+        zeroingFailed = RobustConfigurator.retryConfigurator(() -> deployRight.setPosition(ZERO_POSITION),
+                "Zeroed right deploy motor.",
+                "FAILED TO SET RIGHT DEPLOY POSITION!",
+                "Retrying setting right deploy position.").isError();
 
-        isZeroed = !failed && !isDisabled;
+        SafeAKitLogger.recordOutput("Collector/Zeroing Failed", zeroingFailed);
+
+        // The collector is zeroed if the robot is enabled and the position set was successful.
+        isZeroed = !zeroingFailed && !isDisabled;
     }
 
     public boolean isZeroed() {
         return isZeroed;
     }
-
 
     //STATE MACHINES
 

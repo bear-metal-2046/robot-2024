@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.climbers.commands.ClimbZeroCommand;
+import org.tahomarobotics.robot.identity.RobotID;
+import org.tahomarobotics.robot.identity.RobotIdentity;
 import org.tahomarobotics.robot.util.SafeAKitLogger;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
@@ -27,9 +29,11 @@ public class Climbers extends SubsystemIF {
 
     private boolean trapping = false;
 
+    private final boolean enabled = RobotIdentity.robotID != RobotID.PLAYBEAR_CARTI;
+
     private Climbers() {
-        leftClimber = new Climber(RobotMap.LEFT_CLIMB_MOTOR, "Left Climber", true);
-        rightClimber = new Climber(RobotMap.RIGHT_CLIMB_MOTOR, "Right Climber", false);
+        leftClimber = enabled ? new Climber(RobotMap.LEFT_CLIMB_MOTOR, "Left Climber", true) : null;
+        rightClimber = enabled ? new Climber(RobotMap.RIGHT_CLIMB_MOTOR, "Right Climber", false) : null;
         
         setTrapping(false);
     }
@@ -37,61 +41,77 @@ public class Climbers extends SubsystemIF {
     // SETTERS
 
     public void zero() {
+        if (!enabled) return;
+
         leftClimber.zero();
         rightClimber.zero();
     }
 
     public void setPositionLaden(double position) {
+        if (!enabled) return;
+
         leftClimber.setPositionLaden(position);
         rightClimber.setPositionLaden(position);
     }
 
     public void setPositionUnladen(double position) {
+        if (!enabled) return;
+
         leftClimber.setPositionUnladen(position);
         rightClimber.setPositionUnladen(position);
     }
 
     public void setVoltageLeft(double voltage) {
+        if (!enabled) return;
+
         leftClimber.setVoltage(voltage);
     }
 
     public void setVoltageRight(double voltage) {
+        if (!enabled) return;
+
         rightClimber.setVoltage(voltage);
     }
 
     public void stop() {
+        if (!enabled) return;
+
         stopLeft();
         stopRight();
     }
 
     public void stopLeft() {
+        if (!enabled) return;
+
         leftClimber.stop();
     }
 
     public void stopRight() {
+        if (!enabled) return;
+
         rightClimber.stop();
     }
 
     // GETTERS
 
     public double getLeftPosition() {
-        return leftClimber.getPosition();
+        return enabled ? leftClimber.getPosition() : 0;
     }
 
     public double getRightPosition() {
-        return rightClimber.getPosition();
+        return enabled ? rightClimber.getPosition() : 0;
     }
 
     public double getLeftVelocity() {
-        return leftClimber.getVelocity();
+        return enabled ? leftClimber.getVelocity() : 0;
     }
 
     public double getRightVelocity() {
-        return rightClimber.getVelocity();
+        return enabled ? rightClimber.getVelocity() : 0;
     }
 
-    public double getLeftCurrent() { return leftClimber.getCurrent(); }
-    public double getRightCurrent() { return rightClimber.getCurrent(); }
+    public double getLeftCurrent() { return enabled ? leftClimber.getCurrent() : 0; }
+    public double getRightCurrent() { return enabled ? rightClimber.getCurrent() : 0; }
 
     @Override
     public double getEnergyUsed() {
@@ -123,6 +143,8 @@ public class Climbers extends SubsystemIF {
 
     @Override
     public void periodic() {
+        if (!enabled) return;
+
         double voltage = RobotController.getBatteryVoltage();
         totalCurrent = Math.abs(leftClimber.getCurrent()) + Math.abs(rightClimber.getCurrent());
         energyUsed += totalCurrent * voltage * Robot.defaultPeriodSecs;

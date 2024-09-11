@@ -220,9 +220,9 @@ public class Collector extends SubsystemIF {
                 "Zeroed Left Collector Motor",
                 "FAILED TO SET LEFT COLLECTOR POSITION",
                 "Retrying setting left collector position.").isError()) {
-            if (isDisabled)
-                throw new RuntimeException("AHHH THE COLLECTOR DIDNT ZERO, PLEASE POWER CYCLE!");
-            else
+            if (isDisabled) {
+//                throw new RuntimeException("AHHH THE COLLECTOR DIDNT ZERO, PLEASE POWER CYCLE!");
+            } else
                 failed = true;
         }
 
@@ -230,9 +230,9 @@ public class Collector extends SubsystemIF {
                 "Zeroed Right Collector Motor",
                 "FAILED TO SET RIGHT COLLECTOR POSITION",
                 "Retrying setting right collector position.").isError()) {
-            if (isDisabled)
-                throw new RuntimeException("AHHH THE COLLECTOR DIDNT ZERO, PLEASE POWER CYCLE!");
-            else
+            if (isDisabled) {
+//                throw new RuntimeException("AHHH THE COLLECTOR DIDNT ZERO, PLEASE POWER CYCLE!");
+            } else
                 failed = true;
         }
 

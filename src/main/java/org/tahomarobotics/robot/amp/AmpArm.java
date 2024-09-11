@@ -210,13 +210,13 @@ public class AmpArm extends SubsystemIF {
                 "Set arm position to STOW",
                 "FAILED TO SET ARM POSITION",
                 "Retrying setting arm position.").isError() && isDisabled) {
-            throw new RuntimeException("AGHHHHGHHH... the amp arm didnt zero this is not good... POWER CYCLEEEE!");
+//            throw new RuntimeException("AGHHHHGHHH... the amp arm didnt zero this is not good... POWER CYCLEEEE!");
         }
         if (RobustConfigurator.retryConfigurator(() -> wristMotor.setPosition(WRIST_STOW_POSE),
                 "Set wrist position to STOW",
                 "FAILED TO SET WRIST POSITION",
                 "Retrying setting wrist position.").isError() && isDisabled) {
-            throw new RuntimeException("OHH NOOO... YOUR WRIST IS BROKEN (it didnt zero 🤭)... POWER CYCLE POR FAVOR!");
+//            throw new RuntimeException("OHH NOOO... YOUR WRIST IS BROKEN (it didnt zero 🤭)... POWER CYCLE POR FAVOR!");
         }
     }
 

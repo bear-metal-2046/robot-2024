@@ -29,16 +29,22 @@ public class ATVision {
     private final VisionConstants.Camera cameraSettings;
     private final Field2d fieldPose;
     private final SwerveDrivePoseEstimator poseEstimator;
+
+    private boolean connected;
+
     private int updates = 0;
     private int failedUpdates = 0;
     private double lastUpdateTime = 0;
-    private boolean enabled = true;
+
     private int aprilTagCount = 0;
+
+    private final String prefix;
 
     public ATVision(VisionConstants.Camera cameraSettings, Field2d fieldPose, SwerveDrivePoseEstimator poseEstimator) {
         this.cameraSettings = cameraSettings;
         this.fieldPose = fieldPose;
         this.poseEstimator = poseEstimator;
+        prefix = "ATCamera/" + cameraSettings.cameraName;
 
         // normally this would the default client connecting to robot
         // connect to server running on camera (for debugging0
@@ -46,6 +52,8 @@ public class ATVision {
 
         // create PhotonLib camera (required for each camera)
         camera = new PhotonCamera(inst, cameraSettings.cameraName);
+        connected = camera.isConnected();
+        SafeAKitLogger.recordOutput(prefix + "/Connected", connected);
 
         fieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     }
@@ -193,7 +201,6 @@ public class ATVision {
      */
     private void processVisionUpdate(PhotonPipelineResult result) {
         Pose2d robotPose;
-        String prefix = "ATCamera/" + cameraSettings.cameraName;
         MultiTargetPNPResult multiRes = result.getMultiTagResult();
         double time = Timer.getFPGATimestamp() - (result.getLatencyMillis() / 1000.0);
 
@@ -287,7 +294,15 @@ public class ATVision {
 
     public void update() {
         aprilTagCount = 0;
-        processVisionUpdate(camera.getLatestResult());
+        boolean connected = camera.isConnected();
+        if (connected != this.connected) {
+            this.connected = connected;
+            SafeAKitLogger.recordOutput(prefix + "/Connected", connected);
+        }
+
+        if (connected) {
+            processVisionUpdate(camera.getLatestResult());
+        }
     }
 
     public int aprilTagCount() {

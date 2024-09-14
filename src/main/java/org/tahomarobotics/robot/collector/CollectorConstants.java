@@ -9,7 +9,7 @@ import org.tahomarobotics.robot.identity.RobotIdentity;
 
 public class CollectorConstants {
 
-    private final static double DEPLOY_GEAR_REDUCTION = (10d / 72d) * (16d / 40d);
+    private final static double DEPLOY_GEAR_REDUCTION;
     public final static double COLLECT_GEAR_REDUCTION = (18d / 36d);
 
     //Deploy Motion Profile Constraints
@@ -18,21 +18,37 @@ public class CollectorConstants {
     private final static double DEPLOY_MAX_JERK = DEPLOY_MAX_ACCEL / 0.125;
 
     //Collection Motion Profile Constraints
-    public final static double COLLECT_MAX_RPS = 40;
-    public final static double COLLECT_MAX_ACCEL = COLLECT_MAX_RPS / 0.25;
-    public final static double COLLECT_MAX_JERK = COLLECT_MAX_ACCEL / 0.125;
+    public final static double COLLECT_MAX_RPS;
 
     public final static double STOW_POSITION, COLLECT_POSITION, EJECT_POSITION, ZERO_POSITION;
 
     static {
         switch (RobotIdentity.robotID) {
-            case PLAYBEAR_CARTI, BEARITONE -> {
+            case PLAYBEAR_CARTI -> {
+                DEPLOY_GEAR_REDUCTION = (10d / 72d) * (16d / 36d);
+
+                COLLECT_MAX_RPS = 30;
+
+                STOW_POSITION = Units.degreesToRotations(82);
+                COLLECT_POSITION = Units.degreesToRotations(177);
+                EJECT_POSITION = Units.degreesToRotations(177 - 30);
+                ZERO_POSITION = Units.degreesToRotations(63.5);
+            }
+            case BEARITONE -> {
+                DEPLOY_GEAR_REDUCTION = (10d / 72d) * (16d / 40d);
+
+                COLLECT_MAX_RPS = 40;
+
                 STOW_POSITION = Units.degreesToRotations(90.0000000);
                 COLLECT_POSITION = Units.degreesToRotations(213.92578125);
                 EJECT_POSITION = Units.degreesToRotations(213.92578125 - 30);
                 ZERO_POSITION = Units.degreesToRotations(63.5);
             }
             default -> {
+                DEPLOY_GEAR_REDUCTION = (10d / 72d) * (16d / 36d);
+
+                COLLECT_MAX_RPS = 40;
+
                 // TODO: Get these positions.
                 STOW_POSITION = Units.degreesToRotations(10);
                 COLLECT_POSITION = Units.degreesToRotations(137.5);
@@ -41,6 +57,9 @@ public class CollectorConstants {
             }
         }
     }
+
+    public final static double COLLECT_MAX_ACCEL = COLLECT_MAX_RPS / 0.25;
+    public final static double COLLECT_MAX_JERK = COLLECT_MAX_ACCEL / 0.125;
     
     private final static double SUPPLY_CURRENT_LIMIT = 40;
     private final static double STATOR_CURRENT_LIMIT = 80;

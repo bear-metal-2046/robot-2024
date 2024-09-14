@@ -71,7 +71,12 @@ public class CollectorConstants {
                     .withStatorCurrentLimitEnable(true)
                     .withSupplyCurrentLimitEnable(true))
             .withSlot0(switch (RobotIdentity.robotID) {
-                case BEARITONE, PLAYBEAR_CARTI -> new Slot0Configs()
+                case BEARITONE -> new Slot0Configs()
+                        .withKP(.11795)
+                        .withKS(.27235)
+                        .withKV(.2485)
+                        .withKA(.010979);
+                case PLAYBEAR_CARTI -> new Slot0Configs()
                         .withKP(.11795)
                         .withKS(.27235)
                         .withKV(.2485)
@@ -100,7 +105,7 @@ public class CollectorConstants {
                     .withStatorCurrentLimitEnable(true)
                     .withSupplyCurrentLimitEnable(true))
             .withSlot0(switch (RobotIdentity.robotID) {
-                case BEARITONE, PLAYBEAR_CARTI -> new Slot0Configs()
+                case BEARITONE -> new Slot0Configs()
                         .withGravityType(GravityTypeValue.Arm_Cosine)
                         .withKP(55.903)
                         .withKD(4.8502)
@@ -108,6 +113,14 @@ public class CollectorConstants {
                         .withKV(1.8207)
                         .withKA(0.25676)
                         .withKG(0.25583);
+                case PLAYBEAR_CARTI -> new Slot0Configs()
+                        .withGravityType(GravityTypeValue.Arm_Cosine)
+                        .withKP(43.062)
+                        .withKD(10.857)
+                        .withKS(0.11864)
+                        .withKV(2.0101)
+                        .withKA(0.25573)
+                        .withKG(0.41374);
                 default -> new Slot0Configs()
                         .withGravityType(GravityTypeValue.Arm_Cosine)
                         .withKP(53.655)

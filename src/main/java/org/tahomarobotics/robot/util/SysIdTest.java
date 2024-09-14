@@ -86,7 +86,7 @@ public class SysIdTest extends SubsystemIF {
         sysIdRoutine = new SysIdRoutine(
                 new SysIdRoutine.Config(
                         Volts.of(0.25).per(Second),  //Quasistatic Ramp Rate
-                        Volts.of(2.5), // Dynamic voltage
+                        Volts.of(1), // Dynamic voltage
                         null,     // Default timeout is acceptable
                         null),
                 new SysIdRoutine.Mechanism(

@@ -43,7 +43,7 @@ public class OI extends SubsystemIF {
         return INSTANCE;
     }
 
-    private final CommandXboxController driveController = new CommandXboxController(0);
+    public final CommandXboxController driveController = new CommandXboxController(0);
     private final CommandXboxController manipController = new CommandXboxController(1);
 
     private static final Executor rumbleExec = Executors.newFixedThreadPool(2,
@@ -96,7 +96,6 @@ public class OI extends SubsystemIF {
         driveController.rightBumper().onTrue(Commands.runOnce(shooter::toggleReadyMode));
         manipController.leftBumper().onTrue(Commands.runOnce(shooter::enablePassHigh));
         manipController.rightBumper().onTrue(Commands.runOnce(shooter::enablePassLow));
-
         manipController.povUp().onTrue(Commands.runOnce(shooter::biasUp).ignoringDisable(true));
         manipController.povDown().onTrue(Commands.runOnce(shooter::biasDown).ignoringDisable(true));
         manipController.start().onTrue(Commands.runOnce(shooter::resetBias).ignoringDisable(true));
@@ -165,17 +164,17 @@ public class OI extends SubsystemIF {
                 .onTrue(Commands.runOnce(() -> collector.setIsCollecting(true)))
                 .onFalse(Commands.runOnce(() -> collector.setIsCollecting(false)));
 
-        driveController.povLeft()
-                .onTrue(Commands.runOnce(() -> {
-                    collector.setIsEjecting(true);
-                    shooter.enable();
-                    ampArm.setRollerState(AmpArm.RollerState.PASSING);
-                }))
-                .onFalse(Commands.runOnce(() -> {
-                    collector.setIsEjecting(false);
-                    shooter.stop();
-                    ampArm.setRollerState(AmpArm.RollerState.DISABLED);
-                }));
+//        driveController.povLeft()
+//                .onTrue(Commands.runOnce(() -> {
+//                    collector.setIsEjecting(true);
+//                    shooter.enable();
+//                    ampArm.setRollerState(AmpArm.RollerState.PASSING);
+//                }))
+//                .onFalse(Commands.runOnce(() -> {
+//                    collector.setIsEjecting(false);
+//                    shooter.stop();
+//                    ampArm.setRollerState(AmpArm.RollerState.DISABLED);
+//                }));
 
         manipController.y().onTrue(Commands.deferredProxy(FEEDBACK));
     }

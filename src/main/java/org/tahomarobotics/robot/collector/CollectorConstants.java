@@ -30,7 +30,7 @@ public class CollectorConstants {
                 COLLECT_MAX_RPS = 30;
 
                 STOW_POSITION = Units.degreesToRotations(82);
-                COLLECT_POSITION = Units.degreesToRotations(177);
+                COLLECT_POSITION = Units.degreesToRotations(182.5);
                 EJECT_POSITION = Units.degreesToRotations(177 - 30);
                 ZERO_POSITION = Units.degreesToRotations(63.5);
             }
@@ -77,10 +77,10 @@ public class CollectorConstants {
                         .withKV(.2485)
                         .withKA(.010979);
                 case PLAYBEAR_CARTI -> new Slot0Configs()
-                        .withKP(.11795)
-                        .withKS(.27235)
-                        .withKV(.2485)
-                        .withKA(.010979);
+                        .withKP(0.13384)
+                        .withKS(0.047729)
+                        .withKV(0.21729)
+                        .withKA(0.16971);
                 default -> new Slot0Configs()
                         .withKP(0.23711)
                         .withKS(0.56717)
@@ -116,11 +116,11 @@ public class CollectorConstants {
                 case PLAYBEAR_CARTI -> new Slot0Configs()
                         .withGravityType(GravityTypeValue.Arm_Cosine)
                         .withKP(43.062)
-                        .withKD(10.857)
+                        .withKD(4.8502)
                         .withKS(0.11864)
                         .withKV(2.0101)
                         .withKA(0.25573)
-                        .withKG(0.41374);
+                        .withKG(0.4137);
                 default -> new Slot0Configs()
                         .withGravityType(GravityTypeValue.Arm_Cosine)
                         .withKP(53.655)

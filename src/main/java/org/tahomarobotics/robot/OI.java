@@ -43,7 +43,7 @@ public class OI extends SubsystemIF {
         return INSTANCE;
     }
 
-    public final CommandXboxController driveController = new CommandXboxController(0);
+    private final CommandXboxController driveController = new CommandXboxController(0);
     private final CommandXboxController manipController = new CommandXboxController(1);
 
     private static final Executor rumbleExec = Executors.newFixedThreadPool(2,

@@ -11,11 +11,8 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tahomarobotics.robot.OI;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
@@ -26,7 +23,6 @@ import org.tahomarobotics.robot.shooter.ShooterConstants;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SafeAKitLogger;
 import org.tahomarobotics.robot.util.SubsystemIF;
-import org.tahomarobotics.robot.util.SysIdTest;
 
 import static org.tahomarobotics.robot.collector.CollectorConstants.*;
 
@@ -332,14 +328,6 @@ public class Collector extends SubsystemIF {
                 .andThen(this::setStowed)
                 .ignoringDisable(true)
                 .schedule();
-
-        SysIdTest deployTest = new SysIdTest(this, deployLeft, deployRight);
-        SysIdTest intakeTest = new SysIdTest(this, collectMotor);
-        CommandXboxController driveController = OI.getInstance().driveController;
-        driveController.povUp().whileTrue(intakeTest.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        driveController.povDown().whileTrue(intakeTest.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-        driveController.povLeft().whileTrue(deployTest.sysIdDynamic(SysIdRoutine.Direction.kForward));
-        driveController.povRight().whileTrue(deployTest.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
         return this;
     }

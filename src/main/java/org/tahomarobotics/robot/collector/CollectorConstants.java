@@ -27,7 +27,7 @@ public class CollectorConstants {
             case PLAYBEAR_CARTI -> {
                 DEPLOY_GEAR_REDUCTION = (10d / 72d) * (16d / 36d);
 
-                COLLECT_MAX_RPS = 30;
+                COLLECT_MAX_RPS = 40;
 
                 STOW_POSITION = Units.degreesToRotations(82);
                 COLLECT_POSITION = Units.degreesToRotations(182.5);

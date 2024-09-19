@@ -1,0 +1,13 @@
+{
+    "ntServerAddress": "2046",
+    "connectionType": 1,
+    "staticIp": "10.20.46.71",
+    "hostname": "left-cameras",
+    "runNTServer": false,
+    "shouldManage": true,
+    "shouldPublishProto": false,
+    "networkManagerIface": "netplan-zz-all-eth",
+    "setStaticCommand": "nmcli con mod ${interface} ipv4.addresses ${ipaddr}/8 ipv4.method \"manual\" ipv6.method \"disabled\"",
+    "setDHCPcommand": "nmcli con mod ${interface} ipv4.method \"auto\" ipv6.method \"disabled\"",
+    "matchCamerasOnlyByPath": false
+}

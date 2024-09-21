@@ -8,7 +8,7 @@ import org.tahomarobotics.robot.identity.RobotIdentity;
 
 public class IndexerConstants {
     static final double COLLECT_SPEED; // Rotations
-    static final double INDEX_VELOCITY = 8.0; // Rotations
+    static final double INDEX_VELOCITY = 8; // Rotations
     static final double TRANSFER_DISTANCE = 5.0; // Rotations
     static final double POSITION_TOLERANCE = 0.1; // Rotations
     static final double FACTOR = 2; // For indexing into shooter faster
@@ -19,7 +19,7 @@ public class IndexerConstants {
     static {
         switch (RobotIdentity.robotID) {
             case PLAYBEAR_CARTI -> {
-                COLLECT_SPEED = CollectorConstants.COLLECT_MAX_RPS - 15;
+                COLLECT_SPEED = CollectorConstants.COLLECT_MAX_RPS - 35; // LUCAS MALDING
                 INDEXER_GEAR_REDUCTION = 18d / 30d;
                 INVERSION = InvertedValue.CounterClockwise_Positive;
             }

@@ -31,10 +31,10 @@ public class AutoConstants {
                 put("WAVY-6S-CBA-12", new double[]{
                         34.97,
                         40.0,
-                        38.0,
-                        30.0,
-                        21.9,
-                        21.4,
+                        38.0 - 2.0,
+                        30.0 - 2.0,
+                        21.9 - 1.25,
+                        21.4 - 1.25,
                         23.4
                 });
                 put("5S-C-345", new double[]{
@@ -50,7 +50,7 @@ public class AutoConstants {
             {
                 for (String name : new String[]{"4S-345", "4S-354", "4S-435", "4S-453", "4S-534", "4S-543"}) {
                     put(name, new double[]{
-                            27.165,
+                            27.165 - 1.5,
                             28.165,
                             28.165,
                             28.165

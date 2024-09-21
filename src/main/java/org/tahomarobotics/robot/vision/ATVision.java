@@ -18,6 +18,8 @@ import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.MultiTargetPNPResult;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.util.SafeAKitLogger;
 
 import java.util.List;
@@ -29,6 +31,8 @@ public class ATVision {
     private final VisionConstants.Camera cameraSettings;
     private final Field2d fieldPose;
     private final SwerveDrivePoseEstimator poseEstimator;
+
+    private final static Logger logger = LoggerFactory.getLogger(ATVision.class);
 
     private boolean connected;
 
@@ -298,6 +302,8 @@ public class ATVision {
         if (connected != this.connected) {
             this.connected = connected;
             SafeAKitLogger.recordOutput(prefix + "/Connected", connected);
+
+            logger.warn("Camera '{}' {}!", getName(), connected ? "connected" : "disconnected");
         }
 
         if (connected) {

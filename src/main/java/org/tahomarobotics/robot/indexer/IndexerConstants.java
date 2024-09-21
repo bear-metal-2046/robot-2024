@@ -18,16 +18,16 @@ public class IndexerConstants {
 
     static {
         switch (RobotIdentity.robotID) {
-            case PLAYBEAR_CARTI -> {
+            case BEARITONE, PLAYBEAR_CARTI -> {
                 COLLECT_SPEED = CollectorConstants.COLLECT_MAX_RPS - 35; // LUCAS MALDING
                 INDEXER_GEAR_REDUCTION = 18d / 30d;
                 INVERSION = InvertedValue.CounterClockwise_Positive;
             }
-            case BEARITONE -> {
-                COLLECT_SPEED = CollectorConstants.COLLECT_MAX_RPS - 25;
-                INDEXER_GEAR_REDUCTION = 18d / 30d;
-                INVERSION = InvertedValue.CounterClockwise_Positive;
-            }
+//            case BEARITONE -> { OLD COLLECTOR
+//                COLLECT_SPEED = CollectorConstants.COLLECT_MAX_RPS - 25;
+//                INDEXER_GEAR_REDUCTION = 18d / 30d;
+//                INVERSION = InvertedValue.CounterClockwise_Positive;
+//            }
             default -> {
                 COLLECT_SPEED = CollectorConstants.COLLECT_MAX_RPS - 25;
                 INDEXER_GEAR_REDUCTION = 1d;

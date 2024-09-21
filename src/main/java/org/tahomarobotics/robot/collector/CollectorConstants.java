@@ -24,26 +24,27 @@ public class CollectorConstants {
 
     static {
         switch (RobotIdentity.robotID) {
-            case PLAYBEAR_CARTI -> {
+            case BEARITONE, PLAYBEAR_CARTI -> {
                 DEPLOY_GEAR_REDUCTION = (10d / 72d) * (16d / 36d);
 
                 COLLECT_MAX_RPS = 50;
 
-                STOW_POSITION = Units.degreesToRotations(76);
+                STOW_POSITION = Units.degreesToRotations(82);
                 COLLECT_POSITION = Units.degreesToRotations(182.5);
                 EJECT_POSITION = Units.degreesToRotations(177 - 30);
                 ZERO_POSITION = Units.degreesToRotations(63.5);
             }
-            case BEARITONE -> {
-                DEPLOY_GEAR_REDUCTION = (10d / 72d) * (16d / 40d);
-
-                COLLECT_MAX_RPS = 40;
-
-                STOW_POSITION = Units.degreesToRotations(90.0000000);
-                COLLECT_POSITION = Units.degreesToRotations(213.92578125);
-                EJECT_POSITION = Units.degreesToRotations(213.92578125 - 30);
-                ZERO_POSITION = Units.degreesToRotations(63.5);
-            }
+//            OLD COLLECTOR
+//            case BEARITONE -> {
+//                DEPLOY_GEAR_REDUCTION = (10d / 72d) * (16d / 40d);
+//
+//                COLLECT_MAX_RPS = 40;
+//
+//                STOW_POSITION = Units.degreesToRotations(90.0000000);
+//                COLLECT_POSITION = Units.degreesToRotations(213.92578125);
+//                EJECT_POSITION = Units.degreesToRotations(213.92578125 - 30);
+//                ZERO_POSITION = Units.degreesToRotations(63.5);
+//            }
             default -> {
                 DEPLOY_GEAR_REDUCTION = (10d / 72d) * (16d / 36d);
 

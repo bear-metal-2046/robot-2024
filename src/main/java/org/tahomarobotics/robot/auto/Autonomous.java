@@ -216,7 +216,10 @@ public class Autonomous extends SubsystemIF {
     private void onAutoChange(String autoName) {
         shotNumber = 0;
         currentAutoName = autoName;
-        currentAutoAngles = AutoConstants.SHOT_TABLE.getOrDefault(getSelectedAutoName(), new double[]{});
+        currentAutoAngles = AutoConstants.SHOT_TABLE.getOrDefault(currentAutoName, new double[]{});
+        if (currentAutoAngles.length == 0) {
+            useLookupTable = false;
+        }
 
         new InstantCommand(() ->
             postAutoTrajectory(chassis.getField(), autoName)).schedule();

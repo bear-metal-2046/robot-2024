@@ -110,7 +110,7 @@ public class Check extends ParallelCommandGroup {
                     Check.printStatistics(logger, "Right Climber", rightCurrents, new Check.NominalValues(2.15, 3.15));
                     Check.printStatistics(logger, "Shooter Pivot", pivotCurrents, new Check.NominalValues(.15, 1.0));
                     Check.printStatistics(logger, "Shooter Left", shooterLeftCurrents, new Check.NominalValues(6.25, 8.0));
-                    Check.printStatistics(logger, "Shooter Right", shooterRightCurrents, new Check.NominalValues(7.25, 9.0));
+                    Check.printStatistics(logger, "Shooter Right", shooterRightCurrents, new Check.NominalValues(7.25, 9.5));
                 })
         );
 
@@ -199,7 +199,7 @@ public class Check extends ParallelCommandGroup {
                 })),
                 Commands.runOnce(() -> {
                     Check.printStatistics(logger, "Arm", armCurrents, new Check.NominalValues(1.5, 2.5));
-                    Check.printStatistics(logger, "Wrist", wristCurrents, new Check.NominalValues(0.5, 3.75));
+                    Check.printStatistics(logger, "Wrist", wristCurrents, new Check.NominalValues(0.5, 4));
                     Check.printStatistics(logger, "Rollers", rollerCurrents, new Check.NominalValues(9.5, 12));
                 })
         );

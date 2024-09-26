@@ -19,8 +19,7 @@ public class SafeAKitLogger {
         }
     }
 
-    @SafeVarargs
-    public static <T extends StructSerializable> void recordOutput(String key, T... value) {
+    public static <T extends StructSerializable> void recordOutput(String key, T[] value) {
         try {
             Logger.recordOutput(key, value);
         } catch (Exception ignored) {

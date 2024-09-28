@@ -9,12 +9,10 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
-import org.tahomarobotics.robot.amp.commands.AmpArmCommands;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SafeAKitLogger;
 import org.tahomarobotics.robot.util.SubsystemIF;
@@ -306,8 +304,6 @@ public class AmpArm extends SubsystemIF {
                 }))
                 .ignoringDisable(true).schedule();
 
-        SmartDashboard.putData("Wrist Passthrough", Commands.runOnce(() -> setWristPosition(WRIST_PASSTHROUGH_POSE)));
-        SmartDashboard.putData("Wrist Stow", Commands.runOnce(() -> setWristPosition(WRIST_STOW_POSE)));
         return this;
     }
 

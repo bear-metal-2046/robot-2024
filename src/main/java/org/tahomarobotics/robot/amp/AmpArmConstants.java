@@ -27,8 +27,8 @@ public class AmpArmConstants {
 
     static {
         ARM_CLIMB_POSE = Units.degreesToRotations(150);
-        ARM_GEAR_REDUCTION = RobotIdentity.robotID == RobotID.BEARITONE ?
-                (14.0 / 64.0) * (18.0 / 72.0) * (16.0 / 48.0) :
+        ARM_GEAR_REDUCTION = // RobotIdentity.robotID == RobotID.BEARITONE ?
+                // (14.0 / 64.0) * (18.0 / 72.0) * (16.0 / 48.0) :
                 (16.0 / 64.0) * (18.0 / 72.0) * (16.0 / 48.0);
 
         switch (RobotIdentity.robotID) {
@@ -76,7 +76,8 @@ public class AmpArmConstants {
             }
         }
 
-        WRIST_INVERT = RobotIdentity.robotID == RobotID.PLAYBEAR_CARTI ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+//        WRIST_INVERT = RobotIdentity.robotID == RobotID.PLAYBEAR_CARTI ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+        WRIST_INVERT = InvertedValue.Clockwise_Positive;
     }
 
     static {
@@ -102,11 +103,11 @@ public class AmpArmConstants {
 
     static {
         switch (RobotIdentity.robotID) {
-            case BEARITONE -> {
-                ROLLER_GEAR_REDUCTION = 12d / 60d;
-                ROLLER_INVERT = InvertedValue.CounterClockwise_Positive;
-            }
-            case PLAYBEAR_CARTI -> {
+//            case BEARITONE -> {
+//                ROLLER_GEAR_REDUCTION = 12d / 60d;
+//                ROLLER_INVERT = InvertedValue.CounterClockwise_Positive;
+//            }
+            case BEARITONE, PLAYBEAR_CARTI -> {
                 ROLLER_GEAR_REDUCTION = 12d / 60d;
                 ROLLER_INVERT = InvertedValue.Clockwise_Positive;
             }
